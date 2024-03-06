@@ -1,0 +1,77 @@
+@startuml
+
+package Client {
+    ' View related classes
+    abstract class UI
+
+    class GUI extends UI
+    class TUI extends UI
+
+    class View {
+        - userInterface: UI
+    }
+
+    View <-- "1" UI
+
+    class ClientController {
+        - networkProtocol: ClientNetworkProtocol
+    }
+
+    ' MVC client view controller relationship
+
+    View --> ClientController: notify user action
+    ClientController --> View: update/modify view
+}
+
+package Server {
+
+    ' Controller for a single game
+    class GameController {
+        - model: GameModel
+        - playersConnections: ServerNetworkProtocol[]
+    }
+
+    class GameModel
+
+    ' MVC server controller/model relationship
+    GameController --> GameModel: uses
+
+    ' This class represents a single running game
+    class Game {
+        - gameController: GameController
+    }
+
+    Game --> GameController
+
+    class GameServer {
+        - games: Game[]
+        + startServer()
+        + stopServer()
+        + joinGame()
+    }
+
+    GameServer "1" --> "0...N" Game
+}
+
+package Networking {
+    ' This abstract class handles communications for the client
+    abstract class ClientNetworkProtocol
+    class RMIClientProtocol extends ClientNetworkProtocol
+    class SocketClientProtocol extends ClientNetworkProtocol
+
+
+    ' This abstract class handles communications for the server
+    abstract class ServerNetworkProtocol
+    class RMIServerProtocol extends ServerNetworkProtocol
+    class SocketServerProtocol extends ServerNetworkProtocol
+}
+
+' Networking relations
+ClientController "0..1" <-- "1" ClientNetworkProtocol
+GameController "1" <-- "1..4" ServerNetworkProtocol
+
+' MVC client controller / server controller relation
+ClientController "1" <-[#red]-> "1..4" GameController: connected
+' TODO to join/create a game the client controller must connect directly to the game server
+
+@enduml
