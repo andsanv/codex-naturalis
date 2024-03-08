@@ -28,6 +28,10 @@ package Server {
     ' Controller for a single game
     class GameController {
         - model: GameModel
+    }
+
+    ' Controller for the connections in a single game
+    class GameNetworkController {
         - playersConnections: ServerNetworkProtocol[]
     }
 
@@ -37,41 +41,47 @@ package Server {
     GameController --> GameModel: uses
 
     ' This class represents a single running game
-    class Game {
+    class GameSession {
         - gameController: GameController
+        - gameNetworkController: GameNetworkController
     }
 
-    Game --> GameController
+    GameSession --> GameController
+    GameSession --> GameNetworkController
 
+    ' The game server keeps a pool of connected users and can start games on users' requests
     class GameServer {
+        - playersConnections: ClientNetworkProtocol[]
         - games: Game[]
         + startServer()
         + stopServer()
         + joinGame()
     }
 
-    GameServer "1" --> "0...N" Game
+    GameServer "1" --> "0...N" GameSession
 }
 
 package Networking {
     ' This abstract class handles communications for the client
     abstract class ClientNetworkProtocol
-    class RMIClientProtocol extends ClientNetworkProtocol
-    class SocketClientProtocol extends ClientNetworkProtocol
+    class RMIClient extends ClientNetworkProtocol
+    class SocketClient extends ClientNetworkProtocol
 
 
     ' This abstract class handles communications for the server
     abstract class ServerNetworkProtocol
-    class RMIServerProtocol extends ServerNetworkProtocol
-    class SocketServerProtocol extends ServerNetworkProtocol
+    class RMIServer extends ServerNetworkProtocol
+    class SocketServer extends ServerNetworkProtocol
 }
 
 ' Networking relations
 ClientController "0..1" <-- "1" ClientNetworkProtocol
 GameController "1" <-- "1..4" ServerNetworkProtocol
 
+' MVC client controller / game network controller relation
+ClientController "1..4" <-[#red]-> "1" GameNetworkController: connected
+
 ' MVC client controller / server controller relation
-ClientController "1" <-[#red]-> "1..4" GameController: connected
-' TODO to join/create a game the client controller must connect directly to the game server
+ClientController "1..*" <-[#red]-> "1" GameServer: connected
 
 @enduml
