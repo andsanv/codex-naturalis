@@ -64,15 +64,51 @@ package Server {
         - scoreTrack: ScoreTrack
         - starterDeck: StarterDeck
         - goldCardDeck: GoldCardDeck
-        - objectiveDeck: ObjectiveDeck
-        - resourceCard: ResourceCard
+        - objectiveDeck: CommonObjectivesCards
+        - resourceCardDeck: ResourceCardDeck
+        - drawableVisibleCards: DrawableVisibleCards
         - turn: int
         - currentPlayer: Player
     }
 
-    class Player
+    GameModel --> "1" ResourceCardDeck
+    GameModel --> "1" StarterDeck
+    GameModel --> "1" GoldCardDeck
+    GameModel --> "1" CommonObjectivesCards
+    GameModel --> "1" DrawableVisibleCards
+    GameModel --> "1" ScoreTrack
 
-    class PlayerHand
+    ' TODO Discuss starterPlayer: we could use decorator pattern
+    class Player {
+        - nickname: String
+        - id: String
+        - color: Token
+        - points: int
+        - isCurrentPlayer: boolean
+
+        - playerHand: PlayerHand
+        - secretObjective: ObjectiveCard
+        - playerBoard: PlayerBoard
+    }
+
+    Player --> "1" Token
+    Player --> "1" PlayerHand
+    Player --> "1" PlayerBoard
+
+
+    class PlayerHand {
+        cards: PlayableCard[3]
+    }
+
+
+    class PlayerBoard {
+        /' TODO: Discuss implentation possibilities:
+            1- Bidimensional matrix preallocated
+            2- Bidimensional matrix dynamically allocated (overengineering)
+            3- Card corners linking to other cards with pointers
+            4- Search others solutions online
+        '/
+    }
 
     abstract class Card {
         ' - getFront(): CardSide
@@ -86,11 +122,15 @@ package Server {
     '/
 
     class ScoreTrack {
-        - move(token: Token, int points): void
+        - points: HashMap<Player, int>
+
+        - move(player: Player, int points): void
         - notifyLastRound(): void
     }
 
-    class Token
+    class Token {
+        color: TokenColor
+    }
 
     enum TokenColor {
         RED
@@ -100,6 +140,8 @@ package Server {
         BLACK
     }
 
+    Token --> TokenColor
+
     abstract class PlayableCard extends Card {
         - draw(): void
         - place(): void
@@ -107,11 +149,34 @@ package Server {
         - color: Color
     }
 
-    class GoldCard extends PlayableCard
+    class GoldCard extends PlayableCard {
+        - points: Points
+        ' TODO Only on placement, objects added later don't give you points
+        - requisiteForPoints: RequisiteForPoints
+        ' From 3 to 5
+        - requiredResources: ResourceType[]
+    }
+    GoldCard --> Points
+    GoldCard --> RequisiteForPoints
 
-    class ResourceCard extends PlayableCard
+    enum RequisiteForPoints {
+        QUILL
+        INKWELL
+        MANUSCRIPT
+        NONE
+    }
 
-    class StarterCard extends PlayableCard
+    class ResourceCard extends PlayableCard {
+        - points: Points
+    }
+    ResourceCard --> Points
+
+    class StarterCard extends PlayableCard {
+        ' TODO See correct syntax
+        - color: Color = Color.NONE
+        ' TODO From 1 to 3
+        - centralResources: ResourceType[]
+    }
 
 
     class ObjectiveCard extends Card {
@@ -130,21 +195,32 @@ package Server {
         - pattern: Pattern
     }
 
+    PatternsObjective --> Pattern
+
     class ObjectsObjective extends Objective {
         /' - object: Combinations
         TODO Discuss and change type
         '/
     }
+    ObjectsObjective --> Combinations
 
     abstract class Deck
 
-    class StarterDeck extends Deck
+    class StarterDeck extends Deck {
+        - cards: StarterCard[]
+    }
 
-    class GoldCardDeck extends Deck
+    class GoldCardDeck extends Deck {
+        - cards: GoldCard[]
+    }
 
-    class ObjectiveDeck extends Deck
+    class ObjectiveCardDeck extends Deck {
+        - cards: ObjectiveCard[]
+    }
 
-    class ResourceCardDeck extends Deck
+    class ResourceCardDeck extends Deck {
+        - cards: ResourceCard[]
+    }
 
     class DrawableVisibleCards {
         + resourceCard: ResourceCard[2]
@@ -156,7 +232,7 @@ package Server {
     }
 
     enum Points {
-        2, 3
+        1, 2, 3, 5
     }
 
     enum Pattern {
@@ -176,7 +252,7 @@ package Server {
     class Corner {
         - cornerVisibility: CornerVisibility
         - cornerPosition: CornerPosition
-        - cornerResourceType: CornerResourceType
+        - resourceType: ResourceType
         - cornerState: CornerState
     }
 
@@ -206,7 +282,7 @@ package Server {
         NONE
     }
 
-    enum CornerResourceType {
+    enum ResourceType {
         PLANT
         ANIMAL
         FUNGI
@@ -219,9 +295,9 @@ package Server {
 
 
 
-
+    PlayableCard --> "4" Corner
     PlayableCard --> Color
-    Corner --> CornerResourceType
+    Corner --> ResourceType
     Corner --> CornerState
     Corner --> CornerPosition
     Corner --> CornerVisibility
