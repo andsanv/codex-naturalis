@@ -39,11 +39,11 @@ points_type_dict = {
 
 
 def translate_resource_cards() -> None:
-    with open("resource_cards.csv", 'r') as fin:
+    with open("../csv/resource_cards.csv", 'r') as fin:
         reader = csv.reader(fin)
         next(reader)        # skipping first line
 
-        with open("resource_cards.txt", 'w') as fout:
+        with open("../txt/resource_cards.txt", 'w') as fout:
             for row in reader:
                 corner_items = ""
                 for index, item in enumerate(row[2]):
@@ -54,11 +54,11 @@ def translate_resource_cards() -> None:
                 print(string , file=fout)
 
 def translate_gold_cards() -> None:
-    with open("gold_cards.csv", 'r') as fin:
+    with open("../csv/gold_cards.csv", 'r') as fin:
         reader = csv.reader(fin)
         next(reader)        # skipping first line
 
-        with open("gold_cards.txt", 'w') as fout:
+        with open("../txt/gold_cards.txt", 'w') as fout:
             for row in reader:
                 # resources counts
                 resources_counts = ""
