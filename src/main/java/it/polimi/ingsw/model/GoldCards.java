@@ -3,7 +3,7 @@ package it.polimi.ingsw.model;
 import java.util.*;
 
 
-public enum GoldCards implements Card {
+public enum GoldCards implements PlayableCard {
     CARD0(Resources.ANIMAL, GoldCardPoints.ONE_PER_QUILL, new HashMap<Resources, Integer>() {{
         put(Resources.PLANT, 0);
         put(Resources.ANIMAL, 1);

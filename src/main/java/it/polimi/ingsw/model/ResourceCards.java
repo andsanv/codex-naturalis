@@ -7,7 +7,7 @@ import java.util.Optional;
 /*
 * This enum defines all the resource Items.
 * */
-public enum ResourceCards implements Card {
+public enum ResourceCards implements PlayableCard {
     CARD0(Resources.ANIMAL, Arrays.asList(Optional.of(CardItems.FUNGI), Optional.of(CardItems.EMPTY), Optional.empty(), Optional.of(CardItems.FUNGI)), false);
     // all the other cards ...
 

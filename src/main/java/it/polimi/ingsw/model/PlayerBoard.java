@@ -11,12 +11,10 @@ public class PlayerBoard {
 
     PlayerBoard(CardSlot starterCardSlot) {
         this.starterCardSlot = starterCardSlot;
-
-        // TODO count of resources on starter card and following resources count update
+        this.visibleItems = null;
     }
 }
 
-// TODO differentiate between starter card and resource cards. Following is starter card
 class CardSlot {
     final Card card;
     List<Optional<CardSlot>> adjacentSlots;
