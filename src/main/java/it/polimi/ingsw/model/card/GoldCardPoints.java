@@ -1,8 +1,9 @@
 package it.polimi.ingsw.model.card;
 
-/*
-* This enum defines the points that are assigned to the player when a gold card is placed
-* */
+/**
+ * This enum defines the points that are assigned to the player when a gold card is placed.
+ * @see GoldCard
+ */
 public enum GoldCardPoints {
     ONE,
     THREE,

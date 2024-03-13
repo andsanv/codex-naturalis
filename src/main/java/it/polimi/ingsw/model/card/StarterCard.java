@@ -6,9 +6,23 @@ import it.polimi.ingsw.model.corner.CornerPosition;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A starter card is the first card placed on each player's board.
+ * At the start of the match, each player randomly draws one starter card.
+ * @see it.polimi.ingsw.model.player.PlayerBoard
+ */
 public class StarterCard extends PlayableCard {
+    /**
+     * This set holds the resources of the front of the card.
+     */
     private final Set<Resources> centralResources;
 
+    /**
+     * TODO: add description
+     * @param centralResources resources of the front of the card.
+     * @param frontCorners corners of the front of the card.
+     * @param backCorners corners of the back of the card.
+     */
     StarterCard(Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
         super(frontCorners, backCorners);
         this.centralResources = centralResources;
