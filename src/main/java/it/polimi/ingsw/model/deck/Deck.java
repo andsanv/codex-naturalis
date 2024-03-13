@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Stack;
 
 // TODO discuss implementation of a deck factory/abstract factory
-public abstract class Deck {
+public class Deck {
     private Stack<Card> deck;
 
     public Optional<Card> draw() {
