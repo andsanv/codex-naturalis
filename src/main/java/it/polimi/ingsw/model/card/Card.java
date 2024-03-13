@@ -1,7 +1,8 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card;
 
 /*
-* This interfaces is implemented by the playable cards
-* */
-public interface Card {
+* Abstract class that represents a generic card, all cards must have an unique id.
+*/
+public abstract class Card {
+    public final int id = 0;
 }

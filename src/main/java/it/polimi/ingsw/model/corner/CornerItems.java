@@ -1,6 +1,6 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.corner;
 
-public enum CardItems {
+public enum CornerItems {
     EMPTY,
     PLANT,
     ANIMAL,

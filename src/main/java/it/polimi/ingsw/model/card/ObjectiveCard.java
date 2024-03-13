@@ -1,6 +1,5 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card;
 
-import it.polimi.ingsw.model.card.Card;
+public class ObjectiveCard extends Card {
 
-public enum ObjectiveCards implements Card {
 }
