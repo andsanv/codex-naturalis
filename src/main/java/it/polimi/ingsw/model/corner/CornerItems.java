@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.corner;
 
 /**
  * /**
- * This enum defines the items contained in the corners of a card.
+ * This enum defines the possible items that can be contained in a card's corner.
  * @see Corner
  */
 public enum CornerItems {

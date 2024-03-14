@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.player;
 
 /**
- * This enum defines the possible (different?) tokens assigned to a player.
+ * This enum defines the possible tokens that identify players during a game.
  */
 public enum PlayerToken {
     BLUE,

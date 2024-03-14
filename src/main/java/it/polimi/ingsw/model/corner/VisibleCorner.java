@@ -5,7 +5,7 @@ package it.polimi.ingsw.model.corner;
  */
 public class VisibleCorner extends Corner {
     /**
-     * An item is the (object?) contained in a corner
+     * This attribute holds the item (resource, object or possibly no item) contained in the corner.
      */
     private CornerItems item;
 }

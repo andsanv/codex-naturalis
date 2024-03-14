@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class PlayerHand {
     /**
-     * This attribute represents the list of card of the hand.
+     * The list that holds the cards in the player's hand.
      */
-    List<PlayableCard> hand;
+    List<PlayableCard> cards;
 }
