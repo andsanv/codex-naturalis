@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.card.ResourceCard;
 import it.polimi.ingsw.model.deck.Deck;
+import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
 
