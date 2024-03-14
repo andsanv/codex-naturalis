@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
+/**
+ * TODO: add javadoc, after discussion (see below)
+ */
 // TODO discuss implementation of a deck factory/abstract factory
 public class Deck {
     private Stack<Card> deck;

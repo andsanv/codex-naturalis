@@ -8,6 +8,9 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TODO: add javadoc
+ */
 public class GameModel {
     public final Map<PlayerToken, Player> tokenToPlayer;
 
