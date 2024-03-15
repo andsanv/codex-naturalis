@@ -1,16 +1,17 @@
 package it.polimi.ingsw.model.player;
 
-import it.polimi.ingsw.model.card.PlayableCard;
-import it.polimi.ingsw.model.card.StarterCard;
+import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerItems;
 import it.polimi.ingsw.model.corner.CornerPosition;
+import it.polimi.ingsw.model.corner.HiddenCorner;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * This class represents the area of the board personal to a single player.
+ *
  * @see Player
  */
 public class PlayerBoard {
@@ -20,7 +21,7 @@ public class PlayerBoard {
     /**
      * This attribute holds the starter card's coordinates in the player's board.
      */
-    final private Coords STARTER_CARD_COORDS = new Coords(49,49);
+    static final private Coords STARTER_CARD_COORDS = new Coords(49, 49);
 
     /**
      * This map represents the number of items available on the board.
@@ -34,103 +35,114 @@ public class PlayerBoard {
 
     /**
      * TODO: add description
+     *
      * @param starterCard starter card of the player's board
      */
     PlayerBoard(StarterCard starterCard) {
         this.visibleItems = new HashMap<>();
         this.board = new PlayableCard[BOARD_SIZE_X][BOARD_SIZE_Y];
-        this.board[STARTER_CARD_COORDS.getX()][STARTER_CARD_COORDS.getY()] = starterCard;
+        this.board[STARTER_CARD_COORDS.x][STARTER_CARD_COORDS.y] = starterCard;
     }
 
-    public boolean playStarterCard(StarterCard starterCard, CardSide side) {
-
-    }
-
-    public boolean playCard(PlayableCard card, Coords coords, CardSide side) {
+    public PlayCardResult playCard(PlayableCard card, Coords coords, CardSide side) {
         boolean placeable = true;
 
         // TODO ERRORS ENUM
         // TODO LIST OF ERRORS
         // TODO FINISH
 
-        // invalid cell
-        if((coords.getX() - coords.getY()) % 2 != 0)
-            return false;
+        // Coordinates already occupied
+        if (getCard(coords) != null)
+            return PlayCardResult.ERROR_COORDINATES_ALREADY_OCCUPIED;
 
-        // already occupied
-        if(board[coords.getX()][coords.getY()] != null)
-            return false;
+        // No adjacent cards
+        if (adjacentCards(coords).isEmpty())
+            return PlayCardResult.ERROR_NO_ADJACENT_CARDS;
 
-        // no available adjacent cards
-        if((board[coords.getX() - 1][coords.getY() - 1] == null || board[coords.getX() - 1][coords.getY() - 1].getActiveCorners(BR)) &&
-           board[coords.getX() - 1][coords.getY() + 1] == null &&
-           board[coords.getX() + 1][coords.getY() - 1] == null &&
-           board[coords.getX() + 1][coords.getY() + 1] == null
-        ) {
-            return false;
+        Map<CornerPosition, Corner> adjCorners = adjacentCorners(coords);
+        // Hidden corner
+        if (adjCorners.values().stream().anyMatch(corner -> corner instanceof HiddenCorner))
+            return PlayCardResult.ERROR_CANT_PLACE_ON_HIDDEN_CORNER;
+
+        // Not enough resources
+        if (card instanceof GoldCard) {
+            Map<Resources, Integer> requiredResources = ((GoldCard) card).getRequiredResources();
+
+            if (visibleItems.getOrDefault(CornerItems.PLANT, 0) < requiredResources.getOrDefault(Resources.PLANT, 0) ||
+                    visibleItems.getOrDefault(CornerItems.ANIMAL, 0) < requiredResources.getOrDefault(Resources.ANIMAL, 0) ||
+                    visibleItems.getOrDefault(CornerItems.FUNGI, 0) < requiredResources.getOrDefault(Resources.FUNGI, 0) ||
+                    visibleItems.getOrDefault(CornerItems.INSECT, 0) < requiredResources.getOrDefault(Resources.INSECT, 0)
+            )
+                return PlayCardResult.ERROR_NOT_ENOUGH_RESOURCES;
+
         }
 
-        if()
+        // Add card to the board
+        setCard(card, coords);
 
-        this.board[coords.getX()][coords.getY()] = card;
-        return true;
+        // TODO Change corners if they become covered, update visible items by removing the covered ones and adding the new card's ones.
+        // TODO update activeCorners
+
+        return PlayCardResult.SUCCESS;
     }
 
-    private Map<CornerPosition, PlayableCard> adjacentCards(Coords c) {
-        return getAdjacentCoords(c)
+    /**
+     * TODO add description
+     *
+     * @param coords coordinates of card
+     * @return A map containing adjacent cards
+     */
+    private Map<CornerPosition, PlayableCard> adjacentCards(Coords coords) {
+        return adjacentCoords(coords)
                 .entrySet()
                 .stream()
+                .filter(entry -> getCard(entry.getValue()) != null)
                 .collect(Collectors.toMap(
-                        Map.Entry::getKey, e -> getCard(e.getValue())
+                        Map.Entry::getKey,
+                        entry -> getCard(entry.getValue())
                 ));
     }
 
-    private Map<CornerPosition, Corner> adjacentCorners(Coords c) {
-        // TODO
-        // return adjacentCards(c)
-        //         .entrySet()
-        //         .stream()
-        //         .collect(Collectors.toMap(
-        //         ));
+    /**
+     * TODO add description
+     *
+     * @param coords coordinates of card
+     * @return A map containing adjacent corners
+     */
+    private Map<CornerPosition, Corner> adjacentCorners(Coords coords) {
+        return adjacentCoords(coords)
+                .entrySet()
+                .stream()
+                .filter(entry -> getCard(entry.getValue()) != null)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> getCard(entry.getValue()).getActiveCorners().get(entry.getKey())
+                ));
     }
 
+    /**
+     * TODO add description
+     *
+     * @param coords coordinates of a point
+     * @return A map containing the adjacent points' coordinates
+     */
+    static private Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
+        Map<CornerPosition, Coords> map = new HashMap<>();
 
-    static private Map<CornerPosition, Coords> getAdjacentCoords(Coords c) {
-        Map<CornerPosition, Coords> coords = new HashMap<>();
+        map.put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y - 1));
+        map.put(CornerPosition.TOP_RIGHT, new Coords(coords.x - 1, coords.y + 1));
+        map.put(CornerPosition.BOTTOM_RIGHT, new Coords(coords.x + 1, coords.y + 1));
+        map.put(CornerPosition.BOTTOM_LEFT, new Coords(coords.x + 1, coords.y - 1));
 
-        coords.put(CornerPosition.TOP_LEFT, new Coords(c.x - 1,c.y - 1));
-        coords.put(CornerPosition.TOP_RIGHT, new Coords(c.x - 1, c.y + 1));
-        coords.put(CornerPosition.BOTTOM_RIGHT, new Coords(c.x + 1, c.y + 1));
-        coords.put(CornerPosition.BOTTOM_LEFT, new Coords(c.x + 1, c.y - 1));
-
-        return coords;
+        return map;
     }
 
     private PlayableCard getCard(Coords coords) {
-        return board[coords.getX()][coords.getY()];
+        return board[coords.x][coords.y];
     }
 
-    //private List<Corner> adjacentCorners(Coords coords) {
-    //    Map<CornerPosition, PlayableCard> cards = adjacentCards(coords);
-    //
-    //    return Arrays.asList(
-    //        cards.get(CornerPosition.TOP_LEFT).getActiveCorners().get(CornerPosition.BOTTOM_RIGHT),
-    //        cards.get(CornerPosition.TOP_RIGHT).getActiveCorners().get(CornerPosition.BOTTOM_LEFT),
-    //        cards.get(CornerPosition.BOTTOM_RIGHT).getActiveCorners().get(CornerPosition.TOP_LEFT),
-    //        cards.get(CornerPosition.BOTTOM_LEFT).getActiveCorners().get(CornerPosition.TOP_RIGHT)
-    //    );
-    //}
+    private void setCard(PlayableCard card, Coords coords) {
+        board[coords.x][coords.y] = card;
+    }
 }
 
-enum CardSide {
-    FRONT,
-    BACK
-}
-
-//enum PlayCardResult {
-//    SUCCESS_CARD_PLACED,
-//    ERROR_COORDINATES_INVALID,
-//    ERROR_COORDINATES_ALREADY_IN_USE,
-//    ERROR_CANT_PLACE_ON_COVERED_CORNER,
-//    ERROR_NOT_ENOUGH_RESOURCE
-//}
