@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.deck.Deck;
 import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.model.scoreTracker.ScoreTracker;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public class GameModel {
 
     private Deck objectiveCardsDeck;
     private Deck starterCardsDeck;
+
+    private ScoreTracker scoreTracker;
 
     private GameFlowManager stateMachine;
 

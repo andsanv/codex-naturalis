@@ -18,6 +18,10 @@ public class Deck {
         return deck.empty() ? Optional.empty() : Optional.of(deck.pop());
     }
 
+    public void shuffle() {
+        Collections.shuffle(deck);
+    }
+
     Deck(List<Card> cards) {
         deck = new Stack<>();
         Collections.shuffle(cards);
