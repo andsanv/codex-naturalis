@@ -15,4 +15,12 @@ public abstract class GameState {
     }
 
     public abstract void dummy();
+
+    public void playCard() {
+        // TODO ERROR
+    }
+
+    public void drawCard() {
+        // TODO ERROR
+    }
 }
