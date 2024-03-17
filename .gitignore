@@ -2,7 +2,7 @@
 .idea
 
 # Ignore target/
-./target
+target/
 
 # Ignore MacOS related files
 .DS_Store
