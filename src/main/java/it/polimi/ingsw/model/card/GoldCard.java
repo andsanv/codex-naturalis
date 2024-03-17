@@ -42,10 +42,11 @@ public class GoldCard extends PlayableCard {
      * @param frontCorners corners of the front of the card.
      * @param backCorners corners of the back of the card.
      */
-    GoldCard(Resources type, GoldCardPoints points, Map<Resources, Integer> requiredResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
-        super(frontCorners, backCorners);
+    public GoldCard(int id, Resources type, GoldCardPoints points, Map<Resources, Integer> requiredResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
+        super(id, frontCorners, backCorners);
         this.type = type;
         this.points = points;
         this.requiredResources = requiredResources;
     }
+
 }

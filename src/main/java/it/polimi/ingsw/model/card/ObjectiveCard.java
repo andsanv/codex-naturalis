@@ -6,4 +6,7 @@ package it.polimi.ingsw.model.card;
  */
 public class ObjectiveCard extends Card {
 
+    public ObjectiveCard(int id){
+        super(id);
+    }
 }

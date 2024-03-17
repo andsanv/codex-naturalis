@@ -11,10 +11,10 @@ import java.util.Stack;
  * TODO: add javadoc, after discussion (see below)
  */
 // TODO discuss implementation of a deck factory/abstract factory
-public class Deck {
-    private Stack<Card> deck;
+public abstract class Deck<T extends Card> {
+    protected Stack<T> deck;
 
-    public Optional<Card> draw() {
+    public Optional<T> draw() {
         return deck.empty() ? Optional.empty() : Optional.of(deck.pop());
     }
 
@@ -22,9 +22,7 @@ public class Deck {
         Collections.shuffle(deck);
     }
 
-    Deck(List<Card> cards) {
-        deck = new Stack<>();
-        Collections.shuffle(cards);
-        deck.addAll(cards);
+    Deck() {
     }
+
 }

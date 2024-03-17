@@ -1,0 +1,282 @@
+[
+  {
+    "cardNum": 0,
+    "resourceType": "f",
+    "pointsType": "q",
+    "resourcesNeeded": "ffa",
+    "cornerItems": "-xqx"
+  },
+  {
+    "cardNum": 1,
+    "resourceType": "f",
+    "pointsType": "w",
+    "resourcesNeeded": "ffp",
+    "cornerItems": "xwx-"
+  },
+  {
+    "cardNum": 2,
+    "resourceType": "f",
+    "pointsType": "m",
+    "resourcesNeeded": "ffi",
+    "cornerItems": "mx-x"
+  },
+  {
+    "cardNum": 3,
+    "resourceType": "f",
+    "pointsType": "c",
+    "resourcesNeeded": "fffa",
+    "cornerItems": "xxx-"
+  },
+  {
+    "cardNum": 4,
+    "resourceType": "f",
+    "pointsType": "c",
+    "resourcesNeeded": "fffp",
+    "cornerItems": "xx-x"
+  },
+  {
+    "cardNum": 5,
+    "resourceType": "f",
+    "pointsType": "c",
+    "resourcesNeeded": "fffi",
+    "cornerItems": "x-xx"
+  },
+  {
+    "cardNum": 6,
+    "resourceType": "f",
+    "pointsType": "3",
+    "resourcesNeeded": "fff",
+    "cornerItems": "x--w"
+  },
+  {
+    "cardNum": 7,
+    "resourceType": "f",
+    "pointsType": "3",
+    "resourcesNeeded": "fff",
+    "cornerItems": "qx--"
+  },
+  {
+    "cardNum": 8,
+    "resourceType": "f",
+    "pointsType": "3",
+    "resourcesNeeded": "fff",
+    "cornerItems": "-mx-"
+  },
+  {
+    "cardNum": 9,
+    "resourceType": "f",
+    "pointsType": "5",
+    "resourcesNeeded": "fffff",
+    "cornerItems": "x--x"
+  },
+  {
+    "cardNum": 10,
+    "resourceType": "p",
+    "pointsType": "q",
+    "resourcesNeeded": "ppi",
+    "cornerItems": "qx-x"
+  },
+  {
+    "cardNum": 11,
+    "resourceType": "p",
+    "pointsType": "m",
+    "resourcesNeeded": "ppf",
+    "cornerItems": "xmx-"
+  },
+  {
+    "cardNum": 12,
+    "resourceType": "p",
+    "pointsType": "w",
+    "resourcesNeeded": "ppa",
+    "cornerItems": "x-xw"
+  },
+  {
+    "cardNum": 13,
+    "resourceType": "p",
+    "pointsType": "c",
+    "resourcesNeeded": "pppi",
+    "cornerItems": "-xxx"
+  },
+  {
+    "cardNum": 14,
+    "resourceType": "p",
+    "pointsType": "c",
+    "resourcesNeeded": "pppa",
+    "cornerItems": "xx-x"
+  },
+  {
+    "cardNum": 15,
+    "resourceType": "p",
+    "pointsType": "c",
+    "resourcesNeeded": "pppf",
+    "cornerItems": "x-xx"
+  },
+  {
+    "cardNum": 16,
+    "resourceType": "p",
+    "pointsType": "3",
+    "resourcesNeeded": "ppp",
+    "cornerItems": "x--q"
+  },
+  {
+    "cardNum": 17,
+    "resourceType": "p",
+    "pointsType": "3",
+    "resourcesNeeded": "ppp",
+    "cornerItems": "mx--"
+  },
+  {
+    "cardNum": 18,
+    "resourceType": "p",
+    "pointsType": "3",
+    "resourcesNeeded": "ppp",
+    "cornerItems": "-wx-"
+  },
+  {
+    "cardNum": 19,
+    "resourceType": "p",
+    "pointsType": "5",
+    "resourcesNeeded": "ppppp",
+    "cornerItems": "xx--"
+  },
+  {
+    "cardNum": 20,
+    "resourceType": "a",
+    "pointsType": "w",
+    "resourcesNeeded": "aai",
+    "cornerItems": "wx-x"
+  },
+  {
+    "cardNum": 21,
+    "resourceType": "a",
+    "pointsType": "m",
+    "resourcesNeeded": "aap",
+    "cornerItems": "-xmx"
+  },
+  {
+    "cardNum": 22,
+    "resourceType": "a",
+    "pointsType": "q",
+    "resourcesNeeded": "aaf",
+    "cornerItems": "x-xq"
+  },
+  {
+    "cardNum": 23,
+    "resourceType": "a",
+    "pointsType": "c",
+    "resourcesNeeded": "aaai",
+    "cornerItems": "xxx-"
+  },
+  {
+    "cardNum": 24,
+    "resourceType": "a",
+    "pointsType": "c",
+    "resourcesNeeded": "aaaf",
+    "cornerItems": "x-xx"
+  },
+  {
+    "cardNum": 25,
+    "resourceType": "a",
+    "pointsType": "c",
+    "resourcesNeeded": "aaap",
+    "cornerItems": "-xxx"
+  },
+  {
+    "cardNum": 26,
+    "resourceType": "a",
+    "pointsType": "3",
+    "resourcesNeeded": "aaa",
+    "cornerItems": "x--m"
+  },
+  {
+    "cardNum": 27,
+    "resourceType": "a",
+    "pointsType": "3",
+    "resourcesNeeded": "aaa",
+    "cornerItems": "xw--"
+  },
+  {
+    "cardNum": 28,
+    "resourceType": "a",
+    "pointsType": "3",
+    "resourcesNeeded": "aaa",
+    "cornerItems": "-xq-"
+  },
+  {
+    "cardNum": 29,
+    "resourceType": "a",
+    "pointsType": "5",
+    "resourcesNeeded": "aaaaa",
+    "cornerItems": "-xx-"
+  },
+  {
+    "cardNum": 30,
+    "resourceType": "i",
+    "pointsType": "q",
+    "resourcesNeeded": "iip",
+    "cornerItems": "xqx-"
+  },
+  {
+    "cardNum": 31,
+    "resourceType": "i",
+    "pointsType": "m",
+    "resourcesNeeded": "iia",
+    "cornerItems": "x-xm"
+  },
+  {
+    "cardNum": 32,
+    "resourceType": "i",
+    "pointsType": "w",
+    "resourcesNeeded": "iif",
+    "cornerItems": "-xwx"
+  },
+  {
+    "cardNum": 33,
+    "resourceType": "i",
+    "pointsType": "c",
+    "resourcesNeeded": "iiia",
+    "cornerItems": "xxx-"
+  },
+  {
+    "cardNum": 34,
+    "resourceType": "i",
+    "pointsType": "c",
+    "resourcesNeeded": "iiip",
+    "cornerItems": "xx-x"
+  },
+  {
+    "cardNum": 35,
+    "resourceType": "i",
+    "pointsType": "c",
+    "resourcesNeeded": "iiif",
+    "cornerItems": "x-xx"
+  },
+  {
+    "cardNum": 36,
+    "resourceType": "i",
+    "pointsType": "3",
+    "resourcesNeeded": "iii",
+    "cornerItems": "w--x"
+  },
+  {
+    "cardNum": 37,
+    "resourceType": "i",
+    "pointsType": "3",
+    "resourcesNeeded": "iii",
+    "cornerItems": "xm--"
+  },
+  {
+    "cardNum": 38,
+    "resourceType": "i",
+    "pointsType": "3",
+    "resourcesNeeded": "iii",
+    "cornerItems": "--xq"
+  },
+  {
+    "cardNum": 39,
+    "resourceType": "i",
+    "pointsType": "5",
+    "resourcesNeeded": "iiiii",
+    "cornerItems": "xx--"
+  }
+]

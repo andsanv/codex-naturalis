@@ -9,6 +9,10 @@ public class VisibleCorner extends Corner {
      */
     private CornerItems item;
 
+    public VisibleCorner(CornerItems item) {
+        this.item = item;
+    }
+
     /**
      * Corner item getter
      * @return item in the corner

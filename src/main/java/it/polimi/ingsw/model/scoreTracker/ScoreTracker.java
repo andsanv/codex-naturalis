@@ -19,7 +19,7 @@ public class ScoreTracker {
 
     /**
      * TODO: add description
-     * @param players players currently playing
+     * @param players currently playing
      */
     public ScoreTracker(List<Player> players) {
         this.score = new HashMap<>();

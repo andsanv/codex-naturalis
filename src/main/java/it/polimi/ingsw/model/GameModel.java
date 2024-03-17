@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.card.ResourceCard;
-import it.polimi.ingsw.model.deck.Deck;
+import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
@@ -16,14 +16,14 @@ import java.util.Map;
 public class GameModel {
     public final Map<PlayerToken, Player> tokenToPlayer;
 
-    private Deck resourceCardsDeck;
+    private ResourceDeck resourceCardsDeck;
     private List<ResourceCard> visibleResourceCards;
 
-    private Deck goldCardsDeck;
+    private GoldDeck goldCardsDeck;
     private List<ResourceCard> visibleGoldCards;
 
-    private Deck objectiveCardsDeck;
-    private Deck starterCardsDeck;
+    private ObjectiveDeck objectiveCardsDeck;
+    private StarterDeck starterCardsDeck;
 
     private ScoreTracker scoreTracker;
 

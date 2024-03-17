@@ -29,7 +29,8 @@ public abstract class PlayableCard extends Card {
      * @param frontCorners corners of the front of the card.
      * @param backCorners corners of the back of the card.
      */
-    PlayableCard(Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
+    PlayableCard(int id, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
+        super(id);
         this.frontCorners = frontCorners;
         this.backCorners = backCorners;
     }
@@ -37,5 +38,4 @@ public abstract class PlayableCard extends Card {
     public Map<CornerPosition, Corner> getActiveCorners() {
         return activeCorners;
     }
-
 }
