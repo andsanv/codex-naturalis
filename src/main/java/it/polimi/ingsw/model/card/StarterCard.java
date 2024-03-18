@@ -17,7 +17,7 @@ public class StarterCard extends PlayableCard {
     /**
      * This set holds the resources of the front of the card.
      */
-    private final Set<Resources> centralResources;
+    public final Set<Resources> centralResources;
 
     /**
      * TODO: add description
@@ -28,9 +28,5 @@ public class StarterCard extends PlayableCard {
     StarterCard(int id, Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
         super(id, frontCorners, backCorners);
         this.centralResources = centralResources;
-    }
-
-    public Set<Resources> getCentralResources() {
-        return new HashSet<>(centralResources);
     }
 }

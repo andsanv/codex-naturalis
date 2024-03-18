@@ -1,11 +1,6 @@
-package it.polimi.ingsw.model.gameflowmanager.states;
+package it.polimi.ingsw.controller.states;
 
-import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import it.polimi.ingsw.controller.GameFlowManager;
 
 public abstract class GameState {
     GameFlowManager gameFlowManager;

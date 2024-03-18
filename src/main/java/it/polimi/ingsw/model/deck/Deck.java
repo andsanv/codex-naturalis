@@ -18,14 +18,13 @@ public class Deck<T extends Card> {
         return deck.empty() ? Optional.empty() : Optional.of(deck.pop());
     }
 
-    public void shuffle() {
-        Collections.shuffle(deck);
+    public boolean isEmpty() {
+        return deck.isEmpty();
     }
 
     Deck(List<T> cards) {
         deck = new Stack<>();
+        Collections.shuffle(cards);
         deck.addAll(cards);
-        Collections.shuffle(deck);
     }
-
 }

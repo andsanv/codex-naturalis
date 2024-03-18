@@ -9,15 +9,15 @@ public class Player {
     /**
      * This attribute represents the player's board
      */
-    private final PlayerBoard board;
+    private PlayerBoard board;
     /**
      * This attribute represents the player's hand
      */
-    private final PlayerHand hand;
+    private PlayerHand hand;
     /**
      * This attribute represents the player's secret objective
      */
-    private final ObjectiveCard secretObjective;
+    public final ObjectiveCard secretObjective;
 
     /**
      * This is the constructor of a Player
@@ -29,15 +29,14 @@ public class Player {
         this.secretObjective = null;
     }
 
+    //GETTER
     public PlayerBoard getBoard() {
+        // TODO choose how to return board (maybe through a copy)
         return board;
     }
 
     public PlayerHand getHand() {
+        // TODO choose how to return hand (maybe through a copy)
         return hand;
-    }
-
-    public ObjectiveCard getSecretObjective() {
-        return secretObjective;
     }
 }

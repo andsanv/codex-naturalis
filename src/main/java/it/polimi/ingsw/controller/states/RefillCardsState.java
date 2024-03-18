@@ -1,8 +1,6 @@
-package it.polimi.ingsw.model.gameflowmanager.states;
+package it.polimi.ingsw.controller.states;
 
-import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
-
-import java.util.ArrayList;
+import it.polimi.ingsw.controller.GameFlowManager;
 
 public class RefillCardsState extends GameState {
     public RefillCardsState(GameFlowManager gameFlowManager) {

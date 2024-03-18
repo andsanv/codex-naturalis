@@ -15,16 +15,16 @@ public class GoldCard extends PlayableCard {
     /**
      * This attribute represents the resource domain of the card.
      */
-    private final Resources type;
+    public final Resources type;
     /**
      * This attribute represents the amount of points given to the player when he plays the front of this card.
      */
-    private final GoldCardPoints points;
+    public final GoldCardPoints points;
 
     /**
      * This map represents the number of required resources of each type to play this card.
      */
-    private final Map<Resources, Integer> requiredResources;
+    public final Map<Resources, Integer> requiredResources;
 
     /**
      * TODO: add decription
@@ -40,23 +40,4 @@ public class GoldCard extends PlayableCard {
         this.points = points;
         this.requiredResources = requiredResources;
     }
-
-    //GETTER
-    public Resources getType() {
-        return type;
-    }
-
-    public GoldCardPoints getPoints() {
-        return points;
-    }
-
-    /**
-     * This getter returns the resources needed to play the card
-     * @return required resources
-     */
-    public Map<Resources, Integer> getRequiredResources() {
-        return new HashMap<>(requiredResources);
-    }
-
-
 }

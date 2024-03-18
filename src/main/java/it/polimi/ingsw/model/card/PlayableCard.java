@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.card;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +25,16 @@ public abstract class PlayableCard extends Card {
     private Map<CornerPosition, Corner> activeCorners;
 
     /**
+     * This map represents the side card that is played
+     */
+    private CardSide playedSide;
+
+    public void playSide(CardSide playedSide) {
+        this.playedSide = playedSide;
+        this.activeCorners = new HashMap<>(playedSide == CardSide.FRONT ? frontCorners : backCorners);
+    }
+
+    /**
      * TODO: description
      * @param frontCorners corners of the front of the card.
      * @param backCorners corners of the back of the card.
@@ -36,16 +47,16 @@ public abstract class PlayableCard extends Card {
 
     //GETTER
     public Map<CornerPosition, Corner> getActiveCorners() {
-        return activeCorners;
+        return new HashMap<>(activeCorners);
     }
 
-    public Map<CornerPosition, Corner> getFrontCorners() {
-        return frontCorners;
+    public CardSide getPlayedSide() {
+        return playedSide;
     }
 
-    public Map<CornerPosition, Corner> getBackCorners() {
-        return backCorners;
+    //SETTER
+
+    public void setCorner(CornerPosition cornerPosition, Corner corner) {
+        this.activeCorners.put(cornerPosition, corner);
     }
-
-
 }

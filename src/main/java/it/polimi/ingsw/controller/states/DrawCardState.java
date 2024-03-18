@@ -1,8 +1,6 @@
-package it.polimi.ingsw.model.gameflowmanager.states;
+package it.polimi.ingsw.controller.states;
 
-import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
-
-import java.util.HashMap;
+import it.polimi.ingsw.controller.GameFlowManager;
 
 public class DrawCardState extends GameState {
     public DrawCardState(GameFlowManager gameFlowManager) {

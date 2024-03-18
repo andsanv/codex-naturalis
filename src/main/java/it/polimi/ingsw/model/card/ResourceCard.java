@@ -14,11 +14,11 @@ public class ResourceCard extends PlayableCard {
     /**
      * This attribute represents the resource domain of the card.
      */
-    private final Resources type;
+    public final Resources type;
     /**
      * This attribute represents the amount of points given to the player when he plays the front of this card.
      */
-    private final ResourceCardPoints points;
+    public final ResourceCardPoints points;
 
     /**
      * TODO: add description

@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.corner;
 
-import it.polimi.ingsw.model.card.GoldCardPoints;
 import it.polimi.ingsw.model.card.PlayableCard;
 
+// TODO do we really need the covering card and getter? (we use a grid now)
 /**
  * A covered corner is a corner of a card that has been covered by another card, thus it is not visible.
  */

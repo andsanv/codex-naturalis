@@ -5,6 +5,8 @@ package it.polimi.ingsw.model.card;
  * Each player has a personal objective, only visible to him, and all the players share two common objectives, visible by everyone.
  */
 public class ObjectiveCard extends Card {
+    // TODO maybe add a labda to compute objective score
+
     // TODO Create objective class and logic and getter
     public ObjectiveCard(int id){
         super(id);

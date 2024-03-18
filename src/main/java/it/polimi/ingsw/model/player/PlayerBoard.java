@@ -43,7 +43,7 @@ public class PlayerBoard {
         this.board = new PlayableCard[BOARD_SIZE_X][BOARD_SIZE_Y];
         this.board[STARTER_CARD_COORDS.x][STARTER_CARD_COORDS.y] = starterCard;
     }
-
+    /*
     public PlayCardResult playCard(PlayableCard card, Coords coords, CardSide side) {
         boolean placeable = true;
 
@@ -85,6 +85,8 @@ public class PlayerBoard {
 
         return PlayCardResult.SUCCESS;
     }
+
+    */
 
     /**
      * TODO add description
@@ -146,11 +148,12 @@ public class PlayerBoard {
     }
 
     public Map<CornerItems, Integer> getVisibleItems() {
-        return visibleItems;
+        return new HashMap<>(visibleItems);
     }
 
     public PlayableCard[][] getBoard() {
-        return board;
+        // TODO return cloned copy of board
+        return null;
     }
 }
 

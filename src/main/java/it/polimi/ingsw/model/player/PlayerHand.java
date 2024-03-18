@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.card.PlayableCard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,12 +14,16 @@ public class PlayerHand {
      */
     private List<PlayableCard> cards;
 
+    public void addCard(PlayableCard card) {
+        cards.add(card);
+    }
+
     public PlayerHand(List<PlayableCard> cards) {
         this.cards = cards;
     }
 
     //getter
     public List<PlayableCard> getCards() {
-        return cards;
+        return new ArrayList<>(cards);
     }
 }
