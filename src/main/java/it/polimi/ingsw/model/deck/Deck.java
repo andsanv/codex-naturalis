@@ -12,7 +12,7 @@ import java.util.Stack;
  */
 // TODO discuss implementation of a deck factory/abstract factory
 public class Deck<T extends Card> {
-    protected Stack<T> deck;
+    protected final Stack<T> deck;
 
     public Optional<T> draw() {
         return deck.empty() ? Optional.empty() : Optional.of(deck.pop());

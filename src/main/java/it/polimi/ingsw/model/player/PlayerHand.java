@@ -11,5 +11,14 @@ public class PlayerHand {
     /**
      * The list that holds the cards in the player's hand.
      */
-    List<PlayableCard> cards;
+    private List<PlayableCard> cards;
+
+    public PlayerHand(List<PlayableCard> cards) {
+        this.cards = cards;
+    }
+
+    //getter
+    public List<PlayableCard> getCards() {
+        return cards;
+    }
 }

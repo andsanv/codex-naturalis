@@ -11,4 +11,7 @@ public final class CoveredCorner extends Corner {
      * The covering card is the card that has been placed on the corner.
      */
     private PlayableCard coveringCard;
+    public PlayableCard getCoveringCard() {
+        return coveringCard;
+    }
 }

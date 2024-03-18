@@ -2,14 +2,16 @@ package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
+import it.polimi.ingsw.model.player.PlayerBoard;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * A starter card is the first card placed on each player's board.
  * At the start of the match, each player randomly draws one starter card.
- * @see it.polimi.ingsw.model.player.PlayerBoard
+ * @see PlayerBoard
  */
 public class StarterCard extends PlayableCard {
     /**
@@ -26,5 +28,9 @@ public class StarterCard extends PlayableCard {
     StarterCard(int id, Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
         super(id, frontCorners, backCorners);
         this.centralResources = centralResources;
+    }
+
+    public Set<Resources> getCentralResources() {
+        return new HashSet<>(centralResources);
     }
 }

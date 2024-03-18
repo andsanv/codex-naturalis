@@ -33,6 +33,8 @@ public class ScoreTracker {
         score.put(player, score.get(player) + points);
     }
 
+
+    //getter
     public Map<Player, Integer> getScore() {
         return new HashMap<>(this.score);
     }

@@ -18,7 +18,6 @@ public abstract class PlayableCard extends Card {
      */
     private final Map<CornerPosition, Corner> backCorners;
 
-
     /**
      * This map represents the corners of the played side of the card.
      */
@@ -35,7 +34,18 @@ public abstract class PlayableCard extends Card {
         this.backCorners = backCorners;
     }
 
+    //GETTER
     public Map<CornerPosition, Corner> getActiveCorners() {
         return activeCorners;
     }
+
+    public Map<CornerPosition, Corner> getFrontCorners() {
+        return frontCorners;
+    }
+
+    public Map<CornerPosition, Corner> getBackCorners() {
+        return backCorners;
+    }
+
+
 }

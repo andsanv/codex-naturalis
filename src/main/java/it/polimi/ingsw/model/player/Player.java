@@ -23,8 +23,21 @@ public class Player {
      * This is the constructor of a Player
      */
     Player() {
+        //TODO to initialize a player secretobjective and board the startercardsdeck and  objective cardsdeck must be first initialized
         this.board = null;
         this.hand = null;
         this.secretObjective = null;
+    }
+
+    public PlayerBoard getBoard() {
+        return board;
+    }
+
+    public PlayerHand getHand() {
+        return hand;
+    }
+
+    public ObjectiveCard getSecretObjective() {
+        return secretObjective;
     }
 }

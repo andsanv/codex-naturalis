@@ -7,7 +7,7 @@ public class VisibleCorner extends Corner {
     /**
      * This attribute holds the item (resource, object or possibly no item) contained in the corner.
      */
-    private CornerItems item;
+    private final CornerItems item;
 
     public VisibleCorner(CornerItems item) {
         this.item = item;

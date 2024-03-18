@@ -144,5 +144,13 @@ public class PlayerBoard {
     private void setCard(PlayableCard card, Coords coords) {
         board[coords.x][coords.y] = card;
     }
+
+    public Map<CornerItems, Integer> getVisibleItems() {
+        return visibleItems;
+    }
+
+    public PlayableCard[][] getBoard() {
+        return board;
+    }
 }
 

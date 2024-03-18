@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.card;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,7 +12,6 @@ import java.util.Map;
  * @see GoldCardPoints
  */
 public class GoldCard extends PlayableCard {
-
     /**
      * This attribute represents the resource domain of the card.
      */
@@ -20,14 +20,6 @@ public class GoldCard extends PlayableCard {
      * This attribute represents the amount of points given to the player when he plays the front of this card.
      */
     private final GoldCardPoints points;
-
-    /**
-     * This getter returns the resources needed to play the card
-     * @return required resources
-     */
-    public Map<Resources, Integer> getRequiredResources() {
-        return requiredResources;
-    }
 
     /**
      * This map represents the number of required resources of each type to play this card.
@@ -48,5 +40,23 @@ public class GoldCard extends PlayableCard {
         this.points = points;
         this.requiredResources = requiredResources;
     }
+
+    //GETTER
+    public Resources getType() {
+        return type;
+    }
+
+    public GoldCardPoints getPoints() {
+        return points;
+    }
+
+    /**
+     * This getter returns the resources needed to play the card
+     * @return required resources
+     */
+    public Map<Resources, Integer> getRequiredResources() {
+        return new HashMap<>(requiredResources);
+    }
+
 
 }
