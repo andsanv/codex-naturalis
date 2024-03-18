@@ -20,7 +20,7 @@ public class GoldDeckCreator implements DeckCreator {
     static final private Path path = Paths.get("src/main/java/it/polimi/ingsw/model/deck/resources/goldCards.json");
 
     @Override
-    public GoldDeck createDeck() throws IOException {
+    public Deck<GoldCard> createDeck() throws IOException {
         String content = new String(Files.readAllBytes(path));
 
         JSONArray jsonArray = new JSONArray(content);
@@ -104,6 +104,6 @@ public class GoldDeckCreator implements DeckCreator {
 
 
         // TODO implement json import
-        return new GoldDeck(cards);
+        return new Deck<>(cards);
     }
 }
