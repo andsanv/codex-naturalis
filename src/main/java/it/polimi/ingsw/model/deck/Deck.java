@@ -19,7 +19,7 @@ public class Deck<T extends Card> {
     }
 
     public boolean isEmpty() {
-        return deck.isEmpty();
+        return deck.empty();
     }
 
     Deck(List<T> cards) {

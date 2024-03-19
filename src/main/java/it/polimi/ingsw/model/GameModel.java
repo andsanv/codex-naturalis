@@ -3,7 +3,6 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.player.*;
-import it.polimi.ingsw.model.score.ScoreTrack;
 
 import java.util.List;
 import java.util.Map;

@@ -9,6 +9,14 @@ public class VisibleCorner extends Corner {
      */
     private final CornerItems item;
 
+    @Override
+    public boolean canPlaceCardAbove() {
+        return true;
+    }
+
+    /**
+     * @param item item of the corner
+     */
     public VisibleCorner(CornerItems item) {
         this.item = item;
     }

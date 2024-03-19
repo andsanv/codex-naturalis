@@ -1,7 +1,11 @@
 package it.polimi.ingsw.model.corner;
 
 /**
- *TODO A missing corner, where you can't place any card.
+ * A class that represents a missing corner (hidden), where you can't place any card.
  */
 public class HiddenCorner extends Corner {
+    @Override
+    public boolean canPlaceCardAbove() {
+        return false;
+    }
 }

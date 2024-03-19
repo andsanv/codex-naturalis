@@ -1,42 +1,73 @@
 package it.polimi.ingsw.model.player;
 
+import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.ObjectiveCard;
+import it.polimi.ingsw.model.card.PlayableCard;
+import it.polimi.ingsw.model.corner.CornerItems;
+
+import java.util.Map;
 
 /**
- * A player is the entity representing a client in a game.
+ * A player is an entity representing one client in game.
  */
 public class Player {
     /**
-     * This attribute represents the player's board
+     * Attribute that represents the player's board.
      */
-    private PlayerBoard board;
+    private PlayerBoard playerBoard;
+
     /**
-     * This attribute represents the player's hand
+     * Map that represents the number of items available on the board.
+     */
+    private Map<CornerItems, Integer> visibleItems;
+
+    /**
+     * Attribute that represents the player's hand.
      */
     private PlayerHand hand;
+
     /**
-     * This attribute represents the player's secret objective
+     * Attribute that represents the player's secret objective.
      */
     public final ObjectiveCard secretObjective;
 
     /**
-     * This is the constructor of a Player
+     * Constructor of a Player.
      */
-    Player() {
-        //TODO to initialize a player secretobjective and board the startercardsdeck and  objective cardsdeck must be first initialized
-        this.board = null;
+    public Player(ObjectiveCard secretObjective) {
+        // TODO to initialize a player secretObjective and board the starterCardsDeck and  objective cardsDeck must be first initialized
         this.hand = null;
-        this.secretObjective = null;
+        this.secretObjective = secretObjective;
     }
 
-    //GETTER
+    /**
+     * @return a copy of the player's board
+     */
     public PlayerBoard getBoard() {
-        // TODO choose how to return board (maybe through a copy)
-        return board;
+        return new PlayerBoard(playerBoard);
     }
 
+    /**
+     * @return a copy of the player's hand.
+     */
     public PlayerHand getHand() {
-        // TODO choose how to return hand (maybe through a copy)
-        return hand;
+        return new PlayerHand(hand);
     }
+
+    /**
+     * Method that plays the given card at the given coordinates
+     *
+     * @param coords coords at which to play the card
+     * @param card   card to play
+     * @return boolean based on whether the card was placed or not
+     */
+    public boolean playCard(Coords coords, PlayableCard card) {
+        if (playerBoard.canPlaceCardAt(coords, card)) {
+            playerBoard.setCard(coords, card);
+            return true;
+        }
+
+        return false;
+    }
+
 }

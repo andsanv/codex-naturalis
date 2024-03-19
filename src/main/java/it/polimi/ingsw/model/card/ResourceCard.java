@@ -21,7 +21,6 @@ public class ResourceCard extends PlayableCard {
     public final ResourceCardPoints points;
 
     /**
-     * TODO: add description
      * @param type resource domain of the card
      * @param points points given when playing the front of the card.
      * @param frontCorners corners of the front of the card.

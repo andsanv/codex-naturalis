@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.corner.Corner;
+import it.polimi.ingsw.model.corner.CornerItems;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
 import java.util.HashMap;
@@ -29,6 +30,14 @@ public abstract class PlayableCard extends Card {
      */
     private CardSide playedSide;
 
+    /**
+     * @param playerResources resources owned by the player
+     * @return True if there are enough resources to play the card, false otherwise
+     */
+    public boolean enoughResources(Map<CornerItems, Integer> playerResources) {
+        return true;
+    }
+
     public void playSide(CardSide playedSide) {
         this.playedSide = playedSide;
         this.activeCorners = new HashMap<>(playedSide == CardSide.FRONT ? frontCorners : backCorners);
@@ -55,7 +64,6 @@ public abstract class PlayableCard extends Card {
     }
 
     //SETTER
-
     public void setCorner(CornerPosition cornerPosition, Corner corner) {
         this.activeCorners.put(cornerPosition, corner);
     }
