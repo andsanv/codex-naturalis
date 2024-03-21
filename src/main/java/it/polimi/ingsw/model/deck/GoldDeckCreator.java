@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.deck;
 
 import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.corner.*;
-import org.json.*;
+import com.google.gson.*;
 
 import it.polimi.ingsw.model.card.Resources;
 import it.polimi.ingsw.model.card.GoldCardPoints;
@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 public class GoldDeckCreator implements DeckCreator {
-    static final private Path path = Paths.get("src/main/java/it/polimi/ingsw/model/deck/resources/goldCards.json");
+    static final private Path path = Paths.get("src/main/resources/goldCards.json");
 
     @Override
     public Deck<GoldCard> createDeck() throws IOException {
         String content = new String(Files.readAllBytes(path));
 
-        JSONArray jsonArray = new JSONArray(content);
+        JsonArray jsonArray = JsonParser.parseString(content).getAsJsonArray();
 
         List<GoldCard> cards = new ArrayList<>();
 

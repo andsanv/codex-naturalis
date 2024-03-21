@@ -1,0 +1,128 @@
+[
+    {
+        "id": 0,
+        "frontCornerItems": {
+            "topLeft": "empty",
+            "topRight": "plant",
+            "bottomRight": "empty",
+            "bottomLeft": "insect"
+        },
+        "frontCentralItems": {
+            "plant": 0,
+            "animal": 0,
+            "fungi": 0,
+            "insect": 1
+        },
+        "backCornerItems": {
+            "topLeft": "fungi",
+            "topRight": "plant",
+            "bottomRight": "animal",
+            "bottomLeft": "insect"
+        }
+    },
+    {
+        "id": 1,
+        "frontCornerItems": {
+            "topLeft": "animal",
+            "topRight": "empty",
+            "bottomRight": "fungi",
+            "bottomLeft": "empty"
+        },
+        "frontCentralItems": {
+            "plant": 0,
+            "animal": 0,
+            "fungi": 1,
+            "insect": 0
+        },
+        "backCornerItems": {
+            "topLeft": "plant",
+            "topRight": "animal",
+            "bottomRight": "insect",
+            "bottomLeft": "fungi"
+        }
+    },
+    {
+        "id": 2,
+        "frontCornerItems": {
+            "topLeft": "empty",
+            "topRight": "empty",
+            "bottomRight": "empty",
+            "bottomLeft": "empty"
+        },
+        "frontCentralItems": {
+            "plant": 1,
+            "animal": 0,
+            "fungi": 1,
+            "insect": 0
+        },
+        "backCornerItems": {
+            "topLeft": "insect",
+            "topRight": "animal",
+            "bottomRight": "plant",
+            "bottomLeft": "fungi"
+        }
+    },
+    {
+        "id": 3,
+        "frontCornerItems": {
+            "topLeft": "empty",
+            "topRight": "empty",
+            "bottomRight": "empty",
+            "bottomLeft": "empty"
+        },
+        "frontCentralItems": {
+            "plant": 0,
+            "animal": 1,
+            "fungi": 0,
+            "insect": 1
+        },
+        "backCornerItems": {
+            "topLeft": "plant",
+            "topRight": "insect",
+            "bottomRight": "fungi",
+            "bottomLeft": "animal"
+        }
+    },
+    {
+        "id": 4,
+        "frontCornerItems": {
+            "topLeft": "empty",
+            "topRight": "empty",
+            "bottomRight": "hidden",
+            "bottomLeft": "hidden"
+        },
+        "frontCentralItems": {
+            "plant": 1,
+            "animal": 1,
+            "fungi": 0,
+            "insect": 1
+        },
+        "backCornerItems": {
+            "topLeft": "insect",
+            "topRight": "animal",
+            "bottomRight": "fungi",
+            "bottomLeft": "plant"
+        }
+    },
+    {
+        "id": 5,
+        "frontCornerItems": {
+            "topLeft": "empty",
+            "topRight": "empty",
+            "bottomRight": "hidden",
+            "bottomLeft": "hidden"
+        },
+        "frontCentralItems": {
+            "plant": 1,
+            "animal": 1,
+            "fungi": 1,
+            "insect": 0
+        },
+        "backCornerItems": {
+            "topLeft": "fungi",
+            "topRight": "animal",
+            "bottomRight": "insect",
+            "bottomLeft": "plant"
+        }
+    }
+]
