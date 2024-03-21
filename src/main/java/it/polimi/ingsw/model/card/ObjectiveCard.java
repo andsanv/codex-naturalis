@@ -1,47 +1,34 @@
 package it.polimi.ingsw.model.card;
 
+import it.polimi.ingsw.model.card.objective.ObjectiveStrategy;
+import it.polimi.ingsw.model.player.PlayerBoard;
+
 /**
  * An objective card is a card that gives points to the players when the last turn ends if a certain condition is satisfied.
  * Each player has a personal objective, only visible to him, and all the players share two common objectives, visible by everyone.
  */
 public class ObjectiveCard extends Card {
-    // TODO maybe add a lambda to compute objective score
-    // TODO Create objective class and logic and getter
+    /**
+     * Points awarded at the end of the game
+     */
+    public int points;
 
-    private PointCalculator pointCalculator;
+    /**
+     * Strategy used to check points
+     */
+    private ObjectiveStrategy objectiveStrategy;
 
-    public ObjectiveCard(int id, PointCalculator pointCalculator) {
+    public ObjectiveCard(int id, int points, ObjectiveStrategy objectiveStrategy) {
         super(id);
-        this.pointCalculator = pointCalculator;
+        this.objectiveStrategy = objectiveStrategy;
+        this.points = points;
     }
 
-    public int calculatePoints() {
-        return pointCalculator.calculatePoints();
-    }
-}
-
-
-//STRATEGY PATTERN
-
-// Interface for the strategy pattern
-interface PointCalculator {
-    int calculatePoints();
-}
-
-// Calculate points based on items on a player board
-class ItemsPointCalculator implements PointCalculator {
-    //TODO
-    @Override
-    public int calculatePoints() {
-        return 1;
-    }
-}
-
-// Calculate points based on patterns
-class PatternPointCalculator implements PointCalculator {
-    //TODO
-    @Override
-    public int calculatePoints() {
-        return 2;
+    /**
+     * @param playerBoard the board of the player
+     * @return the points awarded for completing this objective
+     */
+    public int computePoints(PlayerBoard playerBoard) {
+        return points * objectiveStrategy.getCompletedOccurrences(playerBoard);
     }
 }
