@@ -1,12 +1,9 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.gameflowmanager.gameflowmanager.states.*;
-import it.polimi.ingsw.controller.gameflowmanager.manager.states.*;
 import it.polimi.ingsw.controller.states.DrawCardState;
 import it.polimi.ingsw.controller.states.GameState;
 import it.polimi.ingsw.controller.states.PlayCardState;
 import it.polimi.ingsw.controller.states.RefillCardsState;
-import it.polimi.ingsw.model.gameflowmanager.states.*;
 
 public class GameFlowManager {
     GameState playCardState;

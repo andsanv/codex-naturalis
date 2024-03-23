@@ -2,7 +2,7 @@
     {
         "id": 0,
         "resourceType": "fungi",
-        "pointsType": "quill",
+        "pointsType": "one_per_quill",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 1,
@@ -10,16 +10,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "quill",
-            "bottomLeft": "empty"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "quill",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 1,
         "resourceType": "fungi",
-        "pointsType": "inkwell",
+        "pointsType": "one_per_inkwell",
         "resourcesNeeded": {
             "plant": 1,
             "animal": 0,
@@ -27,16 +27,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "inkwell",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "inkwell",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 2,
         "resourceType": "fungi",
-        "pointsType": "manuscript",
+        "pointsType": "one_per_manuscript",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 0,
@@ -44,16 +44,16 @@
             "insect": 1
         },
         "cornerItems": {
-            "topLeft": "manuscript",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "manuscript",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 3,
         "resourceType": "fungi",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 1,
@@ -61,16 +61,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 4,
         "resourceType": "fungi",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 1,
             "animal": 0,
@@ -78,16 +78,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 5,
         "resourceType": "fungi",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 0,
@@ -95,10 +95,10 @@
             "insect": 1
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         }
     },
     {
@@ -112,10 +112,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "hidden",
-            "bottomLeft": "inkwell"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "hidden",
+            "bottom_left": "inkwell"
         }
     },
     {
@@ -129,10 +129,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "quill",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "quill",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -146,10 +146,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "manuscript",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "hidden",
+            "top_right": "manuscript",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -163,16 +163,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 10,
         "resourceType": "plant",
-        "pointsType": "quill",
+        "pointsType": "one_per_quill",
         "resourcesNeeded": {
             "plant": 2,
             "animal": 0,
@@ -180,16 +180,16 @@
             "insect": 1
         },
         "cornerItems": {
-            "topLeft": "quill",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "quill",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 11,
         "resourceType": "plant",
-        "pointsType": "manuscript",
+        "pointsType": "one_per_manuscript",
         "resourcesNeeded": {
             "plant": 2,
             "animal": 0,
@@ -197,16 +197,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "manuscript",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "manuscript",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 12,
         "resourceType": "plant",
-        "pointsType": "inkwell",
+        "pointsType": "one_per_inkwell",
         "resourcesNeeded": {
             "plant": 2,
             "animal": 1,
@@ -214,16 +214,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "inkwell"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "inkwell"
         }
     },
     {
         "id": 13,
         "resourceType": "plant",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 3,
             "animal": 0,
@@ -231,16 +231,16 @@
             "insect": 1
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 14,
         "resourceType": "plant",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 3,
             "animal": 1,
@@ -248,16 +248,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 15,
         "resourceType": "plant",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 3,
             "animal": 0,
@@ -265,10 +265,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         }
     },
     {
@@ -282,10 +282,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "hidden",
-            "bottomLeft": "quill"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "hidden",
+            "bottom_left": "quill"
         }
     },
     {
@@ -299,10 +299,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "manuscript",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "manuscript",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -316,10 +316,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "inkwell",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "hidden",
+            "top_right": "inkwell",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -333,16 +333,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 20,
         "resourceType": "animal",
-        "pointsType": "inkwell",
+        "pointsType": "one_per_inkwell",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 2,
@@ -350,16 +350,16 @@
             "insect": 1
         },
         "cornerItems": {
-            "topLeft": "inkwell",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "inkwell",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 21,
         "resourceType": "animal",
-        "pointsType": "manuscript",
+        "pointsType": "one_per_manuscript",
         "resourcesNeeded": {
             "plant": 1,
             "animal": 2,
@@ -367,16 +367,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "manuscript",
-            "bottomLeft": "empty"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "manuscript",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 22,
         "resourceType": "animal",
-        "pointsType": "quill",
+        "pointsType": "one_per_quill",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 2,
@@ -384,16 +384,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "quill"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "quill"
         }
     },
     {
         "id": 23,
         "resourceType": "animal",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 3,
@@ -401,16 +401,16 @@
             "insect": 1
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 24,
         "resourceType": "animal",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 3,
@@ -418,16 +418,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 25,
         "resourceType": "animal",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 1,
             "animal": 3,
@@ -435,10 +435,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         }
     },
     {
@@ -452,10 +452,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "hidden",
-            "bottomLeft": "manuscript"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "hidden",
+            "bottom_left": "manuscript"
         }
     },
     {
@@ -469,10 +469,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "inkwell",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "inkwell",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -486,10 +486,10 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "quill",
-            "bottomLeft": "hidden"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "quill",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -503,16 +503,16 @@
             "insect": 0
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 30,
         "resourceType": "insect",
-        "pointsType": "quill",
+        "pointsType": "one_per_quill",
         "resourcesNeeded": {
             "plant": 1,
             "animal": 0,
@@ -520,16 +520,16 @@
             "insect": 2
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "quill",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "quill",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 31,
         "resourceType": "insect",
-        "pointsType": "manuscript",
+        "pointsType": "one_per_manuscript",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 1,
@@ -537,16 +537,16 @@
             "insect": 2
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "manuscript"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "manuscript"
         }
     },
     {
         "id": 32,
         "resourceType": "insect",
-        "pointsType": "inkwell",
+        "pointsType": "one_per_inkwell",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 0,
@@ -554,16 +554,16 @@
             "insect": 2
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "empty",
-            "bottomRight": "inkwell",
-            "bottomLeft": "empty"
+            "top_left": "hidden",
+            "top_right": "empty",
+            "bottom_right": "inkwell",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 33,
         "resourceType": "insect",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 1,
@@ -571,16 +571,16 @@
             "insect": 3
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "hidden"
         }
     },
     {
         "id": 34,
         "resourceType": "insect",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 1,
             "animal": 0,
@@ -588,16 +588,16 @@
             "insect": 3
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
         "id": 35,
         "resourceType": "insect",
-        "pointsType": "",
+        "pointsType": "two_per_covered_corner",
         "resourcesNeeded": {
             "plant": 0,
             "animal": 0,
@@ -605,10 +605,10 @@
             "insect": 3
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         }
     },
     {
@@ -622,10 +622,10 @@
             "insect": 3
         },
         "cornerItems": {
-            "topLeft": "inkwell",
-            "topRight": "hidden",
-            "bottomRight": "hidden",
-            "bottomLeft": "empty"
+            "top_left": "inkwell",
+            "top_right": "hidden",
+            "bottom_right": "hidden",
+            "bottom_left": "empty"
         }
     },
     {
@@ -639,10 +639,10 @@
             "insect": 3
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "manuscript",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "manuscript",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         }
     },
     {
@@ -656,10 +656,10 @@
             "insect": 3
         },
         "cornerItems": {
-            "topLeft": "hidden",
-            "topRight": "hidden",
-            "bottomRight": "empty",
-            "bottomLeft": "quill"
+            "top_left": "hidden",
+            "top_right": "hidden",
+            "bottom_right": "empty",
+            "bottom_left": "quill"
         }
     },
     {
@@ -673,10 +673,10 @@
             "insect": 5
         },
         "cornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         }
     }
 ]

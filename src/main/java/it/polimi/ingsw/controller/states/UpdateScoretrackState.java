@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller.states;
 
-import it.polimi.ingsw.model.gameflowmanager.manager.GameFlowManager;
+
+import it.polimi.ingsw.controller.GameFlowManager;
 
 public class UpdateScoretrackState extends GameState {
     public UpdateScoretrackState(GameFlowManager gameFlowManager) {

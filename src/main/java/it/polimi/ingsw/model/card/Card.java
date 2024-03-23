@@ -27,4 +27,5 @@ public abstract class Card {
 
         return id == ((Card) other).id;
     }
+
 }

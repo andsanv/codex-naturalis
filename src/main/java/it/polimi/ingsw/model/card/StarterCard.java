@@ -25,7 +25,7 @@ public class StarterCard extends PlayableCard {
      * @param frontCorners corners of the front of the card.
      * @param backCorners corners of the back of the card.
      */
-    StarterCard(int id, Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
+    public StarterCard(int id, Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
         super(id, frontCorners, backCorners);
         this.centralResources = centralResources;
     }

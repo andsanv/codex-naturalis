@@ -27,4 +27,15 @@ public class Deck<T extends Card> {
         Collections.shuffle(cards);
         deck.addAll(cards);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        deck.stream().forEach(e -> {
+            stringBuilder.append(e.toString() + "\n");
+        });
+
+        return stringBuilder.toString();
+    }
 }

@@ -2,10 +2,10 @@
     {
         "id": 0,
         "frontCornerItems": {
-            "topLeft": "empty",
-            "topRight": "plant",
-            "bottomRight": "empty",
-            "bottomLeft": "insect"
+            "top_left": "empty",
+            "top_right": "plant",
+            "bottom_right": "empty",
+            "bottom_left": "insect"
         },
         "frontCentralItems": {
             "plant": 0,
@@ -14,19 +14,19 @@
             "insect": 1
         },
         "backCornerItems": {
-            "topLeft": "fungi",
-            "topRight": "plant",
-            "bottomRight": "animal",
-            "bottomLeft": "insect"
+            "top_left": "fungi",
+            "top_right": "plant",
+            "bottom_right": "animal",
+            "bottom_left": "insect"
         }
     },
     {
         "id": 1,
         "frontCornerItems": {
-            "topLeft": "animal",
-            "topRight": "empty",
-            "bottomRight": "fungi",
-            "bottomLeft": "empty"
+            "top_left": "animal",
+            "top_right": "empty",
+            "bottom_right": "fungi",
+            "bottom_left": "empty"
         },
         "frontCentralItems": {
             "plant": 0,
@@ -35,19 +35,19 @@
             "insect": 0
         },
         "backCornerItems": {
-            "topLeft": "plant",
-            "topRight": "animal",
-            "bottomRight": "insect",
-            "bottomLeft": "fungi"
+            "top_left": "plant",
+            "top_right": "animal",
+            "bottom_right": "insect",
+            "bottom_left": "fungi"
         }
     },
     {
         "id": 2,
         "frontCornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         },
         "frontCentralItems": {
             "plant": 1,
@@ -56,19 +56,19 @@
             "insect": 0
         },
         "backCornerItems": {
-            "topLeft": "insect",
-            "topRight": "animal",
-            "bottomRight": "plant",
-            "bottomLeft": "fungi"
+            "top_left": "insect",
+            "top_right": "animal",
+            "bottom_right": "plant",
+            "bottom_left": "fungi"
         }
     },
     {
         "id": 3,
         "frontCornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "empty",
-            "bottomLeft": "empty"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "empty",
+            "bottom_left": "empty"
         },
         "frontCentralItems": {
             "plant": 0,
@@ -77,19 +77,19 @@
             "insect": 1
         },
         "backCornerItems": {
-            "topLeft": "plant",
-            "topRight": "insect",
-            "bottomRight": "fungi",
-            "bottomLeft": "animal"
+            "top_left": "plant",
+            "top_right": "insect",
+            "bottom_right": "fungi",
+            "bottom_left": "animal"
         }
     },
     {
         "id": 4,
         "frontCornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         },
         "frontCentralItems": {
             "plant": 1,
@@ -98,19 +98,19 @@
             "insect": 1
         },
         "backCornerItems": {
-            "topLeft": "insect",
-            "topRight": "animal",
-            "bottomRight": "fungi",
-            "bottomLeft": "plant"
+            "top_left": "insect",
+            "top_right": "animal",
+            "bottom_right": "fungi",
+            "bottom_left": "plant"
         }
     },
     {
         "id": 5,
         "frontCornerItems": {
-            "topLeft": "empty",
-            "topRight": "empty",
-            "bottomRight": "hidden",
-            "bottomLeft": "hidden"
+            "top_left": "empty",
+            "top_right": "empty",
+            "bottom_right": "hidden",
+            "bottom_left": "hidden"
         },
         "frontCentralItems": {
             "plant": 1,
@@ -119,10 +119,10 @@
             "insect": 0
         },
         "backCornerItems": {
-            "topLeft": "fungi",
-            "topRight": "animal",
-            "bottomRight": "insect",
-            "bottomLeft": "plant"
+            "top_left": "fungi",
+            "top_right": "animal",
+            "bottom_right": "insect",
+            "bottom_left": "plant"
         }
     }
 ]
