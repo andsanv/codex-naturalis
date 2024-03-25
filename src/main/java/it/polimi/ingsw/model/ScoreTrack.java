@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that represents the scoreboard
+ * Class that represents the scoreboard.
  *
  * @see Player
  */

@@ -35,7 +35,6 @@ public class Deck<T extends Card> {
         deck.stream().forEach(e -> {
             stringBuilder.append(e.toString() + "\n");
         });
-
         return stringBuilder.toString();
     }
 }

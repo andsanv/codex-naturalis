@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.card.objective;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
 /**
- * Strategy pattern interface for calculating how many times an objective has been completed (occurences).
+ * Strategy pattern interface for calculating how many times an objective has been completed (occurrences).
  */
 public interface ObjectiveStrategy {
     /**
