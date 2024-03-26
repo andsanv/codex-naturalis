@@ -18,19 +18,18 @@ In this document we describe the UML of our Codex Naturalis java implementation.
 In particular, we will explain how we implemented the model of the MVC architectural pattern.
 % TODO inserire png uml tutto
 
+\newpage
 \section*{Components description}
-% TODO inserire descrizione sezione
-
 \setcounter{section}{1}
-\subsection[1]{Class: GameModel}
-The GameModel class is the core component of a game.
+\subsection[1]{Class: \texttt{GameModel}}
+The \texttt{GameModel} class is the core component of a game.
 While it doesn't contain a finite state machine, which we will implement in the controller package and that will define the flow and behavior of a match, it holds the state of the match.
 In fact, it contains numerous informations about the state of the different game entities:
 \begin{itemize}
     \item a map defining the color picked by each player;
     \item all the decks found on the board (the gold, resource, objective and starter decks);
     \item the visible drawable cards and common objectives;
-    \item the score board (ScoreTrack).
+    \item the score board (\texttt{ScoreTrack}).
 \end{itemize}
 Moreover, it contains many methods that allow retrieving and modifying the state:
 \begin{itemize}
@@ -40,75 +39,100 @@ Moreover, it contains many methods that allow retrieving and modifying the state
     \item functions to check if the decks are empty.
 \end{itemize}
 
-\subsection{Class: ScoreTrack}
+\begin{center}
+    \includegraphics[scale=0.25]{GameModel.png}
+\end{center}
+
+\newpage
+\subsection{Class: \texttt{ScoreTrack}}
 This class tracks the individual scores of players.
 In particular, it allows updating the score and checking if twenty points have been reached, through methods.
 
+\begin{center}
+    \includegraphics[scale=0.5]{ScoreTrack.png}
+\end{center}
 \newpage
-\subsection{Package: card}
+\subsection{Package: \texttt{card}}
 All the informations about cards and their properties are saved in this package.
 Starting from the abstract class Card, two different subclasses are derived:
 \begin{itemize}
-    \item ObjectiveCard, that comes with its own \texttt{objective} package, implements the strategy pattern used to easily define different ways of computing points for objective cards;
-    \item PlayableCard (abstract), that contains maps that track card corners' properties (explained later in the card package). \newline
-    The PlayableCard class is divided into the following subclasses (each with their own properties): 
+    \item \texttt{ObjectiveCard}, that comes with its own \texttt{objective} package, implements the strategy pattern used to easily define different ways of computing points for objective cards;
+    \item \texttt{PlayableCard} (abstract), that contains maps that track card corners' properties (explained later in the card package). \newline
+    The \texttt{PlayableCard} class is divided into the following subclasses (each with their own properties):
     \begin{itemize}
-        \item ResourceCard;
-        \item GoldCard;
-        \item StarterCard.
+        \item \texttt{ResourceCard};
+        \item \texttt{GoldCard};
+        \item \texttt{StarterCard}.
     \end{itemize}
 \end{itemize}
 This package also contains the enumerations needed to represent each propery:
 \begin{itemize}
-    \item CardSide;
-    \item Resources;
-    \item ResourceCardPonts;
-    \item GoldCardPoints.
+    \item \texttt{CardSide};
+    \item \texttt{Resources};
+    \item \texttt{ResourceCardPonts};
+    \item \texttt{GoldCardPoints}.
 \end{itemize}
+
+\begin{center}
+    \hspace*{-2cm}\includegraphics[scale=0.14]{card.png}
+\end{center}
+\newpage
 \noindent
 
-\subsection{Package: deck}
-The package contains a main generic Deck class, which implements a deck as a stack of a generic card type.
-It is used in the GameModel class, to represent the different decks used during the game. \newline
-Furthermore, using the factory method pattern we load the decks into the GameModel from json files.
+\subsection{Package: \texttt{deck}}
+The package contains a main generic \texttt{Deck} class, which implements a deck as a stack of a generic card type.
+It is used in the \texttt{GameModel} class, to represent the different decks used during the game. \newline
+Furthermore, using the factory method pattern we load the decks into the \texttt{GameModel} from json files.
 
-\noindent For every card type, we initialize its deck through different deck creators, each implementing a common DeckCreator interface:
+\noindent For every card type, we initialize its deck through different deck creators, each implementing a common \texttt{DeckCreator} interface:
 \begin{itemize}
-    \item GoldDeckCreator
-    \item ObjectiveDeckCreator
-    \item ResourceDeckCreator
-    \item StarterDeckCreator
+    \item \texttt{GoldDeckCreator}
+    \item \texttt{ObjectiveDeckCreator}
+    \item \texttt{ResourceDeckCreator}
+    \item \texttt{StarterDeckCreator}
 \end{itemize}
 
-\subsection{Package: corner}
-The package includes an abstract \textt{Corner} class which represents a generic corner of a card. 
+\begin{center}
+    \hspace*{-1cm}\includegraphics[scale=0.3]{deck.png}
+\end{center}
+
+\newpage
+\subsection{Package: \texttt{corner}}
+The package includes an abstract \texttt{Corner} class which represents a generic corner of a card.
 The main class is extended by the following classes:
 \begin{itemize}
-    \item CoveredCorner: a corner of a card that has been covered by another card, thus it is not visible;
-    \item HiddenCorner; a missing corner (hidden), where you can't place any card;
-    \item VisibleCorner. a corner of a card that is either empty or contains an item.
+    \item \texttt{CoveredCorner}: a corner of a card that has been covered by another card, thus it is not visible;
+    \item \texttt{HiddenCorner}; a missing corner (hidden), where you can't place any card;
+    \item \texttt{VisibleCorner}: a corner of a card that is either empty or contains an item.
 \end{itemize}
-To keep track of the position of a corner in a card, we use the CornerPosition enum.
+To keep track of the position of a corner in a card, we use the \texttt{CornerPosition} enum.
 \noindent
-The CornerItems enum is used to represent an item in a visible corner.
+The \texttt{CornerItems} enum is used to represent an item in a visible corner.
+\begin{center}
+    \hspace*{-2cm}\includegraphics[scale=0.3]{corner.png}
+\end{center}
 
-\subsection{Package: player}
-The package contains a main Player class which represents a single player in the game.
+\newpage
+\subsection{Package: \texttt{player}}
+The package contains a main \texttt{Player} class which represents a single player in the game.
 The player class contains different attributes to identify their game entities:
 \begin{itemize}
-    \item a PlayerBoard object that models the board of the player;
-    \item a PlayerHand object that represents the three cards in a player hand;
-    \item the ObjectiveCard secret objetive. 
+    \item a \texttt{PlayerBoard} object that models the board of the player;
+    \item a \texttt{PlayerHand} object that represents the three cards in a player hand;
+    \item the \texttt{ObjectiveCard} secret objetive.
 \end{itemize}
 
 \noindent
 More specifically, the other classes are:
 \begin{itemize}
-    \item PlayerBoard: contains two maps, one to model the player's board, and one to keep track of the amount of visible items by item type;
-    \item PlayerHand: implemented as a list of PlayableCard;
-    \item Coords: represents 2D coordinates that can be used to identify cards' position in the player board.
+    \item \texttt{PlayerBoard}: contains two maps, one to model the player's board, and one to keep track of the amount of visible items by item type;
+    \item \texttt{PlayerHand}: implemented as a list of \texttt{PlayableCard};
+    \item \texttt{Coords}: represents 2D coordinates that can be used to identify cards' position in the player board.
 \end{itemize}
 \noindent
-The package also contains the PlayerToken enumeration, used to represent a single player in the model side of the project.
+The package also contains the PlayerToken enumeration, used to represent a single player in the model side of the project thanks to a mapping in the GameModel.
 
+\begin{center}
+    \hspace*{-2cm}\includegraphics[scale=0.2]{player.png}
+\end{center}
 \end{document}
