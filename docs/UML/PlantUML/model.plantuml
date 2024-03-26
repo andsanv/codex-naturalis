@@ -1,0 +1,301 @@
+@startuml
+
+skinparam linetype ortho
+
+
+package card {
+    class Card {
+      + Card(int):
+      - id: int
+      + getId(): int
+      + equals(Object): boolean
+    }
+
+    enum CardSide << enumeration >> {
+      + CardSide():
+      + BACK:
+      + FRONT:
+      + values(): CardSide[]
+      + valueOf(String): CardSide
+    }
+
+    class PlayableCard {
+      ~ PlayableCard(int, Map<CornerPosition, Corner>, Map<CornerPosition, Corner>):
+      - playedSide: CardSide
+      - backCorners: Map<CornerPosition, Corner>
+      - activeCorners: Map<CornerPosition, Corner>
+      - frontCorners: Map<CornerPosition, Corner>
+      + getPlayedSide(): CardSide
+      + enoughResources(Map<CornerItems, Integer>): boolean
+      + playSide(CardSide): void
+      + getActiveCorners(): Map<CornerPosition, Corner>
+      + setCorner(CornerPosition, Corner): void
+    }
+
+    class GoldCard {
+      + GoldCard(int, Resources, GoldCardPoints, Map<Resources, Integer>, Map<CornerPosition, Corner>, Map<CornerPosition, Corner>):
+      + requiredResources: Map<Resources, Integer>
+      + type: Resources
+      + points: GoldCardPoints
+      + enoughResources(Map<CornerItems, Integer>): boolean
+    }
+
+    enum GoldCardPoints << enumeration >> {
+      + GoldCardPoints():
+      + ONE_PER_INKWELL:
+      + ONE:
+      + TWO_PER_COVERED_CORNER:
+      + THREE:
+      + ONE_PER_QUILL:
+      + FIVE:
+      + ONE_PER_MANUSCRIPT:
+      + values(): GoldCardPoints[]
+      + valueOf(String): GoldCardPoints
+    }
+
+    class ObjectiveCard {
+      + ObjectiveCard(int, int, ObjectiveStrategy):
+      + points: int
+      - objectiveStrategy: ObjectiveStrategy
+      + computePoints(PlayerBoard): int
+    }
+
+    class ResourceCard {
+      + ResourceCard(int, Resources, ResourceCardPoints, Map<CornerPosition, Corner>, Map<CornerPosition, Corner>):
+      + type: Resources
+      + points: ResourceCardPoints
+    }
+    enum ResourceCardPoints << enumeration >> {
+      + ResourceCardPoints():
+      + ZERO:
+      + ONE:
+      + values(): ResourceCardPoints[]
+      + valueOf(String): ResourceCardPoints
+    }
+
+    enum Resources << enumeration >> {
+      + Resources():
+      + PLANT:
+      + INSECT:
+      + FUNGI:
+      + ANIMAL:
+      + valueOf(String): Resources
+      + values(): Resources[]
+    }
+
+    class StarterCard {
+        + StarterCard(int, Set<Resources>, Map<CornerPosition, Corner>, Map<CornerPosition, Corner>):
+        + centralResources: Set<Resources>
+    }
+
+    Card ^-- PlayableCard
+    Card ^--  ObjectiveCard
+
+    PlayableCard              ^--  ResourceCard
+    PlayableCard              ^--  GoldCard
+    PlayableCard              ^--  StarterCard
+
+    package objective {
+        interface ObjectiveStrategy << interface >> {
+          + getCompletedOccurrences(PlayerBoard): int
+        }
+
+        class ItemsObjectiveStrategy {
+          + ItemsObjectiveStrategy(Map<CornerItems, Integer>):
+          ~ requiredItems: Map<CornerItems, Integer>
+          + getCompletedOccurrences(PlayerBoard): int
+        }
+
+        class PatternObjectiveStrategy {
+          + PatternObjectiveStrategy(CornerItems[][]):
+          ~ pattern: CornerItems[][]
+          + getCompletedOccurrences(PlayerBoard): int
+        }
+
+        ObjectiveStrategy    ^--  ItemsObjectiveStrategy
+        ObjectiveStrategy    ^--  PatternObjectiveStrategy
+    }
+}
+
+
+package corner {
+    class Corner {
+      + Corner():
+      + canPlaceCardAbove(): boolean
+    }
+
+    enum CornerItems << enumeration >> {
+      + CornerItems():
+      + PLANT:
+      + MANUSCRIPT:
+      + EMPTY:
+      + ANIMAL:
+      + FUNGI:
+      + INKWELL:
+      + QUILL:
+      + INSECT:
+      + values(): CornerItems[]
+      + valueOf(String): CornerItems
+    }
+
+    enum CornerPosition << enumeration >> {
+      + CornerPosition():
+      + TOP_RIGHT:
+      + BOTTOM_RIGHT:
+      + BOTTOM_LEFT:
+      + TOP_LEFT:
+      + valueOf(String): CornerPosition
+      + values(): CornerPosition[]
+    }
+
+    class CoveredCorner {
+      + CoveredCorner():
+      + canPlaceCardAbove(): boolean
+    }
+
+    class HiddenCorner {
+      + HiddenCorner():
+      + canPlaceCardAbove(): boolean
+    }
+
+    class VisibleCorner {
+      + VisibleCorner(CornerItems):
+      - item: CornerItems
+      + getItem(): CornerItems
+      + canPlaceCardAbove(): boolean
+    }
+}
+
+package deck {
+    class Deck<T> {
+      ~ Deck(List<T>):
+      # deck: Stack<T>
+      + draw(): Optional<T>
+      + isEmpty(): boolean
+      + toString(): String
+    }
+
+    interface DeckCreator << interface >> {
+      + createDeck(): Deck<Card>
+    }
+
+    class ResourceDeckCreator {
+      + ResourceDeckCreator():
+      - path: Path
+      + createDeck(): Deck<ResourceCard>
+    }
+
+    class GoldDeckCreator {
+      + GoldDeckCreator():
+      - path: Path
+      + createDeck(): Deck<GoldCard>
+    }
+
+    class StarterDeckCreator {
+      + StarterDeckCreator():
+      - path: Path
+      + createDeck(): Deck<StarterCard>
+    }
+
+    class ObjectiveDeckCreator {
+      + ObjectiveDeckCreator():
+      - path: Path
+      + createDeck(): Deck<ObjectiveCard>
+    }
+}
+
+package player {
+    class Coords {
+      + Coords(int, int):
+      + y: int
+      + x: int
+      + equals(Object): boolean
+    }
+
+    class Player {
+      + Player(ObjectiveCard):
+      - visibleItems: Map<CornerItems, Integer>
+      + secretObjective: ObjectiveCard
+      - playerBoard: PlayerBoard
+      - hand: PlayerHand
+      + playCard(Coords, PlayableCard): boolean
+      + getHand(): PlayerHand
+      + getBoard(): PlayerBoard
+    }
+
+    class PlayerBoard {
+      ~ PlayerBoard(StarterCard):
+      ~ PlayerBoard(PlayerBoard):
+      - board: Map<Coords, PlayableCard>
+      - playerItems: Map<CornerItems, Integer>
+      - STARTER_CARD_COORDINATES: Coords
+      + setCard(Coords, PlayableCard): void
+      + getVisibleItems(): Map<CornerItems, Integer>
+      - adjacentCards(Coords): Map<CornerPosition, PlayableCard>
+      + canPlaceCardAt(Coords, PlayableCard): boolean
+      - adjacentCorners(Coords): Map<CornerPosition, Corner>
+      + getBoard(): HashMap<Coords, PlayableCard>
+      - adjacentCoords(Coords): Map<CornerPosition, Coords>
+      + getCard(Coords): PlayableCard
+    }
+
+    class PlayerHand {
+      + PlayerHand(List<PlayableCard>):
+      + PlayerHand(PlayerHand):
+      - cards: List<PlayableCard>
+      + removeCard(PlayableCard): void
+      + getCards(): List<PlayableCard>
+      + addCard(PlayableCard): void
+    }
+
+    enum PlayerToken << enumeration >> {
+      + PlayerToken():
+      + GREEN:
+      + YELLOW:
+      + BLUE:
+      + RED:
+      + values(): PlayerToken[]
+      + valueOf(String): PlayerToken
+    }
+
+    Player      "1" *--> "playerBoard\n1" PlayerBoard
+    Player      "1" *--> "hand\n1" PlayerHand
+    PlayerBoard "1" *--> "board\n*" Coords
+}
+
+class GameModel {
+  ~ GameModel(): 
+  - starterCardsDeck: Deck<StarterCard>
+  - visibleGoldCards: List<ResourceCard>
+  - goldCardsDeck: Deck<GoldCard>
+  - visibleResourceCards: List<ResourceCard>
+  - resourceCardsDeck: Deck<ResourceCard>
+  - scoreTrack: ScoreTrack
+  - commonObjectives: List<ObjectiveCard>
+  - objectiveCardsDeck: Deck<ObjectiveCard>
+  + tokenToPlayer: Map<PlayerToken, Player>
+  + drawGoldCard(PlayerToken): boolean
+  + drawVisibleGoldCard(PlayerToken, int): boolean
+  + isResourceCardsDeckEmpty(): boolean
+  + drawCommonObjectives(): void
+  + setPlayersMap(Map<PlayerToken, StarterCard>, Map<StarterCard, CardSide>): void
+  + drawPlayerObjective(PlayerToken): void
+  + drawResourceCard(PlayerToken): boolean
+  + drawVisibleResourceCard(PlayerToken, int): boolean
+  + are20PointsReached(): boolean
+  + isGoldCardsDeckEmpty(): boolean
+  + computeObjectivesPoints(PlayerToken): int
+  + playCard(PlayerToken, PlayableCard, CardSide, Coords): void
+  + getStarterCards(int): List<StarterCard>
+}
+
+class ScoreTrack {
+  + ScoreTrack(List<Player>): 
+  - maxScore: int
+  - scores: Map<Player, Integer>
+  + gameEnded(): boolean
+  + getScore(): Map<Player, Integer>
+  + updatePlayerScore(Player, Integer): void
+}
+
+@enduml
