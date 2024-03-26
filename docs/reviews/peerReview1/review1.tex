@@ -14,9 +14,13 @@
 \end{titlepage}
 
 \section*{General Overview}
-In this document we describe the UML of our Codex Naturalis java implementation. \newline
+In this document we describe the UML of our Codex Naturalis java implementation. 
 In particular, we will explain how we implemented the model of the MVC architectural pattern.
 % TODO inserire png uml tutto
+\begin{center}
+    \hspace*{0.3cm}\includegraphics[scale=0.1]{model.png}
+\end{center}
+
 
 \newpage
 \section*{Components description}
@@ -57,7 +61,7 @@ All the informations about cards and their properties are saved in this package.
 Starting from the abstract class Card, two different subclasses are derived:
 \begin{itemize}
     \item \texttt{ObjectiveCard}, that comes with its own \texttt{objective} package, implements the strategy pattern used to easily define different ways of computing points for objective cards;
-    \item \texttt{PlayableCard} (abstract), that contains maps that track card corners' properties (explained later in the card package). \newline
+    \item \texttt{PlayableCard} (abstract), that contains maps that track card corners' properties (explained later in the card package). 
     The \texttt{PlayableCard} class is divided into the following subclasses (each with their own properties):
     \begin{itemize}
         \item \texttt{ResourceCard};
@@ -74,14 +78,14 @@ This package also contains the enumerations needed to represent each propery:
 \end{itemize}
 
 \begin{center}
-    \hspace*{-2cm}\includegraphics[scale=0.14]{card.png}
+    \hspace*{-3cm}\includegraphics[scale=0.18]{card.png}
 \end{center}
 \newpage
 \noindent
 
 \subsection{Package: \texttt{deck}}
 The package contains a main generic \texttt{Deck} class, which implements a deck as a stack of a generic card type.
-It is used in the \texttt{GameModel} class, to represent the different decks used during the game. \newline
+It is used in the \texttt{GameModel} class, to represent the different decks used during the game. 
 Furthermore, using the factory method pattern we load the decks into the \texttt{GameModel} from json files.
 
 \noindent For every card type, we initialize its deck through different deck creators, each implementing a common \texttt{DeckCreator} interface:
@@ -93,7 +97,7 @@ Furthermore, using the factory method pattern we load the decks into the \texttt
 \end{itemize}
 
 \begin{center}
-    \hspace*{-1cm}\includegraphics[scale=0.3]{deck.png}
+    \hspace*{-1cm}\includegraphics[scale=0.15]{deck.png}
 \end{center}
 
 \newpage
@@ -109,7 +113,7 @@ To keep track of the position of a corner in a card, we use the \texttt{CornerPo
 \noindent
 The \texttt{CornerItems} enum is used to represent an item in a visible corner.
 \begin{center}
-    \hspace*{-2cm}\includegraphics[scale=0.3]{corner.png}
+    \hspace*{-2cm}\includegraphics[scale=0.15]{corner.png}
 \end{center}
 
 \newpage
@@ -133,6 +137,6 @@ More specifically, the other classes are:
 The package also contains the PlayerToken enumeration, used to represent a single player in the model side of the project thanks to a mapping in the GameModel.
 
 \begin{center}
-    \hspace*{-2cm}\includegraphics[scale=0.2]{player.png}
+    \hspace*{-2cm}\includegraphics[scale=0.1]{player.png}
 \end{center}
 \end{document}
