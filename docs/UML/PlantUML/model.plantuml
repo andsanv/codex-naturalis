@@ -112,40 +112,33 @@ package card {
           + getCompletedOccurrences(PlayerBoard): int
         }
 
-        ObjectiveStrategy    ^--  ItemsObjectiveStrategy
-        ObjectiveStrategy    ^--  PatternObjectiveStrategy
+        ObjectiveStrategy    <|..  ItemsObjectiveStrategy
+        ObjectiveStrategy    <|..  PatternObjectiveStrategy
     }
 }
 
 
 package corner {
-    class Corner {
-      + Corner():
+    abstract class Corner {
       + canPlaceCardAbove(): boolean
     }
 
     enum CornerItems << enumeration >> {
-      + CornerItems():
-      + PLANT:
-      + MANUSCRIPT:
-      + EMPTY:
-      + ANIMAL:
-      + FUNGI:
-      + INKWELL:
-      + QUILL:
-      + INSECT:
-      + values(): CornerItems[]
-      + valueOf(String): CornerItems
+        +EMPTY
+        +PLANT
+        +ANIMAL
+        +FUNGI
+        +INSECT
+        +QUILL
+        +INKWELL
+        +MANUSCRIPT
     }
 
     enum CornerPosition << enumeration >> {
-      + CornerPosition():
-      + TOP_RIGHT:
-      + BOTTOM_RIGHT:
-      + BOTTOM_LEFT:
-      + TOP_LEFT:
-      + valueOf(String): CornerPosition
-      + values(): CornerPosition[]
+      + TOP_LEFT
+      + TOP_RIGHT
+      + BOTTOM_RIGHT
+      + BOTTOM_LEFT
     }
 
     class CoveredCorner {
@@ -164,6 +157,12 @@ package corner {
       + getItem(): CornerItems
       + canPlaceCardAbove(): boolean
     }
+
+    Corner <|-- HiddenCorner
+    Corner <|-- CoveredCorner
+    Corner <|-- VisibleCorner
+
+    CornerItems - VisibleCorner
 }
 
 package deck {
@@ -214,7 +213,6 @@ package player {
 
     class Player {
       + Player(ObjectiveCard):
-      - visibleItems: Map<CornerItems, Integer>
       + secretObjective: ObjectiveCard
       - playerBoard: PlayerBoard
       - hand: PlayerHand
@@ -249,18 +247,14 @@ package player {
     }
 
     enum PlayerToken << enumeration >> {
-      + PlayerToken():
-      + GREEN:
-      + YELLOW:
-      + BLUE:
-      + RED:
-      + values(): PlayerToken[]
-      + valueOf(String): PlayerToken
+      + BLUE
+      + GREEN
+      + RED
+      + YELLOW
     }
 
-    Player      "1" *--> "playerBoard\n1" PlayerBoard
-    Player      "1" *--> "hand\n1" PlayerHand
-    PlayerBoard "1" *--> "board\n*" Coords
+    Player       *-->  PlayerBoard
+    Player       *-->  PlayerHand
 }
 
 class GameModel {
