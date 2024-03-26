@@ -269,6 +269,32 @@ package player {
     PlayerBoard "1" --> "0..*" Coords: uses
 }
 
+class GameModel {
+    ~ GameModel():
+    - starterCardsDeck: Deck<StarterCard>
+    - visibleGoldCards: List<ResourceCard>
+    - goldCardsDeck: Deck<GoldCard>
+    - visibleResourceCards: List<ResourceCard>
+    - resourceCardsDeck: Deck<ResourceCard>
+    - scoreTrack: ScoreTrack
+    - commonObjectives: List<ObjectiveCard>
+    - objectiveCardsDeck: Deck<ObjectiveCard>
+    + tokenToPlayer: Map<PlayerToken, Player>
+    + drawGoldCard(PlayerToken): boolean
+    + drawVisibleGoldCard(PlayerToken, int): boolean
+    + isResourceCardsDeckEmpty(): boolean
+    + drawCommonObjectives(): void
+    + setPlayersMap(Map<PlayerToken, StarterCard>, Map<StarterCard, CardSide>): void
+    + drawPlayerObjective(PlayerToken): void
+    + drawResourceCard(PlayerToken): boolean
+    + drawVisibleResourceCard(PlayerToken, int): boolean
+    + are20PointsReached(): boolean
+    + isGoldCardsDeckEmpty(): boolean
+    + computeObjectivesPoints(PlayerToken): int
+    + playCard(PlayerToken, PlayableCard, CardSide, Coords): void
+    + getStarterCards(int): List<StarterCard>
+}
+
 class ScoreTrack {
     + ScoreTrack(List<Player>):
     - maxScore: int
