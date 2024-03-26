@@ -305,6 +305,6 @@ Deck o--> Card : contains
 
 PlayableCard o--> Corner : contains
 
-GameModel "1" *--> "4" Deck
+GameModel "1" *--|> "4" Deck
 
 @enduml
