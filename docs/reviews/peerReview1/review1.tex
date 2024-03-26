@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{lmodern}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{caption}
 \renewcommand{\thesubsection}{\arabic{subsection}}
 
 \title{Peer review \#1 - GC11 - Model}
@@ -14,12 +15,16 @@
 \end{titlepage}
 
 \section*{General Overview}
-In this document we describe the UML of our Codex Naturalis java implementation. 
-In particular, we will explain how we implemented the model of the MVC architectural pattern.
+In this document we describe the UML of our Codex Naturalis java implementation. In particular, we will explain how we implemented the model of the MVC architectural pattern.
 % TODO inserire png uml tutto
-\begin{center}
-    \hspace*{0.3cm}\includegraphics[scale=0.1]{model.png}
-\end{center}
+\vspace{1cm}
+\begin{figure}[!h]
+    \captionsetup{labelformat=empty}
+    \centering
+    \includegraphics[scale=0.1]{pngs/model}
+    \caption{\textit{This is the full UML representig the model, to see it in detail see the file attached.}}
+
+\end{figure}
 
 
 \newpage
@@ -43,8 +48,9 @@ Moreover, it contains many methods that allow retrieving and modifying the state
     \item functions to check if the decks are empty.
 \end{itemize}
 
+\vspace{1cm}
 \begin{center}
-    \includegraphics[scale=0.25]{GameModel.png}
+    \includegraphics[scale=0.25]{pngs/GameModel}
 \end{center}
 
 \newpage
@@ -52,8 +58,9 @@ Moreover, it contains many methods that allow retrieving and modifying the state
 This class tracks the individual scores of players.
 In particular, it allows updating the score and checking if twenty points have been reached, through methods.
 
+\vspace{1cm}
 \begin{center}
-    \includegraphics[scale=0.5]{ScoreTrack.png}
+    \includegraphics[scale=0.5]{pngs/ScoreTrack}
 \end{center}
 \newpage
 \subsection{Package: \texttt{card}}
@@ -76,9 +83,9 @@ This package also contains the enumerations needed to represent each propery:
     \item \texttt{ResourceCardPonts};
     \item \texttt{GoldCardPoints}.
 \end{itemize}
-
+\vspace{1cm}
 \begin{center}
-    \hspace*{-3cm}\includegraphics[scale=0.18]{card.png}
+    \hspace*{-3cm}\includegraphics[scale=0.18]{pngs/card}
 \end{center}
 \newpage
 \noindent
@@ -96,8 +103,9 @@ Furthermore, using the factory method pattern we load the decks into the \texttt
     \item \texttt{StarterDeckCreator}
 \end{itemize}
 
+\vspace{1cm}
 \begin{center}
-    \hspace*{-1cm}\includegraphics[scale=0.15]{deck.png}
+    \hspace*{-1cm}\includegraphics[scale=0.15]{pngs/deck}
 \end{center}
 
 \newpage
@@ -112,8 +120,9 @@ The main class is extended by the following classes:
 To keep track of the position of a corner in a card, we use the \texttt{CornerPosition} enum.
 \noindent
 The \texttt{CornerItems} enum is used to represent an item in a visible corner.
+\vspace{1cm}
 \begin{center}
-    \hspace*{-2cm}\includegraphics[scale=0.15]{corner.png}
+    \hspace*{-2cm}\includegraphics[scale=0.15]{pngs/corner}
 \end{center}
 
 \newpage
@@ -136,7 +145,8 @@ More specifically, the other classes are:
 \noindent
 The package also contains the PlayerToken enumeration, used to represent a single player in the model side of the project thanks to a mapping in the GameModel.
 
+\vspace{0.2cm}
 \begin{center}
-    \hspace*{-2cm}\includegraphics[scale=0.1]{player.png}
+    \hspace*{-2cm}\includegraphics[scale=0.1]{pngs/player}
 \end{center}
 \end{document}
