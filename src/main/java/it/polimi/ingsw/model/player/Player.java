@@ -17,11 +17,6 @@ public class Player {
     private PlayerBoard playerBoard;
 
     /**
-     * Map that represents the number of items available on the board.
-     */
-    private Map<CornerItems, Integer> visibleItems;
-
-    /**
      * Attribute that represents the player's hand.
      */
     private PlayerHand hand;
