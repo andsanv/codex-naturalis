@@ -23,27 +23,27 @@ Review dell'UML Class Diagram del gruppo GC01.
 \subsection{Generali}
 
 \begin{itemize}
-  \item Tutti gli attributi nell'UML sono pubblici, nonostante siano stati aggiunti dei getter.
-  \item Sintassi dell'UML a volte poco chiara (e.g.~non è esplicito se \texttt{Card} e \texttt{Deck} siano classi astratte o meno).
-  \item Non sempre si è fedeli alla nomenclatura di gioco usata nel rulebook (e.g. ~RadixCards [StarterCards], Wolf [Animal], Mushroom [Fungi], etc).
+  \item Tutti gli attributi nell'UML sono pubblici, nonostante siano stati aggiunti dei metodi getter.
+  \item Sintassi dell'UML a volte poco chiara (e.g.~non è chiaro se \texttt{Card} e \texttt{Deck} siano classi astratte o meno).
+  \item Non sempre si è fedeli alla nomenclatura di gioco usata nel rulebook (e.g. ~RadixCards (StarterCards), Wolf (Animal), Mushroom (Fungi), etc.).
   \item Mancanza di alcuni attributi e metodi essenziali al funzionamento delle classi (e.g. non si può risalire alle visible cards pescabili in \texttt{Room}, però la classe ha il metodo \texttt{getDrawableCards()}).
 \end{itemize}
 
 \subsection{Class-Specific}
 
 \begin{itemize}
-  \item La classe \texttt{GoldenCard}, sottoclasse di ResourceCard, non rispetta il principio di sostituzione di Liskov (dovrebbe invece essere sottoclasse di \\\texttt{PlayableCard}).
-  \item Implementare il ``back'' di una carta \texttt{RadixCard} come sottoclasse di \texttt{RadixCard} non è molto chiaro.
-  \item \texttt{RadixCard} è implementata come una carta giocabile, ma viene assegnata al giocatore a inizio partita.
-  \item L'implementazione attraverso un Set di posizioni della board di gioco (\texttt{Field}) può risultare molto scomoda. Un'implementazione con una matrice o una \texttt{Map<Coordinate, PlayableCard>} potrebbe semplificare notevolmente la logica.
-  \item L'interfaccia \texttt{CardResources} risulta ambigua a causa di valori sovrapposti, può contenere infatti sia una risorsa (o item) ma anche il valore \texttt{FULL}.
+  \item La classe \texttt{GoldenCard}, sottoclasse di \texttt{ResourceCard}, non rispetta il principio di sostituzione di Liskov (dovrebbe invece essere sottoclasse di \\\texttt{PlayableCard}).
+  \item Implementare il ``back'' di una carta \texttt{RadixCard} come sottoclasse di \texttt{RadixCard} risulta una scelta ambigua.
+  \item \texttt{RadixCard} è implementata come una carta giocabile, nonostante ciò viene assegnata al giocatore a inizio partita.
+  \item L'implementazione attraverso un \texttt{Set} di \texttt{Position} della board di gioco (\texttt{Field}) può risultare molto scomoda.
+  Un'implementazione con una matrice o una \texttt{Map<Coordinate, PlayableCard>} potrebbe semplificare notevolmente la logica.
+  \item L'interfaccia \texttt{CardResources} risulta ambigua a causa di valori sovrapposti, in quanto può contenere sia una risorsa (o item), ma anche il valore \texttt{FULL}.
 \end{itemize}
 
-\section{Confronto tra le
-  architetture}
+\section{Confronto tra le architetture}
 
 \begin{itemize}
-  \item L'implementazione della classe \texttt{Corner} è molto più semplice della nostra, che invece prevede delle sottoclassi in base al tipo di angolo (\texttt{VisibleCorner}, \texttt{HiddenCorner} e \texttt{CoveredCorner}).
+  \item L'implementazione della classe \texttt{Corner} è più semplice rispetto alla nostra, che, invece, prevede delle sottoclassi in base al tipo di angolo (\texttt{VisibleCorner}, \texttt{HiddenCorner} e \texttt{CoveredCorner}).
   \item L'interfaccia comune per gli enum \texttt{Resource} e \texttt{Item} è interessante perché permette di eliminare ridondanza.
 \end{itemize}
 
