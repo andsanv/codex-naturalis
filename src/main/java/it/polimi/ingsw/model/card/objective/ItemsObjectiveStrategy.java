@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.card.objective;
 
+import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
 import java.util.Map;
@@ -11,13 +12,13 @@ public class ItemsObjectiveStrategy implements ObjectiveStrategy {
     /**
      * Map that defines amount of items required to complete the objective.
      */
-    Map<CornerItems, Integer> requiredItems;
+    Map<Elements, Integer> requiredItems;
 
     /**
      * Constructor that requires the following parameters.
      * @param requiredItems map for amount of required items.
      */
-    public ItemsObjectiveStrategy(Map<CornerItems, Integer> requiredItems) {
+    public ItemsObjectiveStrategy(Map<Elements, Integer> requiredItems) {
         this.requiredItems = requiredItems;
     }
 
@@ -27,7 +28,10 @@ public class ItemsObjectiveStrategy implements ObjectiveStrategy {
      */
     @Override
     public int getCompletedOccurrences(PlayerBoard playerBoard) {
-        //TODO implement items occurrences calculation
-        return 0;
+        return playerBoard.getVisibleItems().entrySet().stream()
+            .filter(e -> requiredItems.containsKey(e.getKey()))
+            .mapToInt(e -> e.getValue() / requiredItems.get(e.getKey()))
+            .min()
+            .orElse(0);
     }
 }
