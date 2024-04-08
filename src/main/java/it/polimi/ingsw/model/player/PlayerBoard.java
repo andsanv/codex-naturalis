@@ -57,7 +57,7 @@ public class PlayerBoard {
      */
     PlayerBoard(PlayerBoard other) {
         this.board = other.getBoard();
-        this.playerItems = other.getVisibleItems();
+        this.playerItems = other.getPlayerItems();
     }
 
     /**
@@ -138,7 +138,7 @@ public class PlayerBoard {
     /**
      * @return returns a copy of the visible items
      */
-    public Map<Elements, Integer> getVisibleItems() {
+    public Map<Elements, Integer> getPlayerItems() {
         return new HashMap<>(playerItems);
     }
 
