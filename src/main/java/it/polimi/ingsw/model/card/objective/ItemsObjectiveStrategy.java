@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model.card.objective;
 
-import it.polimi.ingsw.model.corner.CornerItems;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
 import java.util.Map;

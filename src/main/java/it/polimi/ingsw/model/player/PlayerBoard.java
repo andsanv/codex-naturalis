@@ -1,8 +1,10 @@
 package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.card.*;
+import it.polimi.ingsw.model.common.Items;
+import it.polimi.ingsw.model.common.Resources;
+import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.corner.Corner;
-import it.polimi.ingsw.model.corner.CornerItems;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
 import java.util.*;
@@ -27,17 +29,21 @@ public class PlayerBoard {
     /**
      * This map represents the number of items available on the board.
      */
-    private Map<CornerItems, Integer> playerItems;
+    private Map<Elements, Integer> playerItems;
 
     /**
      * @param starterCard starter card of the player's board
      */
     PlayerBoard(StarterCard starterCard) {
-        this.playerItems = new HashMap<CornerItems, Integer>() {{
-            put(CornerItems.PLANT, 0);
-            put(CornerItems.ANIMAL, 0);
-            put(CornerItems.FUNGI, 0);
-            put(CornerItems.INSECT, 0);
+        this.playerItems = new HashMap<Elements, Integer>() {{
+            put(Resources.PLANT, 0);
+            put(Resources.ANIMAL, 0);
+            put(Resources.FUNGI, 0);
+            put(Resources.INSECT, 0);
+            put(Items.INKWELL, 0);
+            put(Items.QUILL, 0);
+            put(Items.MANUSCRIPT, 0);
+
         }};
         this.board = new HashMap<Coords, PlayableCard>() {{
             put(STARTER_CARD_COORDINATES, starterCard);
@@ -132,7 +138,7 @@ public class PlayerBoard {
     /**
      * @return returns a copy of the visible items
      */
-    public Map<CornerItems, Integer> getVisibleItems() {
+    public Map<Elements, Integer> getVisibleItems() {
         return new HashMap<>(playerItems);
     }
 

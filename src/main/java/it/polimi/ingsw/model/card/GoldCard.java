@@ -1,10 +1,12 @@
 package it.polimi.ingsw.model.card;
 
+import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.corner.Corner;
-import it.polimi.ingsw.model.corner.CornerItems;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
-import java.util.HashMap;
+import it.polimi.ingsw.model.common.Resources;
+
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -44,11 +46,14 @@ public class GoldCard extends PlayableCard {
         this.requiredResources = requiredResources;
     }
 
+    /**
+     *
+     * @param playerResources resources owned by the player
+     * @return TODO
+     */
     @Override
-    public boolean enoughResources(Map<CornerItems, Integer> playerResources) {
-        return playerResources.get(CornerItems.PLANT) >= requiredResources.get(Resources.PLANT) &&
-                playerResources.get(CornerItems.ANIMAL) >= requiredResources.get(Resources.ANIMAL) &&
-                playerResources.get(CornerItems.FUNGI) >= requiredResources.get(Resources.FUNGI) &&
-                playerResources.get(CornerItems.INSECT) >= requiredResources.get(Resources.INSECT);
+    public boolean enoughResources(Map<Elements, Integer> playerResources) {
+        return Arrays.stream(Resources.values())
+                .allMatch(res -> playerResources.get(res) >= requiredResources.get(res));
     }
 }

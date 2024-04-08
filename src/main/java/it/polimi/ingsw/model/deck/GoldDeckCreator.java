@@ -2,10 +2,10 @@ package it.polimi.ingsw.model.deck;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.model.card.GoldCard;
+import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.corner.*;
 import com.google.gson.*;
-
-import it.polimi.ingsw.model.card.Resources;
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.card.GoldCardPoints;
 
 import java.io.IOException;
@@ -13,10 +13,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GoldDeckCreator implements DeckCreator {
     static final private Path path = Paths.get("src/main/resources/goldCards.json");
@@ -68,11 +65,13 @@ public class GoldDeckCreator implements DeckCreator {
                 Map<CornerPosition, Corner> backCorner = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : cornerItemsString.entrySet()) {
-                    Corner corner = null;
-                    if(entry.getValue().equals("hidden"))
-                        corner = new HiddenCorner();
-                    else
-                        corner = new VisibleCorner(CornerItems.valueOf(entry.getValue().toUpperCase()));
+                    for(Items item: Items.values())
+                        ;
+
+                    Arrays.asList(Items.values()).stream().map(i -> i.name()).
+
+                    //corner = new VisibleCorner(CornerItems.valueOf(entry.getValue().toUpperCase()));
+
 
                     frontCorners.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), corner);
                     backCorner.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), new VisibleCorner(CornerItems.EMPTY));

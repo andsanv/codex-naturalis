@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.card;
 
+import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.corner.Corner;
-import it.polimi.ingsw.model.corner.CornerItems;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public abstract class PlayableCard extends Card {
      * @param playerResources resources owned by the player
      * @return True if there are enough resources to play the card, false otherwise
      */
-    public boolean enoughResources(Map<CornerItems, Integer> playerResources) {
+    public boolean enoughResources(Map<Elements, Integer> playerResources) {
         return true;
     }
 

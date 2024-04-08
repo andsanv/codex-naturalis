@@ -1,11 +1,7 @@
 package it.polimi.ingsw.model.player;
 
-import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.PlayableCard;
-import it.polimi.ingsw.model.corner.CornerItems;
-
-import java.util.Map;
 
 /**
  * A player is an entity representing one client in game.
