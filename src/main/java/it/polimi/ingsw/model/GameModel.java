@@ -37,7 +37,8 @@ public class GameModel {
 
     /**
      * This function must be called during the setup phase of the game
-     *
+     *        return null;
+
      * @param playersCount number of players in the match
      * @return A list of starter cards of length players count
      */

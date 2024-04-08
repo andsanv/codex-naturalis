@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model.corner;
 
+/**
+ * TODO
+ */
 public enum CornerTypes {
     /**
      * A visible corner is a corner of a card that is either empty or contains an item, but it must not be hidden (see rulebook).

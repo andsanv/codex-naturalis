@@ -1,12 +1,13 @@
 package it.polimi.ingsw.model.card;
 
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 
 /**
  * A starter card is the first card placed on each player's board.
