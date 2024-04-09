@@ -1,6 +1,9 @@
 # Ignore Idea ide files
 .idea
 
+# Ignore vscode files
+.vscode/
+
 # Ignore target/
 target/
 
