@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.common.Resources;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A gold card is a playable card that requires resources to be placed on the board.
@@ -46,14 +47,14 @@ public class GoldCard extends PlayableCard {
         this.requiredResources = requiredResources;
     }
 
-    /**
-     *
-     * @param playerResources resources owned by the player
-     * @return TODO
-     */
     @Override
     public boolean enoughResources(Map<Elements, Integer> playerResources) {
         return Arrays.stream(Resources.values())
                 .allMatch(res -> playerResources.get(res) >= requiredResources.get(res));
+    }
+
+    @Override
+    public Optional<Resources> getType() {
+        return Optional.of(type);
     }
 }

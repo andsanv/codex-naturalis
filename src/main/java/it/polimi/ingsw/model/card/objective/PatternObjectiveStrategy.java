@@ -39,15 +39,7 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
                 .filter(e -> !e.getKey().equals(new Coords(0,0)))
                 .collect(Collectors.toMap(
                     Map.Entry::getKey,
-                    e -> {
-                        PlayableCard card = e.getValue();
-                        // TODO remove instanceof (maybe add a getType to PlayableCard)
-                        if (card instanceof ResourceCard) {
-                            return ((ResourceCard) card).type;
-                        } else {
-                            return ((GoldCard) card).type;
-                        }
-                    }
+                    e -> e.getValue().getType().get() // isPresent() isn't checked since the starter card has been filtered out.
         ));
 
         int x_max = Integer.MIN_VALUE;

@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.corner.CornerPosition;
 import it.polimi.ingsw.model.common.Resources;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A resource card is a playable card that doesn't require any resources to be placed on the board.
@@ -31,5 +32,10 @@ public class ResourceCard extends PlayableCard {
         super(id, frontCorners, backCorners);
         this.type = type;
         this.points = points;
+    }
+
+    @Override
+    public Optional<Resources> getType() {
+        return Optional.of(type);
     }
 }
