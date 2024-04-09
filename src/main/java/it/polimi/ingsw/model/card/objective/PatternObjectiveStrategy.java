@@ -1,8 +1,5 @@
 package it.polimi.ingsw.model.card.objective;
 
-import it.polimi.ingsw.model.card.GoldCard;
-import it.polimi.ingsw.model.card.PlayableCard;
-import it.polimi.ingsw.model.card.ResourceCard;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerBoard;

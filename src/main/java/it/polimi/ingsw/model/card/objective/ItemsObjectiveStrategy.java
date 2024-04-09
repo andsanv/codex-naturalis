@@ -28,7 +28,7 @@ public class ItemsObjectiveStrategy implements ObjectiveStrategy {
      */
     @Override
     public int getCompletedOccurrences(PlayerBoard playerBoard) {
-        return playerBoard.getVisibleItems().entrySet().stream()
+        return playerBoard.getPlayerItems().entrySet().stream()
             .filter(e -> requiredItems.containsKey(e.getKey()))
             .mapToInt(e -> e.getValue() / requiredItems.get(e.getKey()))
             .min()
