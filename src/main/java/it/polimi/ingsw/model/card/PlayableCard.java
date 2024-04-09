@@ -1,11 +1,13 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.common.Elements;
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A playable card is a card that can be placed on the player board.
@@ -54,7 +56,13 @@ public abstract class PlayableCard extends Card {
         this.backCorners = backCorners;
     }
 
-    //GETTER
+    /**
+     * @return The card's type (resource domain) if it's a resource or gold card, an empty optional if it's a starter.
+     */
+    public Optional<Resources> getType() {
+        return Optional.empty();
+    }
+
     public Map<CornerPosition, Corner> getActiveCorners() {
         return new HashMap<>(activeCorners);
     }
@@ -63,7 +71,6 @@ public abstract class PlayableCard extends Card {
         return playedSide;
     }
 
-    //SETTER
     public void setCorner(CornerPosition cornerPosition, Corner corner) {
         this.activeCorners.put(cornerPosition, corner);
     }
