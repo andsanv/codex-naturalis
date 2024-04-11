@@ -43,7 +43,7 @@ public class ScoreTrackTest {
     @Test
     void testGetScore() {
         for (Player player : players) {
-            assertEquals(0, scoreTrack.getScore().get(player).intValue());
+            assertEquals(0, scoreTrack.getScores().get(player).intValue());
         }
     }
 
@@ -53,16 +53,16 @@ public class ScoreTrackTest {
         int score2 = 3;
 
         scoreTrack.updatePlayerScore(player1, score1);
-        assertEquals(score1, scoreTrack.getScore().get(player1));
+        assertEquals(score1, scoreTrack.getScores().get(player1));
 
         scoreTrack.updatePlayerScore(player2, score2);
-        assertEquals(score2, scoreTrack.getScore().get(player2));
+        assertEquals(score2, scoreTrack.getScores().get(player2));
 
         int score1_increment = 3;
 
         scoreTrack.updatePlayerScore(player1, score1_increment);
-        assertEquals(score1+score1_increment, scoreTrack.getScore().get(player1));
-        assertEquals(score2, scoreTrack.getScore().get(player2));
+        assertEquals(score1+score1_increment, scoreTrack.getScores().get(player1));
+        assertEquals(score2, scoreTrack.getScores().get(player2));
     }
 
     @Test

@@ -110,7 +110,7 @@ public class GameModel {
     // TODO maybe change method name
     public boolean are20PointsReached() {
         //TODO
-        return scoreTrack.getScore().entrySet().stream().anyMatch(entry -> entry.getValue() >= 20);
+        return scoreTrack.getScores().entrySet().stream().anyMatch(entry -> entry.getValue() >= 20);
     }
 
     public boolean isResourceCardsDeckEmpty() {

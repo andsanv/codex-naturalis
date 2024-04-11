@@ -52,7 +52,7 @@ public class ScoreTrack {
     /**
      * @return a copy of the scores
      */
-    public Map<Player, Integer> getScore() {
+    public Map<Player, Integer> getScores() {
         return new HashMap<>(this.scores);
     }
 
