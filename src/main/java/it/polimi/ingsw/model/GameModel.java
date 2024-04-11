@@ -27,18 +27,18 @@ public class GameModel {
 
     private ScoreTrack scoreTrack;
 
-//    private final List<PlayerToken> playersOrder;
+    // private final List<PlayerToken> playersOrder;
 
     GameModel() {
         // TODO
         tokenToPlayer = null;
-//        playersOrder = null;
+        // playersOrder = null;
     }
 
     /**
      * This function must be called during the setup phase of the game
-     *        return null;
-
+     * return null;
+     * 
      * @param playersCount number of players in the match
      * @return A list of starter cards of length players count
      */
@@ -48,13 +48,15 @@ public class GameModel {
     }
 
     /**
-     * This function must be called after players decide how to play their starter card
+     * This function must be called after players decide how to play their starter
+     * card
      *
      * @param tokenToStarterCard a map from player tokens to their starter card
-     * @param cardsSidesPlayed a map with the played side of each starter card
-     */
-    public void setPlayersMap(Map<PlayerToken, StarterCard> tokenToStarterCard, Map<StarterCard, CardSide> cardsSidesPlayed) {
-        // TODO this function must be called only once, after calling method getStarterCards()
+     * @param 
+    public void setPlayersMap(Map<PlayerToken, StarterCard> tokenToStarterCard,
+            Map<StarterCard, CardSide> cardsSidesPlayed) {
+        // TODO this function must be called only once, after calling method
+        // getStarterCards()
 
         // TODO create here players and tokenToPlayer map
 
@@ -81,7 +83,7 @@ public class GameModel {
             return false;
 
         playerHand.addCard(card.get());
-            return true;
+        return true;
     }
 
     public boolean drawGoldCard(PlayerToken playerToken) {
@@ -90,12 +92,14 @@ public class GameModel {
     }
 
     public boolean drawVisibleResourceCard(PlayerToken playerToken, int index) {
-        // TODO draw visible resource card, add to hand and update visible cards by drawing from the deck (if it's not empty)
+        // TODO draw visible resource card, add to hand and update visible cards by
+        // drawing from the deck (if it's not empty)
         return false;
     }
 
     public boolean drawVisibleGoldCard(PlayerToken playerToken, int index) {
-        // TODO draw visible gold card, add to hand and update visible cards by drawing from the deck (if it's not empty)
+        // TODO draw visible gold card, add to hand and update visible cards by drawing
+        // from the deck (if it's not empty)
         return false;
     }
 
@@ -107,10 +111,8 @@ public class GameModel {
         // TODO draw two common objective cards and add them to commonObjectives
     }
 
-    // TODO maybe change method name
     public boolean are20PointsReached() {
-        //TODO
-        return scoreTrack.getScores().entrySet().stream().anyMatch(entry -> entry.getValue() >= 20);
+        return scoreTrack.getScores().values().stream().anyMatch(p -> p >= 20);
     }
 
     public boolean isResourceCardsDeckEmpty() {
@@ -121,8 +123,15 @@ public class GameModel {
         return goldCardsDeck.isEmpty();
     }
 
-    public int computeObjectivesPoints(PlayerToken playerToken) {
-        //TODO return ObjectivesScoreCalculator.computeScore(...);
-        return 0;
+    /**
+     * @param playerToken 
+     * @return common and secret objective points of the player
+     */
+    public int getObjectivesPoints(PlayerToken playerToken) {
+        Player player = tokenToPlayer.get(playerToken);
+        PlayerBoard board = player.getBoard();
+
+        return player.secretObjective.computePoints(board)
+                + commonObjectives.stream().mapToInt(o -> o.computePoints(board)).sum();
     }
 }
