@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GoldDeckCreator implements DeckCreator {
     static final private Path path = Paths.get("src/main/resources/goldCards.json");
@@ -65,16 +66,35 @@ public class GoldDeckCreator implements DeckCreator {
                 Map<CornerPosition, Corner> backCorner = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : cornerItemsString.entrySet()) {
-                    for(Items item: Items.values())
-                        ;
 
-                    Arrays.asList(Items.values()).stream().map(i -> i.name()).
+                    List<String> resourceString = Arrays.stream(Resources.values())
+                            .map(Enum::name)
+                            .collect(Collectors.toList());
+                    List<String> itemsString = Arrays.stream(Items.values())
+                            .map(Enum::name)
+                            .collect(Collectors.toList());
 
-                    //corner = new VisibleCorner(CornerItems.valueOf(entry.getValue().toUpperCase()));
+                    Corner corner = null;
+                    // if the value is equal to a Resource value then create a new Corner with resource
+                    if(resourceString.contains(entry.getValue().toUpperCase())) {
+                        corner = new Corner(Resources.valueOf(entry.getValue().toUpperCase()), CornerTypes.VISIBLE);
+                    } // else if the value is equal to an Items value then create a new Corner with item
+                    else if(itemsString.contains(entry.getValue().toUpperCase())) {
+                        corner = new Corner(Items.valueOf(entry.getValue().toUpperCase()), CornerTypes.VISIBLE);
+                    } // corner is hidden
+                    else if("hidden".equals(entry.getValue())){
+                        corner = new Corner(null, CornerTypes.HIDDEN);
+                    } // corner is empty
+                    else if("empty".equals(entry.getValue())){
+                        corner = new Corner(null, CornerTypes.VISIBLE);
+                    }
 
+                    frontCorners.put(CornerPosition.valueOf(entry.getKey().toUpperCase()),
+                            corner);
 
-                    frontCorners.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), corner);
-                    backCorner.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), new VisibleCorner(CornerItems.EMPTY));
+                    backCorner.put(CornerPosition.valueOf(entry.getKey().toUpperCase()),
+                            new Corner(null, CornerTypes.VISIBLE));
+
                 }
 
                 cards.add(new GoldCard(id, resourceType, goldCardPoint, requiredResources, frontCorners, backCorner));

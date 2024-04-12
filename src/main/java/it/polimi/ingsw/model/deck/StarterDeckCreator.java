@@ -4,6 +4,8 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.model.card.StarterCard;
 import com.google.gson.*;
 import it.polimi.ingsw.model.card.*;
+import it.polimi.ingsw.model.common.Items;
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.*;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StarterDeckCreator implements DeckCreator {
     static final private Path path = Paths.get("src/main/resources/starterCards.json");
@@ -42,13 +45,21 @@ public class StarterDeckCreator implements DeckCreator {
                 Map<CornerPosition, Corner> frontCornerItems = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : frontCornerItemsString.entrySet()) {
-                    Corner corner = null;
-                    if(entry.getValue().equals("hidden"))
-                        corner = new HiddenCorner();
-                    else
-                        corner = new VisibleCorner(CornerItems.valueOf(entry.getValue().toUpperCase()));
+                    List<String> resourceString = Arrays.stream(Resources.values())
+                            .map(Enum::name)
+                            .collect(Collectors.toList());
 
-                    frontCornerItems.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), corner);
+                    Corner corner = null;
+                    // if the value is equal to a Resource value then create a new Corner with resource
+                    if(resourceString.contains(entry.getValue().toUpperCase())) {
+                        corner = new Corner(Resources.valueOf(entry.getValue().toUpperCase()), CornerTypes.VISIBLE);
+                    }// corner is empty
+                    else if("empty".equals(entry.getValue())){
+                        corner = new Corner(null, CornerTypes.VISIBLE);
+                    }
+
+                    frontCornerItems.put(CornerPosition.valueOf(entry.getKey().toUpperCase()),
+                            corner);
                 }
 
 
@@ -67,17 +78,21 @@ public class StarterDeckCreator implements DeckCreator {
                 // back corner items parsing
                 JsonObject backCornerItemsObj = jsonObject.getAsJsonObject("backCornerItems");
 
-                Map<String, String> backCornerItemsString = gson.fromJson(frontCornerItemsObj, cornerItemsType);
+                Map<String, String> backCornerItemsString = gson.fromJson(backCornerItemsObj, cornerItemsType);
                 Map<CornerPosition, Corner> backCornerItems = new HashMap<>();
 
                 for (Map.Entry<String, String> entry : backCornerItemsString.entrySet()) {
-                    Corner corner = null;
-                    if(entry.getValue().equals("hidden"))
-                        corner = new HiddenCorner();
-                    else
-                        corner = new VisibleCorner(CornerItems.valueOf(entry.getValue().toUpperCase()));
+                    List<String> resourceString = Arrays.stream(Resources.values())
+                            .map(Enum::name)
+                            .collect(Collectors.toList());
 
-                    backCornerItems.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), corner);
+                    Corner corner = null;
+
+                    // corner can only be visible with resource
+                    corner = new Corner(Resources.valueOf(entry.getValue().toUpperCase()), CornerTypes.VISIBLE);
+
+                    backCornerItems.put(CornerPosition.valueOf(entry.getKey().toUpperCase()),
+                            corner);
                 }
 
 
@@ -86,7 +101,6 @@ public class StarterDeckCreator implements DeckCreator {
             }
         }
 
-        // TODO implement json import
         return new Deck<>(cards);
     }
 

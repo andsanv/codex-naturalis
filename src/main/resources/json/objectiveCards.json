@@ -1,0 +1,82 @@
+[
+  {
+    "id": 0,
+    "points": 2,
+    "pattern": "FXXXFXXXF"
+  },
+  {
+    "id": 1,
+    "points": 2,
+    "pattern": "XXPXPXPXX"
+  },
+  {
+    "id": 2,
+    "points": 2,
+    "pattern": "AXXXAXXXA"
+  },
+  {
+    "id": 3,
+    "points": 2,
+    "pattern": "XXIXIXIXX"
+  },
+  {
+    "id": 4,
+    "points": 3,
+    "pattern": "XFXFPXXX"
+  },
+  {
+    "id": 5,
+    "points": 3,
+    "pattern": "IXXXXPXP"
+  },
+  {
+    "id": 6,
+    "points": 3,
+    "pattern": "AXAXXXXF"
+  },
+  {
+    "id": 7,
+    "points": 3,
+    "pattern": "XXXAIXIX"
+  },
+  {
+    "id": 8,
+    "points": 2,
+    "pattern": "FFF"
+  },
+  {
+    "id": 9,
+    "points": 2,
+    "pattern": "PPP"
+  },
+  {
+    "id": 10,
+    "points": 2,
+    "pattern": "AAA"
+  },
+  {
+    "id": 11,
+    "points": 2,
+    "pattern": "III"
+  },
+  {
+    "id": 12,
+    "points": 3,
+    "pattern": "QWM"
+  },
+  {
+    "id": 13,
+    "points": 2,
+    "pattern": "MM"
+  },
+  {
+    "id": 14,
+    "points": 2,
+    "pattern": "WW"
+  },
+  {
+    "id": 15,
+    "points": 2,
+    "pattern": "QQ"
+  }
+]

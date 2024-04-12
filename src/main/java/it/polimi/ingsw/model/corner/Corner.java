@@ -11,8 +11,9 @@ public class Corner {
     private final Optional<Elements> cornerElement;
     private CornerTypes cornerType;
 
-    public Corner(Elements cornerElement) {
+    public Corner(Elements cornerElement, CornerTypes cornerType) {
         this.cornerElement = Optional.ofNullable(cornerElement);
+        this.cornerType = cornerType;
     }
 
     /**
