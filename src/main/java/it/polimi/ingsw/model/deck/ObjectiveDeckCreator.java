@@ -13,13 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ObjectiveDeckCreator implements DeckCreator {
-    static final private Path path = Paths.get("src/main/resources/objectiveCards.json");
+    static final private Path path = Paths.get("src/main/resources/json/objectiveCards.json");
 
     @Override
     public Deck<ObjectiveCard> createDeck() throws IOException {
@@ -82,31 +79,42 @@ public class ObjectiveDeckCreator implements DeckCreator {
                         }
                     }
                 } else {
-                    for(int i = 0; i < resourceTypeString.length(); i++) {
-                        switch (resourceTypeString.charAt(i)) {
+                    Character character = resourceTypeString.charAt(0);
+
+                    // resources beginning letters
+                    if(Arrays.asList(new Character[]{'A', 'I', 'P', 'F'}).contains(character)) {
+                        switch (character) {
                             case 'I':
-                                requiredItems.put(Resources.INSECT, points);
+                                requiredItems.put(Resources.INSECT, 3);
                                 break;
                             case 'A':
-                                requiredItems.put(Resources.ANIMAL, points);
+                                requiredItems.put(Resources.ANIMAL, 3);
                                 break;
                             case 'F':
-                                requiredItems.put(Resources.FUNGI, points);
+                                requiredItems.put(Resources.FUNGI, 3);
                                 break;
                             case 'P':
-                                requiredItems.put(Resources.PLANT, points);
+                                requiredItems.put(Resources.PLANT, 3);
                                 break;
-                            case 'W':
-                                requiredItems.put(Items.INKWELL, points);
-                                break;
-                            case 'Q':
-                                requiredItems.put(Items.QUILL, points);
-                                break;
-                            case 'M':
-                                requiredItems.put(Items.MANUSCRIPT, points);
-                                break;
-                            default:
-                                break;
+                        }
+                    } else {
+                        for (int i = 0; i < resourceTypeString.length(); i++) {
+                            switch (resourceTypeString.charAt(i)) {
+                                case 'W':
+                                    requiredItems.put(Items.INKWELL, requiredItems.containsKey(Items.INKWELL) ?
+                                            requiredItems.put(Items.INKWELL, requiredItems.get(Items.INKWELL) + 1) : Integer.valueOf(1));
+                                    break;
+                                case 'Q':
+                                    requiredItems.put(Items.QUILL, requiredItems.containsKey(Items.QUILL) ?
+                                            requiredItems.put(Items.QUILL, requiredItems.get(Items.QUILL) + 1) : Integer.valueOf(1));
+                                    break;
+                                case 'M':
+                                    requiredItems.put(Items.MANUSCRIPT, requiredItems.containsKey(Items.MANUSCRIPT) ?
+                                            requiredItems.put(Items.MANUSCRIPT, requiredItems.get(Items.MANUSCRIPT) + 1) : Integer.valueOf(1));
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }

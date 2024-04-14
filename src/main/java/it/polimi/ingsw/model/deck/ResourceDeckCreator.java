@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResourceDeckCreator implements DeckCreator {
-    static final private Path path = Paths.get("src/main/resources/resourceCards.json");
+    static final private Path path = Paths.get("src/main/resources/json/resourceCards.json");
 
     @Override
     public Deck<ResourceCard> createDeck() throws IOException {

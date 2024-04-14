@@ -4,9 +4,7 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -17,13 +15,19 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
      * Map representing a matrix of the required pattern for objective completion.
      * The cell in the bottom-left of the smallest matrix containing the pattern must have (0,0) coordinates.
      */
-    Map<Coords, Resources> pattern;
+    private Map<Coords, Resources> pattern;
+
 
     /**
      * @param patternMap the pattern to be matched
      */
     public PatternObjectiveStrategy(Map<Coords, Resources> patternMap) {
         this.pattern = patternMap;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 
     /**
@@ -90,5 +94,9 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
         }
 
         return pattern_count;
+    }
+
+    public Map<Coords, Resources> getPattern() {
+        return new HashMap<>(pattern);
     }
 }

@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GoldDeckCreator implements DeckCreator {
-    static final private Path path = Paths.get("src/main/resources/goldCards.json");
+    static final private Path path = Paths.get("src/main/resources/json/goldCards.json");
 
     @Override
     public Deck<GoldCard> createDeck() throws IOException {

@@ -99,8 +99,8 @@
         },
         "backCornerItems": {
             "top_left": "insect",
-            "top_right": "animal",
-            "bottom_right": "fungi",
+            "top_right": "fungi",
+            "bottom_right": "animal",
             "bottom_left": "plant"
         }
     },

@@ -11,7 +11,7 @@ public class ObjectiveCard extends Card {
     /**
      * Points awarded at the end of the game
      */
-    public int points;
+    private int points;
 
     /**
      * Strategy used to check points
@@ -30,5 +30,13 @@ public class ObjectiveCard extends Card {
      */
     public int computePoints(PlayerBoard playerBoard) {
         return points * objectiveStrategy.getCompletedOccurrences(playerBoard);
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public ObjectiveStrategy getObjectiveStrategy() {
+        return objectiveStrategy;
     }
 }

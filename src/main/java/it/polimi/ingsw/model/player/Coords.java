@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.player;
 
+import java.util.Objects;
+
 /**
  * This class represents 2D coordinates that can be used to identify cards' position in the player board.
  *
@@ -20,5 +22,10 @@ public final class Coords {
             return false;
 
         return ((Coords) other).x == this.x && ((Coords) other).y == this.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

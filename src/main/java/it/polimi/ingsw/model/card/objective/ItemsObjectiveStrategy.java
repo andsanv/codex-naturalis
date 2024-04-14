@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.card.objective;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,5 +34,9 @@ public class ItemsObjectiveStrategy implements ObjectiveStrategy {
             .mapToInt(e -> e.getValue() / requiredItems.get(e.getKey()))
             .min()
             .orElse(0);
+    }
+
+    public Map<Elements, Integer> getRequiredItems() {
+        return new HashMap<>(requiredItems);
     }
 }

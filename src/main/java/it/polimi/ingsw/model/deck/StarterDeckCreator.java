@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StarterDeckCreator implements DeckCreator {
-    static final private Path path = Paths.get("src/main/resources/starterCards.json");
+    static final private Path path = Paths.get("src/main/resources/json/starterCards.json");
 
     @Override
     public Deck<StarterCard> createDeck() throws IOException {
@@ -53,7 +53,11 @@ public class StarterDeckCreator implements DeckCreator {
                     // if the value is equal to a Resource value then create a new Corner with resource
                     if(resourceString.contains(entry.getValue().toUpperCase())) {
                         corner = new Corner(Resources.valueOf(entry.getValue().toUpperCase()), CornerTypes.VISIBLE);
-                    }// corner is empty
+                    } // corner is hidden
+                    else if("hidden".equals(entry.getValue())) {
+                        corner = new Corner(null, CornerTypes.HIDDEN);
+                    }
+                    // corner is empty
                     else if("empty".equals(entry.getValue())){
                         corner = new Corner(null, CornerTypes.VISIBLE);
                     }
