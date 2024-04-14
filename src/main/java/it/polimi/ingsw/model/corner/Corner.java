@@ -6,13 +6,17 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * TODO
+ * This class represents a corner of a card.
+ * Each card has four corners that can have different states.
  */
 public class Corner {
     private final Optional<Elements> cornerElement;
     private CornerTypes cornerType;
 
-
+    /**
+     * @param cornerElement the element contained in corner
+     * @param cornerType the corner's type (hidden, covered or visible)
+     */
     public Corner(Elements cornerElement, CornerTypes cornerType) {
         this.cornerElement = Optional.ofNullable(cornerElement);
         this.cornerType = cornerType;
@@ -25,8 +29,18 @@ public class Corner {
         return cornerType == CornerTypes.VISIBLE;
     };
 
+    /**
+     * @return An optional containing the element in the corner. 
+     */
     public Optional<Elements> getItem() {
-        return cornerElement;
+        return cornerElement.flatMap(Optional::of);
+    }
+
+    /**
+     * @return the type of the corner
+     */
+    public CornerTypes getType() {
+        return cornerType;
     }
 
     @Override
