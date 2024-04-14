@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import it.polimi.ingsw.model.player.PlayerBoard;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public class StarterCard extends PlayableCard {
      */
     public final Set<Resources> centralResources;
 
+
     /**
      * TODO: add description
      * @param centralResources resources of the front of the card.
@@ -29,5 +31,9 @@ public class StarterCard extends PlayableCard {
     public StarterCard(int id, Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
         super(id, frontCorners, backCorners);
         this.centralResources = centralResources;
+    }
+
+    public Set<Resources> getCentralResources() {
+        return new HashSet<>(centralResources);
     }
 }

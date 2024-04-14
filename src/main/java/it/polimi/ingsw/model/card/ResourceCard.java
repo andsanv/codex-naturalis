@@ -38,4 +38,9 @@ public class ResourceCard extends PlayableCard {
     public Optional<Resources> getType() {
         return Optional.of(type);
     }
+
+    public ResourceCardPoints getPoints() {
+        return points;
+    }
+
 }

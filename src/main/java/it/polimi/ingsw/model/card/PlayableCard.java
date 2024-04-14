@@ -74,4 +74,20 @@ public abstract class PlayableCard extends Card {
     public void setCorner(CornerPosition cornerPosition, Corner corner) {
         this.activeCorners.put(cornerPosition, corner);
     }
+
+    public Map<CornerPosition, Corner> getFrontCorners() {
+        return new HashMap<>(frontCorners);
+    }
+
+    public Map<CornerPosition, Corner> getBackCorners() {
+        return new HashMap<>(backCorners);
+    }
+
+    public void setActiveCorners(Map<CornerPosition, Corner> activeCorners) {
+        this.activeCorners = activeCorners;
+    }
+
+    public void setPlayedSide(CardSide playedSide) {
+        this.playedSide = playedSide;
+    }
 }

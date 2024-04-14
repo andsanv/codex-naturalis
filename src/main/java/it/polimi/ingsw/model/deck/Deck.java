@@ -37,4 +37,8 @@ public class Deck<T extends Card> {
         });
         return stringBuilder.toString();
     }
+
+    public int size() {
+        return deck.size();
+    }
 }
