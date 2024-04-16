@@ -70,10 +70,10 @@ public class ScoreTrackTest {
         scoreTrack.updatePlayerScore(player1, 19);
         scoreTrack.updatePlayerScore(player2, 5);
 
-        assertFalse(scoreTrack.gameEnded());
+        assertFalse(scoreTrack.isGameFinished());
 
         scoreTrack.updatePlayerScore(player1, 1);
 
-        assertTrue(scoreTrack.gameEnded());
+        assertTrue(scoreTrack.isGameFinished());
     }
 }

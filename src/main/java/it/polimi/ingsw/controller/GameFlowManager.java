@@ -11,7 +11,7 @@ public class GameFlowManager {
     GameState refillCardsState;
     GameState updateScoretrackState;
 
-    private GameState currentSate;
+    private GameState currentState;
 
     GameFlowManager() {
         this.playCardState = new PlayCardState(this);
@@ -19,11 +19,11 @@ public class GameFlowManager {
         this.refillCardsState = new RefillCardsState(this);
         this.updateScoretrackState = new PlayCardState.UpdateScoretrackState(this);
 
-        this.currentSate = this.playCardState;      //TODO
+        this.currentState = this.playCardState;      //TODO
     }
 
     public void dummy() {
-        currentSate.dummy();
+        currentState.dummy();
     }
 
 

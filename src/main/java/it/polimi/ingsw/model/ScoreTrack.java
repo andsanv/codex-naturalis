@@ -45,7 +45,7 @@ public class ScoreTrack {
     /**
      * @return True if someone reached 20 points, false otherwise.
      */
-    public boolean gameEnded() {
+    public boolean isGameFinished() {
         return maxScore >= 20;
     }
 

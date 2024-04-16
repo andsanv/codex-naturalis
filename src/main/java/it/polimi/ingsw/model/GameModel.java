@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.player.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * TODO: add javadoc
@@ -18,7 +17,7 @@ public class GameModel {
     private List<ResourceCard> visibleResourceCards;
 
     private Deck<GoldCard> goldCardsDeck;
-    private List<ResourceCard> visibleGoldCards;
+    private List<GoldCard> visibleGoldCards;
 
     private Deck<ObjectiveCard> objectiveCardsDeck;
     private Deck<StarterCard> starterCardsDeck;
@@ -27,111 +26,55 @@ public class GameModel {
 
     private ScoreTrack scoreTrack;
 
-    // private final List<PlayerToken> playersOrder;
+     private final List<PlayerToken> playersOrder;
+     private PlayerToken currentPlayer;
 
     GameModel() {
         // TODO
         tokenToPlayer = null;
-        // playersOrder = null;
+         playersOrder = null;
     }
 
     /**
-     * This function must be called during the setup phase of the game
-     * return null;
-     * 
-     * @param playersCount number of players in the match
-     * @return A list of starter cards of length players count
+     * @return the resource cards deck
      */
-    public List<StarterCard> getStarterCards(int playersCount) {
-        // TODO this function must be called only once
-        return null;
+    public Deck<ResourceCard> getResourceCardsDeck() {
+        return resourceCardsDeck;
     }
 
     /**
-     * This function must be called after players decide how to play their starter
-     * card
-     *
-     * @param tokenToStarterCard a map from player tokens to their starter card
-     * @param 
-    public void setPlayersMap(Map<PlayerToken, StarterCard> tokenToStarterCard,
-            Map<StarterCard, CardSide> cardsSidesPlayed) {
-        // TODO this function must be called only once, after calling method
-        // getStarterCards()
-
-        // TODO create here players and tokenToPlayer map
-
-        // TODO randomly choose players' order (maybe not needed)
-    }
-
-    public void playCard(PlayerToken token, PlayableCard card, CardSide side, Coords coords) {
-        // TODO play card and update scores if points increment is available
-    }
-
-    /**
-     * TODO this class can become void, check inner todo
-     *
-     * @param playerToken the token of the player that draws the card
-     * @return True if the card can be drawn, false otherwise
+     * @return the visible resource cards list
      */
-    public boolean drawResourceCard(PlayerToken playerToken) {
-        PlayerHand playerHand = tokenToPlayer.get(playerToken).getHand();
-
-        // TODO check that the deck's not empty in the controller
-        Optional<ResourceCard> card = resourceCardsDeck.draw();
-
-        if (!card.isPresent())
-            return false;
-
-        playerHand.addCard(card.get());
-        return true;
-    }
-
-    public boolean drawGoldCard(PlayerToken playerToken) {
-        // TODO
-        return false;
-    }
-
-    public boolean drawVisibleResourceCard(PlayerToken playerToken, int index) {
-        // TODO draw visible resource card, add to hand and update visible cards by
-        // drawing from the deck (if it's not empty)
-        return false;
-    }
-
-    public boolean drawVisibleGoldCard(PlayerToken playerToken, int index) {
-        // TODO draw visible gold card, add to hand and update visible cards by drawing
-        // from the deck (if it's not empty)
-        return false;
-    }
-
-    public void drawPlayerObjective(PlayerToken playerToken) {
-        // TODO update player hand with drawn objective
-    }
-
-    public void drawCommonObjectives() {
-        // TODO draw two common objective cards and add them to commonObjectives
-    }
-
-    public boolean are20PointsReached() {
-        return scoreTrack.getScores().values().stream().anyMatch(p -> p >= 20);
-    }
-
-    public boolean isResourceCardsDeckEmpty() {
-        return resourceCardsDeck.isEmpty();
-    }
-
-    public boolean isGoldCardsDeckEmpty() {
-        return goldCardsDeck.isEmpty();
+    public List<ResourceCard> getVisibleResourceCards() {
+        return visibleResourceCards;
     }
 
     /**
-     * @param playerToken 
-     * @return common and secret objective points of the player
+     * @return the gold cards deck
      */
-    public int getObjectivesPoints(PlayerToken playerToken) {
-        Player player = tokenToPlayer.get(playerToken);
-        PlayerBoard board = player.getBoard();
-
-        return player.secretObjective.computePoints(board)
-                + commonObjectives.stream().mapToInt(o -> o.computePoints(board)).sum();
+    public Deck<GoldCard> getGoldCardsDeck() {
+        return goldCardsDeck;
     }
+
+    /**
+     * @return the visible gold cards list
+     */
+    public List<GoldCard> getVisibleGoldCards() {
+        return visibleGoldCards;
+    }
+
+    /**
+     * @return the objective cards deck
+     */
+    public Deck<ObjectiveCard> getObjectiveCardsDeck() {
+        return objectiveCardsDeck;
+    }
+
+    /**
+     * @return the game's score track
+     */
+    public ScoreTrack getScoreTrack() {
+        return scoreTrack;
+    }
+
 }

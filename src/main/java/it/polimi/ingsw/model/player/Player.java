@@ -34,31 +34,22 @@ public class Player {
     /**
      * @return a copy of the player's board
      */
-    public PlayerBoard getBoard() {
-        return new PlayerBoard(playerBoard);
-    }
+    public PlayerBoard getBoard() { return playerBoard; }
 
     /**
      * @return a copy of the player's hand.
      */
-    public PlayerHand getHand() {
-        return new PlayerHand(hand);
-    }
+    public PlayerHand getHand() { return hand; }
+
 
     /**
-     * Method that plays the given card at the given coordinates
-     *
-     * @param coords coords at which to play the card
-     * @param card   card to play
-     * @return boolean based on whether the card was placed or not
+     * @param playerToken the token representing the player
+     * @return common and secret objective points of the player
      */
-    public boolean playCard(Coords coords, PlayableCard card) {
-        if (playerBoard.canPlaceCardAt(coords, card)) {
-            playerBoard.setCard(coords, card);
-            return true;
-        }
+   /* public int getObjectivesPoints() {
+        PlayerBoard board = player.getBoard();
 
-        return false;
-    }
-
+        return player.secretObjective.computePoints(board);
+                + commonObjectives.stream().mapToInt(o -> o.computePoints(board)).sum();
+    }*/
 }
