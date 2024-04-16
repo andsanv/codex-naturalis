@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,11 @@ public abstract class PlayableCard extends Card {
     private CardSide playedSide;
 
     /**
+     * This attribute represents the amount of points given to the player when he plays the front of this card.
+     */
+    public final PointsType pointsType;
+
+    /**
      * @param playerResources resources owned by the player
      * @return True if there are enough resources to play the card, false otherwise
      */
@@ -50,10 +56,11 @@ public abstract class PlayableCard extends Card {
      * @param frontCorners corners of the front of the card.
      * @param backCorners corners of the back of the card.
      */
-    PlayableCard(int id, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
+    PlayableCard(int id, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners, PointsType pointsType) {
         super(id);
         this.frontCorners = frontCorners;
         this.backCorners = backCorners;
+        this.pointsType = pointsType;
     }
 
     /**
@@ -64,7 +71,7 @@ public abstract class PlayableCard extends Card {
     }
 
     public Map<CornerPosition, Corner> getActiveCorners() {
-        return new HashMap<>(activeCorners);
+        return activeCorners;
     }
 
     public CardSide getPlayedSide() {
@@ -89,5 +96,9 @@ public abstract class PlayableCard extends Card {
 
     public void setPlayedSide(CardSide playedSide) {
         this.playedSide = playedSide;
+    }
+
+    public PointsType getPointsType() {
+        return this.pointsType;
     }
 }

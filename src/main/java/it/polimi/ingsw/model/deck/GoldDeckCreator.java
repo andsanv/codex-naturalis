@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.corner.*;
 import com.google.gson.*;
 import it.polimi.ingsw.model.common.Resources;
-import it.polimi.ingsw.model.card.GoldCardPoints;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

@@ -29,11 +29,12 @@ public class StarterCard extends PlayableCard {
      * @param backCorners corners of the back of the card.
      */
     public StarterCard(int id, Set<Resources> centralResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
-        super(id, frontCorners, backCorners);
+        super(id, frontCorners, backCorners, PointsType.ZERO);
         this.centralResources = centralResources;
     }
 
     public Set<Resources> getCentralResources() {
         return new HashSet<>(centralResources);
     }
+
 }

@@ -33,7 +33,7 @@ public class Corner {
      * @return An optional containing the element in the corner. 
      */
     public Optional<Elements> getItem() {
-        return cornerElement.flatMap(Optional::of);
+        return cornerElement;
     }
 
     /**
@@ -41,6 +41,9 @@ public class Corner {
      */
     public CornerTypes getType() {
         return cornerType;
+    }
+    public void setType(CornerTypes cornerType) {
+        this.cornerType = cornerType;
     }
 
     @Override

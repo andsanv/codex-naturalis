@@ -2,6 +2,10 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
+import it.polimi.ingsw.model.common.Elements;
+import it.polimi.ingsw.model.common.Items;
+import it.polimi.ingsw.model.common.Resources;
+import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.player.*;
 
 import java.util.Map;
@@ -25,14 +29,52 @@ public class GameModelUpdater {
      * @return boolean based on whether the card was placed or not
      */
     public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card) {
-        // TODO update scores, player's resources, etc
+        Player player = model.tokenToPlayer.get(playerToken);
+        PlayerBoard playerBoard = player.getBoard();
+        PlayerHand playerHand = player.getHand();
 
-        if (model.tokenToPlayer.get(playerToken).getBoard().canPlaceCardAt(coords, card)) {
-            model.tokenToPlayer.get(playerToken).getBoard().setCard(coords, card);
-            return true;
+        if(!player.getBoard().canPlaceCardAt(coords, card))
+            return false;
+        
+        playerHand.removeCard(card);
+        playerBoard.setCard(coords, card);
+
+        // placeability is already checked, so no HIDDEN corners are present
+        playerBoard.adjacentCorners(coords).values().stream().forEach(corner -> corner.setType(CornerTypes.COVERED));
+
+        playerBoard.updatePlayerItems();
+
+
+        int points = 0;
+        switch(card.getPointsType()) {
+            case ONE:
+                points = 1;
+                break;
+            case THREE:
+                points = 3;
+                break;
+            case FIVE:
+                points = 5;
+                break;
+            case ONE_PER_QUILL:
+                points = playerBoard.getPlayerItems().get(Items.QUILL);
+                break;
+            case ONE_PER_INKWELL:
+                points = playerBoard.getPlayerItems().get(Items.INKWELL);
+                break;
+            case ONE_PER_MANUSCRIPT:
+                points = playerBoard.getPlayerItems().get(Items.MANUSCRIPT);
+                break;
+            case TWO_PER_COVERED_CORNER:
+                points = 2 * playerBoard.adjacentCards(coords).keySet().size();
+                break;
+            default:
+                break;
         }
 
-        return false;
+        model.getScoreTrack().updatePlayerScore(player, points);
+
+        return true;
     }
 
     /**

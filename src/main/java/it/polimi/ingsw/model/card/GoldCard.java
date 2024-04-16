@@ -24,11 +24,6 @@ public class GoldCard extends PlayableCard {
     private final Resources type;
 
     /**
-     * This attribute represents the amount of points given to the player when he plays the front of this card.
-     */
-    private final GoldCardPoints points;
-
-    /**
      * This map represents the number of required resources of each type to play this card.
      */
     private final Map<Resources, Integer> requiredResources;
@@ -42,10 +37,9 @@ public class GoldCard extends PlayableCard {
      * @param frontCorners      corners of the front of the card.
      * @param backCorners       corners of the back of the card.
      */
-    public GoldCard(int id, Resources type, GoldCardPoints points, Map<Resources, Integer> requiredResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
-        super(id, frontCorners, backCorners);
+    public GoldCard(int id, Resources type, PointsType points, Map<Resources, Integer> requiredResources, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners) {
+        super(id, frontCorners, backCorners, points);
         this.type = type;
-        this.points = points;
         this.requiredResources = requiredResources;
     }
 
@@ -58,11 +52,6 @@ public class GoldCard extends PlayableCard {
     @Override
     public Optional<Resources> getType() {
         return Optional.of(type);
-    }
-
-
-    public GoldCardPoints getPoints() {
-        return points;
     }
 
     public Map<Resources, Integer> getRequiredResources() {

@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
+import it.polimi.ingsw.model.corner.CornerTypes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class PlayerBoard {
      * @param coords coordinates of card
      * @return A map containing non-null adjacent cards
      */
-    private Map<CornerPosition, PlayableCard> adjacentCards(Coords coords) {
+    public Map<CornerPosition, PlayableCard> adjacentCards(Coords coords) {
         return adjacentCoords(coords)
                 .entrySet()
                 .stream()
@@ -79,7 +80,7 @@ public class PlayerBoard {
      * @param coords coordinates of card
      * @return A map containing non-null adjacent corners
      */
-    private Map<CornerPosition, Corner> adjacentCorners(Coords coords) {
+    public Map<CornerPosition, Corner> adjacentCorners(Coords coords) {
         return adjacentCoords(coords)
                 .entrySet()
                 .stream()
@@ -94,7 +95,7 @@ public class PlayerBoard {
      * @param coords coordinates of a point
      * @return A map containing the adjacent slots' coordinates
      */
-    static private Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
+    static public Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
         return new HashMap<CornerPosition, Coords>() {{
             put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y - 1));
             put(CornerPosition.TOP_RIGHT, new Coords(coords.x - 1, coords.y + 1));
@@ -140,6 +141,9 @@ public class PlayerBoard {
      */
     public Map<Elements, Integer> getPlayerItems() {
         return new HashMap<>(playerItems);
+    }
+
+    public void updatePlayerItems() {
     }
 
     /**
