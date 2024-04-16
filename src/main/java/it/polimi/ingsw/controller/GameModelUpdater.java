@@ -42,10 +42,9 @@ public class GameModelUpdater {
         // placeability is already checked, so no HIDDEN corners are present
         playerBoard.adjacentCorners(coords).values().stream().forEach(corner -> corner.setType(CornerTypes.COVERED));
 
-        playerBoard.updatePlayerItems();
+        playerBoard.updatePlayerItems(coords);
 
-
-        int points = 0;
+        int points;
         switch(card.getPointsType()) {
             case ONE:
                 points = 1;
@@ -69,6 +68,7 @@ public class GameModelUpdater {
                 points = 2 * playerBoard.adjacentCards(coords).keySet().size();
                 break;
             default:
+                points = 0;
                 break;
         }
 

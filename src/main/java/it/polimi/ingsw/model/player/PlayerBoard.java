@@ -36,19 +36,23 @@ public class PlayerBoard {
      * @param starterCard starter card of the player's board
      */
     PlayerBoard(StarterCard starterCard) {
-        this.playerItems = new HashMap<Elements, Integer>() {{
-            put(Resources.PLANT, 0);
-            put(Resources.ANIMAL, 0);
-            put(Resources.FUNGI, 0);
-            put(Resources.INSECT, 0);
-            put(Items.INKWELL, 0);
-            put(Items.QUILL, 0);
-            put(Items.MANUSCRIPT, 0);
+        this.playerItems = new HashMap<Elements, Integer>() {
+            {
+                put(Resources.PLANT, 0);
+                put(Resources.ANIMAL, 0);
+                put(Resources.FUNGI, 0);
+                put(Resources.INSECT, 0);
+                put(Items.INKWELL, 0);
+                put(Items.QUILL, 0);
+                put(Items.MANUSCRIPT, 0);
 
-        }};
-        this.board = new HashMap<Coords, PlayableCard>() {{
-            put(STARTER_CARD_COORDINATES, starterCard);
-        }};
+            }
+        };
+        this.board = new HashMap<Coords, PlayableCard>() {
+            {
+                put(STARTER_CARD_COORDINATES, starterCard);
+            }
+        };
     }
 
     /**
@@ -72,8 +76,7 @@ public class PlayerBoard {
                 .filter(entry -> getCard(entry.getValue()) != null)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> getCard(entry.getValue())
-                ));
+                        entry -> getCard(entry.getValue())));
     }
 
     /**
@@ -87,8 +90,7 @@ public class PlayerBoard {
                 .filter(entry -> getCard(entry.getValue()) != null)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> getCard(entry.getValue()).getActiveCorners().get(entry.getKey())
-                ));
+                        entry -> getCard(entry.getValue()).getActiveCorners().get(entry.getKey())));
     }
 
     /**
@@ -96,12 +98,14 @@ public class PlayerBoard {
      * @return A map containing the adjacent slots' coordinates
      */
     static public Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
-        return new HashMap<CornerPosition, Coords>() {{
-            put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y - 1));
-            put(CornerPosition.TOP_RIGHT, new Coords(coords.x - 1, coords.y + 1));
-            put(CornerPosition.BOTTOM_RIGHT, new Coords(coords.x + 1, coords.y + 1));
-            put(CornerPosition.BOTTOM_LEFT, new Coords(coords.x + 1, coords.y - 1));
-        }};
+        return new HashMap<CornerPosition, Coords>() {
+            {
+                put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y - 1));
+                put(CornerPosition.TOP_RIGHT, new Coords(coords.x - 1, coords.y + 1));
+                put(CornerPosition.BOTTOM_RIGHT, new Coords(coords.x + 1, coords.y + 1));
+                put(CornerPosition.BOTTOM_LEFT, new Coords(coords.x + 1, coords.y - 1));
+            }
+        };
     }
 
     /**
@@ -109,7 +113,8 @@ public class PlayerBoard {
      * @return True if a card can be placed, false otherwise
      */
     public boolean canPlaceCardAt(Coords coords, PlayableCard card) {
-        // TODO maybe delete adjacentCards and adjacentCorners and put all the code in this function
+        // TODO maybe delete adjacentCards and adjacentCorners and put all the code in
+        // this function
         return !adjacentCards(coords).isEmpty() && card.enoughResources(playerItems) &&
                 adjacentCorners(coords).values().stream().allMatch(Corner::canPlaceCardAbove);
     }
@@ -137,13 +142,41 @@ public class PlayerBoard {
     }
 
     /**
-     * @return returns a copy of the visible items
+     * @return returns the player's visible items map
      */
     public Map<Elements, Integer> getPlayerItems() {
-        return new HashMap<>(playerItems);
+        return playerItems;
     }
 
-    public void updatePlayerItems() {
+    /**
+     * Updates playerItems after placing the card at coords.
+     * Must be called after successfully placing a card.
+     * 
+     * @param coords coordinates of the placed card
+     */
+    public void updatePlayerItems(Coords coords) {
+        // Remove covered items
+        adjacentCorners(coords).values().stream()
+                .map(Corner::getItem)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(item -> {
+                    playerItems.put(item, playerItems.get(item) - 1);
+                });
+
+        // Add card type resource
+        PlayableCard placedCard = this.getCard(coords);
+        Resources cardResource = placedCard.getType().get();
+        playerItems.put(cardResource, playerItems.get(cardResource) + 1);
+
+        // Add corner items
+        placedCard.getActiveCorners().values().stream()
+            .map(Corner::getItem)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(item -> {
+                playerItems.put(item, playerItems.get(item) + 1);
+            });
     }
 
     /**
@@ -153,4 +186,3 @@ public class PlayerBoard {
         return new HashMap<>(board);
     }
 }
-
