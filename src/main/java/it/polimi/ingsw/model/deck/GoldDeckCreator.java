@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.deck;
 
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.model.card.GoldCard;
+import it.polimi.ingsw.model.card.PointsType;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.corner.*;
 import com.google.gson.*;
@@ -44,7 +45,7 @@ public class GoldDeckCreator implements DeckCreator {
 
                 // points type parsing
                 String pointsType = jsonObject.get("pointsType").getAsString();
-                GoldCardPoints goldCardPoint = GoldCardPoints.valueOf(pointsType.toUpperCase());
+                PointsType goldCardPoint = PointsType.valueOf(pointsType.toUpperCase());
 
                 // resource needed map parsing
                 JsonObject resourcesNeededObj = jsonObject.getAsJsonObject("resourcesNeeded");

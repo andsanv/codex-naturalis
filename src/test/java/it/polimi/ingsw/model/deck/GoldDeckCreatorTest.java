@@ -34,7 +34,7 @@ class GoldDeckCreatorTest {
                     case 2:
                         assertTrue(goldCard.getType().isPresent());
                         assertEquals(goldCard.getType().get(), Resources.FUNGI);
-                        assertEquals(goldCard.getPoints().name(), "ONE_PER_MANUSCRIPT");
+                        assertEquals(goldCard.getPointsType().name(), "ONE_PER_MANUSCRIPT");
 
                         assertTrue(goldCard.getRequiredResources().containsKey(Resources.FUNGI) &&
                                 goldCard.getRequiredResources().get(Resources.FUNGI).equals(2));
@@ -55,7 +55,7 @@ class GoldDeckCreatorTest {
                     case 34:
                         assertTrue(goldCard.getType().isPresent());
                         assertEquals(goldCard.getType().get(), Resources.INSECT);
-                        assertEquals(goldCard.getPoints().name(), "TWO_PER_COVERED_CORNER");
+                        assertEquals(goldCard.getPointsType().name(), "TWO_PER_COVERED_CORNER");
 
                         assertTrue(goldCard.getRequiredResources().containsKey(Resources.INSECT) &&
                                 goldCard.getRequiredResources().get(Resources.INSECT).equals(3));

@@ -85,7 +85,7 @@ public class ResourceDeckCreator implements DeckCreator {
 
                 // points amount parsing
                 int points = jsonObject.get("pointsAmount").getAsInt();
-                ResourceCardPoints resourceCardPoints = points == 0 ? ResourceCardPoints.ZERO : ResourceCardPoints.ONE;
+                PointsType resourceCardPoints = points == 0 ? PointsType.ZERO : PointsType.ONE;
 
                 cards.add(new ResourceCard(id, resourceType, resourceCardPoints, frontCorners, backCorner));
             }

@@ -46,7 +46,7 @@ class GoldCardTest {
         when(mockRequiredResources.get(Resources.FUNGI)).thenReturn(1);
         when(mockRequiredResources.get(Resources.INSECT)).thenReturn(3);
 
-        card = new GoldCard(1, Resources.ANIMAL, GoldCardPoints.ONE, mockRequiredResources, mockFrontCorners, mockBackCorners);
+        card = new GoldCard(1, Resources.ANIMAL, PointsType.ONE, mockRequiredResources, mockFrontCorners, mockBackCorners);
     }
 
     @Test

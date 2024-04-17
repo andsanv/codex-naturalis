@@ -37,7 +37,7 @@ class ResourceDeckCreatorTest {
                     case 5:
                         assertTrue(resourceCard.getType().isPresent());
                         assertEquals(resourceCard.getType().get(), Resources.FUNGI);
-                        assertEquals(resourceCard.getPoints().name(), "ZERO");
+                        assertEquals(resourceCard.getPointsType().name(), "ZERO");
 
                         assertTrue(resourceCard.getFrontCorners().get(CornerPosition.TOP_LEFT).equals(new Corner(Items.INKWELL, CornerTypes.VISIBLE)));
                         assertTrue(resourceCard.getFrontCorners().get(CornerPosition.TOP_RIGHT).equals(new Corner(Resources.FUNGI, CornerTypes.VISIBLE)));
@@ -54,7 +54,7 @@ class ResourceDeckCreatorTest {
                     case 38:
                         assertTrue(resourceCard.getType().isPresent());
                         assertEquals(resourceCard.getType().get(), Resources.INSECT);
-                        assertEquals(resourceCard.getPoints().name(), "ONE");
+                        assertEquals(resourceCard.getPointsType().name(), "ONE");
 
                         assertTrue(resourceCard.getFrontCorners().get(CornerPosition.TOP_LEFT).equals(new Corner(null, CornerTypes.VISIBLE)));
                         assertTrue(resourceCard.getFrontCorners().get(CornerPosition.TOP_RIGHT).equals(new Corner(null, CornerTypes.VISIBLE)));

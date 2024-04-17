@@ -32,7 +32,7 @@ class PlayableCardTest {
         mockFrontCorners = mock(HashMap.class);
         mockBackCorners = mock(HashMap.class);
 
-        card = new GoldCard(1, Resources.ANIMAL, GoldCardPoints.ONE, mockRequiredResources, mockFrontCorners, mockBackCorners);
+        card = new GoldCard(1, Resources.ANIMAL, PointsType.ONE, mockRequiredResources, mockFrontCorners, mockBackCorners);
     }
 
     @Test
