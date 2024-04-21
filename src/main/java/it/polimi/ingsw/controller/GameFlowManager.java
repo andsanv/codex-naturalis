@@ -7,13 +7,9 @@ import it.polimi.ingsw.controller.states.SetupState;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
-import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
-import jdk.javadoc.internal.tool.Start;
-import sun.tools.jstat.Token;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 //TODO: implement waiting room state in other controller (discuss)
