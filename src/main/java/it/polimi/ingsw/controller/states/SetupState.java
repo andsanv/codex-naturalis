@@ -2,8 +2,8 @@ package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 
-public class RefillCardsState extends GameState {
-    public RefillCardsState(GameFlowManager gameFlowManager) {
+public class SetupState extends GameState {
+    public SetupState(GameFlowManager gameFlowManager) {
         super(gameFlowManager);
     }
 

@@ -4,11 +4,12 @@ import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.player.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
- * TODO: add javadoc
+ * TODO
  */
 public class GameModel {
     public final Map<PlayerToken, Player> tokenToPlayer;
@@ -26,13 +27,24 @@ public class GameModel {
 
     private ScoreTrack scoreTrack;
 
-     private final List<PlayerToken> playersOrder;
-     private PlayerToken currentPlayer;
+    /**
+     * After creating the GameModel, a TODO must be called.
+     */
+    public GameModel() {
+        objectiveCardsDeck = ObjectiveDeckCreator.createDeck();
+        starterCardsDeck = StarterDeckCreator.createDeck();
+        resourceCardsDeck = ResourceDeckCreator.createDeck();
+        goldCardsDeck = GoldDeckCreator.createDeck();
 
-    GameModel() {
-        // TODO
-        tokenToPlayer = null;
-         playersOrder = null;
+        visibleGoldCards = new ArrayList<>();
+        visibleGoldCards.add(goldCardsDeck.draw().get());
+        visibleGoldCards.add(goldCardsDeck.draw().get());
+
+        visibleResourceCards = new ArrayList<>();
+        visibleResourceCards.add(resourceCardsDeck.draw().get());
+        visibleResourceCards.add(resourceCardsDeck.draw().get());
+
+        tokenToPlayer = new HashMap<>();
     }
 
     /**
@@ -77,4 +89,7 @@ public class GameModel {
         return scoreTrack;
     }
 
+    public Deck<StarterCard> getStarterCardsDeck() {
+        return starterCardsDeck;
+    };
 }

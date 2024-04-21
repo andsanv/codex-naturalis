@@ -15,11 +15,10 @@ public class PlayerHand {
     private List<PlayableCard> cards;
 
     /**
-     * Default constructor.
-     * @param cards list of cards in player's hand.
+     * Empty player hand.
      */
-    public PlayerHand(List<PlayableCard> cards) {
-        this.cards = cards;
+    public PlayerHand() {
+        this.cards = new ArrayList<>();
     }
 
     /**

@@ -6,5 +6,7 @@ import java.io.IOException;
 
 public interface DeckCreator {
 
-    public Deck<? extends Card> createDeck() throws IOException;
+    public static Deck<? extends Card> createDeck() throws IOException {
+        return null;
+    }
 }

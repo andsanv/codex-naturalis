@@ -39,6 +39,18 @@ public abstract class PlayableCard extends Card {
     public final PointsType pointsType;
 
     /**
+     * TODO: description
+     * @param frontCorners corners of the front of the card.
+     * @param backCorners corners of the back of the card.
+     */
+    PlayableCard(int id, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners, PointsType pointsType) {
+        super(id);
+        this.frontCorners = frontCorners;
+        this.backCorners = backCorners;
+        this.pointsType = pointsType;
+    }
+
+    /**
      * @param playerResources resources owned by the player
      * @return True if there are enough resources to play the card, false otherwise
      */
@@ -49,18 +61,6 @@ public abstract class PlayableCard extends Card {
     public void playSide(CardSide playedSide) {
         this.playedSide = playedSide;
         this.activeCorners = new HashMap<>(playedSide == CardSide.FRONT ? frontCorners : backCorners);
-    }
-
-    /**
-     * TODO: description
-     * @param frontCorners corners of the front of the card.
-     * @param backCorners corners of the back of the card.
-     */
-    PlayableCard(int id, Map<CornerPosition, Corner> frontCorners, Map<CornerPosition, Corner> backCorners, PointsType pointsType) {
-        super(id);
-        this.frontCorners = frontCorners;
-        this.backCorners = backCorners;
-        this.pointsType = pointsType;
     }
 
     /**

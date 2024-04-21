@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
-import it.polimi.ingsw.model.corner.CornerTypes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -180,9 +179,9 @@ public class PlayerBoard {
     }
 
     /**
-     * @return returns a copy of the board
+     * @return returns the board
      */
-    public HashMap<Coords, PlayableCard> getBoard() {
-        return new HashMap<>(board);
+    public Map<Coords, PlayableCard> getBoard() {
+        return board;
     }
 }
