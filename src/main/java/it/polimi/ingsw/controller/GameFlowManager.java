@@ -65,8 +65,9 @@ public class GameFlowManager {
             tokenToObjectiveCard.put(playerToken, chosen);
         }
 
-        for(PlayerToken playerToken: IdToToken.values())
-            gameModelUpdater.addPlayer(playerToken, tokenToStarterCard.get(playerToken), tokenToObjectiveCard.get(playerToken));
+        // TODO missing player side in addPlayer(...)
+        // for(PlayerToken playerToken: IdToToken.values())
+        //     gameModelUpdater.addPlayer(playerToken, tokenToStarterCard.get(playerToken), tokenToObjectiveCard.get(playerToken));
     }
 
     public void dummy() {
