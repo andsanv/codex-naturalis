@@ -20,8 +20,7 @@ class ResourceDeckCreatorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        ResourceDeckCreator resourceDeckCreator = new ResourceDeckCreator();
-        deck = resourceDeckCreator.createDeck();
+        deck = ResourceDeckCreator.createDeck();
     }
 
     @Test

@@ -19,8 +19,7 @@ class StarterDeckCreatorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        StarterDeckCreator starterDeckCreator = new StarterDeckCreator();
-        deck = starterDeckCreator.createDeck();
+        deck = StarterDeckCreator.createDeck();
     }
 
     @Test

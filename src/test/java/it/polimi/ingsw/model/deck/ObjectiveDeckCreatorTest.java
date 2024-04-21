@@ -23,8 +23,7 @@ class ObjectiveDeckCreatorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        ObjectiveDeckCreator objectiveDeckCreator = new ObjectiveDeckCreator();
-        deck = objectiveDeckCreator.createDeck();
+        deck = ObjectiveDeckCreator.createDeck();
     }
 
     @Test

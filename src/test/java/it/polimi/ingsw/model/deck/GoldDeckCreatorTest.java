@@ -18,8 +18,7 @@ class GoldDeckCreatorTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        GoldDeckCreator goldDeckCreator = new GoldDeckCreator();
-        deck = goldDeckCreator.createDeck();
+        deck = GoldDeckCreator.createDeck();
     }
 
     @Test
