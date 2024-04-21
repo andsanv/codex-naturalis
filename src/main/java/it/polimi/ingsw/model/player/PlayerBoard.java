@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
+import it.polimi.ingsw.model.corner.CornerTypes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class PlayerBoard {
     private Map<Elements, Integer> playerItems;
 
     /**
-     * @param starterCard starter card of the player's board
+     * @param starterCard     starter card of the player's board
      * @param starterCardSide side of the starter card to play
      */
     public PlayerBoard(StarterCard starterCard, CardSide starterCardSide) {
@@ -48,12 +49,23 @@ public class PlayerBoard {
 
             }
         };
+
         starterCard.playSide(starterCardSide);
+
         this.board = new HashMap<Coords, PlayableCard>() {
             {
                 put(STARTER_CARD_COORDINATES, starterCard);
             }
         };
+
+        for (Resources resource : starterCard.centralResources)
+            playerItems.put(resource, playerItems.get(resource) + 1);
+
+        for (Corner corner : starterCard.getActiveCorners().values())
+            if (corner.getType() == CornerTypes.VISIBLE && corner.getItem().isPresent()) {
+                Elements e = corner.getItem().get();
+                playerItems.put(e, playerItems.get(e) + 1);
+            }
     }
 
     /**
@@ -172,12 +184,12 @@ public class PlayerBoard {
 
         // Add corner items
         placedCard.getActiveCorners().values().stream()
-            .map(Corner::getItem)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(item -> {
-                playerItems.put(item, playerItems.get(item) + 1);
-            });
+                .map(Corner::getItem)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(item -> {
+                    playerItems.put(item, playerItems.get(item) + 1);
+                });
     }
 
     /**
