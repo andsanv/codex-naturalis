@@ -4,9 +4,14 @@ import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.player.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * TODO
+ * This class contains the state of the game items.
+ * There are no informations about players' turns and connections/disconnections, as they are handled in the controller package.
  */
 public class GameModel {
     public final Map<PlayerToken, Player> tokenToPlayer;
