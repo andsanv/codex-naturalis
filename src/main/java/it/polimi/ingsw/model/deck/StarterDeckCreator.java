@@ -86,10 +86,6 @@ public class StarterDeckCreator implements DeckCreator {
                     Map<CornerPosition, Corner> backCornerItems = new HashMap<>();
 
                     for (Map.Entry<String, String> entry : backCornerItemsString.entrySet()) {
-                        List<String> resourceString = Arrays.stream(Resources.values())
-                                .map(Enum::name)
-                                .collect(Collectors.toList());
-
                         Corner corner = null;
 
                         // corner can only be visible with resource
