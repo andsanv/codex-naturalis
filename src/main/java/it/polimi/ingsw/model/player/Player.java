@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.player;
 
+import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
 
@@ -25,11 +26,11 @@ public class Player {
     /**
      * Constructor of a Player.
      */
-    public Player(StarterCard starterCard, ObjectiveCard secretObjective) {
+    public Player(StarterCard starterCard, CardSide starterCardSide, ObjectiveCard secretObjective) {
         // TODO to initialize a player secretObjective and board the starterCardsDeck and  objective cardsDeck must be first initialized
         this.hand = new PlayerHand();
         this.secretObjective = secretObjective;
-        this.playerBoard = new PlayerBoard(starterCard);
+        this.playerBoard = new PlayerBoard(starterCard, starterCardSide);
     }
 
     /**

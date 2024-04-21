@@ -169,8 +169,8 @@ public class GameModelUpdater {
         return model.getScoreTrack().isGameFinished();
     }
 
-    public void addPlayer(PlayerToken token, StarterCard starterCard, ObjectiveCard objectiveCard) {
-        model.tokenToPlayer.put(token, new Player(starterCard, objectiveCard));
+    public void addPlayer(PlayerToken token, StarterCard starterCard, CardSide starterCardSide, ObjectiveCard objectiveCard) {
+        model.tokenToPlayer.put(token, new Player(starterCard, starterCardSide, objectiveCard));
     }
 
     /**

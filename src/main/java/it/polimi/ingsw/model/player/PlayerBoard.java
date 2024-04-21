@@ -33,8 +33,9 @@ public class PlayerBoard {
 
     /**
      * @param starterCard starter card of the player's board
+     * @param starterCardSide side of the starter card to play
      */
-    PlayerBoard(StarterCard starterCard) {
+    public PlayerBoard(StarterCard starterCard, CardSide starterCardSide) {
         this.playerItems = new HashMap<Elements, Integer>() {
             {
                 put(Resources.PLANT, 0);
@@ -47,6 +48,7 @@ public class PlayerBoard {
 
             }
         };
+        starterCard.playSide(starterCardSide);
         this.board = new HashMap<Coords, PlayableCard>() {
             {
                 put(STARTER_CARD_COORDINATES, starterCard);
