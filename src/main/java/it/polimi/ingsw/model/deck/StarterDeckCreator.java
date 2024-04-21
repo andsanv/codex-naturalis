@@ -3,8 +3,6 @@ package it.polimi.ingsw.model.deck;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.model.card.StarterCard;
 import com.google.gson.*;
-import it.polimi.ingsw.model.card.*;
-import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.*;
 

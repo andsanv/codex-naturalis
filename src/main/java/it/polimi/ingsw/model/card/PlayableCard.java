@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

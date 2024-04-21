@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.ResourceCard;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;

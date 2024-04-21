@@ -9,8 +9,6 @@ import it.polimi.ingsw.model.player.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Handles updates of the model

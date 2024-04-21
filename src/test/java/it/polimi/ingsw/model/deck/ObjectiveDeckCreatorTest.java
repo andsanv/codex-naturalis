@@ -1,15 +1,11 @@
 package it.polimi.ingsw.model.deck;
 
 import it.polimi.ingsw.model.card.ObjectiveCard;
-import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.card.objective.ItemsObjectiveStrategy;
 import it.polimi.ingsw.model.card.objective.PatternObjectiveStrategy;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
-import it.polimi.ingsw.model.corner.Corner;
-import it.polimi.ingsw.model.corner.CornerPosition;
-import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.player.Coords;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

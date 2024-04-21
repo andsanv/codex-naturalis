@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.card.ObjectiveCard;
-import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.card.StarterCard;
 
 /**

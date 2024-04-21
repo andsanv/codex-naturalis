@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.model.card.ResourceCard;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
