@@ -90,23 +90,60 @@ public class PatternObjectiveStrategyTest {
         assertEquals(1*objective.getPoints(), objective.computePoints(board));
     }
 
-    // TODO doesnt work
-    // @Test
-    // void testGetCompletedOccurrencesL() {
-    //     ObjectiveCard objective = findCard(objectiveDeck, 4);
+    @Test
+    void testGetCompletedOccurrencesL() {
+        ObjectiveCard objective = findCard(objectiveDeck, 4);
 
-    //     PlayerBoard board = new PlayerBoard(findCard(starterDeck, 0), CardSide.FRONT);
-    //     assertEquals(0, objective.computePoints(board));
+        PlayerBoard board = new PlayerBoard(findCard(starterDeck, 0), CardSide.FRONT);
+        assertEquals(0, objective.computePoints(board));
 
-    //     playCard(board, findCard(resourceDeck, 0), CardSide.FRONT, new Coords(-1, 1));
-    //     assertEquals(0, objective.computePoints(board));
+        playCard(board, findCard(resourceDeck, 0), CardSide.FRONT, new Coords(-1, 1));
+        assertEquals(0, objective.computePoints(board));
 
-    //     playCard(board, findCard(resourceDeck, 1), CardSide.FRONT, new Coords(-1, -1));
-    //     assertEquals(0, objective.computePoints(board));
+        playCard(board, findCard(resourceDeck, 1), CardSide.FRONT, new Coords(-1, -1));
+        assertEquals(0, objective.computePoints(board));
 
-    //     playCard(board, findCard(resourceDeck, 10), CardSide.FRONT, new Coords(0, -1));
-    //     assertEquals(1*objective.getPoints(), objective.computePoints(board));
-    // }
+        playCard(board, findCard(resourceDeck, 10), CardSide.FRONT, new Coords(0, -2));
+        assertEquals(1*objective.getPoints(), objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 2), CardSide.FRONT, new Coords(-1, -3));
+        assertEquals(1*objective.getPoints(), objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 10), CardSide.FRONT, new Coords(0, -4));
+        assertEquals(1*objective.getPoints(), objective.computePoints(board));
+    }
+
+    @Test
+    void testGetCompletedOccurrencesLRev() {
+        ObjectiveCard objective = findCard(objectiveDeck, 7);
+
+        PlayerBoard board = new PlayerBoard(findCard(starterDeck, 0), CardSide.FRONT);
+        assertEquals(0, objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 30), CardSide.FRONT, new Coords(0, -2));
+        assertEquals(0, objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 20), CardSide.FRONT, new Coords(-1, -1));
+        assertEquals(0, objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 31), CardSide.FRONT, new Coords(0, -4));
+        assertEquals(1*objective.getPoints(), objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 32), CardSide.FRONT, new Coords(2, 0));
+        assertEquals(1*objective.getPoints(), objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 22), CardSide.FRONT, new Coords(1, 1));
+        assertEquals(1*objective.getPoints(), objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 33), CardSide.FRONT, new Coords(2, -2));
+        assertEquals(2*objective.getPoints(), objective.computePoints(board));
+    
+        playCard(board, findCard(resourceDeck, 22), CardSide.FRONT, new Coords(-1, -3));
+        assertEquals(2*objective.getPoints(), objective.computePoints(board));
+
+        playCard(board, findCard(resourceDeck, 34), CardSide.FRONT, new Coords(0, -6));
+        assertEquals(2*objective.getPoints(), objective.computePoints(board));
+    }
 
     <T extends Card> List<T> deckToList(Deck<T> deck) {
         List<T> list = new ArrayList<>();
