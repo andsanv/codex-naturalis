@@ -1,79 +1,54 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.states.DrawCardState;
-import it.polimi.ingsw.controller.states.GameState;
+import it.polimi.ingsw.controller.states.*;
 import it.polimi.ingsw.controller.states.PlayCardState;
 import it.polimi.ingsw.controller.states.SetupState;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.card.ObjectiveCard;
-import it.polimi.ingsw.model.card.StarterCard;
+import it.polimi.ingsw.model.card.*;
+import it.polimi.ingsw.model.player.PlayerHand;
 import it.polimi.ingsw.model.player.PlayerToken;
 
+import java.sql.Array;
 import java.util.*;
 
 
 //TODO: implement waiting room state in other controller (discuss)
 
 public class GameFlowManager {
-    private GameState setupState;
-    private GameState playCardState;
-    private GameState drawCardState;
-    private GameState updateScoretrackState;
+    public GameState setupState;
+    public GameState playCardState;
+    public GameState drawCardState;
+    public GameState postGameState;
 
-    private GameState currentState;
+    public GameState currentState;
 
-    private GameModelUpdater gameModelUpdater;
+    public GameModelUpdater gameModelUpdater;
 
-    private ArrayList<String> playersIds;
-    private Map<String, PlayerToken> IdToToken;
+    public List<String> playersIds;
+    public Map<String, PlayerToken> IdToToken;
 
-    public GameFlowManager() {
+    public Integer turn = 0;
+    public Integer round = 0;
+    public Boolean isLastRound = false;
+
+    public GameFlowManager(ArrayList<String> playersIds) {
+        this.playersIds = playersIds;
+        this.IdToToken = new HashMap<String, PlayerToken>();
+        this.gameModelUpdater = new GameModelUpdater(new GameModel());
+
         this.playCardState = new PlayCardState(this);
         this.drawCardState = new DrawCardState(this);
         this.setupState = new SetupState(this);
-        this.updateScoretrackState = new PlayCardState.UpdateScoretrackState(this);
+        this.postGameState = new PostGameState(this);
 
         this.currentState = this.setupState;
+        currentState.setup();
     }
 
-    public void setup() {
-        Collections.shuffle(playersIds);
-
-        // players choose their token
-        playersIds.forEach(playerId -> {
-            //TODO PLAYER CHOOSES TOKEN
-            PlayerToken chosen = null;
-            IdToToken.put(playerId, chosen);
-        });
-
-        this.gameModelUpdater = new GameModelUpdater(new GameModel());
-
-        // players choose their starter card
-        Map<PlayerToken, StarterCard> tokenToStarterCard = new HashMap<>();
-
-        IdToToken.values().forEach(token -> {
-            tokenToStarterCard.put(token, gameModelUpdater.drawStarterCard().get());
-        });
-
-        // players choose their objective card
-        Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard = new HashMap<>();
-        for(PlayerToken playerToken : IdToToken.values()) {
-            ObjectiveCard firstObjectiveCard = gameModelUpdater.drawObjectiveCard().get();
-            ObjectiveCard secondObjectiveCard = gameModelUpdater.drawObjectiveCard().get();
-
-            ObjectiveCard chosen = null; //player chooses
-            tokenToObjectiveCard.put(playerToken, chosen);
-        }
-
-        // TODO missing player side in addPlayer(...)
-        // for(PlayerToken playerToken: IdToToken.values())
-        //     gameModelUpdater.addPlayer(playerToken, tokenToStarterCard.get(playerToken), tokenToObjectiveCard.get(playerToken));
+    public void setState(GameState nextState) {
+        currentState = nextState;
     }
-
-    public void dummy() {
-        currentState.dummy();
-    }
-
 
 }
 

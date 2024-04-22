@@ -94,4 +94,13 @@ public class GameModel {
     public Deck<StarterCard> getStarterCardsDeck() {
         return starterCardsDeck;
     };
+
+    public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
+        this.commonObjectives = commonObjectives;
+    }
+
+    public List<ObjectiveCard> getCommonObjectives() {
+        return commonObjectives;
+    }
+
 }

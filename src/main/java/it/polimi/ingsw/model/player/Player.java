@@ -16,7 +16,7 @@ public class Player {
     /**
      * Attribute that represents the player's hand.
      */
-    private PlayerHand hand;
+    private PlayerHand playerHand;
 
     /**
      * Attribute that represents the player's secret objective.
@@ -28,7 +28,7 @@ public class Player {
      */
     public Player(StarterCard starterCard, CardSide starterCardSide, ObjectiveCard secretObjective) {
         // TODO to initialize a player secretObjective and board the starterCardsDeck and  objective cardsDeck must be first initialized
-        this.hand = new PlayerHand();
+        this.playerHand = new PlayerHand();
         this.secretObjective = secretObjective;
         this.playerBoard = new PlayerBoard(starterCard, starterCardSide);
     }
@@ -41,8 +41,11 @@ public class Player {
     /**
      * @return a copy of the player's hand.
      */
-    public PlayerHand getHand() { return hand; }
+    public PlayerHand getHand() { return playerHand; }
 
+    public void setPlayerHand(PlayerHand playerHand) {
+        this.playerHand = playerHand;
+    }
 
     /**
      * @param playerToken the token representing the player

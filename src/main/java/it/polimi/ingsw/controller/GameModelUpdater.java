@@ -191,5 +191,9 @@ public class GameModelUpdater {
         // TODO randomly choose players' order (maybe not needed)
     }
 
+    public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
+        model.setCommonObjectives(commonObjectives);
+    }
+
 
 }
