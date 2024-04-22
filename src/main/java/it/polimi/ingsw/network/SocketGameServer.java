@@ -6,7 +6,10 @@ import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.Player;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -20,9 +23,9 @@ public class SocketGameServer implements GameServer {
     private List<Socket> clientSockets;
     private Map<Player, Socket> playerSockets;
 
-    public SocketGameServer(int port) throws IOException {
+    public SocketGameServer(int port, List<Socket> clientSockets) throws IOException {
         serverSocket = new ServerSocket(port);
-        clientSockets = new ArrayList<>();
+        this.clientSockets = clientSockets;
         playerSockets = new HashMap<>();
 
         waitClients();
@@ -42,9 +45,32 @@ public class SocketGameServer implements GameServer {
         }).start();
     }
 
-    @Override
-    public void addPlayer(Player player) {
+    private void handleMessages(){
+        for(Socket client : clientSockets){
+            new Thread(() -> {
+                try {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+
+                    if (inputLine.equals("HEARTBEAT")) {
+                        out.println("ACK");
+                    } else {
+                        // Other types of messages
+                    }
+
+                    if (out.checkError()) {
+                        // Error in the client
+                        break;
+                    }
+            }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
     }
 
     @Override

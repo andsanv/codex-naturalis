@@ -11,7 +11,6 @@ import java.util.List;
 public interface GameServer {
 
     // Network functionalities
-    void addPlayer(Player player);
     void startGame();
 
     // Game functionalities

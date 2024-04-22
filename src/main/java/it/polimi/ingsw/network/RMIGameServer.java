@@ -9,10 +9,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public class RMIGameServer implements RMIGameServerInterface{
-    @Override
-    public void addPlayer(Player player) {
-
-    }
 
     @Override
     public void startGame() {

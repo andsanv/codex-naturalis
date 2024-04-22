@@ -10,9 +10,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface RMIGameServerInterface extends GameServer, Remote {
-    void addPlayer(Player player);
     void startGame();
-
     // Game functionalities
     @Override
     void placeCard(Player player, Coords coords, PlayableCard card, CardSide cardSide) throws RemoteException;
