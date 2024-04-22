@@ -66,7 +66,7 @@ public class GameFlowManager {
         }
 
         for(PlayerToken playerToken: IdToToken.values())
-            gameModelUpdater.addPlayer(playerToken, tokenToStarterCard.get(playerToken), tokenToObjectiveCard.get(playerToken));
+            ;//gameModelUpdater.addPlayer(playerToken, tokenToStarterCard.get(playerToken), tokenToObjectiveCard.get(playerToken));
     }
 
     public void dummy() {

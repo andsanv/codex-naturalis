@@ -117,6 +117,28 @@ class ObjectiveDeckCreatorTest {
 
                         break;
 
+                    case 15:
+                        assertEquals(objectiveCard.getPoints(), 2);
+
+                        requiredItems = new HashMap<>();
+                        requiredItems.put(Items.QUILL, 2);
+
+
+                        map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
+
+                        assertTrue(requiredItems
+                                .keySet()
+                                .containsAll(map.keySet())
+                        );
+
+                        assertTrue(map
+                                .keySet()
+                                .containsAll(requiredItems.keySet()));
+
+                        assertEquals(requiredItems.size(), map.size());
+
+                        break;
+
                 }
             }
         }
