@@ -58,8 +58,9 @@ public class PlayerBoard {
             }
         };
 
-        for (Resources resource : starterCard.centralResources)
-            playerItems.put(resource, playerItems.get(resource) + 1);
+        if(starterCard.getPlayedSide() == CardSide.BACK)
+            for (Resources resource : starterCard.centralResources)
+                playerItems.put(resource, playerItems.get(resource) + 1);
 
         for (Corner corner : starterCard.getActiveCorners().values())
             if (corner.getType() == CornerTypes.VISIBLE && corner.getItem().isPresent()) {
@@ -103,7 +104,7 @@ public class PlayerBoard {
                 .filter(entry -> getCard(entry.getValue()) != null)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> getCard(entry.getValue()).getActiveCorners().get(entry.getKey())));
+                        entry -> getCard(entry.getValue()).getActiveCorners().get(entry.getKey().getOpposite())));
     }
 
     /**
@@ -113,10 +114,10 @@ public class PlayerBoard {
     static public Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
         return new HashMap<CornerPosition, Coords>() {
             {
-                put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y - 1));
-                put(CornerPosition.TOP_RIGHT, new Coords(coords.x - 1, coords.y + 1));
-                put(CornerPosition.BOTTOM_RIGHT, new Coords(coords.x + 1, coords.y + 1));
-                put(CornerPosition.BOTTOM_LEFT, new Coords(coords.x + 1, coords.y - 1));
+                put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y + 1));
+                put(CornerPosition.TOP_RIGHT, new Coords(coords.x + 1, coords.y + 1));
+                put(CornerPosition.BOTTOM_RIGHT, new Coords(coords.x + 1, coords.y - 1));
+                put(CornerPosition.BOTTOM_LEFT, new Coords(coords.x - 1, coords.y - 1));
             }
         };
     }

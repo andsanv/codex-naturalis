@@ -3,6 +3,7 @@ package it.polimi.ingsw.network;
 import it.polimi.ingsw.model.player.Player;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RMIRoomServer implements RMIRoomServerInterface{
@@ -18,6 +19,10 @@ public class RMIRoomServer implements RMIRoomServerInterface{
 
     @Override
     public List<GameServer> getServers() throws RemoteException {
-        return List.of();
+        return new ArrayList<>();
+    }
+
+    public List<Player> getPlayers() {
+        return new ArrayList<>();
     }
 }

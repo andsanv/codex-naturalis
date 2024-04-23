@@ -125,6 +125,6 @@ public class SocketGameServer implements GameServer {
 
     @Override
     public List<Player> getPlayers() {
-        return List.of();
+        return new ArrayList<>();
     }
 }

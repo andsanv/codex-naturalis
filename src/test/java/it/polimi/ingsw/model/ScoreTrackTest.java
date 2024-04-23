@@ -5,45 +5,31 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import it.polimi.ingsw.model.player.PlayerToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import it.polimi.ingsw.model.player.Player;
 
-@ExtendWith(MockitoExtension.class)
 public class ScoreTrackTest {
     private ScoreTrack scoreTrack;
-    private List<Player> players;
-
-    @Mock
-    private Player player1;
-
-    @Mock
-    private Player player2;
+    private List<PlayerToken> playerTokens;
 
     @BeforeEach
     void init() {
-        player1 = Mockito.mock(Player.class);
-        player2 = Mockito.mock(Player.class);
-
-        players = new ArrayList<Player>();
-
-        players.add(player1);
-        players.add(player2);
+        playerTokens = new ArrayList<>(
+                Arrays.asList(PlayerToken.RED, PlayerToken.GREEN, PlayerToken.BLUE, PlayerToken.YELLOW)
+        );
         
-        scoreTrack = new ScoreTrack(players);
+        scoreTrack = new ScoreTrack(playerTokens);
     }
 
     @Test
     void testGetScore() {
-        for (Player player : players) {
-            assertEquals(0, scoreTrack.getScores().get(player).intValue());
+        for (PlayerToken playerToken : playerTokens) {
+            assertEquals(0, scoreTrack.getScores().get(playerToken).intValue());
         }
     }
 
@@ -52,27 +38,27 @@ public class ScoreTrackTest {
         int score1 = 10;
         int score2 = 3;
 
-        scoreTrack.updatePlayerScore(player1, score1);
-        assertEquals(score1, scoreTrack.getScores().get(player1));
+        scoreTrack.updatePlayerScore(PlayerToken.RED, score1);
+        assertEquals(score1, scoreTrack.getScores().get(PlayerToken.RED));
 
-        scoreTrack.updatePlayerScore(player2, score2);
-        assertEquals(score2, scoreTrack.getScores().get(player2));
+        scoreTrack.updatePlayerScore(PlayerToken.GREEN, score2);
+        assertEquals(score2, scoreTrack.getScores().get(PlayerToken.GREEN));
 
         int score1_increment = 3;
 
-        scoreTrack.updatePlayerScore(player1, score1_increment);
-        assertEquals(score1+score1_increment, scoreTrack.getScores().get(player1));
-        assertEquals(score2, scoreTrack.getScores().get(player2));
+        scoreTrack.updatePlayerScore(PlayerToken.RED, score1_increment);
+        assertEquals(score1+score1_increment, scoreTrack.getScores().get(PlayerToken.RED));
+        assertEquals(score2, scoreTrack.getScores().get(PlayerToken.GREEN));
     }
 
     @Test
     void testGameEnded() {
-        scoreTrack.updatePlayerScore(player1, 19);
-        scoreTrack.updatePlayerScore(player2, 5);
+        scoreTrack.updatePlayerScore(PlayerToken.RED, 19);
+        scoreTrack.updatePlayerScore(PlayerToken.GREEN, 5);
 
         assertFalse(scoreTrack.isGameFinished());
 
-        scoreTrack.updatePlayerScore(player1, 1);
+        scoreTrack.updatePlayerScore(PlayerToken.RED, 1);
 
         assertTrue(scoreTrack.isGameFinished());
     }

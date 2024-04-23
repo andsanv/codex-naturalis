@@ -47,6 +47,8 @@ public class GameModel {
         visibleResourceCards.add(resourceCardsDeck.draw().get());
 
         tokenToPlayer = new HashMap<>();
+
+        scoreTrack = null;
     }
 
     /**
@@ -103,4 +105,7 @@ public class GameModel {
         return commonObjectives;
     }
 
+    public void setScoreTrack(List<PlayerToken> playerTokens) {
+        this.scoreTrack = new ScoreTrack(playerTokens);
+    }
 }

@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.Player;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RMIGameServer implements RMIGameServerInterface{
@@ -62,6 +63,6 @@ public class RMIGameServer implements RMIGameServerInterface{
 
     @Override
     public List<Player> getPlayers() {
-        return List.of();
+        return new ArrayList<>();
     }
 }

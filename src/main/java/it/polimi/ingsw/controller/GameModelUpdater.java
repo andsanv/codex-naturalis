@@ -72,7 +72,7 @@ public class GameModelUpdater {
                 break;
         }
 
-        model.getScoreTrack().updatePlayerScore(player, points);
+        model.getScoreTrack().updatePlayerScore(playerToken, points);
 
         return true;
     }
@@ -84,6 +84,9 @@ public class GameModelUpdater {
     public boolean drawResourceDeckCard(PlayerToken playerToken) {
         Player player = model.tokenToPlayer.get(playerToken);
         PlayerHand playerHand = player.getHand();
+
+        if(playerHand.getCards().size() == 3)
+            return false;
 
         Optional<ResourceCard> card = model.getResourceCardsDeck().draw();
 
@@ -102,6 +105,9 @@ public class GameModelUpdater {
         Player player = model.tokenToPlayer.get(playerToken);
         PlayerHand playerHand = player.getHand();
 
+        if(playerHand.getCards().size() == 3)
+            return false;
+
         Optional<GoldCard> card = model.getGoldCardsDeck().draw();
 
         if (!card.isPresent())
@@ -119,18 +125,21 @@ public class GameModelUpdater {
     public boolean drawVisibleResourceCard(PlayerToken playerToken, int chosen) {
         Player player = model.tokenToPlayer.get(playerToken);
         PlayerHand playerHand = player.getHand();
-        List<ResourceCard> visibleResourceCard = model.getVisibleResourceCards();
 
-        ResourceCard card = model.getVisibleResourceCards().get(chosen);
+        if(playerHand.getCards().size() == 3)
+            return false;
+
+        List<ResourceCard> visibleResourceCards = model.getVisibleResourceCards();
+        ResourceCard card = visibleResourceCards.get(chosen);
 
         if (card == null)
             return false;
 
+        visibleResourceCards.remove(chosen);
         playerHand.addCard(card);
 
         Optional<ResourceCard> newCard = model.getResourceCardsDeck().draw();
-        newCard.ifPresent(resourceCard -> visibleResourceCard.add(chosen, resourceCard));
-
+        visibleResourceCards.add(chosen, newCard.orElse(null));
         return true;
     }
 
@@ -142,17 +151,21 @@ public class GameModelUpdater {
     public boolean drawVisibleGoldCard(PlayerToken playerToken, int chosen) {
         Player player = model.tokenToPlayer.get(playerToken);
         PlayerHand playerHand = player.getHand();
-        List<GoldCard> visibleGoldCards = model.getVisibleGoldCards();
 
+        if(playerHand.getCards().size() == 3)
+            return false;
+
+        List<GoldCard> visibleGoldCards = model.getVisibleGoldCards();
         GoldCard card = visibleGoldCards.get(chosen);
 
         if (card == null)
             return false;
 
+        visibleGoldCards.remove(chosen);
         playerHand.addCard(card);
 
         Optional<GoldCard> newCard = model.getGoldCardsDeck().draw();
-        newCard.ifPresent(goldCard -> visibleGoldCards.add(chosen, goldCard));
+        visibleGoldCards.add(chosen, newCard.orElse(null));
 
         return true;
     }
@@ -172,13 +185,19 @@ public class GameModelUpdater {
     public boolean someDecksEmpty() {
         return model.getResourceCardsDeck().isEmpty() || model.getGoldCardsDeck().isEmpty();
     }
-    public void addPlayer(PlayerToken token, StarterCard starterCard, CardSide starterCardSide, ObjectiveCard objectiveCard) {
+    public boolean addPlayer(PlayerToken token, StarterCard starterCard, CardSide starterCardSide, ObjectiveCard objectiveCard) {
+        if(model.tokenToPlayer.containsKey(token))
+            return false;
+
         model.tokenToPlayer.put(token, new Player(starterCard, starterCardSide, objectiveCard));
+        return true;
     }
 
     public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
         model.setCommonObjectives(commonObjectives);
     }
 
-
+    public void setScoreTrack(List<PlayerToken> playerTokens) {
+        model.setScoreTrack(playerTokens);
+    }
 }

@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SetupState extends GameState {
     public SetupState(GameFlowManager gameFlowManager) {
@@ -25,6 +26,8 @@ public class SetupState extends GameState {
             PlayerToken chosen = null;
             IdToToken.put(playerId, chosen);
         });
+
+        gameModelUpdater.setScoreTrack(new ArrayList<>(IdToToken.values()));
 
         // players choose their starter card
         Map<PlayerToken, StarterCard> tokenToStarterCard = new HashMap<>();
