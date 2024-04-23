@@ -12,9 +12,6 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import java.sql.Array;
 import java.util.*;
 
-
-//TODO: implement waiting room state in other controller (discuss)
-
 public class GameFlowManager {
     public GameState setupState;
     public GameState playCardState;

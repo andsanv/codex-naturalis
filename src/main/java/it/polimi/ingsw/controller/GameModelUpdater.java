@@ -24,7 +24,7 @@ public class GameModelUpdater {
      * Method that plays the given card at the given coordinates
      *
      * @param coords coords at which to play the card
-     * @param card   card to play
+     * @param card card to play
      * @return boolean based on whether the card was placed or not
      */
     public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
@@ -174,24 +174,6 @@ public class GameModelUpdater {
     }
     public void addPlayer(PlayerToken token, StarterCard starterCard, CardSide starterCardSide, ObjectiveCard objectiveCard) {
         model.tokenToPlayer.put(token, new Player(starterCard, starterCardSide, objectiveCard));
-    }
-
-    /**
-     * TODO PROBABLY GOES INTO GAMEFLOWMANAGER
-     * This function must be called after players decide how to play their starter
-     * card
-     *
-     * @param tokenToStarterCard a map from player tokens to their starter card
-     * @param cardsSidesPlayed ...
-     */
-    public void setPlayersMap(Map<PlayerToken, StarterCard> tokenToStarterCard,
-                              Map<StarterCard, CardSide> cardsSidesPlayed) {
-        // TODO this function must be called only once, after calling method
-        // getStarterCards()
-
-        // TODO create here players and tokenToPlayer map
-
-        // TODO randomly choose players' order (maybe not needed)
     }
 
     public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
