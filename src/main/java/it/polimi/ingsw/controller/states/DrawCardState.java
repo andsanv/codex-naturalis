@@ -8,36 +8,47 @@ public class DrawCardState extends GameState {
     }
 
     @Override
-    public void drawCard(String playerId, DrawChoices choice) {
+    public void drawResourceDeckCard(String playerId) {
         if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
-            switch(choice) {
-                case RESOURCE_DECK:
-                    gameModelUpdater.drawResourceDeckCard(IdToToken.get(playerId));
-                    break;
-                case RESOURCE_VISIBLE_FIRST:
-                    gameModelUpdater.drawVisibleResourceCard(IdToToken.get(playerId), 0);
-                    break;
-                case RESOURCE_VISIBLE_SECOND:
-                    gameModelUpdater.drawVisibleResourceCard(IdToToken.get(playerId), 1);
-                    break;
-                case GOLD_DECK:
-                    gameModelUpdater.drawGoldDeckCard(IdToToken.get(playerId));
-                    break;
-                case GOLD_VISIBLE_FIRST:
-                    gameModelUpdater.drawVisibleGoldCard(IdToToken.get(playerId), 0);
-                    break;
-                case GOLD_VISIBLE_SECOND:
-                    gameModelUpdater.drawVisibleGoldCard(IdToToken.get(playerId), 1);
-                    break;
-            }
+            gameModelUpdater.drawResourceDeckCard(IdToToken.get(playerId));
 
+        endTurn();
+    }
+
+    @Override
+    public void drawGoldDeckCard(String playerId) {
+        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
+            gameModelUpdater.drawGoldDeckCard(IdToToken.get(playerId));
+
+        endTurn();
+    }
+
+    @Override
+    public void drawVisibleResourceCard(String playerId, int choice) {
+        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
+            gameModelUpdater.drawVisibleResourceCard(IdToToken.get(playerId), choice);
+
+        endTurn();
+    }
+
+    @Override
+    public void drawVisibleGoldCard(String playerId, int choice) {
+        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
+            gameModelUpdater.drawVisibleGoldCard(IdToToken.get(playerId), choice);
+
+        endTurn();
+    }
+
+    private void endTurn() {
         if(gameFlowManager.turn % playerIds.size() == playerIds.size() - 1) {
             if(gameFlowManager.isLastRound) {
                 // stuff
                 gameFlowManager.setState(gameFlowManager.postGameState);
+                // gameFlowManager.currentState.handlePostGame();
+                return;
             }
             else {
-                if(gameModelUpdater.limitPointsReached()  /* TODO if decks empty */)
+                if(gameModelUpdater.limitPointsReached() || gameModelUpdater.someDecksEmpty())
                     gameFlowManager.isLastRound = true;
                 gameFlowManager.round += 1;
             }
@@ -45,5 +56,5 @@ public class DrawCardState extends GameState {
 
         gameFlowManager.turn += 1;
         gameFlowManager.setState(gameFlowManager.playCardState);
-    };
+    }
 }

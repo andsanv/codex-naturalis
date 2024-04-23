@@ -169,6 +169,9 @@ public class GameModelUpdater {
         return model.getScoreTrack().isGameFinished();
     }
 
+    public boolean someDecksEmpty() {
+        return model.getResourceCardsDeck().isEmpty() || model.getGoldCardsDeck().isEmpty();
+    }
     public void addPlayer(PlayerToken token, StarterCard starterCard, CardSide starterCardSide, ObjectiveCard objectiveCard) {
         model.tokenToPlayer.put(token, new Player(starterCard, starterCardSide, objectiveCard));
     }

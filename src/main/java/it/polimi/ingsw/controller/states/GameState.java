@@ -24,7 +24,6 @@ public abstract class GameState {
         this.IdToToken = gameFlowManager.IdToToken;
     }
 
-    public void dummy() {};
 
     public void setup() {}
 
@@ -32,7 +31,19 @@ public abstract class GameState {
         // TODO ERROR
     }
 
-    public void drawCard(String playerId, DrawChoices choice) {
+    public void drawResourceDeckCard(String playerId) {
+        // TODO ERROR
+    }
+
+    public void drawGoldDeckCard(String playerId) {
+        // TODO ERROR
+    }
+
+    public void drawVisibleResourceCard(String playerId, int choice) {
+        // TODO ERROR
+    }
+
+    public void drawVisibleGoldCard(String playerId, int choice) {
         // TODO ERROR
     }
 }
