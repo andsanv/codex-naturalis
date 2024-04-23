@@ -32,8 +32,8 @@ public class GameFlowManager {
     public Integer round = 0;
     public Boolean isLastRound = false;
 
-    public GameFlowManager(ArrayList<String> playersIds) {
-        this.playersIds = playersIds;
+    public GameFlowManager() {
+        // this.playersIds = playersIds;
         this.IdToToken = new HashMap<String, PlayerToken>();
         this.gameModelUpdater = new GameModelUpdater(new GameModel());
 

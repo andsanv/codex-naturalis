@@ -48,8 +48,7 @@ public class GoldCard extends PlayableCard {
 
     @Override
     public boolean enoughResources(Map<Elements, Integer> playerResources, CardSide side) {
-        return side == CardSide.FRONT ? Arrays.stream(Resources.values())
-                .allMatch(res -> playerResources.get(res) >= requiredResources.get(res)) : true;
+        return side == CardSide.BACK || requiredResources.entrySet().stream().allMatch(e -> playerResources.get(e.getKey()) >= e.getValue());
     }
 
     @Override
