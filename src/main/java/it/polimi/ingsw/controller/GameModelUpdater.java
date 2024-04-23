@@ -32,7 +32,7 @@ public class GameModelUpdater {
         PlayerBoard playerBoard = player.getBoard();
         PlayerHand playerHand = player.getHand();
 
-        if(!player.getBoard().canPlaceCardAt(coords, card))
+        if(!player.getBoard().canPlaceCardAt(coords, card, cardSide))
             return false;
         
         playerHand.removeCard(card);

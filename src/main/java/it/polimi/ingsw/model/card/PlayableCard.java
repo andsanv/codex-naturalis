@@ -53,7 +53,7 @@ public abstract class PlayableCard extends Card {
      * @param playerResources resources owned by the player
      * @return True if there are enough resources to play the card, false otherwise
      */
-    public boolean enoughResources(Map<Elements, Integer> playerResources) {
+    public boolean enoughResources(Map<Elements, Integer> playerResources, CardSide side) {
         return true;
     }
 
