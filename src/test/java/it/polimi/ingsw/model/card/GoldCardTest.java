@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,50 +13,43 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GoldCardTest {
-    @Mock
-    private Map<Elements, Integer> mockPlayerResources;
-
-    @Mock
-    private Map<Resources, Integer> mockRequiredResources;
-
-    @Mock
-    private Map<CornerPosition, Corner> mockFrontCorners;
-
-    @Mock
-    private Map<CornerPosition, Corner> mockBackCorners;
+    private Map<Elements, Integer> playerResources;
+    private Map<Resources, Integer> requiredResources;
+    private Map<CornerPosition, Corner> frontCorners;
+    private Map<CornerPosition, Corner> backCorners;
 
     private GoldCard card;
 
     @BeforeEach
     void init() {
-        mockPlayerResources = mock(HashMap.class);
-        mockRequiredResources = mock(HashMap.class);
+        playerResources = new HashMap<>();
+        requiredResources = new HashMap<>();
 
-        mockFrontCorners = mock(HashMap.class);
-        mockBackCorners = mock(HashMap.class);
+        frontCorners = new HashMap<>();
+        backCorners = new HashMap<>();
 
-        when(mockPlayerResources.get(Resources.ANIMAL)).thenReturn(1);
-        when(mockPlayerResources.get(Resources.PLANT)).thenReturn(2);
-        when(mockPlayerResources.get(Resources.FUNGI)).thenReturn(3);
-        when(mockPlayerResources.get(Resources.INSECT)).thenReturn(4);
+        playerResources.put(Resources.ANIMAL, 1);
+        playerResources.put(Resources.PLANT, 2);
+        playerResources.put(Resources.FUNGI, 3);
+        playerResources.put(Resources.INSECT, 4);
 
-        when(mockRequiredResources.get(Resources.ANIMAL)).thenReturn(5);
-        when(mockRequiredResources.get(Resources.PLANT)).thenReturn(7);
-        when(mockRequiredResources.get(Resources.FUNGI)).thenReturn(1);
-        when(mockRequiredResources.get(Resources.INSECT)).thenReturn(3);
+        requiredResources.put(Resources.ANIMAL, 5);
+        requiredResources.put(Resources.PLANT, 7);
+        requiredResources.put(Resources.FUNGI, 1);
+        requiredResources.put(Resources.INSECT, 3);
 
-        card = new GoldCard(1, Resources.ANIMAL, PointsType.ONE, mockRequiredResources, mockFrontCorners, mockBackCorners);
+        card = new GoldCard(1, Resources.ANIMAL, PointsType.ONE, requiredResources, frontCorners, backCorners);
     }
 
     @Test
     void enoughResourcesTest() {
-        assertFalse(card.enoughResources(mockPlayerResources));
+        assertFalse(card.enoughResources(playerResources, CardSide.FRONT));
 
-        when(mockPlayerResources.get(Resources.ANIMAL)).thenReturn(8);
-        when(mockPlayerResources.get(Resources.PLANT)).thenReturn(7);
-        when(mockPlayerResources.get(Resources.FUNGI)).thenReturn(8);
-        when(mockPlayerResources.get(Resources.INSECT)).thenReturn(3);
+        playerResources.put(Resources.ANIMAL, 8);
+        playerResources.put(Resources.PLANT, 7);
+        playerResources.put(Resources.FUNGI, 8);
+        playerResources.put(Resources.INSECT, 3);
 
-        assertTrue(card.enoughResources(mockPlayerResources));
+        assertTrue(card.enoughResources(playerResources, CardSide.FRONT));
     }
 }
