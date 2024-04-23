@@ -125,10 +125,10 @@ public class PlayerBoard {
      * @param coords coordinates to check
      * @return True if a card can be placed, false otherwise
      */
-    public boolean canPlaceCardAt(Coords coords, PlayableCard card) {
+    public boolean canPlaceCardAt(Coords coords, PlayableCard card, CardSide side) {
         // TODO maybe delete adjacentCards and adjacentCorners and put all the code in
         // this function
-        return !adjacentCards(coords).isEmpty() && card.enoughResources(playerItems) &&
+        return !adjacentCards(coords).isEmpty() && card.enoughResources(playerItems, side) &&
                 adjacentCorners(coords).values().stream().allMatch(Corner::canPlaceCardAbove);
     }
 
