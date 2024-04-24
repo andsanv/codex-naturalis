@@ -3,6 +3,12 @@ package it.polimi.ingsw.controller.server;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Contains an user's information (name and unique id).
+ * The class is meant to be used on the server.
+ * Synchronization on the class is implemented to ensure that all ids are
+ * unique.
+ */
 public final class User {
     private static Map<String, Integer> nameToNextId = new HashMap<>();
 
@@ -20,7 +26,7 @@ public final class User {
 
         Integer id;
 
-        synchronized(User.class) {
+        synchronized (User.class) {
             id = nameToNextId.get(name);
             nameToNextId.put(name, (id != null ? id : 0) + 1);
         }
@@ -35,7 +41,7 @@ public final class User {
 
     @Override
     public boolean equals(Object obj) {
-        User other = (User)obj;
+        User other = (User) obj;
         return this.name != other.name || this.id != other.id;
     }
 }

@@ -3,6 +3,11 @@ package it.polimi.ingsw.controller.server;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The lobby contains up to four users.
+ * It has a manager (an user) and an unique id (incremental from 0).
+ * The class is synchronized.
+ */
 public class Lobby {
     private static int nextId = 0;
 
@@ -14,14 +19,14 @@ public class Lobby {
     /**
      * @return A copy of the list of users connected to the lobby
      */
-    public List<User> getUsers() {
+    public synchronized List<User> getUsers() {
         return new ArrayList<>(users);
     }
 
     /**
      * @return The manager of the lobby
      */
-    public User getManager() {
+    public synchronized User getManager() {
         return manager;
     }
 
@@ -51,7 +56,7 @@ public class Lobby {
      * 
      * @return true if successfull, false otherwise
      */
-    public boolean addUser(User user) {
+    public synchronized boolean addUser(User user) {
         if (users.size() == 4)
             return false;
 
@@ -73,7 +78,7 @@ public class Lobby {
      * 
      * @return true if there are still users left in the lobby, false otherwise
      */
-    public boolean removeUser(User user) {
+    public synchronized boolean removeUser(User user) {
         users.remove(user);
 
         if (manager == user)
@@ -88,7 +93,7 @@ public class Lobby {
      * 
      * @return false if the game was already started, true otherwise
      */
-    public boolean startGame() {
+    public synchronized boolean startGame() {
         if (gameStarted)
             return false;
 
