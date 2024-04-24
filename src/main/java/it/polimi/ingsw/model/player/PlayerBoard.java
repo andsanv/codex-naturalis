@@ -178,8 +178,10 @@ public class PlayerBoard {
 
         // Add card type resource
         PlayableCard placedCard = this.getCard(coords);
-        Resources cardResource = placedCard.getType().get();
-        playerItems.put(cardResource, playerItems.get(cardResource) + 1);
+        if(placedCard.getPlayedSide() == CardSide.BACK) {
+            Resources cardResource = placedCard.getType().get();
+            playerItems.put(cardResource, playerItems.get(cardResource) + 1);
+        }
 
         // Add corner items
         placedCard.getActiveCorners().values().stream()

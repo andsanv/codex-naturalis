@@ -2,6 +2,8 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
+import it.polimi.ingsw.model.common.Resources;
+import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.deck.Deck;
@@ -10,10 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +25,10 @@ class GameModelUpdaterTest {
     private Optional<StarterCard> starterCard;
     private Optional<ObjectiveCard> objectiveCard;
 
+    private PlayableCard resourceCard1, resourceCard2;
+    private StarterCard specificStarterCard;
+    private Map<CornerPosition, Corner> frontCorners, backCorners;
+
     @BeforeEach
     void init() {
         model = new GameModel();
@@ -33,6 +36,27 @@ class GameModelUpdaterTest {
 
         starterCard = gameModelUpdater.drawStarterCard();
         objectiveCard = gameModelUpdater.drawObjectiveCard();
+
+        frontCorners = new HashMap<>();
+        backCorners = new HashMap<>();
+
+        frontCorners.put(CornerPosition.TOP_LEFT, new Corner(Resources.INSECT, CornerTypes.VISIBLE));
+        frontCorners.put(CornerPosition.TOP_RIGHT, new Corner(null, CornerTypes.HIDDEN));
+        frontCorners.put(CornerPosition.BOTTOM_RIGHT, new Corner(Resources.PLANT, CornerTypes.VISIBLE));
+        frontCorners.put(CornerPosition.BOTTOM_LEFT, new Corner(null, CornerTypes.HIDDEN));
+
+        backCorners.put(CornerPosition.TOP_LEFT, new Corner(null, CornerTypes.VISIBLE));
+        backCorners.put(CornerPosition.TOP_RIGHT, new Corner(null, CornerTypes.VISIBLE));
+        backCorners.put(CornerPosition.BOTTOM_RIGHT, new Corner(null, CornerTypes.VISIBLE));
+        backCorners.put(CornerPosition.BOTTOM_LEFT, new Corner(null, CornerTypes.VISIBLE));
+
+        Set<Resources> centralElements = new HashSet<>();
+        centralElements.add(Resources.FUNGI);
+        centralElements.add(Resources.INSECT);
+
+        resourceCard1 = new ResourceCard(0, Resources.ANIMAL, PointsType.ONE, frontCorners, backCorners);
+        resourceCard2 = new ResourceCard(1, Resources.ANIMAL, PointsType.ONE, frontCorners, backCorners);
+        specificStarterCard = new StarterCard(2, centralElements, backCorners, backCorners);
 
         gameModelUpdater.addPlayer(PlayerToken.RED, starterCard.get(), CardSide.FRONT, objectiveCard.get());
         gameModelUpdater.addPlayer(PlayerToken.GREEN, starterCard.get(), CardSide.FRONT, objectiveCard.get());
@@ -42,29 +66,91 @@ class GameModelUpdaterTest {
     }
 
     @Test
-    void playCard() {
+    void playCardPlacementTest() {
         Player player = model.tokenToPlayer.get(PlayerToken.RED);
         PlayerHand playerHand = player.getHand();
         PlayerBoard playerBoard = player.getBoard();
 
-        gameModelUpdater.drawResourceDeckCard(PlayerToken.RED);
-        PlayableCard card = playerHand.getCards().get(0);
+        playerHand.addCard(resourceCard1);
         int tempSize = playerHand.getCards().size();
-        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), card, CardSide.FRONT));
+
+        // card placement should be successful
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard1, CardSide.FRONT));
 
         // should not be possible to place a card at occupied coords
-        assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), card, CardSide.FRONT));
+        assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard2, CardSide.BACK));
 
+        // hand size should change in the following way
         assertEquals(0, playerHand.getCards().size());
         assertEquals(tempSize - 1, playerHand.getCards().size());
 
-        assertEquals(card, playerBoard.getCard(new Coords(1, 1)));
-
+        // card placed should be the card that was actually played, and the corner being covered should switch to a COVERED corner.
+        assertEquals(resourceCard1, playerBoard.getCard(new Coords(1, 1)));
         assertEquals(CornerTypes.COVERED, playerBoard.getCard(new Coords(0,0)).getActiveCorners().get(CornerPosition.TOP_RIGHT).getType());
+
+        // cornerType of covering card should not change
+        assertEquals(CornerTypes.HIDDEN, playerBoard.getCard(new Coords(1,1)).getActiveCorners().get(CornerPosition.BOTTOM_LEFT).getType());
+
+        playerHand.addCard(resourceCard2);
+        // corner of card below is hidden, so playCard should fail
+        assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(2, 2), resourceCard2, CardSide.BACK));
+        // playCard should fail in invalid coords
+        assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, 1), resourceCard2, CardSide.BACK));
+
+        // all adjacent corners should be covered when placing a card
+        gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, 2), resourceCard2, CardSide.BACK);
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(-1, 1), resourceCard2, CardSide.BACK));
+        assertEquals(CornerTypes.VISIBLE, playerBoard.getCard(new Coords(-1,1)).getActiveCorners().get(CornerPosition.BOTTOM_RIGHT).getType());
+        assertEquals(CornerTypes.COVERED, playerBoard.getCard(new Coords(0,0)).getActiveCorners().get(CornerPosition.TOP_LEFT).getType());
+        assertEquals(CornerTypes.COVERED, playerBoard.getCard(new Coords(0,2)).getActiveCorners().get(CornerPosition.BOTTOM_LEFT).getType());
     }
 
     @Test
-    void drawResourceDeckCard() {
+    void playCardPointsAndResourcesTest() {
+        // let's only consider one player
+        gameModelUpdater.addPlayer(PlayerToken.BLUE, specificStarterCard, CardSide.BACK, objectiveCard.get());
+        gameModelUpdater.setScoreTrack(new ArrayList<>(Arrays.asList(PlayerToken.RED, PlayerToken.GREEN, PlayerToken.YELLOW, PlayerToken.BLUE)));
+
+        Player player = model.tokenToPlayer.get(PlayerToken.BLUE);
+        PlayerHand playerHand = player.getHand();
+        PlayerBoard playerBoard = player.getBoard();
+
+        // playCard should be successful and resources should be updated summing all resources
+        gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(1, 1), resourceCard1, CardSide.FRONT);
+        assertEquals(2, playerBoard.getPlayerItems().get(Resources.INSECT));
+        assertEquals(1, playerBoard.getPlayerItems().get(Resources.FUNGI));
+        assertEquals(0, playerBoard.getPlayerItems().get(Resources.ANIMAL));
+        assertEquals(1, playerBoard.getPlayerItems().get(Resources.PLANT));
+
+        // one INSECT resource should be covered, and a INSECT resource and a PLANT resource should be added to resources count
+        gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(0, 2), resourceCard2, CardSide.FRONT);
+        assertEquals(2, playerBoard.getPlayerItems().get(Resources.INSECT));
+        assertEquals(1, playerBoard.getPlayerItems().get(Resources.FUNGI));
+        assertEquals(0, playerBoard.getPlayerItems().get(Resources.ANIMAL));
+        assertEquals(2, playerBoard.getPlayerItems().get(Resources.PLANT));
+
+        // every card we placed should give 1 point each
+        assertEquals(2, model.getScoreTrack().getScores().get(PlayerToken.BLUE));
+
+        // changing card's pointType
+        resourceCard2 = new ResourceCard(1, Resources.ANIMAL, PointsType.TWO_PER_COVERED_CORNER, frontCorners, backCorners);
+
+        // card covers 1 corner, so 2 more points should be given. A PLANT resource is covered, a PLANT resource and an ANIMAL resource are added
+        gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(2, 0), resourceCard2, CardSide.BACK);
+        assertEquals(2, playerBoard.getPlayerItems().get(Resources.INSECT));
+        assertEquals(1, playerBoard.getPlayerItems().get(Resources.FUNGI));
+        assertEquals(1, playerBoard.getPlayerItems().get(Resources.ANIMAL));
+        assertEquals(1, playerBoard.getPlayerItems().get(Resources.PLANT));
+
+        assertEquals(4, model.getScoreTrack().getScores().get(PlayerToken.BLUE));
+
+        // card placed covers 2 corners, so 4 points should be given.
+        gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(1, -1), resourceCard2, CardSide.BACK);
+        assertEquals(8, model.getScoreTrack().getScores().get(PlayerToken.BLUE));
+    }
+
+    @Test
+    void drawResourceDeckCardTest() {
         // hand should be empty
         assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
 
@@ -105,7 +191,7 @@ class GameModelUpdaterTest {
     }
 
     @Test
-    void drawGoldDeckCard() {
+    void drawGoldDeckCardTest() {
         // following tests are exactly the same as the previous test method. Implemented for completeness
         assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
 
@@ -142,7 +228,7 @@ class GameModelUpdaterTest {
     }
 
     @Test
-    void drawVisibleResourceCard() {
+    void drawVisibleResourceCardTest() {
         // hand should be empty
         assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
 
@@ -184,7 +270,7 @@ class GameModelUpdaterTest {
     }
 
     @Test
-    void drawVisibleGoldCard() {
+    void drawVisibleGoldCardTest() {
         // following tests are exactly the same as the previous test method. Implemented for completeness
         assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
 
@@ -218,7 +304,7 @@ class GameModelUpdaterTest {
     }
 
     @Test
-    void addPlayer() {
+    void addPlayerTest() {
         assertFalse(gameModelUpdater.addPlayer(PlayerToken.RED, starterCard.get(), CardSide.FRONT, objectiveCard.get()));
 
         assertTrue(gameModelUpdater.addPlayer(PlayerToken.BLUE, starterCard.get(), CardSide.FRONT, objectiveCard.get()));
