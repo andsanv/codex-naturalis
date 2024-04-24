@@ -1,12 +1,26 @@
 package it.polimi.ingsw.controller.server;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Server {
+/**
+ * The server is implemented using the Singleton pattern.
+ * It handles users, lobbies and starting games.
+ */
+public enum Server {
+    INSTANCE;
+
+    Server() {
+        this.lobbies = new HashMap<>();
+        this.users = new HashSet<>();
+    }
+
     Map<Integer, Lobby> lobbies;
-    Map<User, String> users;
+    Set<User> users;
 
     /**
      * Adds the user to the lobby with the given id.
@@ -16,13 +30,12 @@ public class Server {
      * @return True if joining was successfull, false if the lobby doesn't exist or
      *         if the user is already in the lobby.
      */
-    synchronized boolean joinLobby(User user, int lobbyId) {
-        Lobby lobby = lobbies.get(lobbyId);
+    boolean joinLobby(User user, int lobbyId) {
+        synchronized (lobbies) {
+            Lobby lobby = lobbies.get(lobbyId);
 
-        if (lobby == null || !lobby.addUser(user))
-            return false;
-
-        return true;
+            return lobby != null && lobby.addUser(user);
+        }
     }
 
     /**
@@ -34,16 +47,18 @@ public class Server {
      * @return True if leaving the lobby was successfull, false if the lobby doesn't
      *         exist or if the user is already in the lobby.
      */
-    synchronized boolean leaveLobby(User user, int lobbyId) {
-        Lobby lobby = lobbies.get(lobbyId);
+    boolean leaveLobby(User user, int lobbyId) {
+        synchronized (lobbies) {
+            Lobby lobby = lobbies.get(lobbyId);
 
-        if (lobby == null)
-            return false;
+            if (lobby == null)
+                return false;
 
-        if (!lobby.removeUser(user))
-            lobbies.remove(lobbyId);
+            if (!lobby.removeUser(user))
+                lobbies.remove(lobbyId);
 
-        return true;
+            return true;
+        }
     }
 
     /**
@@ -51,10 +66,12 @@ public class Server {
      * 
      * @return The list of lobbies as LobbyInfo classes.
      */
-    synchronized List<LobbyInfo> getLobbies() {
-        return lobbies.values().stream()
-                .map(lobby -> new LobbyInfo(lobby))
-                .collect(Collectors.toList());
+    List<LobbyInfo> getLobbies() {
+        synchronized (lobbies) {
+            return lobbies.values().stream()
+                    .map(lobby -> new LobbyInfo(lobby))
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -66,11 +83,13 @@ public class Server {
      *         exist, if the user is not the lobby manager of if the game was
      *         already started.
      */
-    synchronized boolean startGame(User user, int lobbyId) {
-        Lobby lobby = lobbies.get(lobbyId);
+    boolean startGame(User user, int lobbyId) {
+        synchronized (lobbies) {
+            Lobby lobby = lobbies.get(lobbyId);
 
-        if (lobby == null || user != lobby.getManager() || !lobby.startGame())
-            return false;
+            if (lobby == null || user != lobby.getManager() || !lobby.startGame())
+                return false;
+        }
 
         // TODO spawn thread with gameflowmanager
         // TODO send to client connection informations for the started game
@@ -81,28 +100,16 @@ public class Server {
     /**
      * Signup method to create an user.
      */
-    // TODO add password strenght requirements
-    public void signup(String name, String password) {
-        // TODO password validation
+    public UserInfo signup(String name, String password) {
+        User user = new User(name);
 
         synchronized (users) {
-            // TODO add password hashing
-            users.put(new User(name), password);
+            users.add(user);
         }
+
+        return new UserInfo(user);
     }
 
-    /**
-     * Login method to authenticate user.
-     */
-    // TODO swap password for the hash
-    public boolean login(User user, String password) {
-        if (user == null || password == null)
-            return false;
-
-        synchronized (users) {
-            return password == users.get(user);
-        }
-    }
-
-    // TODO add a method to reconnect to the started game (connection info could be added as an optional in the lobby class)
+    // TODO add a method to reconnect to the started game (connection info could be
+    // added as an optional in the lobby class)
 }
