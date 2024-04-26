@@ -36,13 +36,13 @@ public class Lobby {
      * @param creator The user who creates the lobby.
      */
     public Lobby(User creator) {
-        synchronized(Lobby.class) {
+        synchronized (Lobby.class) {
             id = nextId;
-            Lobby.nextId++;    
+            Lobby.nextId++;
         }
 
         users = new ArrayList<>();
-        users.add(manager);
+        users.add(creator);
 
         manager = creator;
 
@@ -101,5 +101,21 @@ public class Lobby {
 
         gameStarted = true;
         return true;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Lobby other = (Lobby) obj;
+        return this.id == other.id;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

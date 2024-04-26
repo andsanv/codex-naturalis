@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller.server;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +10,7 @@ import java.util.stream.Collectors;
  * The class can be safely shared since it is final and doesn't hold any
  * references.
  */
-public final class LobbyInfo {
+public final class LobbyInfo implements Serializable {
     public final int id;
     public final UserInfo manager;
     public final List<UserInfo> users;
@@ -21,5 +23,10 @@ public final class LobbyInfo {
                 .map(user -> new UserInfo(user))
                 .collect(Collectors.toList());
         this.gameStarted = lobby.gameStarted;
+    }
+
+    @Override
+    public String toString() {
+        return "id: " + id + ", manager: " + manager + ", users" + users.toString() + ", gameStarted: " + gameStarted;
     }
 }

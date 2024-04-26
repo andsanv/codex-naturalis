@@ -1,9 +1,6 @@
 package it.polimi.ingsw.controller.server;
 
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import it.polimi.ingsw.distributed.RMIServer;
 import it.polimi.ingsw.distributed.ServerActions;
 
 /**
@@ -23,30 +19,6 @@ public enum Server implements ServerActions {
 
     Map<Integer, Lobby> lobbies;
     Set<User> users;
-
-    public static void main(String[] args) {
-        try {
-            Registry registry;
-            try {
-                registry = LocateRegistry.createRegistry(60200);
-            } catch (RemoteException e) {
-
-            } finally {
-                registry = LocateRegistry.getRegistry(60200);
-            }
-
-            System.out.println(registry.REGISTRY_PORT);
-
-            RMIServer remoteServer = new RMIServer();
-            ServerActions stub = (ServerActions) UnicastRemoteObject.exportObject(remoteServer, 0);
-
-            registry.rebind("ServerCodex", stub);
-            
-        } catch (Exception e) {
-            System.err.println("RMI init failed: " + e.toString());
-            e.printStackTrace();
-        }
-    }
 
     Server() {
         this.lobbies = new HashMap<>();

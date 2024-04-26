@@ -1,43 +1,28 @@
 package it.polimi.ingsw.distributed;
 
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
-// import java.util.concurrent.CompletableFuture;
-// import java.util.concurrent.ExecutionException;
-// import java.util.concurrent.ExecutorService;
-// import java.util.concurrent.Executors;
-// import java.util.concurrent.Future;
 
+import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 
-public class RMIServer extends UnicastRemoteObject implements ServerActions  {
-    // ExecutorService executorService;
-    
+public class RMIServer extends UnicastRemoteObject implements ServerActions, Runnable {
     public RMIServer() throws RemoteException {
-        // executorService = Executors.newCachedThreadPool();
-
     }
 
     @Override
     public List<LobbyInfo> getLobbies() throws RemoteException {
-        // CompletableFuture<List<LobbyInfo>> res = CompletableFuture.supplyAsync(() -> {
-        //     return Server.INSTANCE.getLobbies();
-        // }, executorService);
-
-        // try {
-        //     return res.get();
-        // } catch (InterruptedException | ExecutionException e) {
-        //     e.printStackTrace();
-        //     return null;
-        // }
-
-        // debug return
-        List<LobbyInfo> list = new java.util.ArrayList<>();
+        // TODO the code is only for debugging, uncomment last line when done
+        List<LobbyInfo> list = new ArrayList<>();
         list.add(new LobbyInfo(new Lobby(new User("Raveeee"))));
         list.add(new LobbyInfo(new Lobby(new User("Raveeee"))));
         list.add(new LobbyInfo(new Lobby(new User("Angelo"))));
@@ -70,6 +55,22 @@ public class RMIServer extends UnicastRemoteObject implements ServerActions  {
     @Override
     public boolean startGame(User user, int lobbyId) throws RemoteException {
         return Server.INSTANCE.startGame(user, lobbyId);
+    }
+
+    @Override
+    public void run() {
+        Registry registry;
+
+        try {
+            registry = LocateRegistry.createRegistry(Config.RMIServerPort);
+            registry.bind(Config.RMIServerName, this);
+        } catch (RemoteException e) {
+            System.err.println("Error: " + e.toString());
+            e.printStackTrace();
+        } catch (AlreadyBoundException e) {
+            System.err.println("Error: " + Config.RMIServerName + " already bound");
+            e.printStackTrace();
+        }
     }
 
 }

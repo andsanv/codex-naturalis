@@ -27,8 +27,8 @@ public final class User {
         Integer id;
 
         synchronized (User.class) {
-            id = nameToNextId.get(name);
-            nameToNextId.put(name, (id != null ? id : 0) + 1);
+            id = nameToNextId.getOrDefault(name, 0);
+            nameToNextId.put(name, id + 1);
         }
 
         this.id = id;
@@ -42,6 +42,12 @@ public final class User {
     @Override
     public boolean equals(Object obj) {
         User other = (User) obj;
-        return this.name != other.name || this.id != other.id;
+        return this.name == other.name && this.id == other.id;
+    }
+
+    // TODO add hashcode impl
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
