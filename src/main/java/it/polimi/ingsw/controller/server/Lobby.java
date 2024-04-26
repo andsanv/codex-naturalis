@@ -36,8 +36,10 @@ public class Lobby {
      * @param creator The user who creates the lobby.
      */
     public Lobby(User creator) {
-        id = nextId;
-        Lobby.nextId++;
+        synchronized(Lobby.class) {
+            id = nextId;
+            Lobby.nextId++;    
+        }
 
         users = new ArrayList<>();
         users.add(manager);

@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 public enum Server {
     INSTANCE;
 
+    Map<Integer, Lobby> lobbies;
+    Set<User> users;
+
     Server() {
         this.lobbies = new HashMap<>();
         this.users = new HashSet<>();
     }
-
-    Map<Integer, Lobby> lobbies;
-    Set<User> users;
 
     /**
      * Adds the user to the lobby with the given id.
