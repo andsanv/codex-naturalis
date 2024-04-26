@@ -13,4 +13,9 @@ public final class UserInfo {
         this.name = user.name;
         this.id = user.id;
     }
+
+    @Override
+    public String toString() {
+        return name + "#" + id;
+    }
 }

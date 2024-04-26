@@ -1,4 +1,4 @@
-package it.polimi.ingsw.network;
+package it.polimi.ingsw.distributed.network;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.card.CardSide;

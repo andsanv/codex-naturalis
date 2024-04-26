@@ -1,4 +1,4 @@
-package it.polimi.ingsw.network;
+package it.polimi.ingsw.distributed.network;
 
 import java.util.List;
 

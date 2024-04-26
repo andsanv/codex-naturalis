@@ -1,5 +1,9 @@
 package it.polimi.ingsw.controller.server;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,15 +11,42 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import it.polimi.ingsw.distributed.RMIServer;
+import it.polimi.ingsw.distributed.ServerActions;
+
 /**
  * The server is implemented using the Singleton pattern.
  * It handles users, lobbies and starting games.
  */
-public enum Server {
+public enum Server implements ServerActions {
     INSTANCE;
 
     Map<Integer, Lobby> lobbies;
     Set<User> users;
+
+    public static void main(String[] args) {
+        try {
+            Registry registry;
+            try {
+                registry = LocateRegistry.createRegistry(60200);
+            } catch (RemoteException e) {
+
+            } finally {
+                registry = LocateRegistry.getRegistry(60200);
+            }
+
+            System.out.println(registry.REGISTRY_PORT);
+
+            RMIServer remoteServer = new RMIServer();
+            ServerActions stub = (ServerActions) UnicastRemoteObject.exportObject(remoteServer, 0);
+
+            registry.rebind("ServerCodex", stub);
+            
+        } catch (Exception e) {
+            System.err.println("RMI init failed: " + e.toString());
+            e.printStackTrace();
+        }
+    }
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -30,7 +61,8 @@ public enum Server {
      * @return True if joining was successfull, false if the lobby doesn't exist or
      *         if the user is already in the lobby.
      */
-    boolean joinLobby(User user, int lobbyId) {
+    @Override
+    public boolean joinLobby(User user, int lobbyId) {
         synchronized (lobbies) {
             Lobby lobby = lobbies.get(lobbyId);
 
@@ -47,7 +79,8 @@ public enum Server {
      * @return True if leaving the lobby was successfull, false if the lobby doesn't
      *         exist or if the user is already in the lobby.
      */
-    boolean leaveLobby(User user, int lobbyId) {
+    @Override
+    public boolean leaveLobby(User user, int lobbyId) {
         synchronized (lobbies) {
             Lobby lobby = lobbies.get(lobbyId);
 
@@ -66,7 +99,8 @@ public enum Server {
      * 
      * @return The list of lobbies as LobbyInfo classes.
      */
-    List<LobbyInfo> getLobbies() {
+    @Override
+    public List<LobbyInfo> getLobbies() {
         synchronized (lobbies) {
             return lobbies.values().stream()
                     .map(lobby -> new LobbyInfo(lobby))
@@ -83,7 +117,8 @@ public enum Server {
      *         exist, if the user is not the lobby manager of if the game was
      *         already started.
      */
-    boolean startGame(User user, int lobbyId) {
+    @Override
+    public boolean startGame(User user, int lobbyId) {
         synchronized (lobbies) {
             Lobby lobby = lobbies.get(lobbyId);
 
@@ -100,6 +135,7 @@ public enum Server {
     /**
      * Signup method to create an user.
      */
+    @Override
     public UserInfo signup(String name, String password) {
         User user = new User(name);
 
@@ -112,4 +148,9 @@ public enum Server {
 
     // TODO add a method to reconnect to the started game (connection info could be
     // added as an optional in the lobby class)
+    @Override
+    public boolean connectToGame(User user, int lobbyId) throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'joinGame'");
+    }
 }
