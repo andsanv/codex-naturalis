@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.distributed.ServerActions;
+import it.polimi.ingsw.distributed.events.Event;
 
 /**
  * The server is implemented using the Singleton pattern.
@@ -17,8 +20,10 @@ import it.polimi.ingsw.distributed.ServerActions;
 public enum Server implements ServerActions {
     INSTANCE;
 
-    Map<Integer, Lobby> lobbies;
-    Set<User> users;
+    private Map<Integer, Lobby> lobbies;
+    private Set<User> users;
+
+    private ConcurrentHashMap<String, Queue<Event>> eventsQueues;
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -125,4 +130,6 @@ public enum Server implements ServerActions {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'joinGame'");
     }
+
+    // TODO add queue methods
 }

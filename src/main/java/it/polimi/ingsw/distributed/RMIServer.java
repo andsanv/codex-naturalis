@@ -5,11 +5,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.User;
@@ -21,15 +19,7 @@ public class RMIServer extends UnicastRemoteObject implements ServerActions, Run
 
     @Override
     public List<LobbyInfo> getLobbies() throws RemoteException {
-        // TODO the code is only for debugging, uncomment last line when done
-        List<LobbyInfo> list = new ArrayList<>();
-        list.add(new LobbyInfo(new Lobby(new User("Raveeee"))));
-        list.add(new LobbyInfo(new Lobby(new User("Raveeee"))));
-        list.add(new LobbyInfo(new Lobby(new User("Angelo"))));
-
-        return list;
-
-        // return Server.INSTANCE.getLobbies();
+        return Server.INSTANCE.getLobbies();
     }
 
     @Override

@@ -16,6 +16,9 @@ public class Lobby {
     private List<User> users;
     boolean gameStarted;
 
+    // TODO implement chat here
+    // List<Pair<UserInfo, String>> chat;
+
     /**
      * @return A copy of the list of users connected to the lobby
      */
