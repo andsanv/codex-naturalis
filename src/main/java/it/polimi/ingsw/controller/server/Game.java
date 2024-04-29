@@ -4,18 +4,22 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import it.polimi.ingsw.controller.GameFlowManager;
+
 /**
  * The Game class represents a single game.
  * It contains the in-game connections to the clients, the controller and the
  * model.
  */
-public class Game implements Runnable {
+public class Game {
     private Lobby lobby;
     private Map<User, Boolean> isConnected;
 
+    private GameFlowManager game;
+
     /**
      * When created, all clients are disconnected by default.
-     * They must call joinGame() on the Server to join the match.
+     * The method joinGame() of Server must be called to join the match.
      * 
      * @param lobby lobby of the game
      */
@@ -24,11 +28,4 @@ public class Game implements Runnable {
         isConnected = lobby.getUsers().stream()
                 .collect(Collectors.toMap(Function.identity(), u -> false));
     }
-
-    @Override
-    public void run() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
-    }
-
 }
