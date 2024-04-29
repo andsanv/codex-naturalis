@@ -1,14 +1,14 @@
-package it.polimi.ingsw.distributed;
+package it.polimi.ingsw.distributed.actions;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import it.polimi.ingsw.client.lightModel.ClientCard;
+import it.polimi.ingsw.client.ClientCard;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.Coords;
 
-public interface GameActions extends Remote {
+public interface GameActions{
     void placeCard(LobbyInfo lobby, String user, Coords coords, ClientCard card, CardSide cardSide)
             throws RemoteException;
 

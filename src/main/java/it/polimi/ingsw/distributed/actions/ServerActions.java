@@ -1,13 +1,12 @@
-package it.polimi.ingsw.distributed;
+package it.polimi.ingsw.distributed.actions;
 
-import java.rmi.RemoteException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
-
 
 public interface ServerActions extends Remote {
     boolean joinLobby(User user, int lobbyId) throws RemoteException;

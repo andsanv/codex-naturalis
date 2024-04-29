@@ -1,6 +1,6 @@
 package it.polimi.ingsw.distributed.events;
 
-import it.polimi.ingsw.client.lightModel.ClientModel;
+import it.polimi.ingsw.client.ClientCache;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 public class ScoreTrackEvent extends Event {
@@ -13,8 +13,8 @@ public class ScoreTrackEvent extends Event {
     }
 
     @Override
-    public void update(ClientModel model) {
-        model.updateScoreTrack(token, score);
+    public void execute(ClientCache clientCache) {
+        clientCache.updateScoreTrack(token, score);
     }
-    
+
 }

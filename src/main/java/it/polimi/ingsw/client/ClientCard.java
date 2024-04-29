@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.lightModel;
+package it.polimi.ingsw.client;
 
 public class ClientCard {
     public final int id;

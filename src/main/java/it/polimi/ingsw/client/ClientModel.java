@@ -1,10 +1,9 @@
-package it.polimi.ingsw.client.lightModel;
+package it.polimi.ingsw.client;
 
 import java.util.List;
 import java.util.Map;
 
 import it.polimi.ingsw.util.Pair;
-import it.polimi.ingsw.client.ClientCard;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;

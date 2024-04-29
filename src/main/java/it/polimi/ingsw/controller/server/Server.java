@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import it.polimi.ingsw.distributed.ServerActions;
+import it.polimi.ingsw.distributed.actions.ServerActions;
 import it.polimi.ingsw.distributed.events.Event;
 
 /**

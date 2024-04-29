@@ -1,7 +1,9 @@
 package it.polimi.ingsw.distributed.events;
 
-import it.polimi.ingsw.client.lightModel.ClientModel;
+import java.io.Serializable;
 
-public abstract class Event {
-    public abstract void update(ClientModel model);
+import it.polimi.ingsw.client.ClientCache;
+
+public abstract class Event implements Serializable {
+    public abstract void execute(ClientCache clientCache);
 }
