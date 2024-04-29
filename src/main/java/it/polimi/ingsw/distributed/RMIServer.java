@@ -8,13 +8,14 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 import it.polimi.ingsw.Config;
+import it.polimi.ingsw.client.VirtualMainView;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.actions.ServerActions;
+import it.polimi.ingsw.distributed.actions.VirtualMainServer;
 
-public class RMIServer extends UnicastRemoteObject implements ServerActions, Runnable {
+public class RMIServer extends UnicastRemoteObject implements VirtualMainServer, Runnable {
     public RMIServer() throws RemoteException {
     }
 
@@ -40,11 +41,6 @@ public class RMIServer extends UnicastRemoteObject implements ServerActions, Run
     }
 
     @Override
-    public boolean connectToGame(User user, int lobbyId) throws RemoteException {
-        return Server.INSTANCE.connectToGame(user, lobbyId);
-    }
-
-    @Override
     public boolean joinLobby(User user, int lobbyId) {
         return Server.INSTANCE.joinLobby(user, lobbyId);
     }
@@ -55,12 +51,18 @@ public class RMIServer extends UnicastRemoteObject implements ServerActions, Run
     }
 
     @Override
-    public UserInfo signup(String name, String password) throws RemoteException {
-        return Server.INSTANCE.signup(name, password);
+    public UserInfo signup(String name) throws RemoteException {
+        return Server.INSTANCE.signup(name);
     }
 
     @Override
     public boolean startGame(User user, int lobbyId) throws RemoteException {
         return Server.INSTANCE.startGame(user, lobbyId);
+    }
+
+    @Override
+    public void connect(VirtualMainView clientMainView) throws RemoteException {
+        // TODO implement correctly
+        Server.INSTANCE.addConnectedClient(clientMainView);
     }
 }

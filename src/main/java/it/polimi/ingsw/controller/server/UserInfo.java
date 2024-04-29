@@ -20,4 +20,10 @@ public final class UserInfo implements Serializable {
     public String toString() {
         return name + "#" + id;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        UserInfo other = (UserInfo) obj;
+        return this.name == other.name && this.id == other.id;
+    }
 }
