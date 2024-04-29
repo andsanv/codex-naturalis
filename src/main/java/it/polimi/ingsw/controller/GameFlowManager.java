@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.states.*;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
@@ -11,9 +13,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import java.util.concurrent.CountDownLatch;
-
-javapackage it.polimi.ingsw.controller.server;
 
 public class GameFlowManager implements Runnable {
     public GameModelUpdater gameModelUpdater;
