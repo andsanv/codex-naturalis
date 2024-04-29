@@ -15,7 +15,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerBoardTest {
-
     PlayerBoard playerBoard;
     StarterCard starterCard;
     PlayableCard card1;

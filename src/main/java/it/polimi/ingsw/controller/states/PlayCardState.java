@@ -12,11 +12,12 @@ public class PlayCardState extends GameState {
     }
 
     @Override
-    public void playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size()))) {
-            gameModelUpdater.playCard(IdToToken.get(playerId), coords, card, cardSide);
+    public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+        if(gameModelUpdater.playCard(playerToken, coords, card, cardSide)) {
+            gameFlowManager.setState(gameFlowManager.drawCardState);
+            return true;
         }
 
-        gameFlowManager.setState(gameFlowManager.drawCardState);
+        return false;
     };
 }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 public class DrawCardState extends GameState {
     public DrawCardState(GameFlowManager gameFlowManager) {
@@ -8,53 +9,42 @@ public class DrawCardState extends GameState {
     }
 
     @Override
-    public void drawResourceDeckCard(String playerId) {
-        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
-            gameModelUpdater.drawResourceDeckCard(IdToToken.get(playerId));
-
-        endTurn();
-    }
-
-    @Override
-    public void drawGoldDeckCard(String playerId) {
-        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
-            gameModelUpdater.drawGoldDeckCard(IdToToken.get(playerId));
-
-        endTurn();
-    }
-
-    @Override
-    public void drawVisibleResourceCard(String playerId, int choice) {
-        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
-            gameModelUpdater.drawVisibleResourceCard(IdToToken.get(playerId), choice);
-
-        endTurn();
-    }
-
-    @Override
-    public void drawVisibleGoldCard(String playerId, int choice) {
-        if(playerId.equals(playerIds.get(gameFlowManager.turn % playerIds.size())))
-            gameModelUpdater.drawVisibleGoldCard(IdToToken.get(playerId), choice);
-
-        endTurn();
-    }
-
-    private void endTurn() {
-        if(gameFlowManager.turn % playerIds.size() == playerIds.size() - 1) {
-            if(gameFlowManager.isLastRound) {
-                // stuff
-                gameFlowManager.setState(gameFlowManager.postGameState);
-                // gameFlowManager.currentState.handlePostGame();
-                return;
-            }
-            else {
-                if(gameModelUpdater.limitPointsReached() || gameModelUpdater.someDecksEmpty())
-                    gameFlowManager.isLastRound = true;
-                gameFlowManager.round += 1;
-            }
+    public boolean drawResourceDeckCard(PlayerToken playerToken) {
+        if(gameModelUpdater.drawResourceDeckCard(playerToken)) {
+            gameFlowManager.increaseTurn();
+            return true;
         }
 
-        gameFlowManager.turn += 1;
-        gameFlowManager.setState(gameFlowManager.playCardState);
+        return false;
+    }
+
+    @Override
+    public boolean drawGoldDeckCard(PlayerToken playerToken) {
+        if(gameModelUpdater.drawGoldDeckCard(playerToken)) {
+            gameFlowManager.increaseTurn();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean drawVisibleResourceCard(PlayerToken playerToken, int choice) {
+        if(gameModelUpdater.drawVisibleResourceCard(playerToken, choice)) {
+            gameFlowManager.increaseTurn();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean drawVisibleGoldCard(PlayerToken playerToken, int choice) {
+        if(gameModelUpdater.drawVisibleGoldCard(playerToken, choice)) {
+            gameFlowManager.increaseTurn();
+            return true;
+        }
+
+        return false;
     }
 }

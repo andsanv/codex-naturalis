@@ -27,23 +27,23 @@ public abstract class GameState {
 
     public void setup() {}
 
-    public void playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        // TODO ERROR
+    public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+        return false;
     }
 
-    public void drawResourceDeckCard(String playerId) {
-        // TODO ERROR
+    public boolean drawResourceDeckCard(PlayerToken playerToken) {
+        return false;
     }
 
-    public void drawGoldDeckCard(String playerId) {
-        // TODO ERROR
+    public boolean drawGoldDeckCard(PlayerToken playerToken) {
+        return false;
     }
 
-    public void drawVisibleResourceCard(String playerId, int choice) {
-        // TODO ERROR
+    public boolean drawVisibleResourceCard(PlayerToken playerToken, int choice) {
+        return false;
     }
 
-    public void drawVisibleGoldCard(String playerId, int choice) {
-        // TODO ERROR
+    public boolean drawVisibleGoldCard(PlayerToken playerToken, int choice) {
+        return false;
     }
 }
