@@ -3,7 +3,6 @@ package it.polimi.ingsw.distributed.actions;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import it.polimi.ingsw.client.ClientCard;
 import it.polimi.ingsw.client.VirtualGameView;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.card.CardSide;
@@ -11,7 +10,7 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 public interface VirtualGameServer extends Remote {
-    void placeCard(int lobbyId, UserInfo user, Coords coords, ClientCard card, CardSide cardSide)
+    void placeCard(int lobbyId, UserInfo user, Coords coords, int cardId, CardSide cardSide)
             throws RemoteException;
 
     void drawResourceCard(UserInfo user) throws RemoteException;
