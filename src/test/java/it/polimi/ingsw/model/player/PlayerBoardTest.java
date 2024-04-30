@@ -30,7 +30,6 @@ class PlayerBoardTest {
     }
 
     private StarterCard createStarterCard0() {
-
         int id = 0;
         Set<Resources> centralResources = new HashSet<>();
         centralResources.add(Resources.INSECT);
@@ -124,9 +123,9 @@ class PlayerBoardTest {
 
         assertTrue(playerBoard.canPlaceCardAt(new Coords(2, 2), card2, CardSide.BACK));
         assertTrue(playerBoard.canPlaceCardAt(new Coords(0, 2), card2, CardSide.BACK));
-        assertTrue(playerBoard.canPlaceCardAt(new Coords(1, 1), card2, CardSide.BACK));
+        assertFalse(playerBoard.canPlaceCardAt(new Coords(1, 1), card2, CardSide.BACK));
         assertTrue(playerBoard.canPlaceCardAt(new Coords(-1, -1), card2, CardSide.BACK));
-        assertTrue(playerBoard.canPlaceCardAt(new Coords(2, 0), card2, CardSide.BACK));
+        assertFalse(playerBoard.canPlaceCardAt(new Coords(2, 0), card2, CardSide.BACK));
 
         assertFalse(playerBoard.canPlaceCardAt(new Coords(-1, 0), card2, CardSide.BACK));
         assertFalse(playerBoard.canPlaceCardAt(new Coords(0, -1), card2, CardSide.BACK));

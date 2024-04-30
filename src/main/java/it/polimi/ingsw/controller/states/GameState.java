@@ -46,4 +46,8 @@ public abstract class GameState {
     public boolean drawVisibleGoldCard(PlayerToken playerToken, int choice) {
         return false;
     }
+
+    public boolean postGame() {
+        return false;
+    }
 }

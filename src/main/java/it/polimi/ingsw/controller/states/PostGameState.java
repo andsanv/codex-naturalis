@@ -7,5 +7,10 @@ public class PostGameState extends GameState {
         super(gameFlowManager);
     }
 
-    // TODO
+    @Override
+    public boolean postGame() {
+        // TODO check points and choose winner
+
+        return false;
+    }
 }

@@ -34,7 +34,7 @@ public class GameModelUpdater {
 
         if(!player.getBoard().canPlaceCardAt(coords, card, cardSide))
             return false;
-        
+
         playerHand.removeCard(card);
         card.playSide(cardSide);
         playerBoard.setCard(coords, card);
@@ -193,11 +193,24 @@ public class GameModelUpdater {
         return true;
     }
 
+    public Map<PlayerToken, Player> getPlayers() {
+        return model.tokenToPlayer;
+    }
+
     public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
         model.setCommonObjectives(commonObjectives);
+    }
+
+    public List<ObjectiveCard> getCommonObjectives() {
+        return model.getCommonObjectives();
     }
 
     public void setScoreTrack(List<PlayerToken> playerTokens) {
         model.setScoreTrack(playerTokens);
     }
+
+    public GameModel getModel() {
+        return model;
+    }
+
 }
