@@ -65,4 +65,9 @@ public class RMIServer extends UnicastRemoteObject implements VirtualMainServer,
         // TODO implement correctly
         Server.INSTANCE.addConnectedClient(clientMainView);
     }
+
+    @Override
+    public LobbyInfo createLobby(UserInfo userInfo) throws RemoteException {
+        return Server.INSTANCE.createLobby(userInfo);
+    }
 }

@@ -1,9 +1,11 @@
 package it.polimi.ingsw.controller.server;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -20,7 +22,12 @@ public enum Server {
     private Map<Integer, Lobby> lobbies;
     private Set<User> users;
 
-    private ConcurrentHashMap<VirtualMainView, Object> connectedPlayers;
+    /**
+     * Links the Virtual Views to their status.
+     * The value is true if the client is in the menu, false if it's in-game.
+     * When the client is in the menu, he receives updates on the list of lobbies.
+     */
+    private ConcurrentHashMap<VirtualMainView, Boolean> connectedPlayers;
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -116,11 +123,50 @@ public enum Server {
         return new UserInfo(user);
     }
 
+    public LobbyInfo createLobby(UserInfo userInfo) {
+        synchronized (lobbies) {
+            synchronized (users) {
+                System.out.println(users);
+                System.out.println(userInfo);
+                Optional<User> serverUser = users.stream()
+                        .filter(user -> user.name.equals(userInfo.name) && user.id == userInfo.id)
+                        .findAny();
+
+                if (!serverUser.isPresent()) {
+                    System.err.println("Error: User not found");
+                    return null;
+                }
+
+                Lobby newLobby = new Lobby(serverUser.get());
+                lobbies.put(newLobby.id, newLobby);
+
+                return new LobbyInfo(newLobby);
+            }
+        }
+    }
+
     public void addConnectedClient(VirtualMainView clientMainView) {
-        connectedPlayers.put(clientMainView, null);
+        connectedPlayers.put(clientMainView, true);
     }
 
     public void removeConnectedClient(VirtualMainView clientMainView) {
-        connectedPlayers.remove(clientMainView, null);
+        connectedPlayers.remove(clientMainView, true);
+    }
+
+    private void broadcastLobbies(List<LobbyInfo> lobbies) {
+        // TODO use a threadpool
+        new Thread(() -> {
+            connectedPlayers.entrySet().stream()
+                    .filter(entry -> entry.getValue())
+                    .map(entry -> entry.getKey())
+                    .forEach(client -> {
+                        try {
+                            client.setLobbies(lobbies);
+                        } catch (RemoteException e) {
+                            System.err.println("Error: Couldn't send message to " + client);
+                            e.printStackTrace();
+                        }
+                    });
+        });
     }
 }

@@ -57,41 +57,41 @@ public class GameFlowManager implements Runnable {
     public void run() {
         Boolean movePlayed = false;
 
-        Date start = new Date();
-        Thread timerThread = new Thread(() -> {
-            try {
-                while(true)
-                    synchronized(movePlayed) {
-                        if(movePlayed)
-                            return;
-                    }
+        // Date start = new Date();
+        // Thread timerThread = new Thread(() -> {
+        //     try {
+        //         while(true)
+        //             synchronized(movePlayed) {
+        //                 if(movePlayed)
+        //                     return;
+        //             }
 
-                if((new Date()).getTime() - start.getTime() > timeLimit) {
-                    if(currentState.equals(drawCardState)) {
-                        Random rand = new Random();
+                // if((new Date()).getTime() - start.getTime() > timeLimit) {
+                //     if(currentState.equals(drawCardState)) {
+                //         Random rand = new Random();
 
-                        switch(rand.nextInt(4)) {
-                            case 0:
-                                drawResourceDeckCard(getTurn());
-                                break;
-                            case 1:
-                                drawGoldDeckCard(getTurn());
-                                break;
-                            case 2:
-                                drawVisibleResourceCard(getTurn(), rand.nextInt(2));
-                                break;
-                            case 3:
-                                drawVisibleGoldCard(getTurn(), rand.nextInt(2));
-                                break;
-                        }
-                    }
+                //         switch(rand.nextInt(4)) {
+                //             case 0:
+                //                 drawResourceDeckCard(getTurn());
+                //                 break;
+                //             case 1:
+                //                 drawGoldDeckCard(getTurn());
+                //                 break;
+                //             case 2:
+                //                 drawVisibleResourceCard(getTurn(), rand.nextInt(2));
+                //                 break;
+                //             case 3:
+                //                 drawVisibleGoldCard(getTurn(), rand.nextInt(2));
+                //                 break;
+                //         }
+                //     }
 
-                    increaseTurn();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
+                //     increaseTurn();
+            //     }
+            // } catch (InterruptedException e) {
+            //     Thread.currentThread().interrupt();
+            // }
+        // });
 
 
     }
@@ -101,7 +101,7 @@ public class GameFlowManager implements Runnable {
     }
 
     public boolean playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        called = true;
+        // called = true;
 
         return playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide);
     }

@@ -22,6 +22,8 @@ public interface VirtualMainServer extends Remote {
 
     UserInfo signup(String name) throws RemoteException;
 
+    LobbyInfo createLobby(UserInfo userInfo) throws RemoteException;
+
     /**
      * This method must be called when connecting to the server.
      * 

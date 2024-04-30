@@ -24,6 +24,6 @@ public final class UserInfo implements Serializable {
     @Override
     public boolean equals(Object obj) {
         UserInfo other = (UserInfo) obj;
-        return this.name == other.name && this.id == other.id;
+        return this.name.equals(other.name) && this.id == other.id;
     }
 }

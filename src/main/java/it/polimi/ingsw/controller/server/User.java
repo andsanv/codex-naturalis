@@ -42,7 +42,7 @@ public final class User {
     @Override
     public boolean equals(Object obj) {
         User other = (User) obj;
-        return this.name == other.name && this.id == other.id;
+        return this.name.equals(other.name) && this.id == other.id;
     }
 
     // TODO add hashcode impl
