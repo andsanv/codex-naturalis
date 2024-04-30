@@ -25,7 +25,7 @@ public class GameFlowManager implements Runnable {
     public GameState drawCardState;
     public GameState postGameState;
 
-    public GameState currentState;
+    private GameState currentState;
 
     public List<String> playersIds;
     public Map<String, PlayerToken> IdToToken;
@@ -35,65 +35,85 @@ public class GameFlowManager implements Runnable {
     public Boolean isLastRound = false;
 
     private long timeLimit = 30;
+    private Boolean lastMovePlayed = false;
 
     public GameFlowManager(Lobby lobby) {
         this.lobby = lobby;
         isConnected = lobby.getUsers().stream()
                 .collect(Collectors.toMap(Function.identity(), u -> false));
 
+        this.playersIds = lobby.getUsers().stream().map(user -> user.name).collect(Collectors.toList());
+        this.IdToToken = new HashMap<>();
+        this.gameModelUpdater = new GameModelUpdater(new GameModel());
+
         this.playCardState = new PlayCardState(this);
         this.drawCardState = new DrawCardState(this);
         this.setupState = new SetupState(this);
         this.postGameState = new PostGameState(this);
 
-        this.IdToToken = new HashMap<String, PlayerToken>();
-        this.gameModelUpdater = new GameModelUpdater(new GameModel());
-
         this.currentState = this.setupState;
-        currentState.setup();
     }
 
     @Override
     public void run() {
-        Boolean movePlayed = false;
+        // pre-game phase
+        currentState.setup();
 
-        // Date start = new Date();
-        // Thread timerThread = new Thread(() -> {
-        //     try {
-        //         while(true)
-        //             synchronized(movePlayed) {
-        //                 if(movePlayed)
-        //                     return;
-        //             }
+        // in-game phase
+        while(!currentState.equals(postGameState)) {
+            Thread thread = handleTurn();
+            try {
+                thread.join();
+            }
+            catch(InterruptedException e) {}
+        }
 
-                // if((new Date()).getTime() - start.getTime() > timeLimit) {
-                //     if(currentState.equals(drawCardState)) {
-                //         Random rand = new Random();
+        // post-game phase
+        currentState.postGame();
+    }
 
-                //         switch(rand.nextInt(4)) {
-                //             case 0:
-                //                 drawResourceDeckCard(getTurn());
-                //                 break;
-                //             case 1:
-                //                 drawGoldDeckCard(getTurn());
-                //                 break;
-                //             case 2:
-                //                 drawVisibleResourceCard(getTurn(), rand.nextInt(2));
-                //                 break;
-                //             case 3:
-                //                 drawVisibleGoldCard(getTurn(), rand.nextInt(2));
-                //                 break;
-                //         }
-                //     }
+    private Thread handleTurn() {
+        Date start = new Date();
+        lastMovePlayed = false;
 
-                //     increaseTurn();
-            //     }
-            // } catch (InterruptedException e) {
-            //     Thread.currentThread().interrupt();
-            // }
-        // });
+        Thread thread = new Thread(() -> {
+            while(true) {
+                synchronized(lastMovePlayed) {
+                    if(lastMovePlayed) {
+                        return;
+                    }
+                }
 
+                if((new Date()).getTime() - start.getTime() > timeLimit * 1000) {
+                    if(currentState.equals(playCardState)) {
+                        increaseTurn();
+                    }
+                    else {
+                        Random rand = new Random();
 
+                        switch(rand.nextInt(4)) {
+                            case 0:
+                                drawResourceDeckCard(getTurn());
+                                break;
+                            case 1:
+                                drawGoldDeckCard(getTurn());
+                                break;
+                            case 2:
+                                drawVisibleResourceCard(getTurn(), rand.nextInt(2));
+                                break;
+                            case 3:
+                                drawVisibleGoldCard(getTurn(), rand.nextInt(2));
+                                break;
+                        }
+                    }
+                    return;
+                }
+            }
+        });
+
+        thread.start();
+
+        return thread;
     }
 
     public void setState(GameState nextState) {
@@ -101,28 +121,57 @@ public class GameFlowManager implements Runnable {
     }
 
     public boolean playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        // called = true;
+        synchronized (lastMovePlayed) {
+            if (playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide)) {
+                lastMovePlayed = true;
+                return true;
+            }
 
-        return playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide);
+            return false;
+        }
     }
 
     public boolean drawResourceDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawResourceDeckCard(IdToToken.get(playerId));
+        synchronized (lastMovePlayed) {
+            if (playerId.equals(getTurn()) && currentState.drawResourceDeckCard(IdToToken.get(playerId))) {
+                lastMovePlayed = true;
+                return true;
+            }
+            return false;
+        }
     }
 
     public boolean drawGoldDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId));
+        synchronized (lastMovePlayed) {
+            if (playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId))) {
+                lastMovePlayed = true;
+                return true;
+            }
+            return false;
+        }
     }
 
     public boolean drawVisibleResourceCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice);
+        synchronized (lastMovePlayed) {
+            if (playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice)) {
+                lastMovePlayed = true;
+                return true;
+            }
+            return false;
+        }
     }
 
     public boolean drawVisibleGoldCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(IdToToken.get(playerId), choice);
+        synchronized (lastMovePlayed) {
+            if (playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(IdToToken.get(playerId), choice)) {
+                lastMovePlayed = true;
+                return true;
+            }
+            return false;
+        }
     }
 
-    private String getTurn() {
+    public String getTurn() {
         return playersIds.get(turn % playersIds.size());
     }
 
@@ -143,6 +192,30 @@ public class GameFlowManager implements Runnable {
 
         turn += 1;
         setState(playCardState);
+    }
+
+    public Map<User, Boolean> getIsConnected() {
+        return isConnected;
+    }
+
+    public void setIsConnected(User user, Boolean isConnected) {
+        getIsConnected().put(user, isConnected);
+    }
+
+    public GameState getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(GameState state) {
+        currentState = state;
+    }
+
+    public void setTimeLimit(long timeLimit) {
+        this.timeLimit = timeLimit;
+    }
+
+    public long getTimeLimit() {
+        return this.timeLimit;
     }
 }
 

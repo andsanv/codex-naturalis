@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller.states;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.card.Card;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
@@ -21,11 +22,18 @@ public class SetupState extends GameState {
         Collections.shuffle(gameFlowManager.playersIds);
 
         // players choose their token
-        playerIds.forEach(playerId -> {
-            // TODO player chooses token
-            PlayerToken chosen = null;
-            IdToToken.put(playerId, chosen);
-        });
+
+        int counter = 0;                                                // for testing reasons, actual implementation is below
+        for(String playerId : playerIds) {                              // for testing reasons, actual implementation is below
+            IdToToken.put(playerId, PlayerToken.values()[counter]);     // for testing reasons, actual implementation is below
+            counter += 1;                                               // for testing reasons, actual implementation is below
+        }                                                               // for testing reasons, actual implementation is below
+
+        // playerIds.forEach(playerId -> {
+        //     // TODO player chooses token
+        //      PlayerToken chosen = null;
+        //      IdToToken.put(playerId, chosen);
+        // });
 
         gameModelUpdater.setScoreTrack(new ArrayList<>(IdToToken.values()));
 
@@ -35,7 +43,8 @@ public class SetupState extends GameState {
 
         gameFlowManager.IdToToken.values().forEach(token -> {
             StarterCard starterCard = gameFlowManager.gameModelUpdater.drawStarterCard().get();
-            CardSide chosenCardSide = null;     // TODO player chooses card side to play
+
+            CardSide chosenCardSide = CardSide.BACK;     // TODO player chooses card side to play
 
             tokenToStarterCard.put(token, starterCard);
             tokenToCardSide.put(token, chosenCardSide);
@@ -48,7 +57,7 @@ public class SetupState extends GameState {
             ObjectiveCard firstObjectiveCard = gameFlowManager.gameModelUpdater.drawObjectiveCard().get();
             ObjectiveCard secondObjectiveCard = gameFlowManager.gameModelUpdater.drawObjectiveCard().get();
 
-            ObjectiveCard chosenObjectiveCard = null; // TODO player chooses objectiveCard
+            ObjectiveCard chosenObjectiveCard = firstObjectiveCard; // TODO player chooses objectiveCard
             tokenToObjectiveCard.put(playerToken, chosenObjectiveCard);
         }
 
@@ -70,6 +79,6 @@ public class SetupState extends GameState {
         gameFlowManager.gameModelUpdater.setCommonObjectives(commonObjectives);
 
         // transition
-        gameFlowManager.currentState = gameFlowManager.playCardState;
+        gameFlowManager.setCurrentState(gameFlowManager.playCardState);
     }
 }
