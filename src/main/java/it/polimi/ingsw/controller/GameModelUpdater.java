@@ -182,9 +182,24 @@ public class GameModelUpdater {
         return model.getScoreTrack().isGameFinished();
     }
 
+    /**
+     * Checks whether one of the two decks is empty
+     *
+     * @return A boolean
+     */
     public boolean someDecksEmpty() {
         return model.getResourceCardsDeck().isEmpty() || model.getGoldCardsDeck().isEmpty();
     }
+
+    /**
+     * Adds a player to the tokenToPlayer map in the model. Used in the setup phase of the game
+     *
+     * @param token PlayerToken chosen by the player
+     * @param starterCard StarterCard drawn by the player
+     * @param starterCardSide StarterCard chosen by the player
+     * @param objectiveCard ObjectiveCard chosen by the player
+     * @return A boolean that depends on whether the player was added or not
+     */
     public boolean addPlayer(PlayerToken token, StarterCard starterCard, CardSide starterCardSide, ObjectiveCard objectiveCard) {
         if(model.tokenToPlayer.containsKey(token))
             return false;

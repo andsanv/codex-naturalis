@@ -12,11 +12,17 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents the initial phase of the game, where the model is set up, and players choose their tokens, starter cards and objective cards
+ */
 public class SetupState extends GameState {
     public SetupState(GameFlowManager gameFlowManager) {
         super(gameFlowManager);
     }
 
+    /**
+     * Set up is done through this method
+     */
     @Override
     public void setup() {
         Collections.shuffle(gameFlowManager.playersIds);

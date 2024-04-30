@@ -10,13 +10,33 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A GameState refers to a state of the gameFlowManager (state machine), implemented using the state pattern
+ * GameState is an abstract class, from which the actual state classes inherit the methods that will eventually be re-implemented
+ */
 public abstract class GameState {
-    public GameFlowManager gameFlowManager;
-    public GameModelUpdater gameModelUpdater;
-    public List<String> playerIds;
-    public Map<String, PlayerToken> IdToToken;
+    /**
+     * The state machine
+     */
+    protected GameFlowManager gameFlowManager;
 
+    protected GameModelUpdater gameModelUpdater;
 
+    /**
+     * The list of players in the game
+     */
+    protected List<String> playerIds;
+
+    /**
+     * A map from players' ids (a string) to their game token
+     */
+    protected Map<String, PlayerToken> IdToToken;
+
+    /**
+     * GameState constructor
+     *
+     * @param gameFlowManager the object containing the state machine
+     */
     GameState(GameFlowManager gameFlowManager){
         this.gameFlowManager = gameFlowManager;
         this.gameModelUpdater = gameFlowManager.gameModelUpdater;

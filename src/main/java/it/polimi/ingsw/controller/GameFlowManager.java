@@ -13,13 +13,32 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a single game
+ * It contains the in-game connections to the clients, the state machine (and the relative states) and the model
+ * Implemented as a runnable in order to be able to run more games on a single server
+ */
+
 
 public class GameFlowManager implements Runnable {
+    /**
+     * Part of the controller that updates the model
+     */
     public GameModelUpdater gameModelUpdater;
 
+    /**
+     * Represents the lobby, or the "room" containing the players (more games can be started sequentially from a single lobby)
+     */
     private Lobby lobby;
+
+    /**
+     * Map that keeps track of active connections (not AFK players)
+     */
     private Map<User, Boolean> isConnected;
 
+    /**
+     * States of the state machine
+     */
     public GameState setupState;
     public GameState playCardState;
     public GameState drawCardState;
@@ -27,16 +46,38 @@ public class GameFlowManager implements Runnable {
 
     private GameState currentState;
 
+    /**
+     * List containing players' ids
+     */
     public List<String> playersIds;
+
+    /**
+     * Map from players' ids to their token
+     */
     public Map<String, PlayerToken> IdToToken;
 
+    /**
+     * Variables to keep track of the turn / round of the game
+     */
     public Integer turn = 0;
     public Integer round = 0;
     public Boolean isLastRound = false;
 
-    private long timeLimit = 30;
+    /**
+     * Time limit for a player to make his move (in seconds)
+     */
+    private long timeLimit = 60;
+
+    /**
+     * Boolean used by the timer to tell if a player has already made a move or not
+     */
     private Boolean lastMovePlayed = false;
 
+    /**
+     * GameFlowManager constructor
+     *
+     * @param lobby The lobby from which the game was started
+     */
     public GameFlowManager(Lobby lobby) {
         this.lobby = lobby;
         isConnected = lobby.getUsers().stream()
@@ -54,6 +95,9 @@ public class GameFlowManager implements Runnable {
         this.currentState = this.setupState;
     }
 
+    /**
+     * Override of the Runnable::run method. From this method, the setup phase, the in-game phase and the post game phase are managed
+     */
     @Override
     public void run() {
         // pre-game phase
@@ -72,6 +116,14 @@ public class GameFlowManager implements Runnable {
         currentState.postGame();
     }
 
+    /**
+     * Synchronized, allows to handle a players' turn. A timer is started as soon as player's turn starts
+     * If the timer expires before the player makes the move, the turn is skipped
+     * Otherwise, the Boolean flag "lastMovePlayed" is set to true by the method called and the timer stops
+     * This situation is all managed in the run() method
+     *
+     * @return The timer thread
+     */
     private Thread handleTurn() {
         Date start = new Date();
         lastMovePlayed = false;
@@ -86,7 +138,7 @@ public class GameFlowManager implements Runnable {
 
                 if((new Date()).getTime() - start.getTime() > timeLimit * 1000) {
                     if(currentState.equals(playCardState)) {
-                        increaseTurn();
+                        manageTurn();
                     }
                     else {
                         Random rand = new Random();
@@ -120,6 +172,15 @@ public class GameFlowManager implements Runnable {
         currentState = nextState;
     }
 
+    /**
+     * Allows a player (String) to make a move, which can succeed only if the state machina is in the PlayCardState
+     *
+     * @param playerId Player ID of the player playing the card
+     * @param coords Coordinates on which to place the card
+     * @param card Card to place
+     * @param cardSide Side to play
+     * @return A boolean that depends on whether the operation was successful or not
+     */
     public boolean playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
         synchronized (lastMovePlayed) {
             if (playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide)) {
@@ -131,6 +192,12 @@ public class GameFlowManager implements Runnable {
         }
     }
 
+    /**
+     * Allows a player to draw from the ResourceCards deck
+     *
+     * @param playerId Player ID of the player drawing the card
+     * @return A boolean that depends on whether the operation was successful or not
+     */
     public boolean drawResourceDeckCard(String playerId) {
         synchronized (lastMovePlayed) {
             if (playerId.equals(getTurn()) && currentState.drawResourceDeckCard(IdToToken.get(playerId))) {
@@ -141,6 +208,12 @@ public class GameFlowManager implements Runnable {
         }
     }
 
+    /**
+     * Allows a player to draw from the GoldCards deck
+     *
+     * @param playerId Player ID of the player drawing the card
+     * @return A boolean that depends on whether the operation was successful or not
+     */
     public boolean drawGoldDeckCard(String playerId) {
         synchronized (lastMovePlayed) {
             if (playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId))) {
@@ -151,6 +224,13 @@ public class GameFlowManager implements Runnable {
         }
     }
 
+    /**
+     * Allows a player to draw from the list of visible ResourceCards
+     *
+     * @param playerId Player ID of the player drawing the card
+     * @param choice The offset of the card chosen in the list
+     * @return A boolean that depends on whether the operation was successful or not
+     */
     public boolean drawVisibleResourceCard(String playerId, int choice) {
         synchronized (lastMovePlayed) {
             if (playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice)) {
@@ -161,6 +241,13 @@ public class GameFlowManager implements Runnable {
         }
     }
 
+    /**
+     * Allows a player to draw from the list of visible GoldCards
+     *
+     * @param playerId Player ID of the player drawing the card
+     * @param choice The offset of the card chosen in the list
+     * @return A boolean that depends on whether the operation was successful or not
+     */
     public boolean drawVisibleGoldCard(String playerId, int choice) {
         synchronized (lastMovePlayed) {
             if (playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(IdToToken.get(playerId), choice)) {
@@ -171,16 +258,20 @@ public class GameFlowManager implements Runnable {
         }
     }
 
+    /**
+     * @return The ID of the player whose turn it is
+     */
     public String getTurn() {
         return playersIds.get(turn % playersIds.size());
     }
 
-    public void increaseTurn() {
+    /**
+     * Manages the turns, the rounds and checks whether the next turn will be the last
+     */
+    public void manageTurn() {
         if(turn % playersIds.size() == playersIds.size() - 1) {
             if(isLastRound) {
-                // stuff
                 setState(postGameState);
-                // currentState.handlePostGame();
                 return;
             }
             else {
@@ -218,10 +309,3 @@ public class GameFlowManager implements Runnable {
         return this.timeLimit;
     }
 }
-
-/**
- * The Game class represents a single game.
- * It contains the in-game connections to the clients, the controller and the
- * model.
- */
-

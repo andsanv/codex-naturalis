@@ -1,16 +1,42 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * State that represents the "post-game" part of the game. No actions on the boards are allowed
+ */
 public class PostGameState extends GameState {
     public PostGameState(GameFlowManager gameFlowManager) {
         super(gameFlowManager);
     }
 
+    /**
+     * Manages post-game operations
+     *
+     * @return A boolean that depends on whether the game ended successfully or not
+     */
     @Override
     public boolean postGame() {
-        // TODO check points and choose winner
+        List<Pair<PlayerToken, Integer>> results = gameModelUpdater
+                .getModel()
+                .getScoreTrack()
+                .getScores()
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(entry -> new Pair<>(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
 
-        return false;
+        PlayerToken winner = results.stream().findFirst().map(x -> x.first).get();
+
+        return true;
     }
 }
