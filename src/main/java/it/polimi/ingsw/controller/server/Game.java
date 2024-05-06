@@ -15,7 +15,7 @@ public class Game {
     private Lobby lobby;
     private Map<User, Boolean> isConnected;
 
-    private GameFlowManager game;
+    private GameFlowManager gameFlowManager;
 
     /**
      * When created, all clients are disconnected by default.

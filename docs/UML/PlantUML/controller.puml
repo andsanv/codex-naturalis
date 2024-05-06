@@ -1,5 +1,7 @@
 @startuml
 
+skinparam linetype ortho
+
 scale 4000x4000
 
 package controller {
@@ -50,9 +52,7 @@ package controller {
     package server {
 
         class Game {
-            - lobby: Lobby
             - isConnected: Map<User, Boolean>
-            - game: GameFlowManager
             + Game(lobby: Lobby)
         }
 
@@ -115,8 +115,6 @@ package controller {
     }
 
     class GameFlowManager {
-        - gameModelUpdater: GameModelUpdater
-        - lobby: Lobby
         - isConnected: Map<User, Boolean>
         - setupState: GameState
         - playCardState: GameState
@@ -167,32 +165,24 @@ package controller {
         + setCommonObjectives(commonObjectives: List<ObjectiveCard>)
     }
 
-   GameState *-- GameFlowManager: controls
-   GameFlowManager *-- Lobby: has
-   GameFlowManager *-- GameModelUpdater: uses
-   Lobby "1"--o "1" User: has
-   LobbyInfo "1"--o "1" UserInfo: has
-   Server --|> Lobby: manages
-   Server --|> User: manages
-   Server --|> VirtualMainView: communicates with
+   GameState <--up-- GameFlowManager: controls
+   GameFlowManager -->"1" Lobby: has
+   GameFlowManager -right-> GameModelUpdater: uses
+   Lobby "1"--o "1..4" User: has
+   LobbyInfo "1" --o "1..4" UserInfo: has
+   LobbyInfo "1" --  Lobby
 
-   GameFlowManager -- SetupState: contains
-   GameFlowManager -- DrawCardState: contains
-   GameFlowManager -- PlayCardState: contains
-   GameFlowManager -- PostGameState: contains
-
-   GameFlowManager -- GameModelUpdater: uses
-
-   User -- User: has
+   Game "1"-"1" GameFlowManager: has
+   Game "1"--"1" Lobby: has
 
    GameState <|-- SetupState
    GameState <|-- DrawCardState
    GameState <|-- PlayCardState
    GameState <|-- PostGameState
 
-   Server -- Lobby: has
-   Server -- User: has
-   Server -- VirtualMainView: has
+   UserInfo "1"--"1" User
 
-   controller.server --up--> controller.states
+   Server -- Lobby: has
+   Server "1"--"0..*" User: has
+
 @enduml
