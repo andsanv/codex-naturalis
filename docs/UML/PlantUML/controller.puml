@@ -114,7 +114,9 @@ package controller {
 
     }
 
-    class GameFlowManager {
+    class GameFlowManager implements GameUpdateObserver {
+        - eventsToBroadcast: BlockingQueue<GameUpdate>
+        + receivedEvents: BlockingQueue<GameCommand>
         - isConnected: Map<User, Boolean>
         - setupState: GameState
         - playCardState: GameState

@@ -1,0 +1,282 @@
+@startuml network
+
+skinparam linetype ortho
+
+scale 4000x4000
+
+
+package network {
+    ' Client to server game action
+    abstract class GameCommand {
+        + execute(GameFlowManager gameFlowManager)
+    }
+
+    class PlayCardCommand extends GameCommand {
+        - int cardId
+        - CardSide playedSide
+        - Coords coordinates
+    }
+
+    class DrawResourceCardCommand extends GameCommand {
+    }
+
+    class DrawGoldCardCommand extends GameCommand {
+    }
+
+    class DrawVisibleResourceCardCommand extends GameCommand {
+        - int chosenVisibleCard
+    }
+
+    class DrawVisibleGoldCardCommand extends GameCommand {
+        - int chosenVisibleCard
+    }
+
+    class SelectStarterCardSideCommand extends GameCommand {
+        - CardSide selectedSide
+    }
+
+    class SelectSecretObjective extends GameCommand {
+        - int selectedObjectiveCardId
+    }
+
+    class DirectMessageCommand extends GameCommand {
+        - PlayerInfo receiver
+        - PlayerInfo message
+    }
+
+    class GroupMessageCommand extends GameCommand {
+        - PlayerInfo message
+    }
+
+    ' --------------------------------
+
+    ' Server to client message
+    abstract class GameUpdate {
+        - int idLobby
+        - int idEvent
+        + execute(GameUpdateHandler handler)
+    }
+
+    class ScoreTrackUpdate extends GameUpdate {
+        - PlayerInfo player
+        - int newScore
+        + execute(GameUpdateHandler handler)
+    }
+
+    class PlayedCardEvent extends GameUpdate {
+        - PlayerInfo player
+        - int playedCardId
+        - CardSide playedSide
+        - Coords coordinates
+        - int oldHandPosition
+        + execute(GameUpdateHandler handler)
+    }
+
+    class DrawnCard extends GameUpdate {
+        - PlayerInfo player
+        - int drawnCardId
+        - int position
+        + execute(GameUpdateHandler handler)
+    }
+
+    class DirectMessageEvent extends GameUpdate {
+        - PlayerInfo sender
+        - PlayerInfo receiver
+        - String message
+        + execute(GameUpdateHandler handler)
+    }
+
+    class GroupMessageEvent extends GameUpdate {
+        - PlayerInfo sender
+        - String message
+        + execute(GameUpdateHandler handler)
+    }
+
+    class CommonObjectivesEvent extends GameUpdate {
+        - int firstObjectCardId
+        - int secondObjectCardId
+        + execute(GameUpdateHandler handler)
+    }
+
+    class SecretObjectiveEvent extends GameUpdate {
+        - PlayerInfo player
+        - int objectCardId
+        + execute(GameUpdateHandler handler)
+    }
+
+    class TokenAssignmentEvent extends GameUpdate {
+        - PlayerInfo player
+        - PlayerToken token
+        + execute(GameUpdateHandler handler)
+    }
+
+    class CommonObjectiveScoreEvent extends GameUpdate {
+        - PlayerInfo player
+        - int score
+        + execute(GameUpdateHandler handler)
+    }
+
+    class SecretObjectiveScoreEvent extends GameUpdate {
+        - PlayerInfo player
+        - int score
+        + execute(GameUpdateHandler handler)
+    }
+
+    class PlayerResourcesEvent extends GameUpdate {
+        - PlayerInfo player
+        - Map<Element, Integer> playerResources
+        + execute(GameUpdateHandler handler)
+    }
+
+    ' ------------------------------
+
+    ' Client to server; server action request
+    abstract class ServerCommand {
+        + execute(ServerActions server)
+    }
+
+    class JoinLobbyCommand extends ServerCommand {
+        - int lobbyId
+    }
+
+    class LeaveLobbyCommand extends ServerCommand {
+    }
+
+    class CreateLobbyCommand extends ServerCommand {
+    }
+
+    GameUpdate --d[hidden]-> GameCommand
+    GameUpdate --d[hidden]-> ServerCommand
+    GameCommand -l[hidden]-> ServerCommand
+}
+package client {
+    interface GameUpdateHandler {
+        + handleDirectMessage()
+        + handleGroupMessage()
+        + handleScoreTrackUpdated()
+        + handlePlayedCard()
+        + handleDrawnCard()
+        + handleChosenCommonObjectives()
+        + handleChosenSecretObjective()
+        + handleStarterCardSelf()
+        + handleTokenAssignment()
+        ' TODO add gameUpdate
+        + handleReconnection()
+    }
+
+    ' TODO add eventQueue to a client class
+
+    abstract class UserInterface implements GameUpdateHandler {
+
+    }
+
+    class TUI extends UserInterface {
+
+    }
+
+    class GUI extends UserInterface {
+
+    }
+
+    interface VirtualMainView extends Remote {
+        + sendLobbies(List<LobbyInfo> lobbies)
+        + sendError(String error)
+    }
+
+    class RMIMainView extends UnicastRemoteObject implements VirtualMainView {
+
+    }
+
+    class SocketMainView implements VirtualMainView {
+
+    }
+
+    interface VirtualGameView extends Remote {
+        + sendUpdate(GameUpdate update)
+        + sendError(String error)
+    }
+
+    class RMIGameView extends UnicastRemoteObject implements VirtualGameView {
+
+    }
+
+    class SocketGameView implements VirtualGameView {
+
+    }
+}
+package server {
+    enum Server {
+        + INSTANCE
+
+        - ConcurrentHashMap<ConnectedClients, Boolean> connectedClients
+
+        + createLobby(): LobbyInfo
+        + joinLobby(): boolean
+        + startGame(): boolean
+    }
+
+    ' Model classes implement this interface
+    interface GameUpdateObservable {
+        + addObserver(GameUpdateObserver observer)
+        + notify(GameUpdate gameUpdate)
+    }
+
+    interface GameUpdateObserver {
+        + update()
+    }
+
+    class Game implements Runnable, GameUpdateObserver {
+        - GameFlowManager gameControllerStateMachine
+
+        - BlockingQueue<GameUpdate> broadcastQueue
+    }
+
+
+
+    interface VirtualMainServer extends Remote {
+        + connect(VirtualMainView client, UserInfo user)
+        + send(ServerCommand command)
+        + joinGame(UserInfo user): GameConnectionInfo
+        + getAllEventsSinceStart(): List<GameUpdate>
+    }
+
+    class RMIMainServer extends UnicastRemoteObject implements VirtualMainServer {
+
+    }
+
+    class SocketMainServer implements VirtualMainServer {
+
+    }
+
+    interface VirtualGameServer extends Remote {
+        + connect(VirtualGameView client)
+        + send(GameCommand command)
+    }
+
+
+    class RMIGameServer extends UnicastRemoteObject implements VirtualGameServer {
+    }
+
+    class SocketGameServer implements VirtualGameServer {
+
+    }
+
+    abstract class GameConnectionInfo {}
+
+    class RMIGameConnectionInfo extends GameConnectionInfo {
+        + String rmiRemoteObjectName
+    }
+
+    class SocketGameConnectionInfo extends GameConnectionInfo {
+        + String address
+        + int port
+    }
+
+    GameConnectionInfo -- VirtualMainServer
+}
+
+client ----u[hidden]-> network
+server ----u[hidden]-> client
+
+
+@enduml

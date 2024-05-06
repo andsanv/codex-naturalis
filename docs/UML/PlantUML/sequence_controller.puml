@@ -1,0 +1,60 @@
+@startuml
+
+participant Server as "Server"
+
+actor Player
+participant "GameFlowManager" as GameFlowManager
+participant "SetupState" as SetupState
+participant "PlayCardState" as PlayCardState
+participant "DrawCardState" as DrawCardState
+participant "PostGameState" as PostGameState
+participant "GameModelUpdater" as GameModelUpdater
+
+activate Server
+activate Player
+Server -> GameFlowManager: setup()
+activate GameFlowManager
+GameFlowManager -> GameModelUpdater: GameModelUpdater()
+activate GameModelUpdater
+GameModelUpdater --> GameFlowManager
+GameFlowManager -> SetupState: setup()
+activate SetupState
+SetupState -> GameModelUpdater: setScoreTrack()
+GameModelUpdater --> SetupState: scoretracks set
+SetupState -> GameModelUpdater: setCommonObjectives()
+GameModelUpdater --> SetupState: common objectives set
+SetupState --> GameFlowManager: setup phase completed
+deactivate SetupState
+GameFlowManager --> Player: waiting for move
+Player -> GameFlowManager: playCard()
+GameFlowManager -> PlayCardState: playCard()
+activate PlayCardState
+PlayCardState -> GameModelUpdater: playCard()
+GameModelUpdater -> GameModelUpdater: play card logic
+GameModelUpdater --> PlayCardState: success/failure
+PlayCardState --> GameFlowManager: success/failure
+deactivate PlayCardState
+GameFlowManager --> Player: success/failure
+Player -> GameFlowManager: drawCard()
+GameFlowManager -> DrawCardState: drawCard()
+activate DrawCardState
+DrawCardState -> GameModelUpdater: drawCard()
+GameModelUpdater -> GameModelUpdater: draw card logic
+GameModelUpdater --> DrawCardState: success/failure
+DrawCardState --> GameFlowManager: success/failure
+deactivate DrawCardState
+GameFlowManager --> Player: success/failure
+
+GameFlowManager -> PostGameState: postGame()
+activate PostGameState
+PostGameState -> GameModelUpdater: post game phase ops
+GameModelUpdater --> PostGameState
+deactivate GameModelUpdater
+PostGameState --> GameFlowManager: results and winner
+deactivate PostGameState
+GameFlowManager --> Player: results and winner
+deactivate Player
+GameFlowManager --> Server
+deactivate GameFlowManager
+
+@enduml
