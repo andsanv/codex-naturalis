@@ -1,0 +1,38 @@
+\documentclass{article}
+
+\title{Peer Review \#2}
+\author{Samuele Pischedda, Angelo Prete, Gabriele Raveggi, Andrea Sanvito\\GC11}
+\date{9 Maggio 2024}
+
+\begin{document}
+
+    \maketitle
+
+    Revisione del MVC UML del gruppo GC01.
+
+    \section{Aspetti Positivi}
+    \begin{itemize}
+        \item Interfaccia comune tra socket e RMI.
+        \item Corretto utilizzo dell'astrazione per la classe client.
+        \item L'utilizzo di una classe astratta come azione (pattern command) è positivo per l'estendibilità.
+        \item La divisione tra controller principale e controller della room permette di dividere le responsabilità e
+        supportare più partite, poiché ogni controller può essere eseguito nel proprio thread.
+    \end{itemize}
+
+    \section{Aspetti Negativi}
+    \begin{itemize}
+        \item In generale, è meglio non inviare oggetti che son già contenuti nel \texttt{model} tra client e server, bensì un ID o una variabile che rappresenti quell'oggetto (e.g. le azioni \texttt{flipCard} e \texttt{playCard}, che hanno il parametro \texttt{PlayableCard}).
+        \item Nelle azioni, il mainController potrebbe essere utilizzato come parametro del metodo \texttt{execute()} piuttosto che come attributo della classe azione.
+        In questo modo, il comando può essere creato dal client piuttosto che dal server.
+        Così, il client può inviare direttamente le azioni, anziché chiamare diversi metodi a seconda dell'azione che si desidera eseguire.
+        In sintesi, il client avrà un metodo chiamato \texttt{sendAction(Action action)}, che invierà direttamente l'azione al server, invece di chiamare un metodo sul server per ogni specifica mossa che il client desidera effettuare.
+    \end{itemize}
+
+    \section{Confronto tra le Architetture}
+    \begin{itemize}
+        \item Noi abbiamo preferito utilizzare una connessione principale al \texttt{mainServer} per la gestione delle lobby, per avviare le partite e gestire con una nuova connessione per ogni partita in modo da dividere le responsabilità.
+        \item Per la gestione delle notifiche inviate dal model, abbiamo creato una classe astratta \texttt{GameUpdate} (opportunamente implementata per i vari update) inviata al client tramite un unico metodo \texttt{send}.
+        \item Per quanto riguarda l'implementazione dei socket, noi abbiamo deciso di emulare il comportamento di RMI tramite socket, consigliamo di usare l'interfaccia di Java \texttt{Serializable} in modo da poter inviare oggetti senza dover costruire da zero un parser.
+    \end{itemize}
+
+\end{document}
