@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.player;
 
+import it.polimi.ingsw.controller.observer.Observable;
 import it.polimi.ingsw.model.card.PlayableCard;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * Class that represents the three cards in a player's hand.
  */
-public class PlayerHand {
+public class PlayerHand extends Observable {
     /**
      * The list that holds the cards in the player's hand.
      */

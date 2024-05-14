@@ -115,7 +115,7 @@ public interface VirtualGameView extends Remote {
 
     /**
      * Displays an error message.
-     * This function is usually called when the client attemps an illegal move.
+     * This function is usually called when the client attempts an illegal move.
      * 
      * @param error error message to display
      * @throws RemoteException

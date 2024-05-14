@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.player;
 
+import it.polimi.ingsw.controller.observer.Observable;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  *
  * @see Player
  */
-public class PlayerBoard {
+public class PlayerBoard extends Observable {
     /**
      * This attribute holds the starter card's coordinates in the player's board.
      */

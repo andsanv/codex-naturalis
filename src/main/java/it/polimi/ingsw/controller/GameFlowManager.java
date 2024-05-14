@@ -129,7 +129,6 @@ public class GameFlowManager implements Runnable {
      */
     private void handleTurn() {
         Timer timer = new Timer();
-        GameCommand command = null;
         timeLimitReached = false;
 
         TimerTask timeElapsedTask = new TimerTask() {
@@ -151,13 +150,14 @@ public class GameFlowManager implements Runnable {
 
             synchronized (timeLimitReached) {
                 if (!timeLimitReached) {
-                    commands.poll();
-
-                    if (command.execute(this)) {
+                    if (commands.poll().execute(this)) {
                         timer.cancel();
                         switchTurn();
 
                         return;
+                    }
+                    else {
+                        // view.displayError("error");
                     }
                 }
                 else break;
@@ -229,7 +229,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawGoldDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId)));
+        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId));
     }
 
     /**
@@ -240,7 +240,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawVisibleResourceCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice))
+        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice);
     }
 
     /**

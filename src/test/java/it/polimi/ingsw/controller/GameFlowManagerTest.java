@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
+import it.polimi.ingsw.distributed.commands.PlayCardCommand;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.PointsType;
 import it.polimi.ingsw.model.card.ResourceCard;
@@ -108,7 +109,8 @@ class GameFlowManagerTest {
         String secondPlayer = firstPlayer.equals(user1.name) ? user2.name : user1.name;
 
         // firstPlayer's turn. He should be able to play the card
-        assertTrue(gameFlowManager.playCard(firstPlayer, new Coords(1,1), resourceCard, CardSide.FRONT));
+        assertTrue(gameFlowManager.addCommand(new PlayCardCommand(firstPlayer, new Coords(1,1), resourceCard, CardSide.FRONT)));
+        assertTrue(gameFlowManager.playCard());
         gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
         gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().addCard(resourceCard);
 
