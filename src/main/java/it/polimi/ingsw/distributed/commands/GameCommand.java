@@ -5,5 +5,5 @@ import java.io.Serializable;
 import it.polimi.ingsw.controller.GameFlowManager;
 
 public abstract class GameCommand implements Serializable {
-    abstract void execute(GameFlowManager gameFlowManager);
+    public abstract void execute(GameFlowManager gameFlowManager);
 }

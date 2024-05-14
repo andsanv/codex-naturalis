@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.states.*;
+import it.polimi.ingsw.distributed.commands.GameCommand;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.PlayableCard;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,7 +73,9 @@ public class GameFlowManager implements Runnable {
     /**
      * Boolean used by the timer to tell if a player has already made a move or not
      */
-    private Boolean lastMovePlayed = false;
+    private Boolean timeLimitReached = false;
+
+    private final Queue<GameCommand> commands;
 
     /**
      * GameFlowManager constructor
@@ -92,6 +96,7 @@ public class GameFlowManager implements Runnable {
         this.setupState = new SetupState(this);
         this.postGameState = new PostGameState(this);
 
+        this.commands = new LinkedBlockingQueue<>();
         this.currentState = this.setupState;
     }
 
@@ -105,11 +110,9 @@ public class GameFlowManager implements Runnable {
 
         // in-game phase
         while(!currentState.equals(postGameState)) {
-            Thread thread = handleTurn();
             try {
-                thread.join();
-            }
-            catch(InterruptedException e) {}
+                (new Thread(this::handleTurn)).join();
+            } catch (InterruptedException e) {}
         }
 
         // post-game phase
@@ -124,52 +127,76 @@ public class GameFlowManager implements Runnable {
      *
      * @return The timer thread
      */
-    private Thread handleTurn() {
-        Date start = new Date();
-        lastMovePlayed = false;
+    private void handleTurn() {
+        Timer timer = new Timer();
+        timeLimitReached = false;
 
-        Thread thread = new Thread(() -> {
-            while(true) {
-                synchronized(lastMovePlayed) {
-                    if(lastMovePlayed) {
-                        return;
-                    }
-                }
-
-                if((new Date()).getTime() - start.getTime() > timeLimit * 1000) {
-                    if(currentState.equals(playCardState)) {
-                        manageTurn();
-                    }
-                    else {
-                        Random rand = new Random();
-
-                        switch(rand.nextInt(4)) {
-                            case 0:
-                                drawResourceDeckCard(getTurn());
-                                break;
-                            case 1:
-                                drawGoldDeckCard(getTurn());
-                                break;
-                            case 2:
-                                drawVisibleResourceCard(getTurn(), rand.nextInt(2));
-                                break;
-                            case 3:
-                                drawVisibleGoldCard(getTurn(), rand.nextInt(2));
-                                break;
-                        }
-                    }
-                    return;
+        TimerTask timeElapsedTask = new TimerTask() {
+            @Override
+            public void run() {
+                synchronized (timeLimitReached) {
+                    timeLimitReached = true;
                 }
             }
-        });
+        };
 
-        thread.start();
+        timer.schedule(timeElapsedTask, timeLimit);
 
-        return thread;
+        while(true) {
+            if(commands.isEmpty())
+                try {
+                    commands.wait();    // waits until a command is added to the queue
+                } catch (InterruptedException e) {}
+
+            synchronized (timeLimitReached) {
+                if (!timeLimitReached) {
+                    if (commands.poll().execute(this)) {
+                        timer.cancel();
+                        switchTurn();
+
+                        return;
+                    }
+                    else {
+                        // view.displayError("error");
+                    }
+                }
+                else break;
+            }
+        }
+
+        if(currentState.equals(drawCardState)) drawRandomCard(getTurn());
+
+        switchTurn();
     }
 
     public void setState(GameState nextState) {
         currentState = nextState;
+    }
+
+    public void addCommand(GameCommand command) {
+        synchronized (commands) {   // to make the two lines atomic
+            commands.offer(command);
+            commands.notifyAll();
+        }
+    }
+
+    public void drawRandomCard(String playerId) {
+        Random rand = new Random();
+
+        switch (rand.nextInt(4)) {
+            case 0:
+                drawResourceDeckCard(playerId);
+                break;
+            case 1:
+                drawGoldDeckCard(playerId);
+                break;
+            case 2:
+                drawVisibleResourceCard(playerId, rand.nextInt(2));
+                break;
+            case 3:
+                drawVisibleGoldCard(playerId, rand.nextInt(2));
+                break;
+        }
     }
 
     /**
@@ -182,14 +209,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        synchronized (lastMovePlayed) {
-            if (playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide)) {
-                lastMovePlayed = true;
-                return true;
-            }
-
-            return false;
-        }
+        return playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide);
     }
 
     /**
@@ -199,13 +219,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawResourceDeckCard(String playerId) {
-        synchronized (lastMovePlayed) {
-            if (playerId.equals(getTurn()) && currentState.drawResourceDeckCard(IdToToken.get(playerId))) {
-                lastMovePlayed = true;
-                return true;
-            }
-            return false;
-        }
+        return playerId.equals(getTurn()) && currentState.drawResourceDeckCard(IdToToken.get(playerId));
     }
 
     /**
@@ -215,13 +229,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawGoldDeckCard(String playerId) {
-        synchronized (lastMovePlayed) {
-            if (playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId))) {
-                lastMovePlayed = true;
-                return true;
-            }
-            return false;
-        }
+        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId));
     }
 
     /**
@@ -232,13 +240,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawVisibleResourceCard(String playerId, int choice) {
-        synchronized (lastMovePlayed) {
-            if (playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice)) {
-                lastMovePlayed = true;
-                return true;
-            }
-            return false;
-        }
+        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice);
     }
 
     /**
@@ -249,13 +251,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawVisibleGoldCard(String playerId, int choice) {
-        synchronized (lastMovePlayed) {
-            if (playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(IdToToken.get(playerId), choice)) {
-                lastMovePlayed = true;
-                return true;
-            }
-            return false;
-        }
+        return playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(IdToToken.get(playerId), choice);
     }
 
     /**
@@ -268,7 +264,7 @@ public class GameFlowManager implements Runnable {
     /**
      * Manages the turns, the rounds and checks whether the next turn will be the last
      */
-    public void manageTurn() {
+    public void switchTurn() {
         if(turn % playersIds.size() == playersIds.size() - 1) {
             if(isLastRound) {
                 setState(postGameState);

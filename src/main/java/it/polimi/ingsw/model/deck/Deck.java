@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.deck;
 
+import it.polimi.ingsw.controller.observer.Observable;
 import it.polimi.ingsw.model.card.Card;
 
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.Stack;
  * TODO: add javadoc, after discussion (see below)
  */
 // TODO discuss implementation of a deck factory/abstract factory
-public class Deck<T extends Card> {
+public class Deck<T extends Card> extends Observable {
     private final Stack<T> deck;
 
     public Optional<T> draw() {
