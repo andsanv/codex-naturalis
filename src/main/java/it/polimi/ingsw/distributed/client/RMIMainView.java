@@ -23,7 +23,7 @@ public class RMIMainView extends UnicastRemoteObject implements VirtualMainView,
     }
 
     @Override
-    public void sendError(String error) throws RemoteException {
+    public void receiveError(String error) throws RemoteException {
         // synchronized (printLock) {
         System.err.println("Error: " + error);
         // }

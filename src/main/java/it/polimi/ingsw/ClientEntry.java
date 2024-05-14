@@ -2,11 +2,10 @@ package it.polimi.ingsw;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import it.polimi.ingsw.distributed.client.RMIMainView;
-import it.polimi.ingsw.distributed.server.VirtualMainServer;
+import it.polimi.ingsw.distributed.client.SocketMainView;
+import it.polimi.ingsw.distributed.server.SocketMainServer;
 
 // Client entrypoint
 public class ClientEntry {
@@ -18,6 +17,8 @@ public class ClientEntry {
         //     System.out.println(s);
 
         // serverActions.getLobbies().stream().forEach(System.out::println);
+
+        // VirtualMainServer serverActions = new SocketMainServer(0);
 
         new Thread(new RMIMainView()).start();
     }

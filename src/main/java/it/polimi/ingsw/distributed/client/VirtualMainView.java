@@ -16,7 +16,7 @@ public interface VirtualMainView extends Remote, Serializable {
      * @param error error message to display
      * @throws RemoteException
      */
-    public void sendError(String error) throws RemoteException;
+    public void receiveError(String error) throws RemoteException;
 
     /**
      * Gives info on the connected client

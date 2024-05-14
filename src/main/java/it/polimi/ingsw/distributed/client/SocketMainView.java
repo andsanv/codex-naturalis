@@ -1,0 +1,61 @@
+package it.polimi.ingsw.distributed.client;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.rmi.RemoteException;
+import java.util.List;
+
+import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.controller.server.UserInfo;
+
+public class SocketMainView implements VirtualMainView, Runnable {
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+
+    public SocketMainView(String ip, int port) throws IOException {
+        socket = new Socket(ip, port);
+        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    }
+
+    @Override
+    public void receiveError(String error) throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sendError'");
+    }
+
+    @Override
+    public UserInfo getUserInfo() throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
+    }
+
+    @Override
+    public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'receiveLobbies'");
+    }
+
+    @Override
+    public void run() {
+        String input;
+        try {
+            while ((input = in.readLine()) != null) {
+                switch (input) {
+                    case "sendError":
+                        
+                        break;
+                
+                    default:
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
