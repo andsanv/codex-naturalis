@@ -1,10 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.InitalStage">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.Gui">
    <children>
-      <Button fx:id="btn1" layoutX="290.0" layoutY="168.0" mnemonicParsing="false" text="Button" />
+      <GridPane fx:id="gridPane" onKeyPressed="#handleEnterKeyPressed" prefHeight="393.0" prefWidth="600.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="175.0" minWidth="10.0" prefWidth="154.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="394.0" minWidth="10.0" prefWidth="278.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="217.0" minWidth="10.0" prefWidth="168.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="127.0" minHeight="6.0" prefHeight="36.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="256.0" minHeight="10.0" prefHeight="226.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <VBox fx:id="VboxCentral" alignment="CENTER_LEFT" prefHeight="256.0" prefWidth="303.0" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+               <children>
+                  <Text fx:id="nicknameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Inserisci qui il tuo nickname:" />
+                  <TextField fx:id="nicknameTextField" promptText="Nickname" />
+                  <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="278.0">
+                     <children>
+                        <Button fx:id="submitNickname" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#handleSubmitClick" text="Submit" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </GridPane>
    </children>
 </AnchorPane>
