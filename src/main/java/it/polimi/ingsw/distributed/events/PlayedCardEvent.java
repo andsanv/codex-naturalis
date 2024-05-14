@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.Coords;
 
 /**
- * Event to signal that a card is played.
+ * Event to signal that a card has been played.
  */
 public final class PlayedCardEvent extends GameEvent {
     private final UserInfo sender;

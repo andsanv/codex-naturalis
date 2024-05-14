@@ -4,7 +4,7 @@ import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
 
 /**
- * Event to signal that a secret objective has been assigned.
+ * Event to signal that a secret objective has been assingned to a player.
  */
 public final class SecretObjectiveEvent extends GameEvent {
     private final UserInfo player;

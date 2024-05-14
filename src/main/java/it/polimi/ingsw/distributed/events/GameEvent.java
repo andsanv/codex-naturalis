@@ -3,7 +3,7 @@ package it.polimi.ingsw.distributed.events;
 import it.polimi.ingsw.distributed.GameEventHandler;
 
 /**
- * A generic game event
+ * A generic game event.
  */
 public abstract class GameEvent {
     /**

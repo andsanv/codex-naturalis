@@ -5,7 +5,7 @@ import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
- * Event to signal that a group message has been sent.
+ * Event to signal the token assigned to a player.
  */
 public final class TokenAssignmentEvent extends GameEvent {
     private final UserInfo player;

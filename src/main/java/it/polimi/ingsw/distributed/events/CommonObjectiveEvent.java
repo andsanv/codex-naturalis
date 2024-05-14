@@ -3,7 +3,7 @@ package it.polimi.ingsw.distributed.events;
 import it.polimi.ingsw.distributed.GameEventHandler;
 
 /**
- * Event to signal that a card is played.
+ * Event to signal chosen common objectives.
  */
 public final class CommonObjectiveEvent extends GameEvent {
     private final int firstCommonObjectiveId;
