@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.distributed.client;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -10,7 +10,7 @@ import java.util.List;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.actions.VirtualMainServer;
+import it.polimi.ingsw.distributed.server.VirtualMainServer;
 
 public class RMIMainView extends UnicastRemoteObject implements VirtualMainView, Runnable {
     private UserInfo userInfo;
@@ -23,35 +23,10 @@ public class RMIMainView extends UnicastRemoteObject implements VirtualMainView,
     }
 
     @Override
-    public void displayError(String error) throws RemoteException {
+    public void sendError(String error) throws RemoteException {
         // synchronized (printLock) {
-            System.err.println("Error: " + error);
+        System.err.println("Error: " + error);
         // }
-    }
-
-    @Override
-    public void setLobbies(List<LobbyInfo> lobbies) throws RemoteException {
-        // synchronized (printLock) {
-            System.out.println("List of current lobbies: ");
-            lobbies.forEach(System.out::println);
-        // }
-    }
-
-    // TODO add incremental lobbies
-
-    @Override
-    public void addLobby(LobbyInfo lobby) throws RemoteException {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void deleteLobby(int lobbyId) throws RemoteException {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void updateLobby(LobbyInfo lobby) throws RemoteException {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -74,7 +49,6 @@ public class RMIMainView extends UnicastRemoteObject implements VirtualMainView,
             LobbyInfo lobby = virtualMainServer.createLobby(userInfo);
             System.out.println(lobby);
 
-
             while (true) {
                 Thread.sleep(1000);
             }
@@ -91,5 +65,11 @@ public class RMIMainView extends UnicastRemoteObject implements VirtualMainView,
     @Override
     public UserInfo getUserInfo() throws RemoteException {
         return userInfo;
+    }
+
+    @Override
+    public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
+        System.out.println("Lobbies:");
+        lobbies.stream().forEach(System.out::println);
     }
 }

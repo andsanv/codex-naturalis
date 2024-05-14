@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed;
+package it.polimi.ingsw.distributed.server;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -8,15 +8,14 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.client.VirtualMainView;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.actions.VirtualMainServer;
+import it.polimi.ingsw.distributed.client.VirtualMainView;
 
-public class RMIServer extends UnicastRemoteObject implements VirtualMainServer, Runnable {
-    public RMIServer() throws RemoteException {
+public class RMIMainServer extends UnicastRemoteObject implements VirtualMainServer, Runnable {
+    public RMIMainServer() throws RemoteException {
     }
 
     @Override
@@ -36,17 +35,12 @@ public class RMIServer extends UnicastRemoteObject implements VirtualMainServer,
     }
 
     @Override
-    public List<LobbyInfo> getLobbies() throws RemoteException {
-        return Server.INSTANCE.getLobbies();
-    }
-
-    @Override
-    public boolean joinLobby(User user, int lobbyId) {
+    public boolean joinLobby(UserInfo user, int lobbyId) {
         return Server.INSTANCE.joinLobby(user, lobbyId);
     }
 
     @Override
-    public boolean leaveLobby(User user, int lobbyId) throws RemoteException {
+    public boolean leaveLobby(UserInfo user, int lobbyId) throws RemoteException {
         return Server.INSTANCE.leaveLobby(user, lobbyId);
     }
 
@@ -56,7 +50,7 @@ public class RMIServer extends UnicastRemoteObject implements VirtualMainServer,
     }
 
     @Override
-    public boolean startGame(User user, int lobbyId) throws RemoteException {
+    public boolean startGame(UserInfo user, int lobbyId) throws RemoteException {
         return Server.INSTANCE.startGame(user, lobbyId);
     }
 

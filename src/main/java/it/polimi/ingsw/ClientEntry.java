@@ -5,8 +5,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import it.polimi.ingsw.client.RMIMainView;
-import it.polimi.ingsw.distributed.actions.VirtualMainServer;
+import it.polimi.ingsw.distributed.client.RMIMainView;
+import it.polimi.ingsw.distributed.server.VirtualMainServer;
 
 // Client entrypoint
 public class ClientEntry {

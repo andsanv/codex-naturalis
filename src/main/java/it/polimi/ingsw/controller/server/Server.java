@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import it.polimi.ingsw.client.VirtualMainView;
+import it.polimi.ingsw.distributed.client.VirtualMainView;
 
 /**
  * The server is implemented using the Singleton pattern.
@@ -51,6 +51,10 @@ public enum Server {
         }
     }
 
+    public boolean joinLobby(UserInfo userInfo, int lobbyId) {
+        return joinLobby(userInfoToUser(userInfo), lobbyId);
+    }
+
     /**
      * Removes the user from the lobby with the given id.
      * If the user is the last one, the lobby gets deleted.
@@ -72,6 +76,11 @@ public enum Server {
 
             return true;
         }
+    }
+
+    public boolean leaveLobby(UserInfo userInfo, int lobbyId) {
+        User user = userInfoToUser(userInfo);
+        return user != null ? leaveLobby(user, lobbyId) : false;
     }
 
     /**
@@ -108,6 +117,11 @@ public enum Server {
         // TODO send to client connection informations for the started game
 
         return true;
+    }
+
+    public boolean startGame(UserInfo userInfo, int lobbyId) {
+        User user = userInfoToUser(userInfo);
+        return user != null ? startGame(user, lobbyId) : false;
     }
 
     /**
@@ -153,6 +167,14 @@ public enum Server {
         connectedPlayers.remove(clientMainView, true);
     }
 
+    private User userInfoToUser(UserInfo userInfo) {
+        synchronized (users) {
+            return users.stream()
+                    .filter(user -> user.name.equals(userInfo.name) && user.id == userInfo.id)
+                    .findFirst().orElse(null);
+        }
+    }
+
     private void broadcastLobbies(List<LobbyInfo> lobbies) {
         // TODO use a threadpool
         new Thread(() -> {
@@ -161,7 +183,7 @@ public enum Server {
                     .map(entry -> entry.getKey())
                     .forEach(client -> {
                         try {
-                            client.setLobbies(lobbies);
+                            client.receiveLobbies(lobbies);
                         } catch (RemoteException e) {
                             System.err.println("Error: Couldn't send message to " + client);
                             e.printStackTrace();
