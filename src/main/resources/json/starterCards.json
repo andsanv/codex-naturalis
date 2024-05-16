@@ -1,6 +1,6 @@
 [
     {
-        "id": 0,
+        "id": 81,
         "frontCornerItems": {
             "top_left": "empty",
             "top_right": "plant",
@@ -21,7 +21,7 @@
         }
     },
     {
-        "id": 1,
+        "id": 82,
         "frontCornerItems": {
             "top_left": "animal",
             "top_right": "empty",
@@ -42,7 +42,7 @@
         }
     },
     {
-        "id": 2,
+        "id": 83,
         "frontCornerItems": {
             "top_left": "empty",
             "top_right": "empty",
@@ -63,7 +63,7 @@
         }
     },
     {
-        "id": 3,
+        "id": 84,
         "frontCornerItems": {
             "top_left": "empty",
             "top_right": "empty",
@@ -84,7 +84,7 @@
         }
     },
     {
-        "id": 4,
+        "id": 85,
         "frontCornerItems": {
             "top_left": "empty",
             "top_right": "empty",
@@ -105,7 +105,7 @@
         }
     },
     {
-        "id": 5,
+        "id": 86,
         "frontCornerItems": {
             "top_left": "empty",
             "top_right": "empty",

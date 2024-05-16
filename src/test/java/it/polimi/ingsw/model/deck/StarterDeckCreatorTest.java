@@ -31,7 +31,7 @@ class StarterDeckCreatorTest {
             if(optionalStarterCard.isPresent()) {
                 StarterCard starterCard = optionalStarterCard.get();
                 switch (starterCard.getId()) {
-                    case 0:
+                    case 81:
                         assertFalse(starterCard.getType().isPresent());
 
                         assertEquals(starterCard.getFrontCorners().get(CornerPosition.TOP_LEFT), new Corner(null, CornerTypes.VISIBLE));
@@ -50,7 +50,7 @@ class StarterDeckCreatorTest {
                         break;
 
 
-                    case 4:
+                    case 85:
                         assertFalse(starterCard.getType().isPresent());
 
                         assertEquals(starterCard.getFrontCorners().get(CornerPosition.TOP_LEFT), new Corner(null, CornerTypes.VISIBLE));

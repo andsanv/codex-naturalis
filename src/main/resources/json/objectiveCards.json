@@ -1,81 +1,81 @@
 [
   {
-    "id": 0,
+    "id": 87,
     "points": 2,
     "pattern": "FXXXFXXXF"
   },
   {
-    "id": 1,
+    "id": 88,
     "points": 2,
     "pattern": "XXPXPXPXX"
   },
   {
-    "id": 2,
+    "id": 89,
     "points": 2,
     "pattern": "AXXXAXXXA"
   },
   {
-    "id": 3,
+    "id": 90,
     "points": 2,
     "pattern": "XXIXIXIXX"
   },
   {
-    "id": 4,
+    "id": 91,
     "points": 3,
     "pattern": "XFXFPXXX"
   },
   {
-    "id": 5,
+    "id": 92,
     "points": 3,
     "pattern": "IXXXXPXP"
   },
   {
-    "id": 6,
+    "id": 93,
     "points": 3,
     "pattern": "AXAXXXXF"
   },
   {
-    "id": 7,
+    "id": 94,
     "points": 3,
     "pattern": "XXXAIXIX"
   },
   {
-    "id": 8,
+    "id": 95,
     "points": 2,
     "pattern": "FFF"
   },
   {
-    "id": 9,
+    "id": 96,
     "points": 2,
     "pattern": "PPP"
   },
   {
-    "id": 10,
+    "id": 97,
     "points": 2,
     "pattern": "AAA"
   },
   {
-    "id": 11,
+    "id": 98,
     "points": 2,
     "pattern": "III"
   },
   {
-    "id": 12,
+    "id": 99,
     "points": 3,
     "pattern": "QWM"
   },
   {
-    "id": 13,
+    "id": 100,
     "points": 2,
     "pattern": "MM"
   },
   {
-    "id": 14,
+    "id": 101,
     "points": 2,
     "pattern": "WW"
   },
   {
-    "id": 15,
+    "id": 102,
     "points": 2,
     "pattern": "QQ"
   }

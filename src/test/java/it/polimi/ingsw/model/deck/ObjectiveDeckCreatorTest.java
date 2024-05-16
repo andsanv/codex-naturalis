@@ -35,7 +35,7 @@ class ObjectiveDeckCreatorTest {
             if(objectiveStarterCard.isPresent()) {
                 ObjectiveCard objectiveCard = objectiveStarterCard.get();
                 switch (objectiveCard.getId()) {
-                    case 0:
+                    case 87:
                         assertEquals(objectiveCard.getPoints(), 2);
 
                         Map<Coords, Resources> mapping = new HashMap<>();
@@ -57,7 +57,7 @@ class ObjectiveDeckCreatorTest {
 
                         break;
 
-                    case 4:
+                    case 91:
                         assertEquals(objectiveCard.getPoints(), 3);
 
                         mapping = new HashMap<>();
@@ -79,7 +79,7 @@ class ObjectiveDeckCreatorTest {
 
                         break;
 
-                    case 8:
+                    case 95:
                         assertEquals(objectiveCard.getPoints(), 2);
 
                         Map<Elements, Integer> requiredItems = new HashMap<>();
@@ -93,7 +93,7 @@ class ObjectiveDeckCreatorTest {
 
                         break;
 
-                    case 12:
+                    case 99:
                         assertEquals(objectiveCard.getPoints(), 3);
 
                         requiredItems = new HashMap<>();
@@ -117,7 +117,7 @@ class ObjectiveDeckCreatorTest {
 
                         break;
 
-                    case 15:
+                    case 102:
                         assertEquals(objectiveCard.getPoints(), 2);
 
                         requiredItems = new HashMap<>();
