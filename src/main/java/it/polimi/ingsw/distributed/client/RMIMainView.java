@@ -10,23 +10,24 @@ import java.util.List;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.distributed.server.VirtualMainServer;
 
 public class RMIMainView extends UnicastRemoteObject implements VirtualMainView, Runnable {
     private UserInfo userInfo;
     private VirtualMainServer virtualMainServer;
+    private final GameEventHandler gameEventHandler;
 
     // private final Object printLock;
 
-    public RMIMainView() throws RemoteException {
+    public RMIMainView(GameEventHandler gameEventHandler) throws RemoteException {
         // this.printLock = printLock;
+        this.gameEventHandler = gameEventHandler;
     }
 
     @Override
     public void receiveError(String error) throws RemoteException {
-        // synchronized (printLock) {
-        System.err.println("Error: " + error);
-        // }
+        // gameEventHandler.showError(error);
     }
 
     @Override
