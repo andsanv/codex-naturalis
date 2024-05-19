@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller.observer;
 
 import it.polimi.ingsw.distributed.events.GameEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +12,10 @@ import java.util.List;
  */
 public abstract class Observable {
     List<Observer> observers;
+
+    public Observable() {
+        this.observers = new ArrayList<>();
+    }
 
     /**
      * Used to register an observer

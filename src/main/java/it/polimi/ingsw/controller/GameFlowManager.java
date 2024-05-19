@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  * Represents a single game
  * It contains the in-game connections to the clients, the state machine (and the relative states) and the model
  * Implemented as a runnable in order to be able to run more games on a single server
+ * Uses the command pattern to keep track of every player's moves
  */
 
 
@@ -71,10 +72,14 @@ public class GameFlowManager implements Runnable {
     private long timeLimit = 60;
 
     /**
-     * Boolean used by the timer to tell if a player has already made a move or not
+     * Boolean used by the timer to tell whether time limit has been reached or not
      */
     private Boolean timeLimitReached = false;
 
+    /**
+     * Queue of commands received by the gameFlowManager. Every move made by a player is identified by a command.
+     * Initialized as a blocking queue.
+     */
     private final Queue<GameCommand> commands;
 
     /**
@@ -111,7 +116,9 @@ public class GameFlowManager implements Runnable {
         // in-game phase
         while(!currentState.equals(postGameState)) {
             try {
-                (new Thread(this::handleTurn)).join();
+                Thread turnHandlerThread = new Thread(this::handleTurn);
+                turnHandlerThread.start();
+                turnHandlerThread.join();
             } catch (InterruptedException e) {}
         }
 
@@ -122,10 +129,7 @@ public class GameFlowManager implements Runnable {
     /**
      * Synchronized, allows to handle a players' turn. A timer is started as soon as player's turn starts
      * If the timer expires before the player makes the move, the turn is skipped
-     * Otherwise, the Boolean flag "lastMovePlayed" is set to true by the method called and the timer stops
      * This situation is all managed in the run() method
-     *
-     * @return The timer thread
      */
     private void handleTurn() {
         Timer timer = new Timer();
@@ -140,19 +144,16 @@ public class GameFlowManager implements Runnable {
             }
         };
 
-        timer.schedule(timeElapsedTask, timeLimit);
+        timer.schedule(timeElapsedTask, timeLimit * 1000);
 
         while(true) {
-            if(commands.isEmpty())
-                try {
-                    commands.wait();    // waits until a command is added to the queue
-                } catch (InterruptedException e) {}
-
-            synchronized (timeLimitReached) {
-                if (!timeLimitReached) {
-                    if (commands.poll().execute(this)) {
+            if (!timeLimitReached)
+                synchronized (commands) {
+                    if (!commands.isEmpty() && commands.poll().execute(this)) {
                         timer.cancel();
-                        switchTurn();
+
+                        if(currentState.equals(playCardState)) currentState = drawCardState;
+                        else switchTurn();
 
                         return;
                     }
@@ -160,8 +161,7 @@ public class GameFlowManager implements Runnable {
                         // view.displayError("error");
                     }
                 }
-                else break;
-            }
+            else break;
         }
 
         if(currentState.equals(drawCardState)) drawRandomCard(getTurn());
@@ -173,9 +173,13 @@ public class GameFlowManager implements Runnable {
         currentState = nextState;
     }
 
+    /**
+     * Adds a command to the commands queue.
+     * @param command The command representing the single player's move
+     */
     public void addCommand(GameCommand command) {
         synchronized (commands) {   // to make the two lines atomic
-            commands.offer(command);
+            commands.add(command);
             commands.notifyAll();
         }
     }
@@ -279,6 +283,10 @@ public class GameFlowManager implements Runnable {
 
         turn += 1;
         setState(playCardState);
+    }
+
+    public void checkConnections() {
+
     }
 
     public Map<User, Boolean> getIsConnected() {

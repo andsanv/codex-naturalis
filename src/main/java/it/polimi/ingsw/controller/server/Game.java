@@ -11,7 +11,7 @@ import it.polimi.ingsw.controller.GameFlowManager;
  * It contains the in-game connections to the clients, the controller and the
  * model.
  */
-public class Game {
+public class Game implements Runnable {
     private Lobby lobby;
     private Map<User, Boolean> isConnected;
 
@@ -25,7 +25,21 @@ public class Game {
      */
     public Game(Lobby lobby) {
         this.lobby = lobby;
-        isConnected = lobby.getUsers().stream()
+        this.isConnected = lobby.getUsers().stream()
                 .collect(Collectors.toMap(Function.identity(), u -> false));
+        this.gameFlowManager = new GameFlowManager(lobby);
+    }
+
+    @Override
+    public void run() {
+        Thread checkConnectionsThread = new Thread(this::checkConnections);
+        checkConnectionsThread.setDaemon(true);
+        checkConnectionsThread.start();
+    }
+
+    public void checkConnections() {
+        while(true) {
+            // TODO
+        }
     }
 }
