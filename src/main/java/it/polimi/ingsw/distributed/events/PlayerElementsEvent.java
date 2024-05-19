@@ -2,28 +2,28 @@ package it.polimi.ingsw.distributed.events;
 
 import java.util.Map;
 
-import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.common.Elements;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
  * Event to signal a player's updated elements' map.
  */
 public final class PlayerElementsEvent extends GameEvent {
-    private final UserInfo player;
+    private final PlayerToken playerToken;
     private final Map<Elements, Integer> resources;
 
     /**
-     * @param player    the player who gets his elements updated
-     * @param resources the new elementes map
+     * @param playerToken   the token of the player that gets his elements updated
+     * @param resources     the updated elements map
      */
-    public PlayerElementsEvent(UserInfo player, Map<Elements, Integer> resources) {
-        this.player = player;
+    public PlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
+        this.playerToken = playerToken;
         this.resources = resources;
     }
 
     @Override
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handlePlayerElementsEvent(player, resources);
+        gameUpdateHandler.handlePlayerElementsEvent(playerToken, resources);
     }
 }

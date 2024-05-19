@@ -1,26 +1,26 @@
 package it.polimi.ingsw.distributed.events;
 
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.distributed.GameEventHandler;
 
 /**
- * Event to signal that a secret objective has been assingned to a player.
+ * Event to signal that a secret objective has been assigned to a player.
  */
 public final class SecretObjectiveEvent extends GameEvent {
-    private final UserInfo player;
+    private final PlayerToken playerToken;
     private final int secretObjectiveCardId;
 
     /**
-     * @param player                the player who gets the secret card
-     * @param secretObjectiveCardId the secret card's id
+     * @param playerToken               the token of the player that gets the secret card
+     * @param secretObjectiveCardId     the secret card's id
      */
-    public SecretObjectiveEvent(UserInfo player, int secretObjectiveCardId) {
-        this.player = player;
+    public SecretObjectiveEvent(PlayerToken playerToken, int secretObjectiveCardId) {
+        this.playerToken = playerToken;
         this.secretObjectiveCardId = secretObjectiveCardId;
     }
 
     @Override
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handlePlayedCardEvent(player, secretObjectiveCardId);
+        gameUpdateHandler.handlePlayedCardEvent(playerToken, secretObjectiveCardId);
     }
 }

@@ -1,26 +1,26 @@
 package it.polimi.ingsw.distributed.events;
 
-import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
  * Event to signal that a group message has been sent.
  */
 public final class GroupMessageEvent extends GameEvent {
-    private final UserInfo sender;
+    private final PlayerToken senderToken;
     private final String message;
 
     /**
-     * @param sender the sender of the message
-     * @param message the sent message
+     * @param senderToken   the token of the sender of the message
+     * @param message       the message sent
      */
-    public GroupMessageEvent(UserInfo sender, String message) {
-        this.sender = sender;
+    public GroupMessageEvent(PlayerToken senderToken, String message) {
+        this.senderToken = senderToken;
         this.message = message;
     }
 
     @Override
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleGroupMessageEvent(sender, message);
+        gameUpdateHandler.handleGroupMessageEvent(senderToken, message);
     }
 }

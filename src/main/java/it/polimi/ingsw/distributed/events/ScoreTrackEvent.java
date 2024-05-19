@@ -1,26 +1,26 @@
 package it.polimi.ingsw.distributed.events;
 
-import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
  * Event to signal an update of a player's points.
  */
 public final class ScoreTrackEvent extends GameEvent {
-    private final UserInfo player;
+    private final PlayerToken playerToken;
     private final int score;
 
     /**
-     * @param player the player who gets a new score
-     * @param score  the new score
+     * @param playerToken   the token of the player that gets a new score
+     * @param score         the new score
      */
-    public ScoreTrackEvent(UserInfo player, int score) {
-        this.player = player;
+    public ScoreTrackEvent(PlayerToken playerToken, int score) {
+        this.playerToken = playerToken;
         this.score = score;
     }
 
     @Override
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleScoreTrackEvent(player, score);
+        gameUpdateHandler.handleScoreTrackEvent(playerToken, score);
     }
 }

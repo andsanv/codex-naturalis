@@ -17,6 +17,5 @@ public final class CommonObjectiveEvent extends GameEvent {
     @Override
     public void execute(GameEventHandler gameUpdateHandler) {
         gameUpdateHandler.handleCommonObjectiveEvent(firstCommonObjectiveId, secondCommonObjectiveId);
-
     }
 }
