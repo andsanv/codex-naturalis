@@ -11,23 +11,26 @@ import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.distributed.MainUpdateHandler;
 import it.polimi.ingsw.distributed.server.VirtualMainServer;
 
 public class RMIMainView extends UnicastRemoteObject implements VirtualMainView, Runnable {
     private UserInfo userInfo;
     private VirtualMainServer virtualMainServer;
     private final GameEventHandler gameEventHandler;
+    private final MainUpdateHandler mainUpdateHandler;
 
     // private final Object printLock;
 
-    public RMIMainView(GameEventHandler gameEventHandler) throws RemoteException {
+    public RMIMainView(GameEventHandler gameEventHandler, MainUpdateHandler mainUpdateHandler) throws RemoteException {
         // this.printLock = printLock;
         this.gameEventHandler = gameEventHandler;
+        this.mainUpdateHandler = mainUpdateHandler;
     }
 
     @Override
     public void receiveError(String error) throws RemoteException {
-        // gameEventHandler.showError(error);
+        mainUpdateHandler.handleErrorMessage(error);
     }
 
     @Override
@@ -70,7 +73,6 @@ public class RMIMainView extends UnicastRemoteObject implements VirtualMainView,
 
     @Override
     public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
-        System.out.println("Lobbies:");
-        lobbies.stream().forEach(System.out::println);
+        mainUpdateHandler.handleLobbiesUpdate(lobbies);
     }
 }
