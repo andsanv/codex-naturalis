@@ -233,18 +233,18 @@ package server {
 
 
 
-    interface VirtualMainServer extends Remote {
+    interface MainServerActions extends Remote {
         + connect(VirtualMainView client, UserInfo user)
         + send(ServerCommand command)
         + joinGame(UserInfo user): GameConnectionInfo
         + getAllEventsSinceStart(): List<GameUpdate>
     }
 
-    class RMIMainServer extends UnicastRemoteObject implements VirtualMainServer {
+    class RMIMainServer extends UnicastRemoteObject implements MainServerActions {
 
     }
 
-    class SocketMainServer implements VirtualMainServer {
+    class SocketMainServer implements MainServerActions {
 
     }
 
@@ -272,7 +272,7 @@ package server {
         + int port
     }
 
-    GameConnectionInfo -- VirtualMainServer
+    GameConnectionInfo -- MainServerActions
 }
 
 client ----u[hidden]-> network

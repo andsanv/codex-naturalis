@@ -6,7 +6,7 @@ import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.distributed.MainUpdateHandler;
 import it.polimi.ingsw.distributed.events.GameEvent;
 
-public class RMIGameView implements VirtualGameView {
+public class RMIGameView implements GameViewActions {
 
     private final GameEventHandler gameEventHandler;
     private final MainUpdateHandler mainUpdateHandler;

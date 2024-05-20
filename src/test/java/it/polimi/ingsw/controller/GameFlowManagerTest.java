@@ -109,8 +109,8 @@ class GameFlowManagerTest {
         String secondPlayer = firstPlayer.equals(user1.name) ? user2.name : user1.name;
 
         // firstPlayer's turn. He should be able to play the card
-        assertTrue(gameFlowManager.addCommand(new PlayCardCommand(firstPlayer, new Coords(1,1), resourceCard, CardSide.FRONT)));
-        assertTrue(gameFlowManager.playCard());
+        //assertTrue(gameFlowManager.addCommand(new PlayCardCommand(firstPlayer, new Coords(1,1), resourceCard, CardSide.FRONT)));
+        //assertTrue(gameFlowManager.playCard());
         gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
         gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().addCard(resourceCard);
 

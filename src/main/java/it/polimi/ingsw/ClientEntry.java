@@ -2,25 +2,37 @@ package it.polimi.ingsw;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
+import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.distributed.client.Client;
+import it.polimi.ingsw.distributed.client.ClientGame;
+import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.RMIMainView;
 import it.polimi.ingsw.distributed.client.SocketMainView;
+import it.polimi.ingsw.distributed.commands.CreateLobbyCommand;
+import it.polimi.ingsw.distributed.commands.LeaveLobbyCommand;
+import it.polimi.ingsw.distributed.commands.SignUpCommand;
+import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.distributed.server.SocketMainServer;
 
 // Client entrypoint
 public class ClientEntry {
     public static void main(String[] args) throws RemoteException, NotBoundException {
-        // Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
-        // VirtualMainServer serverActions = (VirtualMainServer) registry.lookup(Config.RMIServerName);
+        Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
+        MainServerActions serverActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
-        // for (String s : registry.list())
-        //     System.out.println(s);
+        MainViewActions clientMainView = new RMIMainView(new ClientGame(), new Client());
 
-        // serverActions.getLobbies().stream().forEach(System.out::println);
+        serverActions.connect(clientMainView);
+        
+        serverActions.send(new SignUpCommand("test"));
+        
+        serverActions.send(new CreateLobbyCommand(clientMainView.getUserInfo()));
 
-        // VirtualMainServer serverActions = new SocketMainServer(0);
-
-        new Thread(new RMIMainView()).start();
+        serverActions.send(new LeaveLobbyCommand(clientMainView.getUserInfo(), 0));
     }
 
 }

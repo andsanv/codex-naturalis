@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import it.polimi.ingsw.distributed.client.VirtualMainView;
+import it.polimi.ingsw.distributed.client.MainViewActions;
 
 /**
  * The server is implemented using the Singleton pattern.
@@ -27,7 +27,7 @@ public enum Server {
      * The value is true if the client is in the menu, false if it's in-game.
      * When the client is in the menu, he receives updates on the list of lobbies.
      */
-    private ConcurrentHashMap<VirtualMainView, Boolean> connectedPlayers;
+    private ConcurrentHashMap<MainViewActions, Boolean> connectedPlayers;
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -159,11 +159,11 @@ public enum Server {
         }
     }
 
-    public void addConnectedClient(VirtualMainView clientMainView) {
+    public void addConnectedClient(MainViewActions clientMainView) {
         connectedPlayers.put(clientMainView, true);
     }
 
-    public void removeConnectedClient(VirtualMainView clientMainView) {
+    public void removeConnectedClient(MainViewActions clientMainView) {
         connectedPlayers.remove(clientMainView, true);
     }
 

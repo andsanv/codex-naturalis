@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 
 import it.polimi.ingsw.distributed.events.GameEvent;
 
-public interface VirtualGameView extends Remote {
+public interface GameViewActions extends Remote {
     /**
      * Receives a game event.
      * 

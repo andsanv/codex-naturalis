@@ -14,14 +14,15 @@ import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.VirtualMainView;
+import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.commands.ServerCommand;
 
-public class RMIMainServer extends UnicastRemoteObject implements VirtualMainServer, Runnable {
+public class RMIMainServer extends UnicastRemoteObject implements MainServerActions, Runnable {
 
     private final ExecutorService executorService;
 
     public RMIMainServer() throws RemoteException {
-        executorService = Executors.newFixedThreadPool(10);
+        executorService = Executors.newCachedThreadPool();
     }
 
     @Override
@@ -40,72 +41,20 @@ public class RMIMainServer extends UnicastRemoteObject implements VirtualMainSer
         }
     }
 
-    @Override
-    public boolean joinLobby(UserInfo user, int lobbyId) {
-        Callable<Boolean> callable = () -> Server.INSTANCE.joinLobby(user, lobbyId);
-        Future<Boolean> future = executorService.submit(callable);
-        try {
-            return future.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     @Override
-    public boolean leaveLobby(UserInfo user, int lobbyId) throws RemoteException {
-        Callable<Boolean> callable = () -> Server.INSTANCE.leaveLobby(user, lobbyId);
-        Future<Boolean> future = executorService.submit(callable);
-        try {
-            return future.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public UserInfo signup(String name) throws RemoteException {
-        Callable<UserInfo> callable = () -> Server.INSTANCE.signup(name);
-        Future<UserInfo> future = executorService.submit(callable);
-        try {
-            return future.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public boolean startGame(UserInfo user, int lobbyId) throws RemoteException {
-        Callable<Boolean> callable = () -> Server.INSTANCE.startGame(user, lobbyId);
-        Future<Boolean> future = executorService.submit(callable);
-        try {
-            return future.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public void connect(VirtualMainView clientMainView) throws RemoteException {
-        Callable<Void> callable = () -> {
+    public void connect(MainViewActions clientMainView) throws RemoteException {
+        Runnable task = () -> {
             Server.INSTANCE.addConnectedClient(clientMainView);
-            return null;
         };
-        executorService.submit(callable);
+        executorService.submit(task);
     }
 
-    @Override
-    public LobbyInfo createLobby(UserInfo userInfo) throws RemoteException {
-        Callable<LobbyInfo> callable = () -> Server.INSTANCE.createLobby(userInfo);
-        Future<LobbyInfo> future = executorService.submit(callable);
-        try {
-            return future.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+	@Override
+	public void send(ServerCommand command) throws RemoteException {
+		executorService.submit(()-> {
+            command.execute();
+        });
     }
+        
 }

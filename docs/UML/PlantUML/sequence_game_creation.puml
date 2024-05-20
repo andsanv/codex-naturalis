@@ -1,17 +1,17 @@
 @startuml
 
 participant VirtualMainView #white
-participant VirtualMainServer #yellow
+participant MainServerActions #yellow
 
-VirtualMainView -> VirtualMainServer: connect(this, currentUser)
-VirtualMainServer -> VirtualMainView: sendLobbies(): []
-VirtualMainView -> VirtualMainServer: send(new JoinLobbyCommand(1))
-VirtualMainServer -> VirtualMainView: sendError("Invalid lobby id")
-VirtualMainView -> VirtualMainServer: send(new CreateLobbyCommand)
-VirtualMainServer -> VirtualMainView: sendLobbies(): [(id: 1, manager: currentUser, users: [currentUser], gamestarted: false)]
-note over VirtualMainServer: anotherUser joins the lobby
-VirtualMainServer -> VirtualMainView: sendLobbies(): [(id: 1, manager: currentUser, users: [currentUser, anotherUser], gamestarted: false)]
-VirtualMainView -> VirtualMainServer: joinGame(currentUser): connectionInfo
-VirtualMainServer -> VirtualMainView: sendLobbies(): [(id: 1, manager: currentUser, users: [currentUser, anotherUser], gamestarted: true)]
+VirtualMainView -> MainServerActions: connect(this, currentUser)
+MainServerActions -> VirtualMainView: sendLobbies(): []
+VirtualMainView -> MainServerActions: send(new JoinLobbyCommand(1))
+MainServerActions -> VirtualMainView: sendError("Invalid lobby id")
+VirtualMainView -> MainServerActions: send(new CreateLobbyCommand)
+MainServerActions -> VirtualMainView: sendLobbies(): [(id: 1, manager: currentUser, users: [currentUser], gamestarted: false)]
+note over MainServerActions: anotherUser joins the lobby
+MainServerActions -> VirtualMainView: sendLobbies(): [(id: 1, manager: currentUser, users: [currentUser, anotherUser], gamestarted: false)]
+VirtualMainView -> MainServerActions: joinGame(currentUser): connectionInfo
+MainServerActions -> VirtualMainView: sendLobbies(): [(id: 1, manager: currentUser, users: [currentUser, anotherUser], gamestarted: true)]
 note across: the user can now open the game connection with the information in the received connectionInfo object
 @enduml

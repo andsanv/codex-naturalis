@@ -5,15 +5,19 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ConcurrentHashMap;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.distributed.client.VirtualGameView;
+import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.commands.GameCommand;
 
-public class RMIGameServer extends UnicastRemoteObject implements Runnable, VirtualGameServer {
+public class RMIGameServer extends UnicastRemoteObject implements Runnable, GameServerActions {
 
     private final GameFlowManager gameFlowManager;
+
+    private ConcurrentHashMap<UserInfo, GameViewActions> clients;
 
     public RMIGameServer(GameFlowManager gameFlowManager) throws RemoteException {
         this.gameFlowManager = gameFlowManager;
@@ -21,13 +25,12 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Virt
 
     @Override
     public void send(GameCommand command) throws RemoteException {
-        command.execute(gameFlowManager);
+        gameFlowManager.addCommand(command);
     }
 
     @Override
-    public void connect(VirtualGameView clientGameView) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'connect'");
+    public void connect(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException {
+        clients.put(userInfo, clientGameView);
     }
 
     @Override

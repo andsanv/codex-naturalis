@@ -11,7 +11,7 @@ import java.util.List;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
 
-public class SocketMainView implements VirtualMainView, Runnable {
+public class SocketMainView implements MainViewActions, Runnable {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;

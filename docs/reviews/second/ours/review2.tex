@@ -32,7 +32,7 @@ The \texttt{GameModel} constructor now takes a \texttt{List<GameUpdateObserver>}
 The network communication is implemented using classes that extend interfaces shared by both the RMI and socket implementation.
 The main connection to the server (used for creating lobbies and starting games) is opened when the client is started and it
 is kept alive until the client is closed.
-The \texttt{RMIMainServer} and \texttt{SocketMainServer} classes, that implement the \texttt{VirtualMainServer} interface,
+The \texttt{RMIMainServer} and \texttt{SocketMainServer} classes, that implement the \texttt{MainServerActions} interface,
 are used when the client is connecting to the server for the first time.
 \begin{center}
     \includegraphics[scale=0.25]{pngs/server1}
@@ -40,12 +40,12 @@ are used when the client is connecting to the server for the first time.
 We kept the RMI implementation trivial and made the socket implementation mimic the RMI behaviour.
 Once the connection is established (via the RMI Registry or through a socket), the clients must call the \texttt{connect(...)} method
 that take their \texttt{VirtualMainView} as parameter.
-This interface is the client's dual of \texttt{VirtualMainServer} and is implemented by \texttt{RMIMainView} and \texttt{SocketMainView} classes.
+This interface is the client's dual of \texttt{MainServerActions} and is implemented by \texttt{RMIMainView} and \texttt{SocketMainView} classes.
 The interface offers methods to show errors on the view or to send the list of updated lobbies.
 \begin{center}
     \includegraphics[scale=0.3]{pngs/client}
 \end{center}
-By sending a \texttt{ServerCommand} (done by calling the method on the \texttt{VirtualMainServer}) a client can create, join or leave a lobby.
+By sending a \texttt{ServerCommand} (done by calling the method on the \texttt{MainServerActions}) a client can create, join or leave a lobby.
 When the client is ready he can call the \texttt{joinGame} method and receive a \texttt{ConnectionInfo} object that holds
 the information needed to open the second connection.
 

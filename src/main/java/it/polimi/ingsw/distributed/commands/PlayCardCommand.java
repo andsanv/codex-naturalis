@@ -18,6 +18,7 @@ public class PlayCardCommand extends GameCommand {
         this.cardSide = cardSide;
     }
 
+    @Override
     public boolean execute(GameFlowManager gameFlowManager) {
         return gameFlowManager.playCard(playerId, coords, card, cardSide);
     }

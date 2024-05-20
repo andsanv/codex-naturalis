@@ -2,7 +2,7 @@ package it.polimi.ingsw.distributed.commands;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 
-public class DrawVisibleGoldCardCommand {
+public class DrawVisibleGoldCardCommand extends GameCommand {
     private final String playerId;
     private final int choice;
 
@@ -11,6 +11,7 @@ public class DrawVisibleGoldCardCommand {
         this.choice = choice;
     }
 
+    @Override
     public boolean execute(GameFlowManager gameFlowManager) {
         return gameFlowManager.drawVisibleGoldCard(playerId, choice);
     }
