@@ -5,10 +5,10 @@ import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.states.*;
 import it.polimi.ingsw.distributed.commands.GameCommand;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.card.CardSide;
-import it.polimi.ingsw.model.card.PlayableCard;
+import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,14 +35,17 @@ public class GameFlowManager implements Runnable {
     private Lobby lobby;
 
     /**
-     * Map that keeps track of active connections (not AFK players)
+     * Map that keeps track of active connections (or not-AFK players)
      */
     private Map<User, Boolean> isConnected;
 
     /**
      * States of the state machine
      */
-    public GameState setupState;
+    public GameState tokenSelectionState;
+    public GameState starterCardSelectionState;
+    public GameState objectiveCardSelectionState;
+    public GameState initializationState;
     public GameState playCardState;
     public GameState drawCardState;
     public GameState postGameState;
@@ -52,12 +55,13 @@ public class GameFlowManager implements Runnable {
     /**
      * List containing players' ids
      */
-    public List<String> playersIds;
+    public List<User> users;
 
     /**
      * Map from players' ids to their token
      */
-    public Map<String, PlayerToken> IdToToken;
+    public final Map<String, PlayerToken> idToToken;
+    public final List<PlayerToken> playerTokens;
 
     /**
      * Variables to keep track of the turn / round of the game
@@ -80,7 +84,7 @@ public class GameFlowManager implements Runnable {
      * Queue of commands received by the gameFlowManager. Every move made by a player is identified by a command.
      * Initialized as a blocking queue.
      */
-    private final Queue<GameCommand> commands;
+    public final Queue<GameCommand> commands;
 
     /**
      * GameFlowManager constructor
@@ -89,20 +93,24 @@ public class GameFlowManager implements Runnable {
      */
     public GameFlowManager(Lobby lobby) {
         this.lobby = lobby;
-        isConnected = lobby.getUsers().stream()
-                .collect(Collectors.toMap(Function.identity(), u -> false));
+        this.users = lobby.getUsers();
+        users.forEach(user -> this.isConnected.put(user, false));
 
-        this.playersIds = lobby.getUsers().stream().map(user -> user.name).collect(Collectors.toList());
-        this.IdToToken = new HashMap<>();
+        this.idToToken = new HashMap<>();
+        this.playerTokens = new ArrayList<>();
+
         this.gameModelUpdater = new GameModelUpdater(new GameModel());
 
+        this.tokenSelectionState = new TokenSelectionState(this, users, timeLimit);
+        this.starterCardSelectionState = new StarterCardSelectionState(this, playerTokens, timeLimit);
+        this.objectiveCardSelectionState = new ObjectiveCardSelectionState(this, playerTokens, timeLimit);
+        this.initializationState = new InitializationState(this);
         this.playCardState = new PlayCardState(this);
         this.drawCardState = new DrawCardState(this);
-        this.setupState = new SetupState(this);
         this.postGameState = new PostGameState(this);
 
         this.commands = new LinkedBlockingQueue<>();
-        this.currentState = this.setupState;
+        this.currentState = this.tokenSelectionState;
     }
 
     /**
@@ -111,7 +119,13 @@ public class GameFlowManager implements Runnable {
     @Override
     public void run() {
         // pre-game phase
-        currentState.setup();
+        Map<String, PlayerToken> idToToken = currentState.handleTokenSelection();            // select token phase
+        Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> tokenToStarterCardAndCardSide = currentState.handleStarterCardSelection();      // select starter card side phase
+        Map<PlayerToken, StarterCard> tokenToStarterCard = tokenToStarterCardAndCardSide.first;
+        Map<PlayerToken, CardSide> tokenToCardSide = tokenToStarterCardAndCardSide.second;
+        Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard = currentState.handleObjectiveCardSelection();    // select objective card phase
+
+        currentState.handleInitialization(idToToken, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard);
 
         // in-game phase
         while(!currentState.equals(postGameState)) {
@@ -213,7 +227,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        return playerId.equals(getTurn()) && currentState.playCard(IdToToken.get(playerId), coords, card, cardSide);
+        return playerId.equals(getTurn()) && currentState.playCard(idToToken.get(playerId), coords, card, cardSide);
     }
 
     /**
@@ -223,7 +237,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawResourceDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawResourceDeckCard(IdToToken.get(playerId));
+        return playerId.equals(getTurn()) && currentState.drawResourceDeckCard(idToToken.get(playerId));
     }
 
     /**
@@ -233,7 +247,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawGoldDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(IdToToken.get(playerId));
+        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(idToToken.get(playerId));
     }
 
     /**
@@ -244,7 +258,7 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawVisibleResourceCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(IdToToken.get(playerId), choice);
+        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(idToToken.get(playerId), choice);
     }
 
     /**
@@ -255,21 +269,41 @@ public class GameFlowManager implements Runnable {
      * @return A boolean that depends on whether the operation was successful or not
      */
     public boolean drawVisibleGoldCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(IdToToken.get(playerId), choice);
+        return playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(idToToken.get(playerId), choice);
+    }
+
+    public boolean selectToken(String playerId, PlayerToken playerToken) {
+        return currentState.selectToken(playerId, playerToken);
+    }
+
+    public boolean drawStarterCard(PlayerToken playerToken) {
+        return currentState.drawStarterCard(playerToken);
+    }
+
+    public boolean selectStarterCardSide(PlayerToken playerToken, CardSide cardSide) {
+        return currentState.selectStarterCardSide(playerToken, cardSide);
+    }
+
+    public boolean drawObjectiveCards(PlayerToken playerToken) {
+        return currentState.drawObjectiveCards(playerToken);
+    }
+
+    public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
+        return currentState.selectObjectiveCard(playerToken, choice);
     }
 
     /**
      * @return The ID of the player whose turn it is
      */
     public String getTurn() {
-        return playersIds.get(turn % playersIds.size());
+        return users.get(turn % users.size()).name;
     }
 
     /**
      * Manages the turns, the rounds and checks whether the next turn will be the last
      */
     public void switchTurn() {
-        if(turn % playersIds.size() == playersIds.size() - 1) {
+        if(turn % users.size() == users.size() - 1) {
             if(isLastRound) {
                 setState(postGameState);
                 return;
@@ -285,8 +319,12 @@ public class GameFlowManager implements Runnable {
         setState(playCardState);
     }
 
-    public void checkConnections() {
+    public void setup() {
 
+    }
+
+    public void checkConnections() {
+        // TODO
     }
 
     public Map<User, Boolean> getIsConnected() {
@@ -301,9 +339,6 @@ public class GameFlowManager implements Runnable {
         return currentState;
     }
 
-    public void setCurrentState(GameState state) {
-        currentState = state;
-    }
 
     public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit;

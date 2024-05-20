@@ -3,7 +3,6 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.distributed.commands.*;
-import it.polimi.ingsw.model.ScoreTrack;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.PointsType;
 import it.polimi.ingsw.model.card.ResourceCard;
@@ -50,12 +49,12 @@ class GameFlowManagerTest {
 
         assertTrue(gameFlowManager.getIsConnected().values().stream().allMatch(value -> value.equals(false)));
 
-        assertEquals(0, gameFlowManager.IdToToken.size());
+        assertEquals(0, gameFlowManager.idToToken.size());
         assertEquals(gameFlowManager.setupState, gameFlowManager.getCurrentState());
 
         gameFlowManager.getCurrentState().setup();
 
-        assertEquals(2, gameFlowManager.IdToToken.keySet().size());
+        assertEquals(2, gameFlowManager.idToToken.keySet().size());
         assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().size());
 
         for(Player player : gameFlowManager.gameModelUpdater.getPlayers().values()) {
@@ -120,9 +119,9 @@ class GameFlowManagerTest {
         }
         catch(InterruptedException e) {}
 
-        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getBoard().getCard(new Coords(1, 1)));
-        gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
-        gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().addCard(resourceCard);
+        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getBoard().getCard(new Coords(1, 1)));
+        gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
+        gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().addCard(resourceCard);
 
         // still firstPlayer's turn. He should be able to draw the card
         assertEquals(gameFlowManager.getTurn(), firstPlayer);
@@ -134,7 +133,7 @@ class GameFlowManagerTest {
         }
         catch(InterruptedException e) {}
 
-        assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size());
+        assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size());
         assertEquals(secondPlayer, gameFlowManager.getTurn());
 
 
@@ -156,7 +155,7 @@ class GameFlowManagerTest {
         catch(InterruptedException e) {}
         assertEquals(firstPlayer, gameFlowManager.getTurn());
         assertEquals(gameFlowManager.playCardState, gameFlowManager.getCurrentState());
-        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getBoard().getCard(new Coords(1, 1)));
+        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getBoard().getCard(new Coords(1, 1)));
 
         // firstPlayer should first play a card and then draw
         gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayer));
@@ -164,17 +163,17 @@ class GameFlowManagerTest {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size());
+        assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size());
         assertEquals(gameFlowManager.playCardState, gameFlowManager.getCurrentState());
         gameFlowManager.addCommand(new PlayCardCommand(firstPlayer, new Coords(-1,1), resourceCard, CardSide.FRONT));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getBoard().getCard(new Coords(-1, 1)));
+        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getBoard().getCard(new Coords(-1, 1)));
 
         // card drawn should be added to firstPlayer's hand
-        assertEquals(1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size());
+        assertEquals(1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size());
 
         // should fail as it's still not secondPlayer's turn, even though it is a DrawCard turn
         gameFlowManager.addCommand(new PlayCardCommand(secondPlayer, new Coords(-1,1), resourceCard, CardSide.FRONT));
@@ -182,7 +181,7 @@ class GameFlowManagerTest {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getBoard().getCard(new Coords(-1, 1)));
+        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getBoard().getCard(new Coords(-1, 1)));
 
         // firstPlayer exceeds the time limit
         try {
@@ -194,20 +193,20 @@ class GameFlowManagerTest {
         assertEquals(secondPlayer, gameFlowManager.getTurn());
 
         // as firstPlayer AFKed in the DrawCard, to keep consistency in the game model, a random card should be added to his hand
-        assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size());
+        assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size());
 
         // firstPlayer should not be able to draw the card as his time has expired
-        int tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size();
+        int tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size();
         gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayer));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(tempSize, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size());
+        assertEquals(tempSize, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size());
 
         // setting firstPlayer's score to a number above the points limit, which should trigger the post game phase
-        gameFlowManager.gameModelUpdater.setScoreTrack(Arrays.asList(gameFlowManager.IdToToken.get(firstPlayer), gameFlowManager.IdToToken.get(secondPlayer)));
-        gameFlowManager.gameModelUpdater.getModel().getScoreTrack().updatePlayerScore(gameFlowManager.IdToToken.get(firstPlayer), 23);
+        gameFlowManager.gameModelUpdater.setScoreTrack(Arrays.asList(gameFlowManager.idToToken.get(firstPlayer), gameFlowManager.idToToken.get(secondPlayer)));
+        gameFlowManager.gameModelUpdater.getModel().getScoreTrack().updatePlayerScore(gameFlowManager.idToToken.get(firstPlayer), 23);
 
         // should not be last round yet
         assertFalse(gameFlowManager.isLastRound);
@@ -217,17 +216,17 @@ class GameFlowManagerTest {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getBoard().getCard(new Coords(1, 1)));
+        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getBoard().getCard(new Coords(1, 1)));
 
-        gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
-        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getHand().getCards().size();
+        gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
+        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getHand().getCards().size();
         assertEquals(0, tempSize);
         gameFlowManager.addCommand(new DrawGoldDeckCardCommand(secondPlayer));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(tempSize + 1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getHand().getCards().size());
+        assertEquals(tempSize + 1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getHand().getCards().size());
 
         // should now be last round
         assertTrue(gameFlowManager.isLastRound);
@@ -237,30 +236,30 @@ class GameFlowManagerTest {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getBoard().getCard(new Coords(2, 2)));
+        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getBoard().getCard(new Coords(2, 2)));
 
         gameFlowManager.addCommand(new PlayCardCommand(firstPlayer, new Coords(-1,-1), resourceCard, CardSide.FRONT));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getBoard().getCard(new Coords(-1, -1)));
+        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getBoard().getCard(new Coords(-1, -1)));
 
-        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getHand().getCards().size();
+        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getHand().getCards().size();
         gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(secondPlayer, 1));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(tempSize, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getHand().getCards().size());
+        assertEquals(tempSize, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getHand().getCards().size());
 
-        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size();
+        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size();
         gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(firstPlayer, 1));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(tempSize + 1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getHand().getCards().size());
+        assertEquals(tempSize + 1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getHand().getCards().size());
 
         try {
             Thread.sleep(100);
@@ -275,15 +274,15 @@ class GameFlowManagerTest {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getBoard().getCard(new Coords(2, 2)));
+        assertEquals(resourceCard, gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getBoard().getCard(new Coords(2, 2)));
 
-        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getHand().getCards().size();
+        tempSize = gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getHand().getCards().size();
         gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(secondPlayer, 1));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertEquals(tempSize + 1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getHand().getCards().size());
+        assertEquals(tempSize + 1, gameFlowManager.gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getHand().getCards().size());
 
 
         // to allow flowManager to enter post-game phase
@@ -301,13 +300,13 @@ class GameFlowManagerTest {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(firstPlayer)).getBoard().getCard(new Coords(2, 2)));
+        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(firstPlayer)).getBoard().getCard(new Coords(2, 2)));
 
         gameFlowManager.addCommand(new PlayCardCommand(secondPlayer, new Coords(1,3), resourceCard, CardSide.FRONT));
         try {
             Thread.sleep(100);
         }
         catch(InterruptedException e) {}
-        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.IdToToken.get(secondPlayer)).getBoard().getCard(new Coords(1, 3)));
+        assertNull(gameModelUpdater.getPlayers().get(gameFlowManager.idToToken.get(secondPlayer)).getBoard().getCard(new Coords(1, 3)));
     }
 }

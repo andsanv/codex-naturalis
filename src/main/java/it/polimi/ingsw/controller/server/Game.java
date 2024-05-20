@@ -15,6 +15,8 @@ public class Game implements Runnable {
     private Lobby lobby;
     private Map<User, Boolean> isConnected;
 
+    private long checkInterval = 2; // seconds
+
     private GameFlowManager gameFlowManager;
 
     /**
@@ -39,7 +41,15 @@ public class Game implements Runnable {
 
     public void checkConnections() {
         while(true) {
-            // TODO
+            for(User user : isConnected.keySet()) {
+                boolean connected = true;
+                // TODO check connection that sets connected flag to true if client responds
+                isConnected.put(user, connected);
+
+                try {
+                    Thread.sleep(checkInterval * 1000);
+                } catch (InterruptedException e) {}
+            }
         }
     }
 }
