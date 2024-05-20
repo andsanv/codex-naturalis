@@ -10,7 +10,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.distributed.ConnectionInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.events.GameConnectionEvent;
+import it.polimi.ingsw.distributed.server.GameServerActions;
+import it.polimi.ingsw.distributed.server.RMIGameServer;
 
 /**
  * The server is implemented using the Singleton pattern.
@@ -28,6 +33,7 @@ public enum Server {
      * When the client is in the menu, he receives updates on the list of lobbies.
      */
     private ConcurrentHashMap<MainViewActions, Boolean> connectedPlayers;
+    private ConcurrentHashMap<Lobby, GameServerActions> lobbyConnections;
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -106,15 +112,31 @@ public enum Server {
      *         already started.
      */
     public boolean startGame(User user, int lobbyId) {
+        Runnable startGame;
+
         synchronized (lobbies) {
             Lobby lobby = lobbies.get(lobbyId);
 
             if (lobby == null || user != lobby.getManager() || !lobby.startGame())
                 return false;
+
+            startGame = () -> {
+                try {
+                    GameServerActions gameServerActions = new RMIGameServer(new GameFlowManager(lobby));
+                    lobbyConnections.put(lobby, gameServerActions);
+                } catch (RemoteException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            };
         }
 
+        startGame.run();
+        
+        // GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(null, null)
+
         // TODO spawn thread with gameflowmanager
-        // TODO send to client connection informations for the started game
+        // TODO send to client connection informations for the started game ??
 
         return true;
     }
