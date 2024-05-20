@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameView">
+   <children>
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" prefHeight="1080.0" prefWidth="1920.0" vbarPolicy="NEVER">
+         <content>
+            <ImageView fx:id="mapView" fitHeight="4000.0" fitWidth="4000.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/grid_cells.png" />
+               </image>
+            </ImageView>
+         </content>
+      </ScrollPane>
+      <StackPane layoutX="510.0" layoutY="830.0" prefHeight="250.0" prefWidth="900.0">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ImageView fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </HBox>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

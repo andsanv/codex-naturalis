@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MainMenu">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../../css/mainMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MainMenu">
    <children>
       <GridPane layoutX="-19.0" layoutY="-8.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -25,7 +25,7 @@
             <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
                   <Text fx:id="helloText" strokeType="OUTSIDE" strokeWidth="0.0" text="Ciao" />
-                  <Button fx:id="createGame" mnemonicParsing="false" text="Create Game" />
+                  <Button fx:id="createGame" mnemonicParsing="false" onMouseClicked="#handleCreateGameButtonClick" text="Create Game" />
                   <Button fx:id="joinGame" mnemonicParsing="false" text="Join Game" />
                   <Button fx:id="options" mnemonicParsing="false" text="Options" />
                </children>
