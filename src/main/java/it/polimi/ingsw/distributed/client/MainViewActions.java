@@ -8,7 +8,7 @@ import java.util.List;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
 
-public interface VirtualMainView extends Remote, Serializable {
+public interface MainViewActions extends Remote, Serializable {
     /**
      * Sends an error to the client.
      * Usually sent after failing to do an action like joining a lobby or a game.

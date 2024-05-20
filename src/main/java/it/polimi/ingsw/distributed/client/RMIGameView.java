@@ -2,21 +2,27 @@ package it.polimi.ingsw.distributed.client;
 
 import java.rmi.RemoteException;
 
+import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.distributed.MainUpdateHandler;
 import it.polimi.ingsw.distributed.events.GameEvent;
 
-public class RMIGameView implements VirtualGameView {
-    public RMIGameView() throws RemoteException {
+public class RMIGameView implements GameViewActions {
+
+    private final GameEventHandler gameEventHandler;
+    private final MainUpdateHandler mainUpdateHandler;
+
+    public RMIGameView(GameEventHandler gameEventHandler, MainUpdateHandler mainUpdateHandler) throws RemoteException {
+        this.gameEventHandler = gameEventHandler;
+        this.mainUpdateHandler = mainUpdateHandler;
     }
 
     @Override
     public void receiveEvent(GameEvent event) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendEvent'");
+        event.execute(gameEventHandler);
     }
 
     @Override
     public void receiveError(String error) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendError'");
+        mainUpdateHandler.handleErrorMessage(error);
     }    
 }

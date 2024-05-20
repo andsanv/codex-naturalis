@@ -43,7 +43,7 @@ public class ScoreTrack extends Observable {
         if(scores.get(playerToken) > maxScore)
             maxScore = newScore;
 
-        notify(new ScoreTrackEvent(playerToken, newScore));
+        //notify(new ScoreTrackEvent(playerToken, newScore));
     }
 
     /**

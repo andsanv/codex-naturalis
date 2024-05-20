@@ -11,6 +11,7 @@ public class DrawVisibleResourceCardCommand extends GameCommand {
         this.choice = choice;
     }
 
+    @Override
     public boolean execute(GameFlowManager gameFlowManager) {
         return gameFlowManager.drawVisibleResourceCard(playerId, choice);
     }

@@ -9,6 +9,7 @@ public class DrawResourceDeckCardCommand extends GameCommand {
         this.playerId = playerId;
     }
 
+    @Override
     public boolean execute(GameFlowManager gameFlowManager) {
         return gameFlowManager.drawResourceDeckCard(playerId);
     }

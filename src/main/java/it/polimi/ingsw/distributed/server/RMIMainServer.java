@@ -5,15 +5,24 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.VirtualMainView;
+import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.commands.ServerCommand;
 
-public class RMIMainServer extends UnicastRemoteObject implements VirtualMainServer, Runnable {
+public class RMIMainServer extends UnicastRemoteObject implements MainServerActions, Runnable {
+
+    private final ExecutorService executorService;
+
     public RMIMainServer() throws RemoteException {
+        executorService = Executors.newCachedThreadPool();
     }
 
     @Override
@@ -32,34 +41,20 @@ public class RMIMainServer extends UnicastRemoteObject implements VirtualMainSer
         }
     }
 
-    @Override
-    public boolean joinLobby(UserInfo user, int lobbyId) {
-        return Server.INSTANCE.joinLobby(user, lobbyId);
-    }
 
     @Override
-    public boolean leaveLobby(UserInfo user, int lobbyId) throws RemoteException {
-        return Server.INSTANCE.leaveLobby(user, lobbyId);
+    public void connect(MainViewActions clientMainView) throws RemoteException {
+        Runnable task = () -> {
+            Server.INSTANCE.addConnectedClient(clientMainView);
+        };
+        executorService.submit(task);
     }
 
-    @Override
-    public UserInfo signup(String name) throws RemoteException {
-        return Server.INSTANCE.signup(name);
+	@Override
+	public void send(ServerCommand command) throws RemoteException {
+		executorService.submit(()-> {
+            command.execute();
+        });
     }
-
-    @Override
-    public boolean startGame(UserInfo user, int lobbyId) throws RemoteException {
-        return Server.INSTANCE.startGame(user, lobbyId);
-    }
-
-    @Override
-    public void connect(VirtualMainView clientMainView) throws RemoteException {
-        // TODO implement correctly
-        Server.INSTANCE.addConnectedClient(clientMainView);
-    }
-
-    @Override
-    public LobbyInfo createLobby(UserInfo userInfo) throws RemoteException {
-        return Server.INSTANCE.createLobby(userInfo);
-    }
+        
 }

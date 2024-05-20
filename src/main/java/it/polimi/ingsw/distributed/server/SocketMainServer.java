@@ -8,9 +8,9 @@ import java.util.List;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.VirtualMainView;
+import it.polimi.ingsw.distributed.client.MainViewActions;
 
-public class SocketMainServer implements VirtualMainView, Runnable {
+public class SocketMainServer implements MainViewActions, Runnable {
     private ServerSocket serverSocket;
     private List<Socket> sockets;
 
