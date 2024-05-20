@@ -3,17 +3,17 @@ package it.polimi.ingsw.distributed.client;
 import java.rmi.RemoteException;
 
 import it.polimi.ingsw.distributed.GameEventHandler;
-import it.polimi.ingsw.distributed.MainUpdateHandler;
+import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.events.GameEvent;
 
 public class RMIGameView implements GameViewActions {
 
     private final GameEventHandler gameEventHandler;
-    private final MainUpdateHandler mainUpdateHandler;
+    private final MainEventHandler mainEventHandler;
 
-    public RMIGameView(GameEventHandler gameEventHandler, MainUpdateHandler mainUpdateHandler) throws RemoteException {
+    public RMIGameView(GameEventHandler gameEventHandler, MainEventHandler mainEventHandler) throws RemoteException {
         this.gameEventHandler = gameEventHandler;
-        this.mainUpdateHandler = mainUpdateHandler;
+        this.mainEventHandler = mainEventHandler;
     }
 
     @Override
@@ -23,6 +23,6 @@ public class RMIGameView implements GameViewActions {
 
     @Override
     public void receiveError(String error) throws RemoteException {
-        mainUpdateHandler.handleErrorMessage(error);
+        mainEventHandler.handleErrorMessage(error);
     }    
 }

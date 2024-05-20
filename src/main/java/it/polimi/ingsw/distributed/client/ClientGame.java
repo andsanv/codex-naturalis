@@ -12,58 +12,72 @@ import it.polimi.ingsw.model.player.PlayerToken;
 public class ClientGame implements GameEventHandler {
 
     @Override
-    public void handleScoreTrackEvent(UserInfo sender, int score) {
-        System.out.println("\u001B[32mScore track event: " + sender + " - Score: " + score + "\u001B[0m");
+    public void handleScoreTrackEvent(PlayerToken senderToken, int score) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleScoreTrackEvent'");
     }
 
     @Override
-    public void handlePlayedCardEvent(UserInfo player, int playedCardId, CardSide playedCardSide,
+    public void handlePlayedCardEvent(PlayerToken playerToken, int playedCardId, CardSide playedCardSide,
             Coords playedCardCoordinates) {
-        System.out.println("\u001B[32mPlayed card event: " + player + " - Card ID: " + playedCardId + " - Card Side: " + playedCardSide + " - Coordinates: " + playedCardCoordinates + "\u001B[0m");
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handlePlayedCardEvent'");
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(UserInfo player, int drawnCardId) {
-        System.out.println("\u001B[32mDrawn gold deck card event: " + player + " - Card ID: " + drawnCardId + "\u001B[0m");
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(UserInfo player, int drawnCardId) {
-        System.out.println("\u001B[32mDrawn resource deck card event: " + player + " - Card ID: " + drawnCardId + "\u001B[0m");
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
     }
 
     @Override
-    public void handleDrawnVisibleResourceCardEvent(UserInfo player, int drawnCardPosition, int drawnCardId) {
-        System.out.println("\u001B[32mDrawn visible resource card event: " + player + " - Card Position: " + drawnCardPosition + " - Card ID: " + drawnCardId + "\u001B[0m");
+    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnVisibleResourceCardEvent'");
     }
 
     @Override
     public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId) {
-        System.out.println("\u001B[32mCommon objective event: First Objective ID: " + firstCommonObjectiveId + " - Second Objective ID: " + secondCommonObjectiveId + "\u001B[0m");
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleCommonObjectiveEvent'");
     }
 
     @Override
-    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
-        System.out.println("\u001B[32mDirect message event: Sender: " + sender + " - Receiver: " + receiver + " - Message: " + message + "\u001B[0m");
+    public void handleDirectMessageEvent(PlayerToken senderToken, PlayerToken receiverToken, String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDirectMessageEvent'");
     }
 
     @Override
-    public void handleGroupMessageEvent(UserInfo sender, String message) {
-        System.out.println("\u001B[32mGroup message event: Sender: " + sender + " - Message: " + message + "\u001B[0m");
+    public void handleGroupMessageEvent(PlayerToken senderToken, String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
     }
 
     @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
-        System.out.println("\u001B[32mToken assignment event: " + player + " - Assigned Token: " + assignedToken + "\u001B[0m");
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleTokenAssignmentEvent'");
     }
 
     @Override
-    public void handlePlayedCardEvent(UserInfo player, int secretObjectiveCardId) {
-        System.out.println("\u001B[32mPlayed card event: " + player + " - Secret Objective Card ID: " + secretObjectiveCardId + "\u001B[0m");
+    public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handlePlayedCardEvent'");
     }
 
     @Override
-    public void handlePlayerElementsEvent(UserInfo player, Map<Elements, Integer> resources) {
-        System.out.println("\u001B[32mPlayer elements event: " + player + " - Resources: " + resources + "\u001B[0m");
+    public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handlePlayerElementsEvent'");
     }
+
+    
+    
 }

@@ -12,7 +12,7 @@ import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
-import it.polimi.ingsw.distributed.MainUpdateHandler;
+import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.commands.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.SignUpCommand;
 import it.polimi.ingsw.distributed.server.MainServerActions;
@@ -21,20 +21,20 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
     private UserInfo userInfo;
     private MainServerActions MainServerActions;
     private final GameEventHandler gameEventHandler;
-    private final MainUpdateHandler mainUpdateHandler;
+    private final MainEventHandler mainEventHandler;
 
     // private final Object printLock;
 
-    public RMIMainView(GameEventHandler gameEventHandler, MainUpdateHandler mainUpdateHandler) throws RemoteException {
+    public RMIMainView(GameEventHandler gameEventHandler, MainEventHandler mainEventHandler) throws RemoteException {
         // this.printLock = printLock;
         this.userInfo = new UserInfo(new User("test"));
         this.gameEventHandler = gameEventHandler;
-        this.mainUpdateHandler = mainUpdateHandler;
+        this.mainEventHandler = mainEventHandler;
     }
 
     @Override
     public void receiveError(String error) throws RemoteException {
-        mainUpdateHandler.handleErrorMessage(error);
+        mainEventHandler.handleErrorMessage(error);
     }
 
     @Override
@@ -74,6 +74,6 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
 
     @Override
     public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
-        mainUpdateHandler.handleLobbiesUpdate(lobbies);
+        mainEventHandler.handleLobbiesUpdate(lobbies);
     }
 }
