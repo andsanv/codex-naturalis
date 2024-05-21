@@ -3,6 +3,8 @@ package it.polimi.ingsw.distributed.server;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;
@@ -13,15 +15,21 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Game
 
     private final GameFlowManager gameFlowManager;
 
+    private final String rmiConnectionInfo;
+
     private ConcurrentHashMap<UserInfo, GameViewActions> clients;
 
-    public RMIGameServer(GameFlowManager gameFlowManager) throws RemoteException {
+    private final ExecutorService executorService;
+
+    public RMIGameServer(GameFlowManager gameFlowManager, String rmiConnectionInfo) throws RemoteException {
+        executorService = Executors.newCachedThreadPool();
         this.gameFlowManager = gameFlowManager;
+        this.rmiConnectionInfo = rmiConnectionInfo;
     }
 
     @Override
     public void send(GameCommand command) throws RemoteException {
-        gameFlowManager.addCommand(command);
+        executorService.submit(() -> gameFlowManager.addCommand(command));
     }
 
     @Override
@@ -31,18 +39,18 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Game
 
     @Override
     public void run() {
-        /*Registry registry;
+        Registry registry;
 
         try {
-            registry = LocateRegistry.createRegistry(Config.RMIGameServerPort);
-            registry.bind(Config.RMIServerName, this);
+            registry = LocateRegistry.getRegistry(Config.RMIServerPort);
+            registry.bind(rmiConnectionInfo, this);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.toString());
             e.printStackTrace();
         } catch (AlreadyBoundException e) {
-            System.err.println("Error: " + Config.RMIServerName + " already bound");
+            System.err.println("Error: " + rmiConnectionInfo + " already bound");
             e.printStackTrace();
-        }*/
+        }
     }
 
 }

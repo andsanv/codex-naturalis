@@ -5,36 +5,38 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.GameEventHandler;
-import it.polimi.ingsw.distributed.MainUpdateHandler;
 import it.polimi.ingsw.distributed.commands.server.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.server.SignUpCommand;
+import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 
 public class RMIMainView extends UnicastRemoteObject implements MainViewActions, Runnable {
     private UserInfo userInfo;
-    private MainServerActions MainServerActions;
-    private final GameEventHandler gameEventHandler;
-    private final MainUpdateHandler mainUpdateHandler;
+    private final MainEventHandler mainEventHandler;
 
     // private final Object printLock;
 
-    public RMIMainView(GameEventHandler gameEventHandler, MainUpdateHandler mainUpdateHandler) throws RemoteException {
+    public RMIMainView(MainEventHandler mainEventHandler) throws RemoteException {
         // this.printLock = printLock;
         this.userInfo = new UserInfo(new User("test"));
-        this.gameEventHandler = gameEventHandler;
-        this.mainUpdateHandler = mainUpdateHandler;
+        this.mainEventHandler = mainEventHandler;
     }
 
     @Override
     public void receiveError(String error) throws RemoteException {
-        mainUpdateHandler.handleErrorMessage(error);
+        mainEventHandler.handleServerError(error);
+    }
+
+
+    @Override
+    public void receiveEvent(MainEvent serverEvent) throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'receiveEvent'");
     }
 
     @Override
@@ -46,7 +48,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
             MainServerActions mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
             // Send the virtual view to the server
-            mainServerActions.connect(this);
+            mainServerActions.connect(userInfo, this);
 
             // Create an user
             mainServerActions.send(new SignUpCommand("test"));
@@ -65,15 +67,5 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public UserInfo getUserInfo() throws RemoteException {
-        return userInfo;
-    }
-
-    @Override
-    public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
-        mainUpdateHandler.handleLobbiesUpdate(lobbies);
     }
 }

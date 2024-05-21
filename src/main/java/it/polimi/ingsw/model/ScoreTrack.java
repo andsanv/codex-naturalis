@@ -1,13 +1,12 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.controller.observer.Observable;
-import it.polimi.ingsw.distributed.events.ScoreTrackEvent;
-import it.polimi.ingsw.model.player.Player;
-import it.polimi.ingsw.model.player.PlayerToken;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.model.player.Player;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
  * Class that represents the scoreboard.

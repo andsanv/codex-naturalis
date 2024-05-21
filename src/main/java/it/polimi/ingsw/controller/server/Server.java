@@ -10,7 +10,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.events.game.GameConnectionEvent;
+import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
+import it.polimi.ingsw.distributed.server.GameServerActions;
+import it.polimi.ingsw.distributed.server.RMIGameServer;
+import it.polimi.ingsw.util.Pair;
 
 /**
  * The server is implemented using the Singleton pattern.
@@ -27,7 +33,8 @@ public enum Server {
      * The value is true if the client is in the menu, false if it's in-game.
      * When the client is in the menu, he receives updates on the list of lobbies.
      */
-    private ConcurrentHashMap<MainViewActions, Boolean> connectedPlayers;
+    private ConcurrentHashMap<Pair<UserInfo, MainViewActions>, Boolean> connectedPlayers;
+    private ConcurrentHashMap<Lobby, GameServerActions> lobbyConnections;
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -111,12 +118,40 @@ public enum Server {
 
             if (lobby == null || user != lobby.getManager() || !lobby.startGame())
                 return false;
+
+            String rmiConnectionInfo = "GameActions" + lobbyId;
+
+            try {
+                GameServerActions gameServerActions = new RMIGameServer(new GameFlowManager(lobby), rmiConnectionInfo);
+                lobbyConnections.put(lobby, gameServerActions);
+            } catch (RemoteException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, "" /* TODO */);
+
+            connectedPlayers
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue())
+                    .forEach(entry -> {
+                        try {
+                            entry.getKey().second.receiveEvent(gameConnectionEvent);
+
+                            // Keep track that the player is in game
+                            connectedPlayers.put(entry.getKey(), false);
+                        } catch (RemoteException e) {
+                            // TODO
+                            System.err.println("Couldn't send connection event to");
+                            e.printStackTrace();
+                        }
+                        ;
+                    });
         }
 
-        // TODO spawn thread with gameflowmanager
-        // TODO send to client connection informations for the started game
-
         return true;
+
     }
 
     public boolean startGame(UserInfo userInfo, int lobbyId) {
@@ -159,8 +194,8 @@ public enum Server {
         }
     }
 
-    public void addConnectedClient(MainViewActions clientMainView) {
-        connectedPlayers.put(clientMainView, true);
+    public void addConnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
+        connectedPlayers.put(new Pair<>(userInfo, clientMainView), true);
     }
 
     public void removeConnectedClient(MainViewActions clientMainView) {
@@ -176,16 +211,16 @@ public enum Server {
     }
 
     private void broadcastLobbies(List<LobbyInfo> lobbies) {
-        // TODO use a threadpool
+        // TODO broadcast after updating lobbies
         new Thread(() -> {
             connectedPlayers.entrySet().stream()
                     .filter(entry -> entry.getValue())
                     .map(entry -> entry.getKey())
                     .forEach(client -> {
                         try {
-                            client.receiveLobbies(lobbies);
+                            client.second.receiveEvent(new LobbiesEvent(lobbies));
                         } catch (RemoteException e) {
-                            System.err.println("Error: Couldn't send message to " + client);
+                            System.err.println("Error: Couldn't send message to " + client.first);
                             e.printStackTrace();
                         }
                     });
