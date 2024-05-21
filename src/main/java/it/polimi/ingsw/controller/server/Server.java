@@ -14,6 +14,7 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.events.game.GameConnectionEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
+import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.RMIGameServer;
 import it.polimi.ingsw.util.Pair;
@@ -25,8 +26,9 @@ import it.polimi.ingsw.util.Pair;
 public enum Server {
     INSTANCE;
 
-    private Map<Integer, Lobby> lobbies;
-    private Set<User> users;
+    private final Map<Integer, Lobby> lobbies;
+    private final Set<User> users;
+
 
     /**
      * Links the Virtual Views to their status.
@@ -54,7 +56,12 @@ public enum Server {
         synchronized (lobbies) {
             Lobby lobby = lobbies.get(lobbyId);
 
-            return lobby != null && lobby.addUser(user);
+            boolean result = lobby != null && lobby.addUser(user);
+
+            if(result)
+                broadcastLobbies(getLobbies());
+
+            return result;
         }
     }
 
@@ -68,7 +75,7 @@ public enum Server {
      * 
      * @param user    The user who wants to leave the lobby
      * @param lobbyId The lobby id
-     * @return True if leaving the lobby was successfull, false if the lobby doesn't
+     * @return True if leaving the lobby was successful, false if the lobby doesn't
      *         exist or if the user is already in the lobby.
      */
     public boolean leaveLobby(User user, int lobbyId) {
@@ -78,16 +85,22 @@ public enum Server {
             if (lobby == null)
                 return false;
 
-            if (!lobby.removeUser(user))
+            System.out.println("leaving lobby = " + lobby);
+
+            if (!lobby.removeUser(user)) {
                 lobbies.remove(lobbyId);
+            }
+
+            broadcastLobbies(getLobbies());
 
             return true;
         }
+
     }
 
     public boolean leaveLobby(UserInfo userInfo, int lobbyId) {
         User user = userInfoToUser(userInfo);
-        return user != null ? leaveLobby(user, lobbyId) : false;
+        return user != null && leaveLobby(user, lobbyId);
     }
 
     /**
@@ -156,7 +169,7 @@ public enum Server {
 
     public boolean startGame(UserInfo userInfo, int lobbyId) {
         User user = userInfoToUser(userInfo);
-        return user != null ? startGame(user, lobbyId) : false;
+        return user != null && startGame(user, lobbyId);
     }
 
     /**
@@ -189,14 +202,36 @@ public enum Server {
                 Lobby newLobby = new Lobby(serverUser.get());
                 lobbies.put(newLobby.id, newLobby);
 
+                broadcastLobbies(getLobbies());
+
                 return new LobbyInfo(newLobby);
             }
         }
     }
 
-    public void addConnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
+    public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
         connectedPlayers.put(new Pair<>(userInfo, clientMainView), true);
     }
+
+    public void addConnectedClient(String username, MainViewActions clientMainView) {
+        User user = new User(username);
+
+        synchronized (users) {
+            users.add(user);
+        }
+
+        UserInfo userInfo = new UserInfo(user);
+
+        try {
+            clientMainView.receiveEvent(new UserInfoEvent(userInfo));
+        } catch (RemoteException e) {
+            System.err.println("Couldn't send userInfo event to " + userInfo);
+            e.printStackTrace();
+        }
+
+        addReconnectedClient(userInfo, clientMainView);
+    }
+
 
     public void removeConnectedClient(MainViewActions clientMainView) {
         connectedPlayers.remove(clientMainView, true);
@@ -224,6 +259,6 @@ public enum Server {
                             e.printStackTrace();
                         }
                     });
-        });
+        }).start();
     }
 }

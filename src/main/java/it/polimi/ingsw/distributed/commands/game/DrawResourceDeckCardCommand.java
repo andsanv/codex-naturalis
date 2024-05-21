@@ -1,16 +1,17 @@
 package it.polimi.ingsw.distributed.commands.game;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 public class DrawResourceDeckCardCommand extends GameCommand {
-    private final String playerId;
+    private final PlayerToken playerToken;
 
-    public DrawResourceDeckCardCommand(String playerId) {
-        this.playerId = playerId;
+    public DrawResourceDeckCardCommand(PlayerToken playerToken) {
+        this.playerToken = playerToken;
     }
 
     @Override
     public boolean execute(GameFlowManager gameFlowManager) {
-        return gameFlowManager.drawResourceDeckCard(playerId);
+        return gameFlowManager.getCurrentState().drawResourceDeckCard(playerToken);
     }
 }

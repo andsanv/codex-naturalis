@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.distributed.events.game.DrawnGoldDeckCardEvent;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
@@ -109,6 +110,7 @@ public class GameModelUpdater {
             return false;
 
         Optional<GoldCard> card = model.getGoldCardsDeck().draw();
+        if (card.isPresent()) model.getGoldCardsDeck().notify(new DrawnGoldDeckCardEvent(playerToken, card.get().getId()));
 
         if (!card.isPresent())
             return false;

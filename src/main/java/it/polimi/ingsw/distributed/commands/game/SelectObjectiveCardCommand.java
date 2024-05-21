@@ -13,6 +13,6 @@ public class SelectObjectiveCardCommand {
     }
 
     public boolean execute(GameFlowManager gameFlowManager) {
-        return gameFlowManager.selectObjectiveCard(playerToken, choice);
+        return gameFlowManager.getCurrentState().selectObjectiveCard(playerToken, choice);
     }
 }

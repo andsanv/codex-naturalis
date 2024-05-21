@@ -25,6 +25,6 @@ public class PlayCardState extends GameState {
      */
     @Override
     public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
-        return gameModelUpdater.playCard(playerToken, coords, card, cardSide);
+        return gameFlowManager.getTurn().equals(playerToken) && gameModelUpdater.playCard(playerToken, coords, card, cardSide);
     }
 }

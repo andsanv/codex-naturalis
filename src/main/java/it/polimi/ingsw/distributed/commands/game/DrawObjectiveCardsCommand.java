@@ -11,6 +11,6 @@ public class DrawObjectiveCardsCommand {
     }
 
     public boolean execute(GameFlowManager gameFlowManager) {
-        return gameFlowManager.drawObjectiveCards(playerToken);
+        return gameFlowManager.getCurrentState().drawObjectiveCards(playerToken);
     }
 }

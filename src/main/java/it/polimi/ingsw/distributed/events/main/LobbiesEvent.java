@@ -9,11 +9,8 @@ public class LobbiesEvent extends MainEvent {
     private final List<LobbyInfo> lobbies;
 
     public LobbiesEvent(List<LobbyInfo> lobbies) {
+        System.out.println("Lobbies event created");
         this.lobbies = lobbies;
-    }
-
-    public List<LobbyInfo> getLobbies() {
-        return lobbies;
     }
 
     @Override

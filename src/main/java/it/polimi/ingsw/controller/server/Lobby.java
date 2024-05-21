@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller.server;
 
+import com.google.gson.stream.JsonToken;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public class Lobby {
 
     public final int id;
     private User manager;
-    private List<User> users;
+    private final List<User> users;
     boolean gameStarted;
 
     // TODO implement chat here
@@ -86,10 +88,10 @@ public class Lobby {
     public synchronized boolean removeUser(User user) {
         users.remove(user);
 
-        if (manager == user)
-            manager = users.get(0);
+        if(users.isEmpty()) return false;
 
-        return users.size() > 0;
+        if (manager == user) manager = users.get(0);
+        return true;
     }
 
     /**

@@ -7,11 +7,13 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.RMIMainView;
-import it.polimi.ingsw.distributed.commands.server.CreateLobbyCommand;
-import it.polimi.ingsw.distributed.commands.server.LeaveLobbyCommand;
-import it.polimi.ingsw.distributed.commands.server.SignUpCommand;
+import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.LeaveLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
+import it.polimi.ingsw.distributed.commands.main.StartGameCommand;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.client.UI;
 import it.polimi.ingsw.controller.server.LobbyInfo;
@@ -21,26 +23,44 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 
-// Client entrypoint
-public class ClientEntry {
+class ClientEntry implements UI {
     public static void main(String[] args) throws RemoteException, NotBoundException {
+
         Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
         MainServerActions serverActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
-        MainViewActions clientMainView = new RMIMainView(new CLITest());
+        mainServerActions = serverActions;
 
-        serverActions.connect(clientMainView);
-        
-        serverActions.send(new SignUpCommand("test"));
-        
-        serverActions.send(new CreateLobbyCommand(clientMainView.getUserInfo()));
+        ClientEntry clientEntry = new ClientEntry();
+        MainViewActions clientMainView = new RMIMainView(clientEntry);
 
-        serverActions.send(new LeaveLobbyCommand(clientMainView.getUserInfo(), 0));
+        mainServerActions.connect("nome prova", clientMainView);
+
+        mainViewActions = clientMainView;
+
+        userInfo = new UserInfo(new User("nome prova"));
+
+        UserInfo userInfo = ClientEntry.userInfo;
+
+        mainServerActions.send(new CreateLobbyCommand(userInfo));
+
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {}
+
+        mainServerActions.send(new LeaveLobbyCommand(userInfo, 0));
+
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {}
+
+        mainServerActions.send(new CreateLobbyCommand(userInfo));
     }
 
-}
+    private static UserInfo userInfo = null;
+    private static MainServerActions mainServerActions;
+    private static MainViewActions mainViewActions;
 
-class CLITest implements UI {
 
     @Override
     public void handleReceivedConnection(String rmiConnectionInfo, String socketConnectionInfo) {
@@ -48,7 +68,11 @@ class CLITest implements UI {
         System.out.println("RMI Connection Info: " + rmiConnectionInfo);
         System.out.println("Socket Connection Info: " + socketConnectionInfo);
 
-        serverActions.connect(rmiConnectionInfo);
+        try {
+            mainServerActions.connect(rmiConnectionInfo, mainViewActions);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -58,10 +82,12 @@ class CLITest implements UI {
 
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
-        System.out.println("Lobbies event received");
+        System.out.println("-------- New lobbies ----------");
         for (LobbyInfo lobby : lobbies) {
             System.out.println(lobby);
         }
+        System.out.println("------------------------------");
+
     }
 
     @Override
@@ -150,4 +176,11 @@ class CLITest implements UI {
     public void handleGameError(String error) {
         System.out.println("Game error: " + error);
     }
+
+    @Override
+    public void handleUserInfo(UserInfo userInfo) {
+        ClientEntry.userInfo = userInfo;
+        System.out.println("UserInfo: " + userInfo);
+    }
+
 }

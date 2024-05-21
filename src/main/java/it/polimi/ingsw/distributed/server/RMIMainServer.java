@@ -10,8 +10,9 @@ import java.util.concurrent.Executors;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.Server;
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.commands.server.ServerCommand;
+import it.polimi.ingsw.distributed.commands.main.MainCommand;
 
 public class RMIMainServer extends UnicastRemoteObject implements MainServerActions, Runnable {
 
@@ -39,17 +40,23 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
 
 
     @Override
-    public void connect(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException {
+    public void connect(String username, MainViewActions clientMainView) throws RemoteException {
         executorService.submit(() -> {
-            Server.INSTANCE.addConnectedClient(userInfo, clientMainView);
+            Server.INSTANCE.addConnectedClient(username, clientMainView);
         });
     }
 
-	@Override
-	public void send(ServerCommand command) throws RemoteException {
-		executorService.submit(()-> {
-            command.execute();
+    @Override
+    public void reconnect(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException {
+        executorService.submit(() -> {
+            Server.INSTANCE.addReconnectedClient(userInfo, clientMainView);
         });
+    }
+
+    @Override
+	public void send(MainCommand command) throws RemoteException {
+        System.out.println(command);
+		executorService.submit(command::execute);
     }
         
 }

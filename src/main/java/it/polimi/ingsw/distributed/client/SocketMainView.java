@@ -10,6 +10,7 @@ import java.util.List;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.events.main.MainEvent;
 
 public class SocketMainView implements MainViewActions, Runnable {
     private Socket socket;
@@ -29,15 +30,8 @@ public class SocketMainView implements MainViewActions, Runnable {
     }
 
     @Override
-    public UserInfo getUserInfo() throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
-    }
+    public void receiveEvent(MainEvent serverEvent) throws RemoteException {
 
-    @Override
-    public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'receiveLobbies'");
     }
 
     @Override

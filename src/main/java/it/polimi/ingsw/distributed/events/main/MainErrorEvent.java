@@ -9,10 +9,6 @@ public class MainErrorEvent extends MainEvent {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
     @Override
     public void execute(MainEventHandler mainEventHandler) {
         mainEventHandler.handleServerError(message);

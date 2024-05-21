@@ -196,105 +196,35 @@ public class GameFlowManager implements Runnable {
         }
     }
 
-    public void drawRandomCard(String playerId) {
+    /**
+     * Used to fill a player's hand when he exceeds his time limit
+     *
+     * @param PlayerToken Token that represents the player
+     */
+    public void drawRandomCard(PlayerToken playerToken) {
         Random rand = new Random();
 
         switch (rand.nextInt(4)) {
             case 0:
-                drawResourceDeckCard(playerId);
+                currentState.drawResourceDeckCard(playerToken);
                 break;
             case 1:
-                drawGoldDeckCard(playerId);
+                currentState.drawGoldDeckCard(playerToken);
                 break;
             case 2:
-                drawVisibleResourceCard(playerId, rand.nextInt(2));
+                currentState.drawVisibleResourceCard(playerToken, rand.nextInt(2));
                 break;
             case 3:
-                drawVisibleGoldCard(playerId, rand.nextInt(2));
+                currentState.drawVisibleGoldCard(playerToken, rand.nextInt(2));
                 break;
         }
     }
 
     /**
-     * Allows a player (String) to make a move, which can succeed only if the state machina is in the PlayCardState
-     *
-     * @param playerId Player ID of the player playing the card
-     * @param coords Coordinates on which to place the card
-     * @param card Card to place
-     * @param cardSide Side to play
-     * @return A boolean that depends on whether the operation was successful or not
-     */
-    public boolean playCard(String playerId, Coords coords, PlayableCard card, CardSide cardSide) {
-        return playerId.equals(getTurn()) && currentState.playCard(idToToken.get(playerId), coords, card, cardSide);
-    }
-
-    /**
-     * Allows a player to draw from the ResourceCards deck
-     *
-     * @param playerId Player ID of the player drawing the card
-     * @return A boolean that depends on whether the operation was successful or not
-     */
-    public boolean drawResourceDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawResourceDeckCard(idToToken.get(playerId));
-    }
-
-    /**
-     * Allows a player to draw from the GoldCards deck
-     *
-     * @param playerId Player ID of the player drawing the card
-     * @return A boolean that depends on whether the operation was successful or not
-     */
-    public boolean drawGoldDeckCard(String playerId) {
-        return playerId.equals(getTurn()) && currentState.drawGoldDeckCard(idToToken.get(playerId));
-    }
-
-    /**
-     * Allows a player to draw from the list of visible ResourceCards
-     *
-     * @param playerId Player ID of the player drawing the card
-     * @param choice The offset of the card chosen in the list
-     * @return A boolean that depends on whether the operation was successful or not
-     */
-    public boolean drawVisibleResourceCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleResourceCard(idToToken.get(playerId), choice);
-    }
-
-    /**
-     * Allows a player to draw from the list of visible GoldCards
-     *
-     * @param playerId Player ID of the player drawing the card
-     * @param choice The offset of the card chosen in the list
-     * @return A boolean that depends on whether the operation was successful or not
-     */
-    public boolean drawVisibleGoldCard(String playerId, int choice) {
-        return playerId.equals(getTurn()) && currentState.drawVisibleGoldCard(idToToken.get(playerId), choice);
-    }
-
-    public boolean selectToken(String playerId, PlayerToken playerToken) {
-        return currentState.selectToken(playerId, playerToken);
-    }
-
-    public boolean drawStarterCard(PlayerToken playerToken) {
-        return currentState.drawStarterCard(playerToken);
-    }
-
-    public boolean selectStarterCardSide(PlayerToken playerToken, CardSide cardSide) {
-        return currentState.selectStarterCardSide(playerToken, cardSide);
-    }
-
-    public boolean drawObjectiveCards(PlayerToken playerToken) {
-        return currentState.drawObjectiveCards(playerToken);
-    }
-
-    public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
-        return currentState.selectObjectiveCard(playerToken, choice);
-    }
-
-    /**
      * @return The ID of the player whose turn it is
      */
-    public String getTurn() {
-        return users.get(turn % users.size()).name;
+    public PlayerToken getTurn() {
+        return idToToken.get(users.get(turn % users.size()).name);
     }
 
     /**
@@ -317,14 +247,6 @@ public class GameFlowManager implements Runnable {
         setState(playCardState);
     }
 
-    public void setup() {
-
-    }
-
-    public void checkConnections() {
-        // TODO
-    }
-
     public Map<User, Boolean> getIsConnected() {
         return isConnected;
     }
@@ -336,7 +258,6 @@ public class GameFlowManager implements Runnable {
     public GameState getCurrentState() {
         return currentState;
     }
-
 
     public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit;

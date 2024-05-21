@@ -9,8 +9,8 @@ import java.rmi.server.UnicastRemoteObject;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.commands.server.CreateLobbyCommand;
-import it.polimi.ingsw.distributed.commands.server.SignUpCommand;
+import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.MainServerActions;
@@ -35,8 +35,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
 
     @Override
     public void receiveEvent(MainEvent serverEvent) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'receiveEvent'");
+        serverEvent.execute(mainEventHandler);
     }
 
     @Override
@@ -48,10 +47,10 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
             MainServerActions mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
             // Send the virtual view to the server
-            mainServerActions.connect(userInfo, this);
+            mainServerActions.connect("nome prova", this);
 
             // Create an user
-            mainServerActions.send(new SignUpCommand("test"));
+            mainServerActions.send(new SignUpCommand("rave"));
 
             // Create a lobby
             mainServerActions.send(new CreateLobbyCommand(userInfo));

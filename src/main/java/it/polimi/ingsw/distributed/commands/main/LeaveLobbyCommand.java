@@ -1,9 +1,9 @@
-package it.polimi.ingsw.distributed.commands.server;
+package it.polimi.ingsw.distributed.commands.main;
 
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 
-public class LeaveLobbyCommand extends ServerCommand {
+public class LeaveLobbyCommand extends MainCommand {
 
     private final UserInfo userInfo;
     private final int lobbyId;
