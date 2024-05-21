@@ -1,8 +1,7 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.distributed.commands.GameCommand;
-import it.polimi.ingsw.model.card.CardSide;
+import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;

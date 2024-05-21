@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.server;
 
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;

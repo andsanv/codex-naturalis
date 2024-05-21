@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.server;
 
 import java.rmi.RemoteException;
 import java.util.List;

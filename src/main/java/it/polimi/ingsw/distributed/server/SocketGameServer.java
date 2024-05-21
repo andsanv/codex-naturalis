@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.commands.GameCommand;
+import it.polimi.ingsw.distributed.commands.game.GameCommand;
 
 public class SocketGameServer implements GameServerActions, Runnable {
 

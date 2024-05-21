@@ -1,8 +1,6 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.game;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.Game;
-import it.polimi.ingsw.model.card.Card;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.PlayerToken;
 

@@ -13,8 +13,8 @@ import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.distributed.MainUpdateHandler;
-import it.polimi.ingsw.distributed.commands.CreateLobbyCommand;
-import it.polimi.ingsw.distributed.commands.SignUpCommand;
+import it.polimi.ingsw.distributed.commands.server.CreateLobbyCommand;
+import it.polimi.ingsw.distributed.commands.server.SignUpCommand;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 
 public class RMIMainView extends UnicastRemoteObject implements MainViewActions, Runnable {

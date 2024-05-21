@@ -3,12 +3,8 @@ package it.polimi.ingsw.distributed.server;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.commands.GameCommand;
-import it.polimi.ingsw.distributed.commands.ServerCommand;
+import it.polimi.ingsw.distributed.commands.server.ServerCommand;
 
 // TODO replace user with userinfo (update methods in server to take UserInfo)
 public interface MainServerActions extends Remote {

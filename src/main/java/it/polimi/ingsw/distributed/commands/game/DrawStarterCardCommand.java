@@ -1,15 +1,7 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.game;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.Game;
-import it.polimi.ingsw.controller.states.GameState;
-import it.polimi.ingsw.model.card.CardSide;
-import it.polimi.ingsw.model.card.StarterCard;
-import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
-import it.polimi.ingsw.util.Pair;
-
-import java.util.Optional;
 
 public class DrawStarterCardCommand extends GameCommand {
     private PlayerToken playerToken;

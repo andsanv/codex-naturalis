@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.commands.GameCommand;
+import it.polimi.ingsw.distributed.commands.game.GameCommand;
 
 public interface GameServerActions extends Remote {
     public void send(GameCommand command) throws RemoteException;

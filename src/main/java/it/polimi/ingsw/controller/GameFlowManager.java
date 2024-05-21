@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.states.*;
-import it.polimi.ingsw.distributed.commands.GameCommand;
+import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.player.Coords;
@@ -12,8 +12,6 @@ import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Represents a single game

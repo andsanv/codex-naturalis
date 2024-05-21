@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.game;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;

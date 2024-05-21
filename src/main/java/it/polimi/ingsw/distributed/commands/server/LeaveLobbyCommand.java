@@ -1,21 +1,16 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.server;
 
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 
-public class StartGameCommand extends ServerCommand {
+public class LeaveLobbyCommand extends ServerCommand {
 
     private final UserInfo userInfo;
     private final int lobbyId;
 
     @Override
     public void execute() {
-        Server.INSTANCE.startGame(userInfo, lobbyId);
-    }
-
-    public StartGameCommand(UserInfo userInfo, int lobbyId) {
-        this.userInfo = userInfo;
-        this.lobbyId = lobbyId;
+        Server.INSTANCE.leaveLobby(userInfo, lobbyId);
     }
 
     public UserInfo getUserInfo() {
@@ -24,6 +19,11 @@ public class StartGameCommand extends ServerCommand {
 
     public int getLobbyId() {
         return lobbyId;
+    }
+
+    public LeaveLobbyCommand(UserInfo userInfo, int lobbyId) {
+        this.userInfo = userInfo;
+        this.lobbyId = lobbyId;
     }
     
 }

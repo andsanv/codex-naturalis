@@ -2,7 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
-import it.polimi.ingsw.distributed.commands.*;
+import it.polimi.ingsw.distributed.commands.game.*;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.PointsType;
 import it.polimi.ingsw.model.card.ResourceCard;

@@ -1,8 +1,6 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.server;
 
 import java.io.Serializable;
-
-import it.polimi.ingsw.controller.server.Server;
 
 public abstract class ServerCommand implements Serializable {
     

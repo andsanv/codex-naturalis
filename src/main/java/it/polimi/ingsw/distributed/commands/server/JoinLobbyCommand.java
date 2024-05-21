@@ -1,16 +1,15 @@
-package it.polimi.ingsw.distributed.commands;
+package it.polimi.ingsw.distributed.commands.server;
 
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 
-public class LeaveLobbyCommand extends ServerCommand {
-
+public class JoinLobbyCommand extends ServerCommand {
     private final UserInfo userInfo;
     private final int lobbyId;
 
     @Override
     public void execute() {
-        Server.INSTANCE.leaveLobby(userInfo, lobbyId);
+        Server.INSTANCE.joinLobby(userInfo, lobbyId);
     }
 
     public UserInfo getUserInfo() {
@@ -21,9 +20,9 @@ public class LeaveLobbyCommand extends ServerCommand {
         return lobbyId;
     }
 
-    public LeaveLobbyCommand(UserInfo userInfo, int lobbyId) {
+    public JoinLobbyCommand(UserInfo userInfo, int lobbyId) {
         this.userInfo = userInfo;
         this.lobbyId = lobbyId;
     }
-    
+
 }
