@@ -5,10 +5,9 @@ import java.util.List;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 
 public interface MainEventHandler {
+    public void handleServerError(String error);
 
-    public void handleErrorMessage(String error);
+    public void handleLobbiesEvent(List<LobbyInfo> lobbies);
 
-    public void handleLobbiesUpdate(List<LobbyInfo> lobbies);
-
-    public void handleReceivedConnection(ConnectionInfo connectionInfo);
+    public void handleReceivedConnection(String rmiConnectionInfo, String socketConnectionInfo);
 }

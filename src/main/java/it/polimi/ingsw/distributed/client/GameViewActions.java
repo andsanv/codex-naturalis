@@ -3,7 +3,7 @@ package it.polimi.ingsw.distributed.client;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import it.polimi.ingsw.distributed.events.GameEvent;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 
 public interface GameViewActions extends Remote {
     /**

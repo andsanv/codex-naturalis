@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller.observer;
 
-import it.polimi.ingsw.distributed.events.GameEvent;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 
 /**
  * An observer of GameEvents

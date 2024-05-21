@@ -35,4 +35,6 @@ public interface GameEventHandler {
     public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId);
 
     public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources);
+
+    public void handleGameError(String error);
 }

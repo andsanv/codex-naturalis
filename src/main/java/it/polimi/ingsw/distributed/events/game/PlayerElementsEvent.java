@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.events;
+package it.polimi.ingsw.distributed.events.game;
 
 import java.util.Map;
 

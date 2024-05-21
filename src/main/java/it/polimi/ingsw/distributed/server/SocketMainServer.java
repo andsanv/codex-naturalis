@@ -6,9 +6,8 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.events.main.MainEvent;
 
 public class SocketMainServer implements MainViewActions, Runnable {
     private ServerSocket serverSocket;
@@ -34,15 +33,9 @@ public class SocketMainServer implements MainViewActions, Runnable {
         
     }
 
-    @Override
-    public UserInfo getUserInfo() throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
-    }
-
-    @Override
-    public void receiveLobbies(List<LobbyInfo> lobbies) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'receiveLobbies'");
-    }
+	@Override
+	public void receiveEvent(MainEvent serverEvent) throws RemoteException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'receiveEvent'");
+	}
 }

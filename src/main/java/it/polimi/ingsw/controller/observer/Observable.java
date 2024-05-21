@@ -1,9 +1,9 @@
 package it.polimi.ingsw.controller.observer;
 
-import it.polimi.ingsw.distributed.events.GameEvent;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 
 /**
  * Generates GameEvents and sends them to observers.
