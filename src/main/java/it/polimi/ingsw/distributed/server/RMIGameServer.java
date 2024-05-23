@@ -37,7 +37,7 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Game
     }
 
     @Override
-    public void connect(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException {
+    public void connectToGame(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException {
         clients.put(userInfo, clientGameView);
     }
 

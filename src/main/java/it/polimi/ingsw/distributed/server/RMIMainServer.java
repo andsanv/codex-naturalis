@@ -40,9 +40,9 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
 
 
     @Override
-    public void connect(String username, MainViewActions clientMainView) throws RemoteException {
+    public void connectToMain(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException {
         executorService.submit(() -> {
-            Server.INSTANCE.addConnectedClient(username, clientMainView);
+            Server.INSTANCE.addConnectedClient(userInfo.name, clientMainView);
         });
     }
 
