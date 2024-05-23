@@ -49,7 +49,6 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
             mainServerActions.send(new SignUpCommand("test"));
 
-
             new Thread(new CommandConsumer<MainCommand>(serverCommandQueue, this)).start();
             new Thread(new CommandConsumer<GameCommand>(gameCommandQueue, this)).start();
         } catch (RemoteException | NotBoundException e) {
@@ -58,7 +57,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
     }
 
     public boolean connectToGame(String rmiConnection) {
-
+        return false;
     }
 
     @Override

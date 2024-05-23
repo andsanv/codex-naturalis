@@ -7,6 +7,7 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 
+import it.polimi.ingsw.client.RMIConnectionHandler;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.RMIMainView;
@@ -30,29 +31,17 @@ public class ClientEntry {
     // private final ConnectionHandler connectionHandler;
 
     public static void main(String[] args) throws RemoteException, NotBoundException {
+        ConnectionHandler connectionHandler = new RMIConnectionHandler();
 
-        Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
-        MainServerActions mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
-
-        CLITest clientEntry = new CLITest();
-        MainViewActions clientMainView = new RMIMainView(clientEntry);
         UserInfo userInfo = new UserInfo(new User("rave"));
 
-        mainServerActions.connectToMain(userInfo, clientMainView);
+        connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
 
-        mainServerActions.send(new CreateLobbyCommand(userInfo));
-
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {}
-
-        mainServerActions.send(new LeaveLobbyCommand(userInfo, 0));
+        CLITest clientEntry = new CLITest();
 
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {}
-
-        mainServerActions.send(new CreateLobbyCommand(userInfo));
     }
 
 }
