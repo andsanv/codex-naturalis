@@ -7,8 +7,10 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Map;
 
+import it.polimi.ingsw.client.ConnectionHandler;
 import it.polimi.ingsw.client.UI;
 import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.RMIMainView;
@@ -23,24 +25,27 @@ import it.polimi.ingsw.model.player.PlayerToken;
 
 // Client entrypoint
 public class ClientEntry {
+    private final ConnectionHandler connectionHandler;
+
     public static void main(String[] args) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
         MainServerActions serverActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
         MainViewActions clientMainView = new RMIMainView(new CLITest());
 
-        serverActions.connect(clientMainView);
+        UserInfo userInfo = new UserInfo(new User("rave"));
+        serverActions.connectToMain(userInfo, clientMainView);
         
         serverActions.send(new SignUpCommand("test"));
-        
+
         serverActions.send(new CreateLobbyCommand(clientMainView.getUserInfo()));
 
         serverActions.send(new LeaveLobbyCommand(clientMainView.getUserInfo(), 0));
     }
-
+    
 }
 
-class CLITest implements UI {
+public class CLITest implements UI {
 
     @Override
     public void handleReceivedConnection(String rmiConnectionInfo, String socketConnectionInfo) {

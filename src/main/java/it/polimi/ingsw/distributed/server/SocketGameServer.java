@@ -21,7 +21,7 @@ public class SocketGameServer implements GameServerActions, Runnable {
     }
 
     @Override
-    public void connect(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException {
+    public void connectToGame(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'connect'");
     }

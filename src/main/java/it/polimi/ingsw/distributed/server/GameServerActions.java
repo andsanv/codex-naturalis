@@ -16,5 +16,5 @@ public interface GameServerActions extends Remote {
      * @param clientMainView the client's game view
      * @throws RemoteException
      */
-    public void connect(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException;
+    public void connectToGame(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException;
 }

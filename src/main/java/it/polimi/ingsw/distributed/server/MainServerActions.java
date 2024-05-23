@@ -18,5 +18,5 @@ public interface MainServerActions extends Remote {
      * @param clientMainView the client's main view
      * @throws RemoteException
      */
-    void connect(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException;
+    void connectToMain(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException;
 }

@@ -48,7 +48,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
             MainServerActions mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
             // Send the virtual view to the server
-            mainServerActions.connect(userInfo, this);
+            mainServerActions.connectToMain(userInfo, this);
 
             // Create an user
             mainServerActions.send(new SignUpCommand("test"));
