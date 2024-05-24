@@ -1,0 +1,9 @@
+/* styles.css */
+#imageView {
+    -fx-border-color: transparent; /* Default border color */
+    -fx-border-width: 2;           /* Default border width */
+}
+
+#imageView:hover {
+    -fx-border-color: blue;        /* Border color on hover */
+}
