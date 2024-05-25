@@ -14,17 +14,14 @@ import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Collection;import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 
-public class RMIConnectionHandler extends ConnectionHandler implements MainViewActions {
+public class RMIConnectionHandler extends ConnectionHandler {
     
     private MainServerActions mainServerActions;
     private final GameServerActions gameServerActions;
@@ -87,19 +84,13 @@ public class RMIConnectionHandler extends ConnectionHandler implements MainViewA
         return false;
     }
 
-    @Override
-    public void receiveError(String error) throws RemoteException {
-        mainEventHandler.handleServerError(error);
-    }
+    // @Override
+    // public void receiveEvent(MainEvent serverEvent) throws RemoteException {
+    //     // serverEvent.execute(mainEventHandler);
+    //     // connectionHandler.handle(serverEvent)
 
-
-    @Override
-    public void receiveEvent(MainEvent serverEvent) throws RemoteException {
-        serverEvent.execute(mainEventHandler);
-        // connectionHandler.handle(serverEvent);
-
-        // connectionHandler will have handle method that wille execute event
-    }
+    //     // connectionHandler will have handle method that wille execute event
+    // }
 
     @Override
     public boolean reconnect() {

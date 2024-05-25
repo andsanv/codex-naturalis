@@ -17,9 +17,4 @@ public class RMIGameView implements GameViewActions {
     public void receiveEvent(GameEvent event) throws RemoteException {
         event.execute(gameEventHandler);
     }
-
-    @Override
-    public void receiveError(String error) throws RemoteException {
-        gameEventHandler.handleGameError(error);
-    }    
 }

@@ -6,12 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.List;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 
+// Questa classe può essere eliminata perché sostituita dal connectionhandler
 public class SocketMainView implements MainViewActions, Runnable {
     private Socket socket;
     private PrintWriter out;
@@ -21,12 +19,6 @@ public class SocketMainView implements MainViewActions, Runnable {
         socket = new Socket(ip, port);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    }
-
-    @Override
-    public void receiveError(String error) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendError'");
     }
 
     @Override

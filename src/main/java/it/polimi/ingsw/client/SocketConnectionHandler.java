@@ -1,28 +1,48 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.client.MainViewActions;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import it.polimi.ingsw.Config;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 
-import java.rmi.RemoteException;
-
 public class SocketConnectionHandler extends ConnectionHandler {
-    public SocketConnectionHandler() {
+    private Socket mainSocket;
+    private Socket gameSocket;
 
+    private ObjectOutputStream mainStream;
+    private ObjectOutputStream gameStream;
+    
+    public SocketConnectionHandler() throws UnknownHostException, IOException {
+        mainSocket = new Socket(Config.ServerIP, Config.MainSocketPort);
+        this.mainStream = new ObjectOutputStream(mainSocket.getOutputStream());
     }
 
     @Override
     public boolean sendToMainServer(MainCommand command) {
-        // TODO
-        return false;
+        try {
+            mainStream.writeObject(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+        return true;
     }
 
     @Override
     public boolean sendToGameServer(GameCommand command) {
-        // TODO
-        return false;
+        try {
+            gameStream.writeObject(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+        return true;
     }
 
     @Override

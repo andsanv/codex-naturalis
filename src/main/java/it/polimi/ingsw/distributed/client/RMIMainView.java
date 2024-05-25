@@ -28,12 +28,6 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
     }
 
     @Override
-    public void receiveError(String error) throws RemoteException {
-        mainEventHandler.handleServerError(error);
-    }
-
-
-    @Override
     public void receiveEvent(MainEvent serverEvent) throws RemoteException {
         serverEvent.execute(mainEventHandler);
     }
