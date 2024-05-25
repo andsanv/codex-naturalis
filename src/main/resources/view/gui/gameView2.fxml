@@ -16,10 +16,10 @@
       <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" prefHeight="1080.0" prefWidth="1920.0" vbarPolicy="NEVER">
          <content>
            <!-- <StackPane fx:id="stackPane" maxHeight="1631.8" maxWidth="3177.5" minHeight="1631.8" minWidth="3177.5" prefHeight="1631.8" prefWidth="3177.5"> -->
-            <StackPane fx:id="stackPane" maxHeight="1700" maxWidth="3250" minHeight="1700" minWidth="3250" prefHeight="1700" prefWidth="3250">
+            <StackPane fx:id="stackPane" maxHeight="1800" maxWidth="3350" minHeight="1800" minWidth="3350" prefHeight="1800" prefWidth="3350">
           <children>
                   <!-- <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" maxHeight="1631.8" maxWidth="3177.5" minHeight="1631.8" minWidth="3177.5" prefHeight="1631.8" prefWidth="3177.5" scaleX="0.2" scaleY="0.2"> -->
-           <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" maxHeight="1700" maxWidth="3250" minHeight="1700" minWidth="3250" prefHeight="1700" prefWidth="3250" scaleX="0.2" scaleY="0.2">
+           <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" maxHeight="1631.8" maxWidth="3177.5" minHeight="1631.8" minWidth="3177.5" prefHeight="1631.8" prefWidth="3177.5" scaleX="0.2" scaleY="0.2">
 
                  <columnConstraints>
                       <ColumnConstraints hgrow="NEVER" minWidth="387.5" prefWidth="387.5" />
