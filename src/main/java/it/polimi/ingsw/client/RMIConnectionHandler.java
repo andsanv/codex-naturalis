@@ -1,5 +1,12 @@
 package it.polimi.ingsw.client;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import it.polimi.ingsw.CLITest;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.User;
@@ -9,16 +16,8 @@ import it.polimi.ingsw.distributed.client.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
-import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
-
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class RMIConnectionHandler extends ConnectionHandler {
@@ -52,10 +51,6 @@ public class RMIConnectionHandler extends ConnectionHandler {
         } catch (RemoteException | NotBoundException e) {
 
         }
-    }
-
-    public boolean connectToGame(String rmiConnection) {
-        return false;
     }
 
     @Override

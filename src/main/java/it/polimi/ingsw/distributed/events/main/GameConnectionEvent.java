@@ -1,7 +1,6 @@
-package it.polimi.ingsw.distributed.events.game;
+package it.polimi.ingsw.distributed.events.main;
 
 import it.polimi.ingsw.distributed.MainEventHandler;
-import it.polimi.ingsw.distributed.events.main.MainEvent;
 
 public class GameConnectionEvent extends MainEvent {
 

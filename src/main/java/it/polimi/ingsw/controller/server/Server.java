@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.events.game.GameConnectionEvent;
+import it.polimi.ingsw.distributed.events.main.GameConnectionEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
@@ -143,7 +143,7 @@ public enum Server {
                 e.printStackTrace();
             }
 
-            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, "" /* TODO */);
+            GameConnectionEvent gameConnectionEvent = new GameSocketConnectionHandlerSocketConnectionHandlerConnectionEvent(rmiConnectionInfo, "" /* TODO */);
 
             connectedPlayers
                     .entrySet()
