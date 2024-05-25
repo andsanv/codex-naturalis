@@ -27,8 +27,8 @@ public enum Server {
     INSTANCE;
 
     private final Map<Integer, Lobby> lobbies;
-    private final Set<User> users;
 
+    private final Set<User> users;
 
     /**
      * Links the Virtual Views to their status.
@@ -36,6 +36,7 @@ public enum Server {
      * When the client is in the menu, he receives updates on the list of lobbies.
      */
     private ConcurrentHashMap<Pair<UserInfo, MainViewActions>, Boolean> connectedPlayers;
+
     private ConcurrentHashMap<Lobby, GameServerActions> lobbyConnections;
 
     Server() {

@@ -17,7 +17,7 @@ public interface MainViewActions extends Remote, Serializable {
     public void receiveError(String error) throws RemoteException;
 
     /**
-     * Sends an server update to the client
+     * Sends a server update to the client
      * 
      * @param serverEvent the event that the client will receive
      * @throws RemoteException

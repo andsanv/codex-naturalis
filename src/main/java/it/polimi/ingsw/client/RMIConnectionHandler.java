@@ -9,6 +9,7 @@ import it.polimi.ingsw.distributed.client.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
+import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 
@@ -23,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
-public class RMIConnectionHandler extends ConnectionHandler {
+public class RMIConnectionHandler extends ConnectionHandler implements MainViewActions {
     
     private MainServerActions mainServerActions;
     private final GameServerActions gameServerActions;
@@ -49,8 +50,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
             mainServerActions.send(new SignUpCommand("test"));
 
-            new Thread(new CommandConsumer<MainCommand>(serverCommandQueue, this)).start();
-            new Thread(new CommandConsumer<GameCommand>(gameCommandQueue, this)).start();
+            new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
+            new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
         } catch (RemoteException | NotBoundException e) {
 
         }
@@ -84,6 +85,20 @@ public class RMIConnectionHandler extends ConnectionHandler {
         }
 
         return false;
+    }
+
+    @Override
+    public void receiveError(String error) throws RemoteException {
+        mainEventHandler.handleServerError(error);
+    }
+
+
+    @Override
+    public void receiveEvent(MainEvent serverEvent) throws RemoteException {
+        serverEvent.execute(mainEventHandler);
+        // connectionHandler.handle(serverEvent);
+
+        // connectionHandler will have handle method that wille execute event
     }
 
     @Override
