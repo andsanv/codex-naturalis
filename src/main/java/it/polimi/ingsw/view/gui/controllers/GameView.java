@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -20,6 +21,8 @@ import javafx.scene.transform.Scale;
 import java.io.IOException;
 
 public class GameView {
+
+    public String cardSelected;
 
     @FXML
     private ScrollPane scrollPane;
@@ -51,6 +54,7 @@ public class GameView {
         scaleTransform = new Scale(scaleValue, scaleValue);
         stackPane.getTransforms().add(scaleTransform);
 
+        //TODO: may be to remove
         for (Node node : playerHand.getChildren()) {
             if (node instanceof StackPane) {
                 StackPane stackCard = (StackPane) node;
@@ -81,9 +85,10 @@ public class GameView {
         }
 
 
-        //make grid cells light up
+        //set events handling methods for stack panes in player hand
         for (Node node : gridPane.getChildren()) {
             if (node instanceof StackPane) {
+
                 node.setOnMouseEntered(mouseEvent -> {
                     try {
                         boardCellHoverEnter(mouseEvent);
@@ -98,17 +103,16 @@ public class GameView {
                         throw new RuntimeException(e);
                     }
                 });
+
             }
         }
 
         for (Node node : gridPane.getChildren()) {
             if (node instanceof StackPane) {
                 StackPane stackPane = (StackPane) node;
-                System.out.println("StackPane Is a children of gridPane");
 
                 // Check if the stackPane has any children
                 if (!stackPane.getChildren().isEmpty() && stackPane.getChildren().get(0) instanceof ImageView) {
-                    System.out.println("ImageView Is a children of stackPane");
                     stackPane.setOnMouseClicked(mouseEvent -> {
                         try {
                             setCardOnClick(mouseEvent);
@@ -122,14 +126,12 @@ public class GameView {
                 }
             }
             else {
-                System.out.println("Node is not an instance of StackPane or Group it is:" + node);
+                System.out.println("Node is not an instance of StackPane or Group it is:");
             }
         }
 
 
-
-
-        // Add key event handling
+        // Add zoom in/out event handling
         Scene scene = scrollPane.getScene();
         if (scene != null) {
             setupKeyEvents(scene);
@@ -141,6 +143,14 @@ public class GameView {
             });
         }
 
+    }
+
+    @FXML
+    public void selectCardOnClick(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
+
+        StackPane stackPane = (StackPane) mouseEvent.getSource();
+        System.out.println(idToString(stackPane.getId()));
+        cardSelected = idToString(stackPane.getId());
     }
 
     private void setupKeyEvents(Scene scene) {
@@ -220,9 +230,8 @@ public class GameView {
 
         bringStackPaneToFront(gridPane, (StackPane) mouseEvent.getSource());
         ImageView imageView = (ImageView) (((StackPane) mouseEvent.getSource()).getChildren().get(0));
-        Image image = new Image("/images/cards/fronts/001.png");
+        Image image = new Image("/images/cards/fronts/" + cardSelected + ".png");
         imageView.setImage(image);
-        System.out.println("Image set!");
     }
 
     public void bringStackPaneToFront(GridPane gridPane, StackPane stackPaneToFront) {
@@ -239,6 +248,27 @@ public class GameView {
         } else {
             System.out.println("The specified StackPane is not a child of the GridPane.");
         }
+    }
+
+    public String idToString (String id) {
+        //TODO make it different
+        String nameFile = "";
+        System.out.println(id);
+        switch (id) {
+            case "firstHandCard":
+                nameFile = "000";
+                break;
+            case "secondHandCard":
+                nameFile = "010";
+                break;
+            case "thirdHandCard":
+                nameFile = "020";
+                break;
+            default:
+                nameFile = "000";
+
+        }
+        return nameFile;
     }
 
 

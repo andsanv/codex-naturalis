@@ -117,30 +117,30 @@
       <StackPane prefHeight="0.0" prefWidth="0.0" scaleX="0.5" scaleY="0.5" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
       <HBox fx:id="playerHand" alignment="CENTER" scaleX="0.5" scaleY="0.5" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <StackPane  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
+            <StackPane fx:id="firstHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" onMouseClicked="#selectCardOnClick" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
                <children>
-                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true" >
-                      <Image url="@../../images/cards/fronts/040.png" />
+                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                      <Image url="@../../images/cards/fronts/000.png" />
                   </ImageView>
                </children>
                <HBox.margin>
                   <Insets />
                </HBox.margin>
             </StackPane>
-          <StackPane  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
+          <StackPane fx:id="secondHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" onMouseClicked="#selectCardOnClick" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
            <children>
-            <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true" >
-             <Image url="@../../images/cards/fronts/064.png" />
+            <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+             <Image url="@../../images/cards/fronts/010.png" />
             </ImageView>
            </children>
            <HBox.margin>
             <Insets />
            </HBox.margin>
           </StackPane>
-          <StackPane  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
+          <StackPane fx:id="thirdHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" onMouseClicked="#selectCardOnClick" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
            <children>
-            <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true" >
-             <Image url="@../../images/cards/fronts/050.png" />
+            <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+             <Image url="@../../images/cards/fronts/020.png" />
             </ImageView>
            </children>
            <HBox.margin>
