@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -49,13 +48,9 @@ public enum Server {
      */
     private ConcurrentHashMap<Pair<UserInfo, MainViewActions>, Boolean> connectedPlayers;
 
-    private ConcurrentHashMap<Lobby, Pair<GameServerActions, SocketGameServer>> lobbyConnections;
+    private ConcurrentHashMap<Lobby, Pair<GameServerActions, SocketGameServer>> gameConnections;
 
     private final ExecutorService gameServersExecutor;
-
-    public ConcurrentHashMap<Lobby, GameServerActions> getLobbyConnections() {
-        return lobbyConnections;
-    }
 
     Server() {
         this.lobbies = new HashMap<>();
@@ -156,23 +151,30 @@ public enum Server {
 
             // RMI server creation
             String rmiConnectionInfo = "GameActions" + lobbyId;
+            GameServerActions rmiServer;
             try {
-                GameServerActions gameServerActions = new RMIGameServer(gameFlowManager, rmiConnectionInfo);
-                lobbyConnections.put(lobby, gameServerActions);
+                rmiServer = new RMIGameServer(gameFlowManager, rmiConnectionInfo);
             } catch (RemoteException e) {
                 System.out.println("Failed starting " + RMIGameServer.class + "for lobby " + lobbyId);
                 e.printStackTrace();
+                return false;
             }
 
+            
             // Socket server creation
+            SocketGameServer socketServer;
             try {
-                gameServersExecutor.submit(new SocketGameServer(lobbyId, gameFlowManager));
+                socketServer = new SocketGameServer(gameFlowManager);
+                gameServersExecutor.submit(socketServer);
             } catch (IOException e) {
                 System.out.println("Failed starting " + SocketGameServer.class + "for lobby " + lobbyId);
                 e.printStackTrace();
+                return false;
             }
 
-            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, "" /* TODO */);
+            gameConnections.put(lobby, new Pair<>(rmiServer, socketServer));
+
+            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, "");
 
             // TODO check if it's correctly synchronized
             connectedPlayers
@@ -241,10 +243,11 @@ public enum Server {
     }
 
     public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
+        // TODO handle reconnection
         connectedPlayers.put(new Pair<>(userInfo, clientMainView), true);
     }
 
-    public void addConnectedClient(String username, MainViewActions clientMainView) {
+    public UserInfo addConnectedClient(String username, MainViewActions clientMainView) {
         User user = new User(username);
 
         synchronized (users) {
@@ -260,7 +263,9 @@ public enum Server {
             e.printStackTrace();
         }
 
-        addReconnectedClient(userInfo, clientMainView);
+        connectedPlayers.put(new Pair<>(userInfo, clientMainView), true);
+
+        return userInfo;
     }
 
     public void removeConnectedClient(MainViewActions clientMainView) {

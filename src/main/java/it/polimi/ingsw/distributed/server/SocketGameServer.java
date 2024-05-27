@@ -2,7 +2,7 @@ package it.polimi.ingsw.distributed.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +18,10 @@ import it.polimi.ingsw.controller.server.UserInfo;
  * SocketGameServer is created for each game.
  */
 public class SocketGameServer implements Runnable {
+    private static int lastUsedPort = 15789;
+
+    private static int maxBindAttempts = 10;
+
     private ServerSocket serverSocket;
     private final GameFlowManager gameFlowManager;
 
@@ -25,11 +29,40 @@ public class SocketGameServer implements Runnable {
 
     private final ConcurrentHashMap<UserInfo, GameSocketConnection> connections;
 
-    public SocketGameServer(int port, GameFlowManager gameFlowManager) throws IOException {
-        this.serverSocket = new ServerSocket(port);
+    private int port;
+
+    public SocketGameServer(GameFlowManager gameFlowManager) throws IOException {
+        int max_attempts = maxBindAttempts;
+
+        synchronized (SocketGameServer.class) {
+            lastUsedPort++;
+            this.port = lastUsedPort;
+
+            while (max_attempts-- >= 0) {
+                try {
+                    this.serverSocket = new ServerSocket(lastUsedPort);
+                    break;
+                } catch (BindException e) {
+                    synchronized (SocketGameServer.class) {
+                        lastUsedPort++;
+                        this.port = lastUsedPort;
+                    }
+                }
+            }
+        }
+
+        if (max_attempts < 0) {
+            throw new IOException("Could not bind to any port");
+        }
+
+        this.serverSocket = new ServerSocket(lastUsedPort);
         this.gameFlowManager = gameFlowManager;
         this.executorService = Executors.newCachedThreadPool();
         this.connections = new ConcurrentHashMap<>();
+    }
+
+    public int getPort() {
+        return this.port;
     }
 
     @Override
