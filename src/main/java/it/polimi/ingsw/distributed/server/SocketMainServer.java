@@ -35,7 +35,7 @@ public class SocketMainServer {
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                     String requestType = (String) in.readObject();
 
-                    MainSocketConnection connection = new MainSocketConnection(socket);
+                    MainSocketConnection connection = new MainSocketConnection(socket, in);
                     
                     if ("connection".equals(requestType)) {
                         String username = (String) in.readObject();

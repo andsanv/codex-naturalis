@@ -76,7 +76,7 @@ public class SocketGameServer implements Runnable {
                 UserInfo userInfo = (UserInfo) in.readObject();
 
                 // TODO handle game socket connection creation
-                GameSocketConnection connection = new GameSocketConnection(socket, gameFlowManager);
+                GameSocketConnection connection = new GameSocketConnection(socket, in, gameFlowManager);
                 executorService.submit(connection);
                 connections.put(userInfo, connection);
             } catch (Exception e) {

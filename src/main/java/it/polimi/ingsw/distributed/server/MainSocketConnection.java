@@ -13,10 +13,12 @@ import it.polimi.ingsw.distributed.events.main.MainEvent;
 public class MainSocketConnection implements MainViewActions, Runnable {
     private final Socket socket;
     private final ObjectOutputStream out;
+    private final ObjectInputStream in;
 
-    public MainSocketConnection(Socket socket) throws IOException {
+    public MainSocketConnection(Socket socket, ObjectInputStream in) throws IOException {
         this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
+        this.in = in;
     }
 
     @Override
@@ -32,10 +34,7 @@ public class MainSocketConnection implements MainViewActions, Runnable {
     public void run() {
         while (true) {
             try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-
-                MainCommand command = (MainCommand) objectInputStream.readObject();
-                
+                MainCommand command = (MainCommand) in.readObject();
                 command.execute();
             } catch (IOException e) {
                 // TODO Auto-generated catch block

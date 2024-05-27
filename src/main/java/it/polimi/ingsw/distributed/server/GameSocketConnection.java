@@ -15,11 +15,13 @@ public class GameSocketConnection implements GameViewActions, Runnable {
     private final Socket socket;
     private final ObjectOutputStream out;
     private final GameFlowManager gameFlowManager;
+    private final ObjectInputStream in;
 
-    public GameSocketConnection(Socket socket, GameFlowManager gameFlowManager) throws IOException {
+    public GameSocketConnection(Socket socket, ObjectInputStream in, GameFlowManager gameFlowManager) throws IOException {
         this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.gameFlowManager = gameFlowManager;
+        this.in = in;
     }
 
     @Override
@@ -35,10 +37,7 @@ public class GameSocketConnection implements GameViewActions, Runnable {
     public void run() {
         while (true) {
             try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-
-                GameCommand command = (GameCommand) objectInputStream.readObject();
-                
+                GameCommand command = (GameCommand) in.readObject();
                 command.execute(gameFlowManager);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
