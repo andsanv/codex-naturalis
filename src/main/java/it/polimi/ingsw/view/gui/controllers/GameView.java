@@ -6,19 +6,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
 
 import java.io.IOException;
+import java.util.Stack;
 
 public class GameView {
 
@@ -145,6 +144,17 @@ public class GameView {
         cardSelected = idToString(stackPane.getId());
     }
 
+    @FXML
+    public void flipHandCard(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
+        //TODO: make it change from front to back, change cardSelected to handle cards in hand
+        Button button = (Button) mouseEvent.getSource();
+        StackPane stackPane = (StackPane) ((VBox) button.getParent()).getChildren().get(1);
+        ImageView imageView = (ImageView) stackPane.getChildren().get(0);
+        String filepath = "";
+        Image image = new Image("/images/cards/backs/" + cardSelected + ".png");
+        imageView.setImage(image);
+    }
+
     private void setupKeyEvents(Scene scene) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
@@ -210,7 +220,6 @@ public class GameView {
         int row =  GridPane.getRowIndex(stackPane);
         int col =  GridPane.getColumnIndex(stackPane);
 
-        System.out.println(row + " -- " + col);
         if ((row + col) %2 == 0) {
             stackPane.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
         }

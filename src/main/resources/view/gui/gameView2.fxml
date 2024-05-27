@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -10,6 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameView">
    <children>
@@ -117,37 +120,78 @@
       <StackPane prefHeight="0.0" prefWidth="0.0" scaleX="0.5" scaleY="0.5" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
       <HBox fx:id="playerHand" alignment="CENTER" scaleX="0.5" scaleY="0.5" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <StackPane fx:id="firstHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" onMouseClicked="#selectCardOnClick" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
-                      <Image url="@../../images/cards/fronts/000.png" />
-                  </ImageView>
+                  <Button mnemonicParsing="false" text="Flip" onMouseClicked="#flipHandCard">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Button>
+                  <StackPane fx:id="firstHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+                     <children>
+                        <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../images/cards/fronts/000.png" />
+                        </ImageView>
+                     </children>
+                  </StackPane>
                </children>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </StackPane>
-          <StackPane fx:id="secondHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" onMouseClicked="#selectCardOnClick" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
-           <children>
-            <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
-             <Image url="@../../images/cards/fronts/010.png" />
-            </ImageView>
-           </children>
-           <HBox.margin>
-            <Insets />
-           </HBox.margin>
-          </StackPane>
-          <StackPane fx:id="thirdHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" onMouseClicked="#selectCardOnClick" prefHeight="345.0" prefWidth="510.0" HBox.hgrow="NEVER">
-           <children>
-            <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
-             <Image url="@../../images/cards/fronts/020.png" />
-            </ImageView>
-           </children>
-           <HBox.margin>
-            <Insets />
-           </HBox.margin>
-          </StackPane>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Flip" onMouseClicked="#flipHandCard">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Button>
+                <StackPane fx:id="secondHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+                 <children>
+                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                   <Image url="@../../images/cards/fronts/010.png" />
+                  </ImageView>
+                 </children>
+                </StackPane>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Flip" onMouseClicked="#flipHandCard">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Button>
+                <StackPane fx:id="thirdHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+                 <children>
+                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                   <Image url="@../../images/cards/fronts/020.png" />
+                  </ImageView>
+                 </children>
+                </StackPane>
+               </children>
+            </VBox>
          </children>
       </HBox>
+      <VBox alignment="CENTER" fillWidth="false" prefHeight="100.0" prefWidth="100.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objectives">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Text>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/096.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/089.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
