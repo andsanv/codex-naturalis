@@ -20,10 +20,10 @@ public class CLITest implements UI {
     private static MainViewActions mainViewActions;
 
     @Override
-    public void handleReceivedConnection(String rmiConnectionInfo, String socketConnectionInfo) {
+    public void handleReceivedConnection(String rmiConnectionInfo, int socketConnectionPort) {
         System.out.println("Connection event received");
         System.out.println("RMI Connection Info: " + rmiConnectionInfo);
-        System.out.println("Socket Connection Info: " + socketConnectionInfo);
+        System.out.println("Socket Connection Info: " + socketConnectionPort);
 
         try {
             mainServerActions.connectToMain(userInfo, mainViewActions);

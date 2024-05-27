@@ -12,13 +12,11 @@ import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 
 public class GameSocketConnection implements GameViewActions, Runnable {
-    private final Socket socket;
     private final ObjectOutputStream out;
     private final GameFlowManager gameFlowManager;
     private final ObjectInputStream in;
 
     public GameSocketConnection(Socket socket, ObjectInputStream in, GameFlowManager gameFlowManager) throws IOException {
-        this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.gameFlowManager = gameFlowManager;
         this.in = in;
@@ -28,6 +26,7 @@ public class GameSocketConnection implements GameViewActions, Runnable {
     public synchronized void receiveEvent(GameEvent gameEvent) throws RemoteException {
         try {
             out.writeObject(gameEvent);
+            out.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }

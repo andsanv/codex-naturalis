@@ -3,7 +3,6 @@ package it.polimi.ingsw.client;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 
-import java.rmi.Remote;
 import java.util.concurrent.BlockingQueue;
 
 public class CommandConsumer<Command> implements Runnable {
@@ -29,7 +28,9 @@ public class CommandConsumer<Command> implements Runnable {
     }
 
     void consume(Command command) {
-        if(command instanceof MainCommand) connectionHandler.sendToMainServer((MainCommand) command);
-        else connectionHandler.sendToGameServer((GameCommand) command);
+        if(command instanceof MainCommand)
+            connectionHandler.sendToMainServer((MainCommand) command);
+        else
+            connectionHandler.sendToGameServer((GameCommand) command);
     }
 }

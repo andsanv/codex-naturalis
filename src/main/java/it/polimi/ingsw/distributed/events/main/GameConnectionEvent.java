@@ -5,15 +5,15 @@ import it.polimi.ingsw.distributed.MainEventHandler;
 public class GameConnectionEvent extends MainEvent {
 
     private final String rmiConnectionInfo;
-    private final String socketConnectionInfo;
+    private final int socketConnectionPort;
 
     @Override
     public void execute(MainEventHandler mainEventHandler) {
-        mainEventHandler.handleReceivedConnection(rmiConnectionInfo, socketConnectionInfo);
+        mainEventHandler.handleReceivedConnection(rmiConnectionInfo, socketConnectionPort);
     }
 
-    public GameConnectionEvent(String rmiConnectionInfo, String socketConnectionInfo) {
+    public GameConnectionEvent(String rmiConnectionInfo, int socketConnectionPort) {
         this.rmiConnectionInfo = rmiConnectionInfo;
-        this.socketConnectionInfo = socketConnectionInfo;
+        this.socketConnectionPort = socketConnectionPort;
     }
 }

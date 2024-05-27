@@ -25,6 +25,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
     public boolean sendToMainServer(MainCommand command) {
         try {
             mainStream.writeObject(command);
+            mainStream.reset();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -37,6 +38,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
     public boolean sendToGameServer(GameCommand command) {
         try {
             gameStream.writeObject(command);
+            gameStream.reset();
         } catch (IOException e) {
             e.printStackTrace();
             return false;

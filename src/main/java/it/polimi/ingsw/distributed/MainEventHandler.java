@@ -12,5 +12,5 @@ public interface MainEventHandler {
 
     public void handleLobbiesEvent(List<LobbyInfo> lobbies);
 
-    public void handleReceivedConnection(String rmiConnectionInfo, String socketConnectionInfo);
+    public void handleReceivedConnection(String rmiConnectionInfo, int socketConnectionPort);
 }

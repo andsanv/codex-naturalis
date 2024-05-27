@@ -19,7 +19,6 @@ import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 
-
 public class RMIConnectionHandler extends ConnectionHandler {
     
     private MainServerActions mainServerActions;
@@ -78,14 +77,6 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
         return false;
     }
-
-    // @Override
-    // public void receiveEvent(MainEvent serverEvent) throws RemoteException {
-    //     // serverEvent.execute(mainEventHandler);
-    //     // connectionHandler.handle(serverEvent)
-
-    //     // connectionHandler will have handle method that wille execute event
-    // }
 
     @Override
     public boolean reconnect() {

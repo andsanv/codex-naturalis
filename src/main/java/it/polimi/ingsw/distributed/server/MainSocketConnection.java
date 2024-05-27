@@ -11,12 +11,10 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 
 public class MainSocketConnection implements MainViewActions, Runnable {
-    private final Socket socket;
     private final ObjectOutputStream out;
     private final ObjectInputStream in;
 
     public MainSocketConnection(Socket socket, ObjectInputStream in) throws IOException {
-        this.socket = socket;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = in;
     }
@@ -25,6 +23,7 @@ public class MainSocketConnection implements MainViewActions, Runnable {
     public synchronized void receiveEvent(MainEvent serverEvent) throws RemoteException {
         try {
             out.writeObject(serverEvent);
+            out.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }

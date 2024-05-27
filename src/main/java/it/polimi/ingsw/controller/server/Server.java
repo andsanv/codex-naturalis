@@ -174,7 +174,7 @@ public enum Server {
 
             gameConnections.put(lobby, new Pair<>(rmiServer, socketServer));
 
-            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, "");
+            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, socketServer.getPort());
 
             // TODO check if it's correctly synchronized
             connectedPlayers
