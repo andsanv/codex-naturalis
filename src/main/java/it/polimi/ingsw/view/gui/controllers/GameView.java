@@ -66,16 +66,13 @@ public class GameView {
         for (int i = 0; i <=41; i++) {
             for (int j = 0; j <= 41; j++) {
                 StackPane cell = new StackPane();
-                ImageView imageView = new ImageView();
-                imageView.setFitHeight(331);
-                imageView.setFitWidth(496.5);
-                imageView.setPreserveRatio(true);
-                if (i==1 && j==1) {
-                    Image image = new Image("/images/cards/fronts/001.png");
-                    imageView.setImage(image);
-                    StackPane.setAlignment(imageView, javafx.geometry.Pos.CENTER);
+                if ((i+j) % 2 == 0) {
+                    ImageView imageView = new ImageView();
+                    imageView.setFitHeight(331);
+                    imageView.setFitWidth(496.5);
+                    imageView.setPreserveRatio(true);
+                    cell.getChildren().add(imageView);
                 }
-                cell.getChildren().add(imageView);
                 gridPane.add(cell, i, j);
                 GridPane.setHalignment(cell, HPos.CENTER); // Horizontal alignment
                 GridPane.setValignment(cell, VPos.CENTER); // Vertical alignment
@@ -86,6 +83,7 @@ public class GameView {
 
 
         //set events handling methods for stack panes in player hand
+        //todo: add red layout for inaccessible cells
         for (Node node : gridPane.getChildren()) {
             if (node instanceof StackPane) {
 
@@ -117,16 +115,10 @@ public class GameView {
                         try {
                             setCardOnClick(mouseEvent);
                         } catch (IOException e) {
-                            // Log the error with a message
                             e.printStackTrace();
                         }
                     });
-                } else {
-                    System.out.println("StackPane does not contain an ImageView as the first child.");
                 }
-            }
-            else {
-                System.out.println("Node is not an instance of StackPane or Group it is:");
             }
         }
 
@@ -199,8 +191,9 @@ public class GameView {
 
     @FXML
     public void handCardHoverEnter(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
+
         StackPane sourceImageView = (StackPane) mouseEvent.getSource();
-        sourceImageView.setStyle("-fx-border-color: blue; -fx-border-width: 10;");
+        sourceImageView.setStyle("-fx-border-color: yellow; -fx-border-width: 10;");
         sourceImageView.applyCss();
     }
 
@@ -214,7 +207,16 @@ public class GameView {
     @FXML
     public void boardCellHoverEnter(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
         StackPane stackPane = (StackPane) mouseEvent.getSource();
-        stackPane.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
+        int row =  GridPane.getRowIndex(stackPane);
+        int col =  GridPane.getColumnIndex(stackPane);
+
+        System.out.println(row + " -- " + col);
+        if ((row + col) %2 == 0) {
+            stackPane.setStyle("-fx-border-color: blue; -fx-border-width: 2;");
+        }
+        else {
+            stackPane.setStyle("-fx-border-color: red; -fx-border-width: 2;");
+        }
         stackPane.applyCss();
     }
 
@@ -251,7 +253,7 @@ public class GameView {
     }
 
     public String idToString (String id) {
-        //TODO make it different
+        //TODO change it for general cards
         String nameFile = "";
         System.out.println(id);
         switch (id) {
