@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller.server;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +9,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
@@ -17,6 +21,7 @@ import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.RMIGameServer;
+import it.polimi.ingsw.distributed.server.SocketGameServer;
 import it.polimi.ingsw.util.Pair;
 
 /**
@@ -26,8 +31,15 @@ import it.polimi.ingsw.util.Pair;
 public enum Server {
     INSTANCE;
 
+    /**
+     * A map from the lobby id to the corresponding lobby
+     */
     private final Map<Integer, Lobby> lobbies;
 
+    /**
+     * The set containing all the users.
+     */
+    // TODO could be moved to the User class as a static set
     private final Set<User> users;
 
     /**
@@ -37,12 +49,19 @@ public enum Server {
      */
     private ConcurrentHashMap<Pair<UserInfo, MainViewActions>, Boolean> connectedPlayers;
 
-    private ConcurrentHashMap<Lobby, GameServerActions> lobbyConnections;
+    private ConcurrentHashMap<Lobby, Pair<GameServerActions, SocketGameServer>> lobbyConnections;
+
+    private final ExecutorService gameServersExecutor;
+
+    public ConcurrentHashMap<Lobby, GameServerActions> getLobbyConnections() {
+        return lobbyConnections;
+    }
 
     Server() {
         this.lobbies = new HashMap<>();
         this.users = new HashSet<>();
         this.connectedPlayers = new ConcurrentHashMap<>();
+        this.gameServersExecutor = Executors.newCachedThreadPool();
     }
 
     /**
@@ -59,7 +78,7 @@ public enum Server {
 
             boolean result = lobby != null && lobby.addUser(user);
 
-            if(result)
+            if (result)
                 broadcastLobbies(getLobbies());
 
             return result;
@@ -133,18 +152,29 @@ public enum Server {
             if (lobby == null || user != lobby.getManager() || !lobby.startGame())
                 return false;
 
-            String rmiConnectionInfo = "GameActions" + lobbyId;
+            GameFlowManager gameFlowManager = new GameFlowManager(lobby);
 
+            // RMI server creation
+            String rmiConnectionInfo = "GameActions" + lobbyId;
             try {
-                GameServerActions gameServerActions = new RMIGameServer(new GameFlowManager(lobby), rmiConnectionInfo);
+                GameServerActions gameServerActions = new RMIGameServer(gameFlowManager, rmiConnectionInfo);
                 lobbyConnections.put(lobby, gameServerActions);
             } catch (RemoteException e) {
-                // TODO Auto-generated catch block
+                System.out.println("Failed starting " + RMIGameServer.class + "for lobby " + lobbyId);
                 e.printStackTrace();
             }
 
-            GameConnectionEvent gameConnectionEvent = new GameSocketConnectionHandlerSocketConnectionHandlerConnectionEvent(rmiConnectionInfo, "" /* TODO */);
+            // Socket server creation
+            try {
+                gameServersExecutor.submit(new SocketGameServer(lobbyId, gameFlowManager));
+            } catch (IOException e) {
+                System.out.println("Failed starting " + SocketGameServer.class + "for lobby " + lobbyId);
+                e.printStackTrace();
+            }
 
+            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, "" /* TODO */);
+
+            // TODO check if it's correctly synchronized
             connectedPlayers
                     .entrySet()
                     .stream()
@@ -232,7 +262,6 @@ public enum Server {
 
         addReconnectedClient(userInfo, clientMainView);
     }
-
 
     public void removeConnectedClient(MainViewActions clientMainView) {
         connectedPlayers.remove(clientMainView, true);

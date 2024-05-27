@@ -1,29 +1,55 @@
 package it.polimi.ingsw.distributed.server;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.commands.game.GameCommand;
 
-public class SocketGameServer implements GameServerActions, Runnable {
+/**
+ * Accepts inco ingconnections to a single game.
+ * Implements Runnable so it can be submitted to an executor, since a
+ * SocketGameServer is created for each game.
+ */
+public class SocketGameServer implements Runnable {
+    private ServerSocket serverSocket;
+    private final GameFlowManager gameFlowManager;
+
+    private final ExecutorService executorService;
+
+    private final ConcurrentHashMap<UserInfo, GameSocketConnection> connections;
+
+    public SocketGameServer(int port, GameFlowManager gameFlowManager) throws IOException {
+        this.serverSocket = new ServerSocket(port);
+        this.gameFlowManager = gameFlowManager;
+        this.executorService = Executors.newCachedThreadPool();
+        this.connections = new ConcurrentHashMap<>();
+    }
 
     @Override
     public void run() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
+        while (true) {
+            try {
+                Socket socket = serverSocket.accept();
+
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+                UserInfo userInfo = (UserInfo) in.readObject();
+
+                // TODO handle game socket connection creation
+                GameSocketConnection connection = new GameSocketConnection(socket, gameFlowManager);
+                executorService.submit(connection);
+                connections.put(userInfo, connection);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    @Override
-    public void send(GameCommand command) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'send'");
-    }
-
-    @Override
-    public void connectToGame(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'connect'");
-    }
-    
 }

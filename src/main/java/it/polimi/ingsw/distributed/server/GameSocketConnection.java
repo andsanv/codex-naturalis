@@ -23,7 +23,7 @@ public class GameSocketConnection implements GameViewActions, Runnable {
     }
 
     @Override
-    public void receiveEvent(GameEvent gameEvent) throws RemoteException {
+    public synchronized void receiveEvent(GameEvent gameEvent) throws RemoteException {
         try {
             out.writeObject(gameEvent);
         } catch (Exception e) {

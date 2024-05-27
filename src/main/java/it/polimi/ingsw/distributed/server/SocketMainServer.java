@@ -28,11 +28,5 @@ public class SocketMainServer {
                 }
             }
         }).start();
-
-        // new Thread(() -> {
-        //     while (true) {
-                
-        //     }
-        // }).start();
     }
 }

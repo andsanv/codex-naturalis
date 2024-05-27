@@ -20,7 +20,7 @@ public class MainSocketConnection implements MainViewActions, Runnable {
     }
 
     @Override
-    public void receiveEvent(MainEvent serverEvent) throws RemoteException {
+    public synchronized void receiveEvent(MainEvent serverEvent) throws RemoteException {
         try {
             out.writeObject(serverEvent);
         } catch (Exception e) {
