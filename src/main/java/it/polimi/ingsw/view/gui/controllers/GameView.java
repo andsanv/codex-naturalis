@@ -37,6 +37,7 @@ public class GameView {
 
 
 
+
     private Scale scaleTransform;
     private double scaleValue = 1;
     private final double scaleIncrement = 0.1;
@@ -146,12 +147,22 @@ public class GameView {
 
     @FXML
     public void flipHandCard(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
-        //TODO: make it change from front to back, change cardSelected to handle cards in hand
         Button button = (Button) mouseEvent.getSource();
         StackPane stackPane = (StackPane) ((VBox) button.getParent()).getChildren().get(1);
         ImageView imageView = (ImageView) stackPane.getChildren().get(0);
-        String filepath = "";
-        Image image = new Image("/images/cards/backs/" + cardSelected + ".png");
+
+        String filepath = imageView.getImage().getUrl();
+        int startIndex = filepath.indexOf("/images");
+         filepath = filepath.substring(startIndex);
+
+        // Change "fronts" to "backs" and vice versa
+        if (filepath.contains("fronts")) {
+            filepath = filepath.replace("fronts", "backs");
+        } else if (filepath.contains("backs")) {
+            filepath = filepath.replace("backs", "fronts");
+        }
+
+        Image image = new Image(filepath);
         imageView.setImage(image);
     }
 
