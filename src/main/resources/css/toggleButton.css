@@ -1,0 +1,30 @@
+.toggle-button {
+    -fx-background-color: #ccc;
+    -fx-background-radius: 15;
+    -fx-padding: 0;
+    -fx-min-width: 40px;
+    -fx-pref-height: 20px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #4caf50;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.toggle-button .text {
+    -fx-opacity: 0;
+}
+
+.toggle-button .thumb {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-pref-width: 18px;
+    -fx-pref-height: 18px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
+    -fx-padding: 1;
+}
+
+.toggle-button:selected .thumb {
+    -fx-translate-x: 18;
+}
