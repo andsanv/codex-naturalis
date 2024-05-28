@@ -12,6 +12,7 @@ import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a single game
@@ -84,6 +85,8 @@ public class GameFlowManager implements Runnable {
      */
     public final Queue<GameCommand> commands;
 
+    private final AtomicInteger lastEventId = new AtomicInteger(1);
+
     /**
      * GameFlowManager constructor
      *
@@ -97,7 +100,7 @@ public class GameFlowManager implements Runnable {
         this.idToToken = new HashMap<>();
         this.playerTokens = new ArrayList<>();
 
-        this.gameModelUpdater = new GameModelUpdater(new GameModel());
+        this.gameModelUpdater = new GameModelUpdater(new GameModel(lastEventId));
 
         this.tokenSelectionState = new TokenSelectionState(this, users, timeLimit);
         this.starterCardSelectionState = new StarterCardSelectionState(this, playerTokens, timeLimit);

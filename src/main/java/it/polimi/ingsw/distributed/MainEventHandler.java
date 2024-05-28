@@ -3,6 +3,7 @@ package it.polimi.ingsw.distributed;
 import java.util.List;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 
 public interface MainEventHandler {
@@ -12,5 +13,6 @@ public interface MainEventHandler {
 
     public void handleLobbiesEvent(List<LobbyInfo> lobbies);
 
-    public void handleReceivedConnection(String rmiConnectionInfo, int socketConnectionPort);
+    public void handleReceivedConnection();
+
 }

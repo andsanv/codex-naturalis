@@ -16,8 +16,9 @@ import java.util.Optional;
  */
 public class GameModelUpdater {
     private GameModel model;
+    private GameFlowManager gameFlowManager;
 
-     public GameModelUpdater(GameModel model) {
+    public GameModelUpdater(GameModel model) {
         this.model = model;
     }
 

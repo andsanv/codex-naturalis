@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class contains the state of the game items.
@@ -29,10 +30,12 @@ public class GameModel {
 
     private ScoreTrack scoreTrack;
 
+    private final AtomicInteger lastEventId;
+
     /**
      * After creating the GameModel, a TODO must be called.
      */
-    public GameModel() {
+    public GameModel(AtomicInteger lastEventId) {
         objectiveCardsDeck = ObjectiveDeckCreator.createDeck();
         starterCardsDeck = StarterDeckCreator.createDeck();
         resourceCardsDeck = ResourceDeckCreator.createDeck();
@@ -47,6 +50,8 @@ public class GameModel {
         visibleResourceCards.add(resourceCardsDeck.draw().get());
 
         tokenToPlayer = new HashMap<>();
+
+        this.lastEventId = lastEventId;
 
         scoreTrack = null;
     }

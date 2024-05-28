@@ -20,11 +20,13 @@ public class CLITest implements UI {
     private static MainViewActions mainViewActions;
 
     @Override
-    public void handleReceivedConnection(String rmiConnectionInfo, int socketConnectionPort) {
-        System.out.println("Connection event received");
-        System.out.println("RMI Connection Info: " + rmiConnectionInfo);
-        System.out.println("Socket Connection Info: " + socketConnectionPort);
+    public UserInfo getUserInfo(){
+        return userInfo;
+    }
 
+    @Override
+    public void handleReceivedConnection() {
+        System.out.println("Connection event received");
         try {
             mainServerActions.connectToMain(userInfo, mainViewActions);
         } catch (RemoteException e) {

@@ -13,8 +13,8 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;
 
 /**
- * Accepts inco ingconnections to a single game.
- * Implements Runnable so it can be submitted to an executor, since a
+ * Accepts incoming connections to a single game.
+ * Implements Runnable, so it can be submitted to an executor, since a
  * SocketGameServer is created for each game.
  */
 public class SocketGameServer implements Runnable {

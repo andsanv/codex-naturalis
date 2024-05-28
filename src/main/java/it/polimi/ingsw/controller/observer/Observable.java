@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller.observer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 
@@ -11,10 +12,12 @@ import it.polimi.ingsw.distributed.events.game.GameEvent;
  * observers must be used.
  */
 public abstract class Observable {
-    List<Observer> observers;
+    private List<Observer> observers;
+    private AtomicInteger lastEventId;
 
-    public Observable() {
+    public Observable(AtomicInteger lastEventId) {
         this.observers = new ArrayList<>();
+        this.lastEventId = lastEventId;
     }
 
     /**
@@ -32,6 +35,10 @@ public abstract class Observable {
      * @param the event to notify
      */
     public void notify(GameEvent event) {
+        synchronized (lastEventId) {
+            event.setId(lastEventId.getAndIncrement());
+        }
+
         observers.forEach(observer -> observer.update(event));
     }
 }

@@ -4,12 +4,12 @@ import it.polimi.ingsw.distributed.MainEventHandler;
 
 public class GameConnectionEvent extends MainEvent {
 
-    private final String rmiConnectionInfo;
-    private final int socketConnectionPort;
+    public final String rmiConnectionInfo;
+    public final int socketConnectionPort;
 
     @Override
     public void execute(MainEventHandler mainEventHandler) {
-        mainEventHandler.handleReceivedConnection(rmiConnectionInfo, socketConnectionPort);
+        mainEventHandler.handleReceivedConnection();
     }
 
     public GameConnectionEvent(String rmiConnectionInfo, int socketConnectionPort) {
