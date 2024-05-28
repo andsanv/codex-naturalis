@@ -29,6 +29,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
     public SocketConnectionHandler(UI userInterface) throws UnknownHostException, IOException {
         super(userInterface);
+
         mainSocket = new Socket(Config.ServerIP, Config.MainSocketPort);
 
         this.outputMainStream = new ObjectOutputStream(mainSocket.getOutputStream());

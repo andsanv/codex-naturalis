@@ -1,13 +1,12 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.player.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -18,10 +17,10 @@ public class GameModel {
     public final Map<PlayerToken, Player> tokenToPlayer;
 
     private Deck<ResourceCard> resourceCardsDeck;
-    private List<ResourceCard> visibleResourceCards;
+    private final VisibleCardsList<ResourceCard> visibleResourceCards;
 
     private Deck<GoldCard> goldCardsDeck;
-    private List<GoldCard> visibleGoldCards;
+    private VisibleCardsList<GoldCard> visibleGoldCards;
 
     private Deck<ObjectiveCard> objectiveCardsDeck;
     private Deck<StarterCard> starterCardsDeck;
@@ -30,28 +29,19 @@ public class GameModel {
 
     private ScoreTrack scoreTrack;
 
-    private final AtomicInteger lastEventId;
-
     /**
      * After creating the GameModel, a TODO must be called.
      */
-    public GameModel(AtomicInteger lastEventId) {
+    public GameModel() {
         objectiveCardsDeck = ObjectiveDeckCreator.createDeck();
         starterCardsDeck = StarterDeckCreator.createDeck();
         resourceCardsDeck = ResourceDeckCreator.createDeck();
         goldCardsDeck = GoldDeckCreator.createDeck();
 
-        visibleGoldCards = new ArrayList<>();
-        visibleGoldCards.add(goldCardsDeck.draw().get());
-        visibleGoldCards.add(goldCardsDeck.draw().get());
-
-        visibleResourceCards = new ArrayList<>();
-        visibleResourceCards.add(resourceCardsDeck.draw().get());
-        visibleResourceCards.add(resourceCardsDeck.draw().get());
+        visibleResourceCards = new VisibleCardsList<>(Arrays.asList(resourceCardsDeck.draw().get(), resourceCardsDeck.draw().get()));
+        visibleGoldCards = new VisibleCardsList<>(Arrays.asList(goldCardsDeck.draw().get(), goldCardsDeck.draw().get()));;
 
         tokenToPlayer = new HashMap<>();
-
-        this.lastEventId = lastEventId;
 
         scoreTrack = null;
     }
@@ -66,7 +56,7 @@ public class GameModel {
     /**
      * @return the visible resource cards list
      */
-    public List<ResourceCard> getVisibleResourceCards() {
+    public VisibleCardsList<ResourceCard> getVisibleResourceCards() {
         return visibleResourceCards;
     }
 
@@ -80,7 +70,7 @@ public class GameModel {
     /**
      * @return the visible gold cards list
      */
-    public List<GoldCard> getVisibleGoldCards() {
+    public VisibleCardsList<GoldCard> getVisibleGoldCards() {
         return visibleGoldCards;
     }
 

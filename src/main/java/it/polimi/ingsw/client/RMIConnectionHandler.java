@@ -28,7 +28,9 @@ public class RMIConnectionHandler extends ConnectionHandler {
     private final BlockingQueue<GameCommand> gameCommandQueue;
 
 
-    public RMIConnectionHandler() {
+    public RMIConnectionHandler(UI userInterface) {
+        super(userInterface);
+
         serverCommandQueue = new LinkedBlockingQueue<>();
         gameCommandQueue = new LinkedBlockingQueue<>();
 

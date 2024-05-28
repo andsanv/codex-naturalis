@@ -22,6 +22,13 @@ public class GameSocketConnection implements GameViewActions, Runnable {
         this.in = in;
     }
 
+//    public GameSocketConnection(ObjectOutputStream out, ObjectInputStream in, GameFlowManager gameFlowManager) throws IOException {
+//        this.out = out;
+//        this.gameFlowManager = gameFlowManager;
+//        this.in = in;
+//    }
+
+
     @Override
     public synchronized void receiveEvent(GameEvent gameEvent) throws RemoteException {
         try {

@@ -1,18 +1,17 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.states.*;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
-import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a single game
@@ -85,14 +84,14 @@ public class GameFlowManager implements Runnable {
      */
     public final Queue<GameCommand> commands;
 
-    private final AtomicInteger lastEventId = new AtomicInteger(1);
+    public final List<Observer> observers;
 
     /**
      * GameFlowManager constructor
      *
      * @param lobby The lobby from which the game was started
      */
-    public GameFlowManager(Lobby lobby) {
+    public GameFlowManager(Lobby lobby, List<Observer> observers) {
         this.lobby = lobby;
         this.users = lobby.getUsers();
         users.forEach(user -> this.isConnected.put(user, false));
@@ -100,7 +99,9 @@ public class GameFlowManager implements Runnable {
         this.idToToken = new HashMap<>();
         this.playerTokens = new ArrayList<>();
 
-        this.gameModelUpdater = new GameModelUpdater(new GameModel(lastEventId));
+        this.observers = observers;
+
+        this.gameModelUpdater = new GameModelUpdater(new GameModel(), this.observers);
 
         this.tokenSelectionState = new TokenSelectionState(this, users, timeLimit);
         this.starterCardSelectionState = new StarterCardSelectionState(this, playerTokens, timeLimit);

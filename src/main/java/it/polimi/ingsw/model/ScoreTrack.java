@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.distributed.events.game.UpdatedScoreTrackEvent;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
 
@@ -42,7 +43,7 @@ public class ScoreTrack extends Observable {
         if(scores.get(playerToken) > maxScore)
             maxScore = newScore;
 
-        //notify(new ScoreTrackEvent(playerToken, newScore));
+        notify(new UpdatedScoreTrackEvent(playerToken, newScore));
     }
 
     /**

@@ -1,25 +1,33 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.distributed.events.game.DrawnGoldDeckCardEvent;
+import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.distributed.events.game.*;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.corner.CornerTypes;
+import it.polimi.ingsw.model.deck.VisibleCardsList;
 import it.polimi.ingsw.model.player.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Handles updates of the model
  */
 public class GameModelUpdater {
-    private GameModel model;
-    private GameFlowManager gameFlowManager;
+    private final GameModel model;
+    private final AtomicInteger lastEventId;
 
-    public GameModelUpdater(GameModel model) {
+    public GameModelUpdater(GameModel model, List<Observer> observers) {
         this.model = model;
+        this.lastEventId = new AtomicInteger(1);
+
+        Observable.setObservers(observers);
+        Observable.setLastEventId(lastEventId);
     }
 
     /**
@@ -94,6 +102,8 @@ public class GameModelUpdater {
 
         if (!card.isPresent())
             return false;
+        else
+            model.getResourceCardsDeck().notify(new DrawnResourceDeckCardEvent(playerToken, card.get().getId()));
 
         playerHand.addCard(card.get());
         return true;
@@ -111,10 +121,12 @@ public class GameModelUpdater {
             return false;
 
         Optional<GoldCard> card = model.getGoldCardsDeck().draw();
-        if (card.isPresent()) model.getGoldCardsDeck().notify(new DrawnGoldDeckCardEvent(playerToken, card.get().getId()));
 
         if (!card.isPresent())
             return false;
+        else
+            model.getGoldCardsDeck().notify(new DrawnGoldDeckCardEvent(playerToken, card.get().getId()));
+
 
         playerHand.addCard(card.get());
         return true;
@@ -132,11 +144,13 @@ public class GameModelUpdater {
         if(playerHand.getCards().size() == 3)
             return false;
 
-        List<ResourceCard> visibleResourceCards = model.getVisibleResourceCards();
+        VisibleCardsList<ResourceCard> visibleResourceCards = model.getVisibleResourceCards();
         ResourceCard card = visibleResourceCards.get(chosen);
 
         if (card == null)
             return false;
+        else
+            visibleResourceCards.notify(new DrawnVisibleResourceCardEvent(playerToken, chosen, card.getId()));
 
         visibleResourceCards.remove(chosen);
         playerHand.addCard(card);
@@ -158,11 +172,13 @@ public class GameModelUpdater {
         if(playerHand.getCards().size() == 3)
             return false;
 
-        List<GoldCard> visibleGoldCards = model.getVisibleGoldCards();
+        VisibleCardsList<GoldCard> visibleGoldCards = model.getVisibleGoldCards();
         GoldCard card = visibleGoldCards.get(chosen);
 
         if (card == null)
             return false;
+        else
+            visibleGoldCards.notify(new DrawnVisibleGoldCardEvent(playerToken, chosen, card.getId()));
 
         visibleGoldCards.remove(chosen);
         playerHand.addCard(card);
