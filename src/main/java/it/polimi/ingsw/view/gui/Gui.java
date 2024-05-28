@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +24,8 @@ import java.io.IOException;
 
 public class Gui extends Application {
 
+
+
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     public static void main(String[] args) {
@@ -33,9 +36,13 @@ public class Gui extends Application {
     public void start(Stage primaryStage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/gui.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
+            Parent root = fxmlLoader.load(); // Load the FXML file
+
+            Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            initialize(); // Call initialize after the FXML is loaded
 
             ServerEventHandlerTask serverEventHandlerTask = new ServerEventHandlerTask();
             executorService.submit(serverEventHandlerTask);
@@ -50,6 +57,10 @@ public class Gui extends Application {
         super.stop();
         // shut down the executor service so that the application can exit
         executorService.shutdownNow();
+    }
+
+    @FXML
+    public void initialize() {
     }
 
     @FXML

@@ -122,7 +122,7 @@
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Button mnemonicParsing="false" text="Flip" onMouseClicked="#flipHandCard">
+                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
                      <font>
                         <Font size="28.0" />
                      </font>
@@ -138,7 +138,7 @@
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Button mnemonicParsing="false" text="Flip" onMouseClicked="#flipHandCard">
+                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
                      <font>
                         <Font size="28.0" />
                      </font>
@@ -154,7 +154,7 @@
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Button mnemonicParsing="false" text="Flip" onMouseClicked="#flipHandCard">
+                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
                      <font>
                         <Font size="28.0" />
                      </font>
@@ -193,5 +193,6 @@
             </HBox>
          </children>
       </VBox>
+      <VBox fx:id="playerListPane" alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0" />
    </children>
 </AnchorPane>

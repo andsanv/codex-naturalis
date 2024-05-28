@@ -7,6 +7,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
+import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.Node;
@@ -14,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 
 import java.io.IOException;
@@ -21,7 +23,8 @@ import java.util.Stack;
 
 public class GameView {
 
-    public String cardSelected;
+    public String sideSelected = "fronts";
+    public String cardSelectedPath;
 
     @FXML
     private ScrollPane scrollPane;
@@ -34,6 +37,9 @@ public class GameView {
 
     @FXML
     private GridPane gridPane;
+
+    @FXML
+    private VBox playerListPane;
 
 
 
@@ -63,8 +69,8 @@ public class GameView {
         }
 
         //Create grid images containers
-        for (int i = 0; i <=41; i++) {
-            for (int j = 0; j <= 41; j++) {
+        for (int i = 0; i <=40; i++) {
+            for (int j = 0; j <= 40; j++) {
                 StackPane cell = new StackPane();
                 if ((i+j) % 2 == 0) {
                     ImageView imageView = new ImageView();
@@ -122,6 +128,33 @@ public class GameView {
             }
         }
 
+        //side pane for player list
+        for (int i = 0; i < 2; i++) {
+            HBox playerPane = new HBox();
+            ImageView token = new ImageView();
+            token.setFitHeight(40);
+            token.setFitWidth(40);
+            token.setPreserveRatio(true);
+            ImageView view = new ImageView();
+            view.setFitHeight(40);
+            view.setFitWidth(40);
+            view.setPreserveRatio(true);
+            Image tokenImg = new Image("/images/tokens/token_blue.png");
+            Image viewImg = new Image("/images/icons/view_icon.png");
+            token.setImage(tokenImg);
+            view.setImage(viewImg);
+            int points = 0;
+            Text nickname = new Text("Player " + i);
+            Text score = new Text( (String) (points + " pts") );
+            nickname.setFont(javafx.scene.text.Font.font("System", 28));
+            score.setFont(javafx.scene.text.Font.font("System", 28));
+            playerPane.setSpacing(20);
+            playerPane.setAlignment(Pos.CENTER);
+            playerPane.setPadding(new Insets(10));
+            playerPane.getChildren().addAll(token, nickname, score, view);
+            playerListPane.getChildren().add(playerPane);
+            playerListPane.setSpacing(20);
+        }
 
         // Add zoom in/out event handling
         Scene scene = scrollPane.getScene();
@@ -141,8 +174,11 @@ public class GameView {
     public void selectCardOnClick(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
 
         StackPane stackPane = (StackPane) mouseEvent.getSource();
-        System.out.println(idToString(stackPane.getId()));
-        cardSelected = idToString(stackPane.getId());
+        ImageView imageView = (ImageView) stackPane.getChildren().get(0);
+        String imagePath = imageView.getImage().getUrl();
+        int startIndex = imagePath.indexOf("/images");
+        imagePath = imagePath.substring(startIndex);
+        cardSelectedPath = imagePath;
     }
 
     @FXML
@@ -162,7 +198,8 @@ public class GameView {
             filepath = filepath.replace("backs", "fronts");
         }
 
-        Image image = new Image(filepath);
+        cardSelectedPath = filepath;
+        Image image = new Image(cardSelectedPath);
         imageView.setImage(image);
     }
 
@@ -252,7 +289,8 @@ public class GameView {
 
         bringStackPaneToFront(gridPane, (StackPane) mouseEvent.getSource());
         ImageView imageView = (ImageView) (((StackPane) mouseEvent.getSource()).getChildren().get(0));
-        Image image = new Image("/images/cards/fronts/" + cardSelected + ".png");
+        System.out.println(cardSelectedPath);
+        Image image = new Image(cardSelectedPath);
         imageView.setImage(image);
     }
 
