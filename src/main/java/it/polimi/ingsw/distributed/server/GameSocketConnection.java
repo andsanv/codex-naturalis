@@ -16,6 +16,12 @@ public class GameSocketConnection implements GameViewActions, Runnable {
     private final GameFlowManager gameFlowManager;
     private final ObjectInputStream in;
 
+    public GameSocketConnection(ObjectInputStream in, ObjectOutputStream out, GameFlowManager gameFlowManager) throws IOException {
+        this.out = out;
+        this.gameFlowManager = gameFlowManager;
+        this.in = in;
+    }
+
     public GameSocketConnection(Socket socket, ObjectInputStream in, GameFlowManager gameFlowManager) throws IOException {
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.gameFlowManager = gameFlowManager;

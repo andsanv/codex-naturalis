@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 
@@ -17,6 +18,8 @@ import it.polimi.ingsw.controller.server.UserInfo;
  */
 public class SocketMainServer {
     private ServerSocket serverSocket;
+
+    private GameFlowManager gameFlowManager;
 
     private final ExecutorService executorService;
 
