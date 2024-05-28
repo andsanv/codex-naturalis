@@ -35,10 +35,7 @@ public abstract class Observable {
      * @param the event to notify
      */
     public void notify(GameEvent event) {
-        synchronized (lastEventId) {
-            event.setId(lastEventId.getAndIncrement());
-        }
-
+        event.setId(lastEventId.getAndIncrement());
         observers.forEach(observer -> observer.update(event));
     }
 }
