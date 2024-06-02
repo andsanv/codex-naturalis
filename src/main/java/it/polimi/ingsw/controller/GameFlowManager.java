@@ -12,6 +12,7 @@ import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a single game
@@ -76,7 +77,7 @@ public class GameFlowManager implements Runnable {
     /**
      * Boolean used by the timer to tell whether time limit has been reached or not
      */
-    private Boolean timeLimitReached = false;
+    private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
     /**
      * Queue of commands received by the gameFlowManager. Every move made by a player is identified by a command.
@@ -149,13 +150,13 @@ public class GameFlowManager implements Runnable {
      */
     private void handleTurn() {
         Timer timer = new Timer();
-        timeLimitReached = false;
+        timeLimitReached.set(false);
 
         TimerTask timeElapsedTask = new TimerTask() {
             @Override
             public void run() {
                 synchronized (timeLimitReached) {
-                    timeLimitReached = true;
+                    timeLimitReached.set(true);
                 }
             }
         };
@@ -163,7 +164,7 @@ public class GameFlowManager implements Runnable {
         timer.schedule(timeElapsedTask, timeLimit * 1000);
 
         while(true) {
-            if (!timeLimitReached)
+            if (!timeLimitReached.get())
                 synchronized (commands) {
                     if (!commands.isEmpty() && commands.poll().execute(this)) {
                         timer.cancel();

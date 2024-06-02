@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller.states;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
 import it.polimi.ingsw.controller.server.User;
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.PlayableCard;
@@ -82,7 +83,7 @@ public abstract class GameState {
         return null;
     }
 
-    public boolean selectToken(String playerId, PlayerToken playerToken) {
+    public boolean selectToken(UserInfo player, PlayerToken playerToken) {
         return false;
     }
 

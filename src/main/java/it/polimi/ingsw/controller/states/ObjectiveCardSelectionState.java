@@ -2,6 +2,9 @@ package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.events.game.ChosenObjectiveCardEvent;
+import it.polimi.ingsw.distributed.events.game.DrawnObjectiveCardsEvent;
+import it.polimi.ingsw.distributed.events.game.DrawnStarterCardEvent;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
@@ -74,7 +77,11 @@ public class ObjectiveCardSelectionState extends GameState {
     public boolean drawObjectiveCards(PlayerToken playerToken) {
         if(TokenToDrawnObjectiveCards.containsKey(playerToken)) return false;
 
-        TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(gameModelUpdater.drawObjectiveCard().get(), gameModelUpdater.drawObjectiveCard().get()));
+        ObjectiveCard firstCard = gameModelUpdater.drawObjectiveCard().get();
+        ObjectiveCard secondCard = gameModelUpdater.drawObjectiveCard().get();
+        TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
+
+        gameFlowManager.observers.forEach(observer -> observer.update(new DrawnObjectiveCardsEvent(playerToken, firstCard.getId(), secondCard.getId())));
         return true;
     }
 
@@ -82,7 +89,10 @@ public class ObjectiveCardSelectionState extends GameState {
     public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
         if(!TokenToDrawnObjectiveCards.containsKey(playerToken) || TokenToChosenObjectiveCard.containsKey(playerToken)) return false;
 
-        TokenToChosenObjectiveCard.put(playerToken, (choice == 0) ? TokenToDrawnObjectiveCards.get(playerToken).first : TokenToDrawnObjectiveCards.get(playerToken).second);
+        ObjectiveCard chosenCard = (choice == 0) ? TokenToDrawnObjectiveCards.get(playerToken).first : TokenToDrawnObjectiveCards.get(playerToken).second
+        TokenToChosenObjectiveCard.put(playerToken, chosenCard);
+
+        gameFlowManager.observers.forEach(observer -> observer.update(new ChosenObjectiveCardEvent(playerToken, chosenCard.getId())));
         return true;
     }
 }

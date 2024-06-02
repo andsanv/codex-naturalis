@@ -2,16 +2,20 @@ package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.events.game.ChosenStarterCardSideEvent;
+import it.polimi.ingsw.distributed.events.game.DrawnStarterCardEvent;
+import it.polimi.ingsw.distributed.events.game.TokenAssignmentEvent;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StarterCardSelectionState extends GameState {
     private final long timeLimit;   // in seconds
-    private Boolean timeLimitReached;
+    private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
     private final List<PlayerToken> playerTokens;
     private final Map<PlayerToken, StarterCard> TokenToStarterCard;
@@ -21,7 +25,6 @@ public class StarterCardSelectionState extends GameState {
         super(gameFlowManager);
 
         this.timeLimit = timeLimit;
-        this.timeLimitReached = false;
 
         this.playerTokens = playerTokens;
         this.TokenToStarterCard = new HashMap<>();
@@ -38,14 +41,14 @@ public class StarterCardSelectionState extends GameState {
             @Override
             public void run() {
                 synchronized (timeLimitReached) {
-                    timeLimitReached = true;
+                    timeLimitReached.set(true);
                 }
             }
         };
         timer.schedule(timeElapsedTask, timeLimit * 1000);
 
         while(true) {
-            if (!timeLimitReached)
+            if (!timeLimitReached.get())
                 synchronized (commands) {
                     if (!commands.isEmpty() && commands.poll().execute(gameFlowManager)) {
                         if(TokenToStarterCard.keySet().size() == playerTokens.size() && TokenToCardSide.keySet().size() == playerTokens.size()) {
@@ -77,7 +80,9 @@ public class StarterCardSelectionState extends GameState {
     public boolean drawStarterCard(PlayerToken playerToken) {
         if(TokenToStarterCard.containsKey(playerToken)) return false;
 
-        TokenToStarterCard.put(playerToken, gameModelUpdater.drawStarterCard().get());
+        StarterCard starterCard = gameModelUpdater.drawStarterCard().orElse(null);
+        TokenToStarterCard.put(playerToken, starterCard);
+        gameFlowManager.observers.forEach(observer -> observer.update(new DrawnStarterCardEvent(playerToken, starterCard.getId())));
         return true;
     }
 
@@ -86,6 +91,7 @@ public class StarterCardSelectionState extends GameState {
         if(!TokenToStarterCard.containsKey(playerToken) || TokenToCardSide.containsKey(playerToken)) return false;
 
         TokenToCardSide.put(playerToken, cardSide);
+        gameFlowManager.observers.forEach(observer -> observer.update(new ChosenStarterCardSideEvent(playerToken, cardSide)));
         return true;
     }
 }

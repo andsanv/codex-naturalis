@@ -24,6 +24,14 @@ public interface GameEventHandler {
 
     public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId);
 
+    public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId);
+
+    public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide);
+
+    public void handleDrawnObjectiveCardsEvent(PlayerToken playerToken, int firstDrawnCardId, int secondDrawnCardId);
+
+    public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId);
+
     public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId);
 
     public void handleDirectMessageEvent(PlayerToken senderToken, PlayerToken receiverToken, String message);
