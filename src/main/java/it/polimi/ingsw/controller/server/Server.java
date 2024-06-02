@@ -18,6 +18,7 @@ import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.events.main.GameConnectionEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
+import it.polimi.ingsw.distributed.server.ClientHandler;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.RMIGameServer;
 import it.polimi.ingsw.distributed.server.SocketGameServer;
@@ -47,8 +48,6 @@ public enum Server {
      * When the client is in the menu, he receives updates on the list of lobbies.
      */
     private ConcurrentHashMap<Pair<UserInfo, MainViewActions>, Boolean> connectedPlayers;
-
-    private ConcurrentHashMap<Lobby, Pair<GameServerActions, SocketGameServer>> gameConnections;
 
     private final ExecutorService gameServersExecutor;
 
@@ -149,43 +148,18 @@ public enum Server {
 
             GameFlowManager gameFlowManager = new GameFlowManager(lobby);
 
-            // RMI server creation
-            String rmiConnectionInfo = "GameActions" + lobbyId;
-            GameServerActions rmiServer;
-            try {
-                rmiServer = new RMIGameServer(gameFlowManager, rmiConnectionInfo);
-            } catch (RemoteException e) {
-                System.out.println("Failed starting " + RMIGameServer.class + "for lobby " + lobbyId);
-                e.printStackTrace();
-                return false;
-            }
-
-            
-            // Socket server creation
-            SocketGameServer socketServer;
-            try {
-                socketServer = new SocketGameServer(gameFlowManager);
-                gameServersExecutor.submit(socketServer);
-            } catch (IOException e) {
-                System.out.println("Failed starting " + SocketGameServer.class + "for lobby " + lobbyId);
-                e.printStackTrace();
-                return false;
-            }
-
-            gameConnections.put(lobby, new Pair<>(rmiServer, socketServer));
-
-            GameConnectionEvent gameConnectionEvent = new GameConnectionEvent(rmiConnectionInfo, socketServer.getPort());
-
-            // TODO check if it's correctly synchronized
+            // TODO set gameflow on client handler only for the users in the starting game
             connectedPlayers
                     .entrySet()
                     .stream()
                     .filter(entry -> entry.getValue())
+                    .filter(entry -> lobby.getUsers().contains(entry.getKey().first))
                     .forEach(entry -> {
                         try {
-                            entry.getKey().second.receiveEvent(gameConnectionEvent);
-
-                            // Keep track that the player is in game
+                            if(entry.getKey().second instanceof ClientHandler) {
+                                ClientHandler client = (ClientHandler) entry.getKey().second;
+                                client.setGameFlowManager(gameFlowManager);
+                            }
                             connectedPlayers.put(entry.getKey(), false);
                         } catch (RemoteException e) {
                             // TODO
@@ -223,8 +197,9 @@ public enum Server {
             synchronized (users) {
                 System.out.println(users);
                 System.out.println(userInfo);
-                Optional<User> serverUser = users.stream()
-                        .filter(user -> user.name.equals(userInfo.name) && user.id == userInfo.id)
+                Optional<User> serverUser = users
+                        .stream()
+                        .filter(user -> user.equals(userInfoToUser(userInfo)))
                         .findAny();
 
                 if (!serverUser.isPresent()) {
