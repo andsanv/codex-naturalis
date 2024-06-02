@@ -1,13 +1,13 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import java.io.Serializable;
-
 import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.distributed.events.Event;
+
 
 /**
  * A generic game event.
  */
-public abstract class GameEvent implements Serializable {
+public abstract class GameEvent extends Event {
     private int id = 0;
 
     /**

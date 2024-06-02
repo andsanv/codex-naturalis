@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 
@@ -18,6 +19,8 @@ public abstract class ConnectionHandler {
     public abstract boolean sendToMainServer(MainCommand serverCommand);
 
     public abstract boolean sendToGameServer(GameCommand gameCommand);
+
+    public abstract boolean sendToServer(Command command);
 
     public abstract boolean reconnect();
 }
