@@ -4,25 +4,24 @@ import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 
 public class JoinLobbyCommand extends MainCommand {
-    private final UserInfo userInfo;
-    private final int lobbyId;
+  private final UserInfo userInfo;
+  private final int lobbyId;
 
-    @Override
-    public void execute() {
-        Server.INSTANCE.joinLobby(userInfo, lobbyId);
-    }
+  @Override
+  public void execute() {
+    Server.INSTANCE.joinLobby(userInfo, lobbyId);
+  }
 
-    public UserInfo getUserInfo() {
-        return userInfo;
-    }
+  public UserInfo getUserInfo() {
+    return userInfo;
+  }
 
-    public int getLobbyId() {
-        return lobbyId;
-    }
+  public int getLobbyId() {
+    return lobbyId;
+  }
 
-    public JoinLobbyCommand(UserInfo userInfo, int lobbyId) {
-        this.userInfo = userInfo;
-        this.lobbyId = lobbyId;
-    }
-
+  public JoinLobbyCommand(UserInfo userInfo, int lobbyId) {
+    this.userInfo = userInfo;
+    this.lobbyId = lobbyId;
+  }
 }

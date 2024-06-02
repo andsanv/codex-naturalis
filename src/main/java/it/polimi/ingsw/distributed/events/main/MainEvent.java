@@ -5,6 +5,5 @@ import it.polimi.ingsw.distributed.events.Event;
 
 public abstract class MainEvent extends Event {
 
-    public abstract void execute(MainEventHandler mainEventHandler);
-    
+  public abstract void execute(MainEventHandler mainEventHandler);
 }

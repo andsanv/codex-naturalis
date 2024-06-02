@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.deck;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.objective.ItemsObjectiveStrategy;
 import it.polimi.ingsw.model.card.objective.PatternObjectiveStrategy;
@@ -7,142 +9,148 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ObjectiveDeckCreatorTest {
 
-    Deck<ObjectiveCard> deck;
+  Deck<ObjectiveCard> deck;
 
-    @BeforeEach
-    void setUp() throws IOException {
-        deck = ObjectiveDeckCreator.createDeck();
-    }
+  @BeforeEach
+  void setUp() throws IOException {
+    deck = ObjectiveDeckCreator.createDeck();
+  }
 
-    @Test
-    void createDeck() {
-        assertEquals(16, deck.size());
+  @Test
+  void createDeck() {
+    assertEquals(16, deck.size());
 
-        for(int i = 0; i < 40; i++) {
-            Optional<ObjectiveCard> objectiveStarterCard = deck.draw();
-            if(objectiveStarterCard.isPresent()) {
-                ObjectiveCard objectiveCard = objectiveStarterCard.get();
-                switch (objectiveCard.getId()) {
-                    case 87:
-                        assertEquals(objectiveCard.getPoints(), 2);
+    for (int i = 0; i < 40; i++) {
+      Optional<ObjectiveCard> objectiveStarterCard = deck.draw();
+      if (objectiveStarterCard.isPresent()) {
+        ObjectiveCard objectiveCard = objectiveStarterCard.get();
+        switch (objectiveCard.getId()) {
+          case 87:
+            assertEquals(objectiveCard.getPoints(), 2);
 
-                        Map<Coords, Resources> mapping = new HashMap<>();
-                        mapping.put(new Coords(0, 0), Resources.FUNGI);
-                        mapping.put(new Coords(1, 1), Resources.FUNGI);
-                        mapping.put(new Coords(2, 2), Resources.FUNGI);
+            Map<Coords, Resources> mapping = new HashMap<>();
+            mapping.put(new Coords(0, 0), Resources.FUNGI);
+            mapping.put(new Coords(1, 1), Resources.FUNGI);
+            mapping.put(new Coords(2, 2), Resources.FUNGI);
 
+            ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                .getPattern()
+                .keySet()
+                .forEach(
+                    e -> {
+                      assertTrue(mapping.containsKey(e));
+                      assertEquals(
+                          mapping.get(e),
+                          ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                              .getPattern()
+                              .get(e));
+                    });
 
-                        ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
-                                .getPattern()
-                                .keySet()
-                                .forEach(e -> {
-                                    assertTrue(mapping.containsKey(e));
-                                    assertEquals(mapping.get(e),
-                                            ((PatternObjectiveStrategy)objectiveCard.getObjectiveStrategy()).getPattern().get(e));
-                                });
+            assertEquals(
+                mapping.size(),
+                ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                    .getPattern()
+                    .size());
 
-                        assertEquals(mapping.size(), ((PatternObjectiveStrategy)objectiveCard.getObjectiveStrategy()).getPattern().size());
+            break;
 
-                        break;
+          case 91:
+            assertEquals(objectiveCard.getPoints(), 3);
 
-                    case 91:
-                        assertEquals(objectiveCard.getPoints(), 3);
+            mapping = new HashMap<>();
+            mapping.put(new Coords(0, 1), Resources.FUNGI);
+            mapping.put(new Coords(0, 3), Resources.FUNGI);
+            mapping.put(new Coords(1, 0), Resources.PLANT);
 
-                        mapping = new HashMap<>();
-                        mapping.put(new Coords(0, 1), Resources.FUNGI);
-                        mapping.put(new Coords(0, 3), Resources.FUNGI);
-                        mapping.put(new Coords(1, 0), Resources.PLANT);
+            ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                .getPattern()
+                .keySet()
+                .forEach(
+                    e -> {
+                      assertTrue(mapping.containsKey(e));
+                      assertEquals(
+                          mapping.get(e),
+                          ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                              .getPattern()
+                              .get(e));
+                    });
 
+            assertEquals(
+                mapping.size(),
+                ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                    .getPattern()
+                    .size());
 
-                        ((PatternObjectiveStrategy) objectiveCard.getObjectiveStrategy())
-                                .getPattern()
-                                .keySet()
-                                .forEach(e -> {
-                                    assertTrue(mapping.containsKey(e));
-                                    assertEquals(mapping.get(e),
-                                            ((PatternObjectiveStrategy)objectiveCard.getObjectiveStrategy()).getPattern().get(e));
-                                });
+            break;
 
-                        assertEquals(mapping.size(), ((PatternObjectiveStrategy)objectiveCard.getObjectiveStrategy()).getPattern().size());
+          case 95:
+            assertEquals(objectiveCard.getPoints(), 2);
 
-                        break;
+            Map<Elements, Integer> requiredItems = new HashMap<>();
+            requiredItems.put(Resources.FUNGI, 3);
 
-                    case 95:
-                        assertEquals(objectiveCard.getPoints(), 2);
+            assertEquals(
+                requiredItems.get(Resources.FUNGI),
+                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                    .getRequiredItems()
+                    .get(Resources.FUNGI));
 
-                        Map<Elements, Integer> requiredItems = new HashMap<>();
-                        requiredItems.put(Resources.FUNGI, 3);
+            assertEquals(
+                requiredItems.size(),
+                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                    .getRequiredItems()
+                    .size());
 
+            break;
 
-                        assertEquals(requiredItems.get(Resources.FUNGI),
-                                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems().get(Resources.FUNGI));
+          case 99:
+            assertEquals(objectiveCard.getPoints(), 3);
 
-                        assertEquals(requiredItems.size(), ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems().size());
+            requiredItems = new HashMap<>();
+            requiredItems.put(Items.INKWELL, 1);
+            requiredItems.put(Items.QUILL, 1);
+            requiredItems.put(Items.MANUSCRIPT, 1);
 
-                        break;
+            Map<Elements, Integer> map =
+                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
 
-                    case 99:
-                        assertEquals(objectiveCard.getPoints(), 3);
+            assertTrue(requiredItems.keySet().containsAll(map.keySet()));
 
-                        requiredItems = new HashMap<>();
-                        requiredItems.put(Items.INKWELL, 1);
-                        requiredItems.put(Items.QUILL, 1);
-                        requiredItems.put(Items.MANUSCRIPT, 1);
+            assertTrue(map.keySet().containsAll(requiredItems.keySet()));
 
+            assertEquals(requiredItems.size(), map.size());
 
-                        Map<Elements, Integer> map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
+            break;
 
-                        assertTrue(requiredItems
-                                .keySet()
-                                .containsAll(map.keySet())
-                        );
+          case 102:
+            assertEquals(objectiveCard.getPoints(), 2);
 
-                        assertTrue(map
-                                .keySet()
-                                .containsAll(requiredItems.keySet()));
+            requiredItems = new HashMap<>();
+            requiredItems.put(Items.QUILL, 2);
 
-                        assertEquals(requiredItems.size(), map.size());
+            map =
+                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
 
-                        break;
+            assertTrue(requiredItems.keySet().containsAll(map.keySet()));
 
-                    case 102:
-                        assertEquals(objectiveCard.getPoints(), 2);
+            assertTrue(map.keySet().containsAll(requiredItems.keySet()));
 
-                        requiredItems = new HashMap<>();
-                        requiredItems.put(Items.QUILL, 2);
+            assertEquals(requiredItems.size(), map.size());
 
-
-                        map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
-
-                        assertTrue(requiredItems
-                                .keySet()
-                                .containsAll(map.keySet())
-                        );
-
-                        assertTrue(map
-                                .keySet()
-                                .containsAll(requiredItems.keySet()));
-
-                        assertEquals(requiredItems.size(), map.size());
-
-                        break;
-
-                }
-            }
+            break;
         }
-
-        assertEquals(deck.size(), 0);
+      }
     }
+
+    assertEquals(deck.size(), 0);
+  }
 }

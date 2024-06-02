@@ -1,5 +1,7 @@
 package it.polimi.ingsw.distributed.server;
 
+import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.server.UserInfo;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.BindException;
@@ -9,80 +11,75 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.UserInfo;
-
 /**
- * Accepts incoming connections to a single game.
- * Implements Runnable, so it can be submitted to an executor, since a
- * SocketGameServer is created for each game.
+ * Accepts incoming connections to a single game. Implements Runnable, so it can be submitted to an
+ * executor, since a SocketGameServer is created for each game.
  */
 public class SocketGameServer implements Runnable {
-    private static int lastUsedPort = 15789;
+  private static int lastUsedPort = 15789;
 
-    private static int maxBindAttempts = 10;
+  private static int maxBindAttempts = 10;
 
-    private ServerSocket serverSocket;
-    private final GameFlowManager gameFlowManager;
+  private ServerSocket serverSocket;
+  private final GameFlowManager gameFlowManager;
 
-    private final ExecutorService executorService;
+  private final ExecutorService executorService;
 
-    private final ConcurrentHashMap<UserInfo, GameSocketConnection> connections;
+  private final ConcurrentHashMap<UserInfo, GameSocketConnection> connections;
 
-    private int port;
+  private int port;
 
-    public SocketGameServer(GameFlowManager gameFlowManager) throws IOException {
-        int max_attempts = maxBindAttempts;
+  public SocketGameServer(GameFlowManager gameFlowManager) throws IOException {
+    int max_attempts = maxBindAttempts;
 
-        synchronized (SocketGameServer.class) {
+    synchronized (SocketGameServer.class) {
+      lastUsedPort++;
+      this.port = lastUsedPort;
+
+      while (max_attempts-- >= 0) {
+        try {
+          this.serverSocket = new ServerSocket(lastUsedPort);
+          break;
+        } catch (BindException e) {
+          synchronized (SocketGameServer.class) {
             lastUsedPort++;
             this.port = lastUsedPort;
-
-            while (max_attempts-- >= 0) {
-                try {
-                    this.serverSocket = new ServerSocket(lastUsedPort);
-                    break;
-                } catch (BindException e) {
-                    synchronized (SocketGameServer.class) {
-                        lastUsedPort++;
-                        this.port = lastUsedPort;
-                    }
-                }
-            }
+          }
         }
-
-        if (max_attempts < 0) {
-            throw new IOException("Could not bind to any port");
-        }
-
-        this.serverSocket = new ServerSocket(lastUsedPort);
-        this.gameFlowManager = gameFlowManager;
-        this.executorService = Executors.newCachedThreadPool();
-        this.connections = new ConcurrentHashMap<>();
+      }
     }
 
-    public int getPort() {
-        return this.port;
+    if (max_attempts < 0) {
+      throw new IOException("Could not bind to any port");
     }
 
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Socket socket = serverSocket.accept();
+    this.serverSocket = new ServerSocket(lastUsedPort);
+    this.gameFlowManager = gameFlowManager;
+    this.executorService = Executors.newCachedThreadPool();
+    this.connections = new ConcurrentHashMap<>();
+  }
 
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+  public int getPort() {
+    return this.port;
+  }
 
-                UserInfo userInfo = (UserInfo) in.readObject();
+  @Override
+  public void run() {
+    while (true) {
+      try {
+        Socket socket = serverSocket.accept();
 
-                // TODO handle game socket connection creation
-                GameSocketConnection connection = new GameSocketConnection(socket, in, gameFlowManager);
-                executorService.submit(connection);
-                connections.put(userInfo, connection);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+        UserInfo userInfo = (UserInfo) in.readObject();
+
+        // TODO handle game socket connection creation
+        GameSocketConnection connection = new GameSocketConnection(socket, in, gameFlowManager);
+        executorService.submit(connection);
+        connections.put(userInfo, connection);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
-
+  }
 }

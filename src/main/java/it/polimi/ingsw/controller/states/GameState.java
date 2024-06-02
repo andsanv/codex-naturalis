@@ -11,127 +11,112 @@ import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
-
 import java.util.List;
 import java.util.Map;
 
 /**
- * A GameState refers to a state of the gameFlowManager (state machine), implemented using the state pattern
- * GameState is an abstract class, from which the actual state classes inherit the methods that will eventually be re-implemented
+ * A GameState refers to a state of the gameFlowManager (state machine), implemented using the state
+ * pattern GameState is an abstract class, from which the actual state classes inherit the methods
+ * that will eventually be re-implemented
  */
 public abstract class GameState {
-    /**
-     * The state machine
-     */
-    protected GameFlowManager gameFlowManager;
+  /** The state machine */
+  protected GameFlowManager gameFlowManager;
 
-    /**
-     * Part of the controller which updates the model
-     */
-    protected GameModelUpdater gameModelUpdater;
+  /** Part of the controller which updates the model */
+  protected GameModelUpdater gameModelUpdater;
 
-    /**
-     * The list of players in the game
-     */
-    protected List<User> users;
+  /** The list of players in the game */
+  protected List<User> users;
 
+  /**
+   * GameState constructor
+   *
+   * @param gameFlowManager the object containing the state machine
+   */
+  GameState(GameFlowManager gameFlowManager) {
+    this.gameFlowManager = gameFlowManager;
+    this.gameModelUpdater = gameFlowManager.gameModelUpdater;
+    this.users = gameFlowManager.users;
+  }
 
-    /**
-     * GameState constructor
-     *
-     * @param gameFlowManager the object containing the state machine
-     */
-    GameState(GameFlowManager gameFlowManager){
-        this.gameFlowManager = gameFlowManager;
-        this.gameModelUpdater = gameFlowManager.gameModelUpdater;
-        this.users = gameFlowManager.users;
-    }
+  // PlayCardState methods
 
+  public boolean playCard(
+      PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+    return false;
+  }
 
+  // DrawCardState methods
 
-    // PlayCardState methods
+  public boolean drawResourceDeckCard(PlayerToken playerToken) {
+    return false;
+  }
 
-    public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
-        return false;
-    }
+  public boolean drawGoldDeckCard(PlayerToken playerToken) {
+    return false;
+  }
 
+  public boolean drawVisibleResourceCard(PlayerToken playerToken, int choice) {
+    return false;
+  }
 
+  public boolean drawVisibleGoldCard(PlayerToken playerToken, int choice) {
+    return false;
+  }
 
-    // DrawCardState methods
+  // TokenSelectionState methods
 
-    public boolean drawResourceDeckCard(PlayerToken playerToken) {
-        return false;
-    }
+  public Map<String, PlayerToken> handleTokenSelection() {
+    return null;
+  }
 
-    public boolean drawGoldDeckCard(PlayerToken playerToken) {
-        return false;
-    }
+  public boolean selectToken(UserInfo player, PlayerToken playerToken) {
+    return false;
+  }
 
-    public boolean drawVisibleResourceCard(PlayerToken playerToken, int choice) {
-        return false;
-    }
+  // StarterCardSelectionState methods
 
-    public boolean drawVisibleGoldCard(PlayerToken playerToken, int choice) {
-        return false;
-    }
+  public Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>>
+      handleStarterCardSelection() {
+    return null;
+  }
 
+  public boolean drawStarterCard(PlayerToken playerToken) {
+    return false;
+  }
 
+  public boolean selectStarterCardSide(PlayerToken playerToken, CardSide cardSide) {
+    return false;
+  }
 
-    // TokenSelectionState methods
+  // ObjectiveCardSelectionState methods
 
-    public Map<String, PlayerToken> handleTokenSelection() {
-        return null;
-    }
+  public Map<PlayerToken, ObjectiveCard> handleObjectiveCardSelection() {
+    return null;
+  }
 
-    public boolean selectToken(UserInfo player, PlayerToken playerToken) {
-        return false;
-    }
+  public boolean drawObjectiveCards(PlayerToken playerToken) {
+    return false;
+  }
 
+  public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
+    return false;
+  }
 
+  // InitializationState methods
 
-    // StarterCardSelectionState methods
+  public boolean handleInitialization(
+      Map<String, PlayerToken> idToToken,
+      Map<PlayerToken, StarterCard> tokenToStarterCard,
+      Map<PlayerToken, CardSide> tokenToCardSide,
+      Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard) {
+    return false;
+  }
 
-    public Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> handleStarterCardSelection() {
-        return null;
-    }
+  // PostGameState methods
 
-    public boolean drawStarterCard(PlayerToken playerToken) {
-        return false;
-    }
-
-    public boolean selectStarterCardSide(PlayerToken playerToken, CardSide cardSide) {
-        return false;
-    }
-
-
-
-    // ObjectiveCardSelectionState methods
-
-    public Map<PlayerToken, ObjectiveCard> handleObjectiveCardSelection() {
-        return null;
-    }
-
-    public boolean drawObjectiveCards(PlayerToken playerToken) {
-        return false;
-    }
-
-    public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
-        return false;
-    }
-
-
-
-    // InitializationState methods
-
-    public boolean handleInitialization(Map<String, PlayerToken> idToToken, Map<PlayerToken, StarterCard> tokenToStarterCard, Map<PlayerToken, CardSide> tokenToCardSide, Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard) {
-        return false;
-    }
-
-
-
-    // PostGameState methods
-
-    public boolean postGame() {
-        return false;
-    }
+  public boolean postGame() {
+    return false;
+  }
 }

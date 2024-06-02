@@ -6,7 +6,7 @@ import it.polimi.ingsw.distributed.MainEventHandler;
 
 public abstract interface UI extends MainEventHandler, GameEventHandler {
 
+  public UserInfo getUserInfo();
 
-    public UserInfo getUserInfo();
-    public void connectionToGameResult(boolean connectedToGame);
+  public void connectionToGameResult(boolean connectedToGame);
 }

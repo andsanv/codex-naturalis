@@ -5,19 +5,18 @@ import it.polimi.ingsw.controller.server.UserInfo;
 
 public class CreateLobbyCommand extends MainCommand {
 
-    private final UserInfo userInfo;
-    
-    @Override
-    public void execute() {
-        Server.INSTANCE.createLobby(userInfo);    
-    }
+  private final UserInfo userInfo;
 
-    public UserInfo getUserInfo() {
-        return userInfo;
-    }
+  @Override
+  public void execute() {
+    Server.INSTANCE.createLobby(userInfo);
+  }
 
-    public CreateLobbyCommand(UserInfo userInfo) {
-        this.userInfo = userInfo;
-    }
-    
+  public UserInfo getUserInfo() {
+    return userInfo;
+  }
+
+  public CreateLobbyCommand(UserInfo userInfo) {
+    this.userInfo = userInfo;
+  }
 }

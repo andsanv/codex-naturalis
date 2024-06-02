@@ -1,10 +1,8 @@
 package it.polimi.ingsw.model.common;
 
-/**
- * This enum defines the game items.
- * */
+/** This enum defines the game items. */
 public enum Items implements Elements {
-    QUILL,
-    INKWELL,
-    MANUSCRIPT,
+  QUILL,
+  INKWELL,
+  MANUSCRIPT,
 }

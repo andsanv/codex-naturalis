@@ -7,20 +7,21 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 public class PlayCardCommand extends GameCommand {
-    public final PlayerToken playerToken;
-    public final Coords coords;
-    public final PlayableCard card;
-    public final CardSide cardSide;
+  public final PlayerToken playerToken;
+  public final Coords coords;
+  public final PlayableCard card;
+  public final CardSide cardSide;
 
-    public PlayCardCommand(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
-        this.playerToken = playerToken;
-        this.coords = coords;
-        this.card = card;
-        this.cardSide = cardSide;
-    }
+  public PlayCardCommand(
+      PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+    this.playerToken = playerToken;
+    this.coords = coords;
+    this.card = card;
+    this.cardSide = cardSide;
+  }
 
-    @Override
-    public boolean execute(GameFlowManager gameFlowManager) {
-        return gameFlowManager.getCurrentState().playCard(playerToken, coords, card, cardSide);
-    }
+  @Override
+  public boolean execute(GameFlowManager gameFlowManager) {
+    return gameFlowManager.getCurrentState().playCard(playerToken, coords, card, cardSide);
+  }
 }

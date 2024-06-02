@@ -2,35 +2,32 @@ package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
-
 import java.util.concurrent.BlockingQueue;
 
 public class CommandConsumer<Command> implements Runnable {
-    private final BlockingQueue<Command> commandQueue;
-    private final ConnectionHandler connectionHandler;
+  private final BlockingQueue<Command> commandQueue;
+  private final ConnectionHandler connectionHandler;
 
-    public CommandConsumer(BlockingQueue<Command> queue, ConnectionHandler connectionHandler) {
-        this.commandQueue = queue;
-        this.connectionHandler = connectionHandler;
-    }
+  public CommandConsumer(BlockingQueue<Command> queue, ConnectionHandler connectionHandler) {
+    this.commandQueue = queue;
+    this.connectionHandler = connectionHandler;
+  }
 
-    public void run() {
-        try {
-            synchronized (commandQueue) {
-                while (!commandQueue.isEmpty()) {
-                    consume(commandQueue.take());
-                }
-                commandQueue.wait();
-            }
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+  public void run() {
+    try {
+      synchronized (commandQueue) {
+        while (!commandQueue.isEmpty()) {
+          consume(commandQueue.take());
         }
+        commandQueue.wait();
+      }
+    } catch (InterruptedException ex) {
+      ex.printStackTrace();
     }
+  }
 
-    void consume(Command command) {
-        if(command instanceof MainCommand)
-            connectionHandler.sendToMainServer((MainCommand) command);
-        else
-            connectionHandler.sendToGameServer((GameCommand) command);
-    }
+  void consume(Command command) {
+    if (command instanceof MainCommand) connectionHandler.sendToMainServer((MainCommand) command);
+    else connectionHandler.sendToGameServer((GameCommand) command);
+  }
 }
