@@ -3,7 +3,6 @@ package it.polimi.ingsw.distributed;
 import java.util.List;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 
 public interface MainEventHandler {

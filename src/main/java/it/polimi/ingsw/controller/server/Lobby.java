@@ -1,7 +1,5 @@
 package it.polimi.ingsw.controller.server;
 
-import com.google.gson.stream.JsonToken;
-
 import java.util.ArrayList;
 import java.util.List;
 

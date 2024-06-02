@@ -4,7 +4,6 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.player.Coords;
-import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 public class PlayCardCommand extends GameCommand {
