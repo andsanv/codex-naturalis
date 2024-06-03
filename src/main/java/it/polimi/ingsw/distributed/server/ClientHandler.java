@@ -33,7 +33,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
 
         if (command instanceof GameCommand) {
           if (gameFlowManager == null) {
-            throw new IllegalStateException("GameFlowManager not set");
+            System.err.println("GameFlowManager not set");
           }
           ((GameCommand) command).execute(gameFlowManager);
         } else if (command instanceof MainCommand) {

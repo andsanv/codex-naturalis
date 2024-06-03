@@ -36,6 +36,7 @@ public class SocketServer {
 
                   ClientHandler connection = new ClientHandler(socket);
 
+                  // TODO do not use instanceof, cast directly, unify connection event with type conn/reconn
                   if (command instanceof ConnectionCommand) {
                     ConnectionCommand connectionEvent = (ConnectionCommand) command;
                     String username = connectionEvent.username;

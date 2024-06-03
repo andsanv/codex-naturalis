@@ -130,6 +130,7 @@ public enum Server {
 
       if (lobby == null || user != lobby.getManager() || !lobby.startGame()) return false;
 
+      // Aggiungi le view dei giocatori nel costruttore
       GameFlowManager gameFlowManager = new GameFlowManager(lobby);
 
       // TODO set gameflow on client handler only for the users in the starting game
@@ -143,7 +144,6 @@ public enum Server {
                     ClientHandler client = (ClientHandler) entry.getKey().second;
                     client.setGameFlowManager(gameFlowManager);
                   }
-                  connectedPlayers.put(entry.getKey(), false);
                 } catch (RemoteException e) {
                   // TODO
                   System.err.println("Couldn't send connection event to");
