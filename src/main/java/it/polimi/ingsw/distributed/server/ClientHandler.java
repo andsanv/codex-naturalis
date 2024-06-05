@@ -72,4 +72,19 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   public void setGameFlowManager(GameFlowManager gameFlowManager) {
     this.gameFlowManager = gameFlowManager;
   }
+
+  @Override
+  public void update(GameEvent event) {
+    try {
+      receiveEvent(event);
+    } catch (RemoteException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void setGameServer(GameServerActions gameServer) throws RemoteException {
+    ;
+  }
 }

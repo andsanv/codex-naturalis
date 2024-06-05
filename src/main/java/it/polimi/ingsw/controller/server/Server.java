@@ -1,10 +1,13 @@
 package it.polimi.ingsw.controller.server;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.client.RMIMainView;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.ClientHandler;
+import it.polimi.ingsw.distributed.server.RMIGameServer;
 import it.polimi.ingsw.util.Pair;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -131,7 +134,13 @@ public enum Server {
       if (lobby == null || user != lobby.getManager() || !lobby.startGame()) return false;
 
       // Aggiungi le view dei giocatori nel costruttore
-      GameFlowManager gameFlowManager = new GameFlowManager(lobby);
+      List<Observer> observers = connectedPlayers.entrySet().stream()
+          .filter(entry -> entry.getValue())
+          .filter(entry -> lobby.getUsers().contains(entry.getKey().first))
+          .map(entry -> entry.getKey().second)
+          .collect(Collectors.toList());
+
+      GameFlowManager gameFlowManager = new GameFlowManager(lobby, observers);
 
       // TODO set gameflow on client handler only for the users in the starting game
       connectedPlayers.entrySet().stream()
@@ -143,6 +152,10 @@ public enum Server {
                   if (entry.getKey().second instanceof ClientHandler) {
                     ClientHandler client = (ClientHandler) entry.getKey().second;
                     client.setGameFlowManager(gameFlowManager);
+                  } else if (entry.getKey().second instanceof MainViewActions) {
+                    RMIGameServer gameServer = new RMIGameServer(gameFlowManager, "gameServer" + lobbyId);
+                    RMIMainView client = (RMIMainView) entry.getKey().second;
+                    client.setGameServer(gameServer);
                   }
                 } catch (RemoteException e) {
                   // TODO

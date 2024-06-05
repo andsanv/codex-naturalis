@@ -54,22 +54,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
   }
 
   @Override
-  public boolean sendToServer(Command command) {
-    try {
-      outputStream.writeObject(command);
-      outputStream.reset();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
-    }
-
-    return true;
-  }
-
-  // TODO Discuss, should we remove these 2 different methods from the interface
-  // and unify the type of commands with an abstract father class
-
-  @Override
   public boolean sendToMainServer(MainCommand command) {
     try {
       outputStream.writeObject(command);

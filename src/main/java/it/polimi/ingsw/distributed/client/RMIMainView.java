@@ -1,12 +1,15 @@
 package it.polimi.ingsw.distributed.client;
 
 import it.polimi.ingsw.Config;
+import it.polimi.ingsw.client.RMIConnectionHandler;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
+import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -17,6 +20,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class RMIMainView extends UnicastRemoteObject implements MainViewActions, Runnable {
   private UserInfo userInfo;
   private final MainEventHandler mainEventHandler;
+  private RMIConnectionHandler connectionHandler;
 
   // private final Object printLock;
 
@@ -61,5 +65,16 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void setGameServer(GameServerActions gameServer) throws RemoteException {
+    this.connectionHandler.setGameServerActions(gameServer);
+  }
+
+  @Override
+  public void update(GameEvent event) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'update'");
   }
 }

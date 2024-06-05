@@ -21,7 +21,5 @@ public abstract class ConnectionHandler {
 
   public abstract boolean sendToGameServer(GameCommand gameCommand);
 
-  public abstract boolean sendToServer(Command command);
-
   public abstract boolean reconnect();
 }

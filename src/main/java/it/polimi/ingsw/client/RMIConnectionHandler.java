@@ -6,6 +6,7 @@ import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.RMIMainView;
+import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
@@ -21,7 +22,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RMIConnectionHandler extends ConnectionHandler {
 
   private MainServerActions mainServerActions;
-  private final GameServerActions gameServerActions;
+  private GameServerActions gameServerActions;
+
+  public void setGameServerActions(GameServerActions gameServerActions) {
+    this.gameServerActions = gameServerActions;
+  }
 
   private final BlockingQueue<MainCommand> serverCommandQueue;
   private final BlockingQueue<GameCommand> gameCommandQueue;

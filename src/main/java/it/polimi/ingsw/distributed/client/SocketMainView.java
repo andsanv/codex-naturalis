@@ -1,6 +1,9 @@
 package it.polimi.ingsw.distributed.client;
 
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
+import it.polimi.ingsw.distributed.server.GameServerActions;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,5 +42,17 @@ public class SocketMainView implements MainViewActions, Runnable {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void update(GameEvent event) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'update'");
+  }
+
+  @Override
+  public void setGameServer(GameServerActions gameServer) throws RemoteException {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setGameServer'");
   }
 }
