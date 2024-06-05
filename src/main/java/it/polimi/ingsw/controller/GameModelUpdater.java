@@ -9,6 +9,8 @@ import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.deck.VisibleCardsList;
 import it.polimi.ingsw.model.player.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,6 +55,7 @@ public class GameModelUpdater {
         .forEach(corner -> corner.setType(CornerTypes.COVERED));
 
     playerBoard.updatePlayerItems(coords);
+    playerBoard.notify(new PlayerElementsEvent(playerToken, new HashMap<>(playerBoard.getPlayerItems())));
 
     int points;
     switch (card.getPointsType()) {
@@ -83,7 +86,7 @@ public class GameModelUpdater {
     }
 
     model.getScoreTrack().updatePlayerScore(playerToken, points);
-
+    playerBoard.notify(new PlayedCardEvent(playerToken, card.getId(), cardSide, coords));
     return true;
   }
 

@@ -12,6 +12,8 @@ import it.polimi.ingsw.controller.states.PostGameState;
 import it.polimi.ingsw.controller.states.StarterCardSelectionState;
 import it.polimi.ingsw.controller.states.TokenSelectionState;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.events.game.ChosenStarterCardSideEvent;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
@@ -85,7 +87,7 @@ public class GameFlowManager implements Runnable {
    */
   public final Queue<GameCommand> commands;
 
-  public final List<Observer> observers;
+  private final List<Observer> observers;
 
   /**
    * GameFlowManager constructor
@@ -274,5 +276,9 @@ public class GameFlowManager implements Runnable {
 
   public long getTimeLimit() {
     return this.timeLimit;
+  }
+
+  public void notify(GameEvent gameEvent) {
+    observers.forEach(observer -> observer.update(gameEvent));
   }
 }

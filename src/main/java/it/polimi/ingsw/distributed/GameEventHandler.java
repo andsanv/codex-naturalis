@@ -28,10 +28,14 @@ public interface GameEventHandler {
 
   public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide);
 
+  public void handleEndedStarterCardPhaseEvent();
+
   public void handleDrawnObjectiveCardsEvent(
       PlayerToken playerToken, int firstDrawnCardId, int secondDrawnCardId);
 
   public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId);
+
+  public void handleEndedObjectiveCardPhaseEvent();
 
   public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId);
 
@@ -41,6 +45,8 @@ public interface GameEventHandler {
   public void handleGroupMessageEvent(PlayerToken senderToken, String message);
 
   public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken);
+
+  public void handleEndedTokenPhaseEvent();
 
   public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId);
 

@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.ChosenStarterCardSideEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnStarterCardEvent;
+import it.polimi.ingsw.distributed.events.game.EndedStarterCardPhaseEvent;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.player.PlayerToken;
@@ -84,10 +85,11 @@ public class StarterCardSelectionState extends GameState {
 
         break;
       }
-      ;
     }
 
     gameFlowManager.setState(gameFlowManager.objectiveCardSelectionState);
+    gameFlowManager.notify(new EndedStarterCardPhaseEvent());
+
     return new Pair<>(new HashMap<>(TokenToStarterCard), new HashMap<>(TokenToCardSide));
   }
 
@@ -97,8 +99,8 @@ public class StarterCardSelectionState extends GameState {
 
     StarterCard starterCard = gameModelUpdater.drawStarterCard().orElse(null);
     TokenToStarterCard.put(playerToken, starterCard);
-    gameFlowManager.observers.forEach(
-        observer -> observer.update(new DrawnStarterCardEvent(playerToken, starterCard.getId())));
+
+    gameFlowManager.notify(new DrawnStarterCardEvent(playerToken, starterCard.getId()));
     return true;
   }
 
@@ -108,8 +110,8 @@ public class StarterCardSelectionState extends GameState {
       return false;
 
     TokenToCardSide.put(playerToken, cardSide);
-    gameFlowManager.observers.forEach(
-        observer -> observer.update(new ChosenStarterCardSideEvent(playerToken, cardSide)));
+
+    gameFlowManager.notify(new ChosenStarterCardSideEvent(playerToken, cardSide));
     return true;
   }
 }

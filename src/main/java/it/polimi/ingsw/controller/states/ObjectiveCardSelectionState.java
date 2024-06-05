@@ -4,6 +4,8 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.ChosenObjectiveCardEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnObjectiveCardsEvent;
+import it.polimi.ingsw.distributed.events.game.EndedObjectiveCardPhaseEvent;
+import it.polimi.ingsw.distributed.events.game.EndedStarterCardPhaseEvent;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
@@ -92,6 +94,7 @@ public class ObjectiveCardSelectionState extends GameState {
     }
 
     gameFlowManager.setState(gameFlowManager.initializationState);
+    gameFlowManager.notify(new EndedObjectiveCardPhaseEvent());
     return new HashMap<>(TokenToChosenObjectiveCard);
   }
 
@@ -103,10 +106,7 @@ public class ObjectiveCardSelectionState extends GameState {
     ObjectiveCard secondCard = gameModelUpdater.drawObjectiveCard().get();
     TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
 
-    gameFlowManager.observers.forEach(
-        observer ->
-            observer.update(
-                new DrawnObjectiveCardsEvent(playerToken, firstCard.getId(), secondCard.getId())));
+    gameFlowManager.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.getId(), secondCard.getId()));
     return true;
   }
 
@@ -121,8 +121,7 @@ public class ObjectiveCardSelectionState extends GameState {
             : TokenToDrawnObjectiveCards.get(playerToken).second;
     TokenToChosenObjectiveCard.put(playerToken, chosenCard);
 
-    gameFlowManager.observers.forEach(
-        observer -> observer.update(new ChosenObjectiveCardEvent(playerToken, chosenCard.getId())));
+    gameFlowManager.notify(new ChosenObjectiveCardEvent(playerToken, chosenCard.getId()));
     return true;
   }
 }

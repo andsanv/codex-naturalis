@@ -15,6 +15,7 @@ public class ChosenObjectiveCardEvent extends GameEvent {
   public ChosenObjectiveCardEvent(PlayerToken playerToken, int cardId) {
     this.playerToken = playerToken;
     this.cardId = cardId;
+
   }
 
   public void execute(GameEventHandler gameUpdateHandler) {

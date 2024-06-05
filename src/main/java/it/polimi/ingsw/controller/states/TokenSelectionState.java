@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.events.game.EndedTokenPhaseEvent;
 import it.polimi.ingsw.distributed.events.game.TokenAssignmentEvent;
 import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.ArrayList;
@@ -82,11 +83,11 @@ public class TokenSelectionState extends GameState {
 
         break;
       }
-      ;
     }
 
     IdToToken.forEach((id, playerToken) -> gameFlowManager.playerTokens.add(playerToken));
     gameFlowManager.setState(gameFlowManager.starterCardSelectionState);
+    gameFlowManager.notify(new EndedTokenPhaseEvent());
     return new HashMap<>(IdToToken);
   }
 
@@ -96,8 +97,7 @@ public class TokenSelectionState extends GameState {
       if (IdToToken.containsKey(player.name) || IdToToken.containsValue(playerToken)) return false;
 
       IdToToken.put(player.name, playerToken);
-      gameFlowManager.observers.forEach(
-          observer -> observer.update(new TokenAssignmentEvent(player, playerToken)));
+      gameFlowManager.notify(new TokenAssignmentEvent(player, playerToken));
       return true;
     }
   }
