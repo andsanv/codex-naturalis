@@ -9,11 +9,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * State through which the flow manager initializes the model
+ */
 public class InitializationState extends GameState {
   public InitializationState(GameFlowManager gameFlowManager) {
     super(gameFlowManager);
   }
 
+    /**
+     * Handles the initialization phase
+     *
+     * @param idToToken maps players to their tokens
+     * @param tokenToStarterCard maps players tokens to their starter card
+     * @param tokenToCardSide maps players to their chosen starter card side
+     * @param tokenToObjectiveCard maps players to their objective card
+     * @return true
+     */
   @Override
   public boolean handleInitialization(
       Map<String, PlayerToken> idToToken,

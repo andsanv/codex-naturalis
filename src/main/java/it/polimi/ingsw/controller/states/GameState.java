@@ -15,18 +15,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A GameState refers to a state of the gameFlowManager (state machine), implemented using the state
- * pattern GameState is an abstract class, from which the actual state classes inherit the methods
- * that will eventually be re-implemented
+ * A GameState refers to a state of the gameFlowManager (state machine), implemented using the state pattern.
+ * GameState is an abstract class, from which the actual state classes inherit the methods that will eventually be re-implemented
  */
 public abstract class GameState {
-  /** The state machine */
+  /**
+   * The state machine
+   */
   protected GameFlowManager gameFlowManager;
 
-  /** Part of the controller which updates the model */
+  /**
+   * Part of the controller which updates the model
+   */
   protected GameModelUpdater gameModelUpdater;
 
-  /** The list of players in the game */
+  /**
+   * list of players in the game
+   */
   protected List<User> users;
 
   /**
@@ -40,12 +45,14 @@ public abstract class GameState {
     this.users = gameFlowManager.users;
   }
 
+
   // PlayCardState methods
 
   public boolean playCard(
       PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
     return false;
   }
+
 
   // DrawCardState methods
 
@@ -65,6 +72,7 @@ public abstract class GameState {
     return false;
   }
 
+
   // TokenSelectionState methods
 
   public Map<String, PlayerToken> handleTokenSelection() {
@@ -74,6 +82,7 @@ public abstract class GameState {
   public boolean selectToken(UserInfo player, PlayerToken playerToken) {
     return false;
   }
+
 
   // StarterCardSelectionState methods
 
@@ -90,6 +99,7 @@ public abstract class GameState {
     return false;
   }
 
+
   // ObjectiveCardSelectionState methods
 
   public Map<PlayerToken, ObjectiveCard> handleObjectiveCardSelection() {
@@ -104,6 +114,7 @@ public abstract class GameState {
     return false;
   }
 
+
   // InitializationState methods
 
   public boolean handleInitialization(
@@ -113,6 +124,7 @@ public abstract class GameState {
       Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard) {
     return false;
   }
+
 
   // PostGameState methods
 

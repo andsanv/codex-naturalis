@@ -18,13 +18,30 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * The state represents the game phase where players decide their game tokens
+ */
 public class TokenSelectionState extends GameState {
+  /**
+   * List of users
+   */
   private final List<User> users;
 
+  /**
+   * Map that tracks connection between a player and his token
+   */
+  private final Map<String, PlayerToken> IdToToken;
+
+  /**
+   * time limit within which the players need to choose their token
+   */
   private final long timeLimit; // in seconds
+
+  /**
+   * If true, the state machine assigns random tokens to players who have not chosen their token yet
+   */
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
-  private final Map<String, PlayerToken> IdToToken;
 
   public TokenSelectionState(GameFlowManager gameFlowManager, List<User> users, long timeLimit) {
     super(gameFlowManager);
@@ -36,6 +53,14 @@ public class TokenSelectionState extends GameState {
     this.IdToToken = new HashMap<>();
   }
 
+  /**
+   * Waits for tokenAssignmentCommands by the players.
+   * Players need to choose the token within a certain time limit, otherwise a random token is chosen for them.
+   * If time limit is reached, or if all players chose the token, breaks from loop and returns the map.
+   * Throws a EndedTokenPhaseEvent, so that clients can update their UIs
+   *
+   * @return The final player to chosen token map
+   */
   @Override
   public Map<String, PlayerToken> handleTokenSelection() {
     Timer timer = new Timer();
@@ -61,8 +86,6 @@ public class TokenSelectionState extends GameState {
               timer.cancel();
               break;
             }
-          } else {
-            // view.displayError("error");
           }
         }
       else {
@@ -91,6 +114,15 @@ public class TokenSelectionState extends GameState {
     return new HashMap<>(IdToToken);
   }
 
+  /**
+   * Checks whether a requested token is available.
+   * Returns false if a player already chose a token, or if the token chosen is not available
+   * Sends a tokenAssignmentEvent if operation was successful
+   *
+   * @param player player choosing the token
+   * @param playerToken token chosen by the player
+   * @return false if a player already chose a token, or if the token chosen is not available, true otherwise
+   */
   @Override
   public boolean selectToken(UserInfo player, PlayerToken playerToken) {
     synchronized (IdToToken) {

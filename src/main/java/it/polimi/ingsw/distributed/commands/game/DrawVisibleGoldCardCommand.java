@@ -3,6 +3,9 @@ package it.polimi.ingsw.distributed.commands.game;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.player.PlayerToken;
 
+/**
+ * Command to allow a player to draw gold card from the visible cards list
+ */
 public class DrawVisibleGoldCardCommand extends GameCommand {
   private final PlayerToken playerToken;
   private final int choice;

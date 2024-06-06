@@ -6,6 +6,9 @@ import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 
+/**
+ * Command to allow a player to play a card on his board
+ */
 public class PlayCardCommand extends GameCommand {
   public final PlayerToken playerToken;
   public final Coords coords;

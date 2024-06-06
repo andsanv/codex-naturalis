@@ -1,13 +1,17 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.distributed.events.game.GameResultsEvent;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/** State that represents the "post-game" part of the game. No actions on the boards are allowed */
+/**
+ * State that represents the "post-game" part of the game.
+ * No actions on the boards are allowed
+ */
 public class PostGameState extends GameState {
   public PostGameState(GameFlowManager gameFlowManager) {
     super(gameFlowManager);
@@ -26,7 +30,7 @@ public class PostGameState extends GameState {
             .map(entry -> new Pair<>(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
 
-    PlayerToken winner = results.stream().findFirst().map(x -> x.first).get();
+    gameFlowManager.notify(new GameResultsEvent(results));
 
     return true;
   }

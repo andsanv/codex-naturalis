@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
+
+import java.util.List;
 import java.util.Map;
 
 /** This interface must be defined by classes that handle game updates (GUIs, CLIs, etc). */
@@ -53,4 +56,6 @@ public interface GameEventHandler {
   public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources);
 
   public void handleGameError(String error);
+
+  public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults);
 }

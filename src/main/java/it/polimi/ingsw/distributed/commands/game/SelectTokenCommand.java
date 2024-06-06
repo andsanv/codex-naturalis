@@ -4,6 +4,9 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.player.PlayerToken;
 
+/**
+ * Command to allow a player to choose his token
+ */
 public class SelectTokenCommand {
   public final UserInfo player;
   public final PlayerToken playerToken;

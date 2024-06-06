@@ -9,27 +9,41 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * The state represents the game phase where players discover their starter card, and choose its side
+ */
 public class StarterCardSelectionState extends GameState {
-  private final long timeLimit; // in seconds
+  /**
+   * List of tokens in the match
+   */
+  private final List<PlayerToken> playerTokens;
+
+  /**
+   * Time limit within which players need to decide their starter card side
+   */
+  private final long timeLimit;   // seconds
+
+  /**
+   * If true, the state machine assigns a random card side to remaining players
+   */
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
-  private final List<PlayerToken> playerTokens;
+  /**
+   * Map that tracks which starter card each token drew
+   */
   private final Map<PlayerToken, StarterCard> TokenToStarterCard;
+
+  /**
+   * Map that tracks tokens and the chosen card side
+   */
   private final Map<PlayerToken, CardSide> TokenToCardSide;
 
   public StarterCardSelectionState(
-      GameFlowManager gameFlowManager, List<PlayerToken> playerTokens, long timeLimit) {
+          GameFlowManager gameFlowManager, List<PlayerToken> playerTokens, long timeLimit) {
     super(gameFlowManager);
 
     this.timeLimit = timeLimit;
@@ -39,6 +53,14 @@ public class StarterCardSelectionState extends GameState {
     this.TokenToCardSide = new HashMap<>();
   }
 
+  /**
+   * Waits for DrawStarterCardCommands and SelectStarterCardSideCommand by the players.
+   * Players need to draw the card and choose the side within a certain time limit, otherwise a random card (with a random side) is assigned to them.
+   * If time limit is reached, or if all players drew the card and chose the side, breaks from loop and returns the maps.
+   * Throws a EndedStarterCardPhaseEvent, so that clients can update their UIs
+   *
+   * @return The two maps containing information on what card and what side each player chose
+   */
   @Override
   public Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>>
       handleStarterCardSelection() {
@@ -66,8 +88,6 @@ public class StarterCardSelectionState extends GameState {
               timer.cancel();
               break;
             }
-          } else {
-            // view.displayError("error");
           }
         }
       else {
@@ -93,17 +113,38 @@ public class StarterCardSelectionState extends GameState {
     return new Pair<>(new HashMap<>(TokenToStarterCard), new HashMap<>(TokenToCardSide));
   }
 
+  /**
+   * Handles the DrawStarterCardCommand
+   * Throws a DrawnStarterCardCommand when finished
+   *
+   * @param playerToken player drawing the card
+   * @return false if player has already drawn a card, true otherwise
+   */
   @Override
   public boolean drawStarterCard(PlayerToken playerToken) {
     if (TokenToStarterCard.containsKey(playerToken)) return false;
 
-    StarterCard starterCard = gameModelUpdater.drawStarterCard().orElse(null);
-    TokenToStarterCard.put(playerToken, starterCard);
+    Optional<StarterCard> starterCard = gameModelUpdater.drawStarterCard();
 
-    gameFlowManager.notify(new DrawnStarterCardEvent(playerToken, starterCard.getId()));
+    if(!starterCard.isPresent()) {
+      TokenToStarterCard.put(playerToken, null);
+      System.err.println("ERROR: draw starter card failed.");
+      return false;
+    }
+
+    TokenToStarterCard.put(playerToken, starterCard.get());
+    gameFlowManager.notify(new DrawnStarterCardEvent(playerToken, starterCard.get().getId()));
     return true;
   }
 
+  /**
+   * Handles the SelectStarterCardSideCommand
+   * Throws a ChosenStarterCardSideCommand when finished
+   *
+   * @param playerToken player drawing the card
+   * @param cardSide side chosen
+   * @return false if player has not drawn a card yet or if he already chose a side, true otherwise
+   */
   @Override
   public boolean selectStarterCardSide(PlayerToken playerToken, CardSide cardSide) {
     if (!TokenToStarterCard.containsKey(playerToken) || TokenToCardSide.containsKey(playerToken))

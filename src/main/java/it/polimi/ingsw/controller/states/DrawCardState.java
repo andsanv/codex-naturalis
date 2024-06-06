@@ -3,7 +3,9 @@ package it.polimi.ingsw.controller.states;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.player.PlayerToken;
 
-/** The state of the game where a certain player needs to draw a card */
+/**
+ * The state of the game where a certain player needs to draw a card
+ */
 public class DrawCardState extends GameState {
   public DrawCardState(GameFlowManager gameFlowManager) {
     super(gameFlowManager);

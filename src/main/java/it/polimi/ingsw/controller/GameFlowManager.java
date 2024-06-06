@@ -44,25 +44,34 @@ public class GameFlowManager implements Runnable {
    * Represents the lobby, or the "room" containing the players (more games can be started
    * sequentially from a single lobby)
    */
-  private Lobby lobby;
+  private final Lobby lobby;
 
   /** Map that keeps track of active connections (or not-AFK players) */
   private Map<User, Boolean> isConnected;
 
+  /** List containing players' ids */
+  public List<User> users;
+
+  /**
+   * List of observers (the clients connected), which will be notified for every event thrown
+   */
+  private final List<Observer> observers;
+
+  /**
+   * Queue of commands received by the gameFlowManager. Every move made by a player is identified by
+   * a command. Initialized as a blocking queue.
+   */
+  public final Queue<GameCommand> commands;
+
   /** States of the state machine */
   public GameState tokenSelectionState;
-
   public GameState starterCardSelectionState;
   public GameState objectiveCardSelectionState;
   public GameState initializationState;
   public GameState playCardState;
   public GameState drawCardState;
   public GameState postGameState;
-
   private GameState currentState;
-
-  /** List containing players' ids */
-  public List<User> users;
 
   /** Map from players' ids to their token */
   public final Map<String, PlayerToken> idToToken;
@@ -81,13 +90,6 @@ public class GameFlowManager implements Runnable {
   /** Boolean used by the timer to tell whether time limit has been reached or not */
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
-  /**
-   * Queue of commands received by the gameFlowManager. Every move made by a player is identified by
-   * a command. Initialized as a blocking queue.
-   */
-  public final Queue<GameCommand> commands;
-
-  private final List<Observer> observers;
 
   /**
    * GameFlowManager constructor
@@ -153,8 +155,9 @@ public class GameFlowManager implements Runnable {
 
   /**
    * Synchronized, allows to handle a players' turn. A timer is started as soon as player's turn
-   * starts If the timer expires before the player makes the move, the turn is skipped This
-   * situation is all managed in the run() method
+   * starts
+   * If the timer expires before the player makes the move, the turn is skipped
+   * This situation is all managed in the run() method
    */
   private void handleTurn() {
     Timer timer = new Timer();
@@ -199,9 +202,9 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * Adds a command to the commands queue.
+   * Adds a command to the commands queue
    *
-   * @param command The command representing the single player's move
+   * @param command The command representing the player's move
    */
   public void addCommand(GameCommand command) {
     synchronized (commands) { // to make the two lines atomic
@@ -213,7 +216,7 @@ public class GameFlowManager implements Runnable {
   /**
    * Used to fill a player's hand when he exceeds his time limit
    *
-   * @param PlayerToken Token that represents the player
+   * @param playerToken Token that represents the player
    */
   public void drawRandomCard(PlayerToken playerToken) {
     Random rand = new Random();
@@ -262,22 +265,27 @@ public class GameFlowManager implements Runnable {
     return isConnected;
   }
 
-  public void setIsConnected(User user, Boolean isConnected) {
-    getIsConnected().put(user, isConnected);
-  }
-
+  /**
+   * @return current state machine's state
+   */
   public GameState getCurrentState() {
     return currentState;
   }
 
+  /**
+   * Only used for testing purposes
+   *
+   * @param timeLimit time of a player's turn
+   */
   public void setTimeLimit(long timeLimit) {
     this.timeLimit = timeLimit;
   }
 
-  public long getTimeLimit() {
-    return this.timeLimit;
-  }
-
+  /**
+   * Updates clients on a certain event. Used mainly during "setup" phase
+   *
+   * @param gameEvent event sent to clients
+   */
   public void notify(GameEvent gameEvent) {
     observers.forEach(observer -> observer.update(gameEvent));
   }
