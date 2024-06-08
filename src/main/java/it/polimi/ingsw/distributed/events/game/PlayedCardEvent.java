@@ -7,10 +7,10 @@ import it.polimi.ingsw.model.player.PlayerToken;
 
 /** Event to signal that a card has been played. */
 public final class PlayedCardEvent extends GameEvent {
-  private final PlayerToken senderToken;
-  private final int playedCardId;
-  private final CardSide playedCardSide;
-  private final Coords playedCardCoordinates;
+  public final PlayerToken senderToken;
+  public final int playedCardId;
+  public final CardSide playedCardSide;
+  public final Coords playedCardCoordinates;
 
   public PlayedCardEvent(
       PlayerToken senderToken,

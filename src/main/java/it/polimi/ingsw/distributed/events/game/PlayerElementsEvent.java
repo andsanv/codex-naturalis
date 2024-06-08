@@ -7,8 +7,8 @@ import java.util.Map;
 
 /** Event to signal a player's updated elements' map. */
 public final class PlayerElementsEvent extends GameEvent {
-  private final PlayerToken playerToken;
-  private final Map<Elements, Integer> resources;
+  public final PlayerToken playerToken;
+  public final Map<Elements, Integer> resources;
 
   /**
    * @param playerToken the token of the player that gets his elements updated

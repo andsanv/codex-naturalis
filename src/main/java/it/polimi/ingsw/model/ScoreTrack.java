@@ -20,7 +20,7 @@ public class ScoreTrack extends Observable {
   private int maxScore;
 
   /**
-   * @param players currently playing
+   * @param playerTokens list of tokens currently playing
    */
   public ScoreTrack(List<PlayerToken> playerTokens) {
     this.scores = new HashMap<>();
@@ -29,16 +29,17 @@ public class ScoreTrack extends Observable {
   }
 
   /**
-   * @param player player that gets the points
+   * @param playerToken token of the player that gets the points
    * @param incrementPoints points to add to the player's current points
    */
-  public void updatePlayerScore(PlayerToken playerToken, Integer incrementPoints) {
+  public int updatePlayerScore(PlayerToken playerToken, Integer incrementPoints) {
     int newScore = scores.get(playerToken) + incrementPoints;
     scores.put(playerToken, newScore);
 
     if (scores.get(playerToken) > maxScore) maxScore = newScore;
 
     notify(new UpdatedScoreTrackEvent(playerToken, newScore));
+    return newScore;
   }
 
   /**

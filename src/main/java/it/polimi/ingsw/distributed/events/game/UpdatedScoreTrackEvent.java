@@ -5,8 +5,8 @@ import it.polimi.ingsw.model.player.PlayerToken;
 
 /** Event to signal an update of a player's points. */
 public final class UpdatedScoreTrackEvent extends GameEvent {
-  private final PlayerToken playerToken;
-  private final int score;
+  public final PlayerToken playerToken;
+  public final int score;
 
   /**
    * @param playerToken the token of the player that gets a new score

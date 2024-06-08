@@ -55,7 +55,9 @@ public class GameModelUpdater {
         .forEach(corner -> corner.setType(CornerTypes.COVERED));
 
     playerBoard.updatePlayerItems(coords);
-    playerBoard.notify(new PlayerElementsEvent(playerToken, new HashMap<>(playerBoard.getPlayerItems())));
+    PlayerElementsEvent playerElementsEvent = new PlayerElementsEvent(playerToken, new HashMap<>(playerBoard.getPlayerItems()));
+    playerBoard.notify(playerElementsEvent);
+    model.slimGameModel.updatePlayerItems(playerElementsEvent);
 
     int points;
     switch (card.getPointsType()) {
@@ -85,8 +87,13 @@ public class GameModelUpdater {
         break;
     }
 
-    model.getScoreTrack().updatePlayerScore(playerToken, points);
-    playerBoard.notify(new PlayedCardEvent(playerToken, card.getId(), cardSide, coords));
+    int updatedScore = model.getScoreTrack().updatePlayerScore(playerToken, points);
+    model.slimGameModel.updateScores(new UpdatedScoreTrackEvent(playerToken, updatedScore));
+
+    PlayedCardEvent playedCardEvent = new PlayedCardEvent(playerToken, card.getId(), cardSide, coords);
+    playerBoard.notify(playedCardEvent);
+    model.slimGameModel.addPlayedCard(playedCardEvent);
+
     return true;
   }
 

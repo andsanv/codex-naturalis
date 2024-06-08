@@ -25,6 +25,11 @@ public class GameModel {
 
   private ScoreTrack scoreTrack;
 
+  /**
+   * A "simpler" model, that will be sent to clients during their reconnection phase
+   */
+  public SlimGameModel slimGameModel;
+
   /** After creating the GameModel, a TODO must be called. */
   public GameModel() {
     objectiveCardsDeck = ObjectiveDeckCreator.createDeck();
@@ -38,9 +43,10 @@ public class GameModel {
     visibleGoldCards =
         new VisibleCardsList<>(
             Arrays.asList(goldCardsDeck.draw().get(), goldCardsDeck.draw().get()));
-    ;
 
     tokenToPlayer = new HashMap<>();
+
+    slimGameModel = new SlimGameModel();
 
     scoreTrack = null;
   }
