@@ -185,8 +185,6 @@ public class GameFlowManager implements Runnable {
             else switchTurn();
 
             return;
-          } else {
-            // view.displayError("error");
           }
         }
       else break;

@@ -58,4 +58,6 @@ public interface GameEventHandler {
   public void handleGameError(String error);
 
   public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults);
+
+  public void handleCardsPlayabilityEvent(PlayerToken playerToken, Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability);
 }
