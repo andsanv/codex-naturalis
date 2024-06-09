@@ -42,8 +42,10 @@ public class ClientEntry {
     ConnectionHandler connectionHandler = new SocketConnectionHandler(cliTest);
     System.out.println("Sending connection command to server");
 
+    UserInfo userInfo = new UserInfo(new User("rave"));
     connectionHandler.sendToMainServer(new ConnectionCommand("rave"));
-    connectionHandler.sendToMainServer(new ReconnectionCommand(new UserInfo(new User("rave"))));
+    connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
+    connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
 
   }
 }

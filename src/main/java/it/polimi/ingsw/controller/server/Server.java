@@ -224,6 +224,7 @@ public enum Server {
 
     try {
       clientMainView.receiveEvent(new UserInfoEvent(userInfo));
+      clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
     } catch (RemoteException e) {
       System.err.println("Couldn't send userInfo event to " + userInfo);
       e.printStackTrace();

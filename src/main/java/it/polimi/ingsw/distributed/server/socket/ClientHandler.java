@@ -10,6 +10,7 @@ import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -44,6 +45,9 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
         } else {
           System.err.println("Unrecognized command: " + command);
         }
+      } catch (EOFException e) {
+        System.out.println("Client disconnected");
+        break;
       } catch (IOException | ClassNotFoundException e) {
         e.printStackTrace();
       } finally {
