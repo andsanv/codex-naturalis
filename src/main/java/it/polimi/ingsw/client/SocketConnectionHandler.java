@@ -25,8 +25,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
     socket = new Socket(Config.ServerIP, Config.MainSocketPort);
 
     this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+    this.outputStream.flush();
     this.inputStream = new ObjectInputStream(socket.getInputStream());
 
+    System.out.println("Connected to server and set up streams");
     new Thread(
             () -> {
               while (true) {
@@ -51,12 +53,15 @@ public class SocketConnectionHandler extends ConnectionHandler {
               }
             })
         .start();
+
+    System.out.println("started listening for events");
   }
 
   @Override
   public boolean sendToMainServer(MainCommand command) {
     try {
       outputStream.writeObject(command);
+      System.out.println("Sent command to main server");
       outputStream.reset();
     } catch (IOException e) {
       e.printStackTrace();

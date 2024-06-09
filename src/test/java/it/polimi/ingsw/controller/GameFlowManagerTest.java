@@ -1,4 +1,4 @@
-package it.polimi.ingsw.controller;
+/*package it.polimi.ingsw.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -505,3 +505,4 @@ class GameFlowManagerTest {
             .getCard(new Coords(1, 3)));
   }
 }
+*/

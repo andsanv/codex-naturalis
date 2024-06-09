@@ -22,9 +22,9 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   private final ObjectOutputStream out;
   private GameFlowManager gameFlowManager;
 
-  public ClientHandler(Socket socket) throws IOException {
-    this.out = new ObjectOutputStream(socket.getOutputStream());
-    this.in = new ObjectInputStream(socket.getInputStream());
+  public ClientHandler(ObjectOutputStream out, ObjectInputStream in) throws IOException {
+    this.out = out;
+    this.in = in;
   }
 
   @Override
@@ -32,6 +32,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
     while (true) {
       try {
         Command command = (Command) in.readObject();
+        System.out.println("Received command: " + command);
 
         if (command instanceof GameCommand) {
           if (gameFlowManager == null) {

@@ -22,7 +22,7 @@ public class ScoreTrackTest {
             Arrays.asList(
                 PlayerToken.RED, PlayerToken.GREEN, PlayerToken.BLUE, PlayerToken.YELLOW));
 
-    scoreTrack = new ScoreTrack(playerTokens, null);
+    scoreTrack = new ScoreTrack(playerTokens);
   }
 
   @Test
