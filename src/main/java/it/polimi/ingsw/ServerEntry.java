@@ -1,8 +1,9 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.distributed.server.RMIMainServer;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+
+import it.polimi.ingsw.distributed.server.rmi.RMIMainServer;
 
 // Server entrypoint
 public class ServerEntry {

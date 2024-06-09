@@ -5,7 +5,7 @@ import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.client.RMIMainView;
+import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
@@ -23,10 +23,6 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
   private MainServerActions mainServerActions;
   private GameServerActions gameServerActions;
-
-  public void setGameServerActions(GameServerActions gameServerActions) {
-    this.gameServerActions = gameServerActions;
-  }
 
   private final BlockingQueue<MainCommand> serverCommandQueue;
   private final BlockingQueue<GameCommand> gameCommandQueue;
@@ -55,6 +51,15 @@ public class RMIConnectionHandler extends ConnectionHandler {
     } catch (RemoteException | NotBoundException e) {
 
     }
+  }
+
+  // Methods to add commands to the queue, handled by the CommandConsumer
+  public void addCommand(MainCommand command) {
+    serverCommandQueue.add(command);
+  }
+
+  public void addCommand(GameCommand command) {
+    gameCommandQueue.add(command);
   }
 
   @Override
@@ -87,4 +92,17 @@ public class RMIConnectionHandler extends ConnectionHandler {
   public boolean reconnect() {
     return false;
   }
+
+  public void setGameServerActions(GameServerActions gameServerActions) {
+    this.gameServerActions = gameServerActions;
+  }
+
+  public BlockingQueue<MainCommand> getServerCommandQueue() {
+    return serverCommandQueue;
+  }
+
+  public BlockingQueue<GameCommand> getGameCommandQueue() {
+    return gameCommandQueue;
+  }
+
 }

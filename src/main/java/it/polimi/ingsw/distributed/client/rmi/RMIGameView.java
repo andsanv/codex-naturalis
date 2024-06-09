@@ -1,6 +1,7 @@
-package it.polimi.ingsw.distributed.client;
+package it.polimi.ingsw.distributed.client.rmi;
 
 import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import java.rmi.RemoteException;
 

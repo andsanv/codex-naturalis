@@ -1,10 +1,12 @@
-package it.polimi.ingsw.distributed.server;
+package it.polimi.ingsw.distributed.server.rmi;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.server.GameServerActions;
+
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

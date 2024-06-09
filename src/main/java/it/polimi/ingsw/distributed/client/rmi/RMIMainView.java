@@ -1,10 +1,11 @@
-package it.polimi.ingsw.distributed.client;
+package it.polimi.ingsw.distributed.client.rmi;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.client.RMIConnectionHandler;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;

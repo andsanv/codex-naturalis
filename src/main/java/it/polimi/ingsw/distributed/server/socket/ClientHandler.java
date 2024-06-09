@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.server;
+package it.polimi.ingsw.distributed.server.socket;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.distributed.client.GameViewActions;
@@ -8,6 +8,8 @@ import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
+import it.polimi.ingsw.distributed.server.GameServerActions;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

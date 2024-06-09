@@ -1,10 +1,12 @@
-package it.polimi.ingsw.distributed.server;
+package it.polimi.ingsw.distributed.server.rmi;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
+import it.polimi.ingsw.distributed.server.MainServerActions;
+
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
