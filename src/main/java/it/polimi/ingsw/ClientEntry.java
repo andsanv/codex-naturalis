@@ -13,7 +13,7 @@ public class ClientEntry {
   // private final ConnectionHandler connectionHandler;
 
   public static void main(String[] args) throws RemoteException, NotBoundException {
-    ConnectionHandler connectionHandler = new RMIConnectionHandler();
+    ConnectionHandler connectionHandler = new RMIConnectionHandler(new CLITest());
 
     UserInfo userInfo = new UserInfo(new User("rave"));
 

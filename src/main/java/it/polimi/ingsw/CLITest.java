@@ -9,6 +9,8 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
+
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -143,5 +145,66 @@ public class CLITest implements UI {
   public void handleUserInfo(UserInfo userInfo) {
     CLITest.userInfo = userInfo;
     System.out.println("UserInfo: " + userInfo);
+  }
+
+  @Override
+  public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleDrawnStarterCardEvent'");
+  }
+
+  @Override
+  public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleChosenStarterCardSideEvent'");
+  }
+
+  @Override
+  public void handleEndedStarterCardPhaseEvent() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleEndedStarterCardPhaseEvent'");
+  }
+
+  @Override
+  public void handleDrawnObjectiveCardsEvent(PlayerToken playerToken, int firstDrawnCardId, int secondDrawnCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleDrawnObjectiveCardsEvent'");
+  }
+
+  @Override
+  public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleChosenObjectiveCardEvent'");
+  }
+
+  @Override
+  public void handleEndedObjectiveCardPhaseEvent() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleEndedObjectiveCardPhaseEvent'");
+  }
+
+  @Override
+  public void handleEndedTokenPhaseEvent() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
+  }
+
+  @Override
+  public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleGameResultsEvent'");
+  }
+
+  @Override
+  public void handleCardsPlayabilityEvent(PlayerToken playerToken,
+      Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
+  }
+
+  @Override
+  public void connectionToGameResult(boolean connectedToGame) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
   }
 }

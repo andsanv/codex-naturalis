@@ -27,7 +27,7 @@ public class Game implements Runnable {
     this.lobby = lobby;
     this.isConnected =
         lobby.getUsers().stream().collect(Collectors.toMap(Function.identity(), u -> false));
-    this.gameFlowManager = new GameFlowManager(lobby);
+    // this.gameFlowManager = new GameFlowManager(lobby);
   }
 
   @Override
