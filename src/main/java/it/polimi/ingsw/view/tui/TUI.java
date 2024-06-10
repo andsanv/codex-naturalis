@@ -53,8 +53,8 @@ public class TUI implements UI {
     private List<LobbyInfo> availableLobbies = null;
     private Object lobbiesLock;
 
-    private AtomicBoolean waitingForLobbyCreation = new AtomicBoolean(true);
-    private AtomicBoolean waitingUserInfo = new AtomicBoolean(true);
+    private AtomicBoolean waitingForLobbyCreation = new AtomicBoolean(false);
+    private AtomicBoolean waitingUserInfo = new AtomicBoolean(false);
 
     public TUI() {
     }
@@ -133,7 +133,7 @@ public class TUI implements UI {
      * 
      * @param message
      */
-    private void error(String message) {
+    private void displayError(String message) {
         System.out.println(ansi().fg(RED).a("ERROR: ").reset().a(message));
     }
 
@@ -215,9 +215,11 @@ public class TUI implements UI {
 
         switch (command) {
             case "1":
+                waitingForLobbyCreation.set(true);
                 connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
                 displayLoadingMessage("Waiting for lobby creation", waitingForLobbyCreation);
                 System.out.println("The lobby has been created!");
+                printLobbies();
                 break;
             case "2":
                 printLobbies();
@@ -226,7 +228,7 @@ public class TUI implements UI {
                 connectionHandler.sendToMainServer(new JoinLobbyCommand(userInfo, 0));
                 break;
             default:
-                error("Invalid option");
+                displayError("Invalid option");
                 state = State.LOBBY;
                 break;
         }
@@ -260,18 +262,19 @@ public class TUI implements UI {
                     System.out.println("├" + "─".repeat(length) + "┤");
 
                     lobby.users.stream().forEach(user -> {
+                        boolean inLobby = user.equals(userInfo);
                         if (user.equals(lobby.manager)) {
-                            System.out.println(ansi().a("│ ").fg(CYAN).a(user).reset()
-                                    .a("".repeat(length - 2 - user.toString().length()) + "│"));
+                            System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).fg(CYAN).a(user).reset()
+                                    .a(" ".repeat(length - 2 - user.toString().length()) + "│"));
                         } else {
-                            System.out.println("│ " + user + "".repeat(length - 2 - user.toString().length()) + "│");
+                            System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).a(user).reset().a(" ".repeat(length - 2 - user.toString().length()) + "│"));
                         }
                     });
 
                     System.out.println("├" + "─".repeat(length) + "┤");
                     System.out.println(
                             ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X")
-                                    + "".repeat(length - 11) + "│");
+                                    + " ".repeat(length - 11) + "│");
                     System.out.println("╘" + "═".repeat(length) + "╛");
                 }
         }
@@ -323,6 +326,10 @@ public class TUI implements UI {
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
         synchronized (lobbiesLock) {
             this.availableLobbies = lobbies;
+
+            if (lobbies.stream().map(lobby -> lobby.manager).anyMatch(manager -> manager.equals(userInfo))) {
+                waitingForLobbyCreation.set(false);
+            }
         }
     }
 
