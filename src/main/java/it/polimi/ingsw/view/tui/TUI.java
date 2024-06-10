@@ -154,7 +154,7 @@ public class TUI implements UI {
         String[] sequence = { "", ".", "..", "..." };
         int curr = 0;
         while (condition.get()) {
-            System.out.print(ansi().eraseLine().cursorToColumn(0).a(msg + sequence[curr++ % sequence.length]));
+            System.out.print(ansi().eraseLine().cursorToColumn(0).bg(GREEN).a("LOADING").reset().a(" " + msg + sequence[curr++ % sequence.length]));
             System.out.flush();
 
             try {
@@ -162,7 +162,7 @@ public class TUI implements UI {
             } catch (InterruptedException e) {
             }
         }
-        System.out.println();
+        System.out.println("");
         condition.set(true);
     }
 
@@ -176,7 +176,7 @@ public class TUI implements UI {
         System.out.println(ansi().a(CODEX_NATURALIS).reset());
         System.out.println(ansi().bg(BLUE).a("\n┄┄ HOME ┄┄").reset());
 
-        System.out.println(ansi().a("Do you want to connect with Socket or RMI? (enter ").fg(YELLOW).a("s").reset()
+        System.out.println(ansi().a("Do you want to connect with Socket or RMI?\n(enter ").fg(YELLOW).a("s").reset()
                 .a(" for Socket, anything else for RMI)"));
 
         if (prompt().equals("s")) {
@@ -195,18 +195,18 @@ public class TUI implements UI {
         // Check if the user already has an account
         if (retrieveUserInfo()) {
             System.out.println(ansi()
-                    .a("The user " + userInfo + " has been found, do you want to continue with this account? (enter ")
-                    .fg(YELLOW).a("y").reset().a(" to continue, anything else otherwise)"));
+                    .a("The user ").fg(CYAN).a(userInfo).reset().a(" has been found, do you want to continue with this account? (enter ")
+                    .fg(YELLOW).a("yes").reset().a(" to continue, ").fg(YELLOW).a("no").reset().a("to create a new account)"));
             command = prompt();
         }
             
         // Attempt connection to the server
-        if (command.equals("y")) {
+        if (command.equals("yes")) {
             waitingUserInfo.set(true);
             connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
 
             displayLoadingMessage("Logging in", waitingUserInfo);    
-        } else {
+        } else if (command.equals("no")) {
             System.out.println("Choose an username:");
             String username = prompt();
 
@@ -270,7 +270,7 @@ public class TUI implements UI {
                 System.out.println("No lobbies available");
             else
                 for (LobbyInfo lobby : availableLobbies) {
-                    final int length = Math.max(15,
+                    final int length = Math.max(11,
                             lobby.users.stream().mapToInt(user -> user.toString().length()).max().orElse(0));
 
                     System.out.println("╒" + "═".repeat(length) + "╕");
@@ -332,6 +332,7 @@ public class TUI implements UI {
         synchronized(userInfoLock) {
             this.userInfo = userInfo;
             waitingUserInfo.set(false);
+            saveUserInfo();
         }
     }
 
