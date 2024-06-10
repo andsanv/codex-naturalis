@@ -8,7 +8,12 @@ import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
 import it.polimi.ingsw.distributed.server.socket.ClientHandler;
+import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.util.Pair;
+
+import java.io.IOError;
+import java.io.IOException;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +53,40 @@ public enum Server {
     this.users = new HashSet<>();
     this.connectedPlayers = new ConcurrentHashMap<>();
     this.gameServersExecutor = Executors.newCachedThreadPool();
+    checkConnections();
+  }
+
+  public void checkConnections() {
+    new Thread(
+            () -> {
+              while (true) {
+                connectedPlayers.entrySet().stream()
+                    .filter(entry -> entry.getValue())
+                    .forEach(
+                        entry -> {
+                          try {
+                            entry.getKey().second.receiveEvent(new KeepAliveEvent());
+                            connectedPlayers.entrySet().stream()
+                                .forEach(
+                                    client -> {
+                                      System.out.println("2" + client.getKey().first);
+                                      System.out.println(client.getKey().second);
+                                      System.out.println(client.getValue());
+                                    });
+                          } catch (IOException e) {
+                            connectedPlayers.put(entry.getKey(), false);
+                            System.err.println("Error: Couldn't send message to " + entry.getKey().first);
+                            System.err.println("Client probably disconnected");
+                          }                          
+                        });
+                try {
+                  Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+              }
+            })
+        .start();
   }
 
   /**
@@ -225,7 +264,7 @@ public enum Server {
     try {
       clientMainView.receiveEvent(new UserInfoEvent(userInfo));
       clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
-    } catch (RemoteException e) {
+    } catch (IOException e) {
       System.err.println("Couldn't send userInfo event to " + userInfo);
       e.printStackTrace();
     }
@@ -250,6 +289,15 @@ public enum Server {
 
   private void broadcastLobbies(List<LobbyInfo> lobbies) {
     // TODO broadcast after updating lobbies
+    System.out.println("Broadcasting lobbies");
+    connectedPlayers.entrySet().stream()
+                                .forEach(
+                                    client -> {
+                                      System.out.println("lob" + client.getKey().first);
+                                      System.out.println(client.getKey().second);
+                                      System.out.println(client.getValue());
+                                    });
+
     new Thread(
             () -> {
               connectedPlayers.entrySet().stream()
@@ -258,9 +306,12 @@ public enum Server {
                   .forEach(
                       client -> {
                         try {
+                          System.out.println("Sending lobbies to " + client.second);
+                          System.out.println(client.second);
                           client.second.receiveEvent(new LobbiesEvent(lobbies));
-                        } catch (RemoteException e) {
+                        } catch (IOException e) {
                           System.err.println("Error: Couldn't send message to " + client.first);
+
                           e.printStackTrace();
                         }
                       });

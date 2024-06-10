@@ -40,7 +40,11 @@ public class SocketServer {
                   out.flush();
                   ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
+                  System.out.println(in + " " + out);
+
                   Command command = (Command) in.readObject();
+
+                  System.out.println("Received command: " + command);
 
                   ClientHandler connection = new ClientHandler(out, in);
 
@@ -65,7 +69,6 @@ public class SocketServer {
                     System.err.println("Unrecognized request on socket server");
                   }
 
-                  System.out.println("Connection command received");
                   executorService.submit(connection);
 
                 } catch (Exception e) {

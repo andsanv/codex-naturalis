@@ -1,13 +1,13 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.client.ConnectionHandler;
-import it.polimi.ingsw.client.RMIConnectionHandler;
-import it.polimi.ingsw.client.SocketConnectionHandler;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
+import it.polimi.ingsw.view.connection.ConnectionHandler;
+import it.polimi.ingsw.view.connection.RMIConnectionHandler;
+import it.polimi.ingsw.view.connection.SocketConnectionHandler;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -19,17 +19,21 @@ public class ClientEntry {
   // private final ConnectionHandler connectionHandler;
 
   public static void main(String[] args) throws NotBoundException, UnknownHostException, IOException {
-    socketTest();
+    CLITest cliTest = new CLITest(new User("rave"));
+    
+    socketTest(cliTest);
   }
 
   public static void rmiTest() throws RemoteException {
-    ConnectionHandler connectionHandler = new RMIConnectionHandler(new CLITest());
 
-    UserInfo userInfo = new UserInfo(new User("rave"));
+    CLITest clientEntry = new CLITest(new User("rave"));
+
+    ConnectionHandler connectionHandler = new RMIConnectionHandler(clientEntry);
+
+    UserInfo userInfo = clientEntry.getUserInfo();
 
     connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
 
-    CLITest clientEntry = new CLITest();
 
     try {
       Thread.sleep(200);
@@ -37,15 +41,28 @@ public class ClientEntry {
     }
   }
 
-  public static void socketTest() throws UnknownHostException, IOException {
-    CLITest cliTest = new CLITest();
-    ConnectionHandler connectionHandler = new SocketConnectionHandler(cliTest);
+  public static void socketTest(CLITest cliTest) throws UnknownHostException, IOException {
+    
+    SocketConnectionHandler connectionHandler = new SocketConnectionHandler(cliTest);
     System.out.println("Sending connection command to server");
 
-    UserInfo userInfo = new UserInfo(new User("rave"));
     connectionHandler.sendToMainServer(new ConnectionCommand("rave"));
-    connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
-    connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
+    connectionHandler.sendToMainServer(new CreateLobbyCommand(cliTest.getUserInfo()));
+
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+    }
+    connectionHandler.close();
+    System.out.println("Connection closed");
+
+
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+    }
+    connectionHandler.reconnect();
+    connectionHandler.sendToMainServer(new CreateLobbyCommand(cliTest.getUserInfo()));
 
   }
 }

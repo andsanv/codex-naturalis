@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;

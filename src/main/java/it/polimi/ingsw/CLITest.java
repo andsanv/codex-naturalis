@@ -1,7 +1,7 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.client.UI;
 import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
@@ -10,6 +10,7 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.view.UI;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -19,6 +20,10 @@ public class CLITest implements UI {
   private static UserInfo userInfo = null;
   private static MainServerActions mainServerActions;
   private static MainViewActions mainViewActions;
+
+  public CLITest(User user) {
+    userInfo = new UserInfo(user);
+  }
 
   @Override
   public UserInfo getUserInfo() {

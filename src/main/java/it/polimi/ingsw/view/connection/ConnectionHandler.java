@@ -1,8 +1,9 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
+import it.polimi.ingsw.view.UI;
 
 /**
  * ConnectionHandler can be used as a generic connection and hides the underlying socket or RMI
@@ -10,7 +11,7 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
  */
 public abstract class ConnectionHandler {
   private boolean connectedToGame;
-  private final UI userInterface;
+  protected final UI userInterface;
 
   public ConnectionHandler(UI userInterface) {
     this.userInterface = userInterface;
@@ -22,4 +23,5 @@ public abstract class ConnectionHandler {
   public abstract boolean sendToGameServer(GameCommand gameCommand);
 
   public abstract boolean reconnect();
+
 }

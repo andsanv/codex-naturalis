@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;

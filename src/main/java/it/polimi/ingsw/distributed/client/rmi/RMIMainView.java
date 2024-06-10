@@ -1,7 +1,6 @@
 package it.polimi.ingsw.distributed.client.rmi;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.client.RMIConnectionHandler;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.MainEventHandler;
@@ -12,6 +11,8 @@ import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
+import it.polimi.ingsw.view.connection.RMIConnectionHandler;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

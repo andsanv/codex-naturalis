@@ -14,7 +14,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.rmi.RemoteException;
 
 public class ClientHandler implements Runnable, MainViewActions, GameViewActions {
@@ -49,7 +48,8 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
         System.out.println("Client disconnected");
         break;
       } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
+        System.err.println("Error while reading command: " + e.getMessage());
+        break;
       } finally {
         // Add your code here
       }
@@ -57,23 +57,17 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   }
 
   @Override
-  public void receiveEvent(MainEvent event) throws RemoteException {
-    try {
-      out.writeObject(event);
-      out.reset();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  public void receiveEvent(MainEvent event) throws IOException {
+    out.writeObject(event);
+    out.reset();
+    
   }
 
   @Override
-  public void receiveEvent(GameEvent event) throws RemoteException {
-    try {
-      out.writeObject(event);
-      out.reset();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  public void receiveEvent(GameEvent event) throws IOException {
+    out.writeObject(event);
+    out.reset();
+    
   }
 
   public void setGameFlowManager(GameFlowManager gameFlowManager) {
@@ -84,7 +78,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   public void update(GameEvent event) {
     try {
       receiveEvent(event);
-    } catch (RemoteException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

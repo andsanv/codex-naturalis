@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client;
+package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.CLITest;
 import it.polimi.ingsw.Config;
@@ -12,6 +12,8 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
+import it.polimi.ingsw.view.UI;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -39,7 +41,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
-      MainViewActions clientMainView = new RMIMainView(new CLITest());
+      MainViewActions clientMainView = new RMIMainView(new CLITest(new User("user")));
 
       UserInfo userInfo = new UserInfo(new User("rave"));
       mainServerActions.connectToMain(userInfo, clientMainView);
