@@ -17,8 +17,10 @@ import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
@@ -45,13 +47,15 @@ public class TUI implements UI {
     }
 
     private UserInfo userInfo = null;
+    private Object userInfoLock = new Object();
+
     private Scanner input = new Scanner(System.in);
     private ConnectionHandler connectionHandler = null;
     private State state = State.HOME;
     private boolean running = true;
 
     private List<LobbyInfo> availableLobbies = null;
-    private Object lobbiesLock;
+    private Object availableLobbiesLock = new Object();
 
     private AtomicBoolean waitingForLobbyCreation = new AtomicBoolean(false);
     private AtomicBoolean waitingUserInfo = new AtomicBoolean(false);
@@ -175,8 +179,13 @@ public class TUI implements UI {
         System.out.println(ansi().a("Do you want to connect with Socket or RMI? (enter ").fg(YELLOW).a("s").reset()
                 .a(" for Socket, anything else for RMI)"));
 
-        if (prompt() == "s") {
-            // connectionHandler = new SocketConnectionHandler(this);
+        if (prompt().equals("s")) {
+            // TODO remove try catch after connection handler is update
+            try {
+                connectionHandler = new SocketConnectionHandler(this);
+            } catch(Exception e) {
+                e.printStackTrace();
+            };
         } else {
             connectionHandler = new RMIConnectionHandler(this);
         }
@@ -190,18 +199,26 @@ public class TUI implements UI {
                     .fg(YELLOW).a("y").reset().a(" to continue, anything else otherwise)"));
             command = prompt();
         }
+            
+        // Attempt connection to the server
+        if (command.equals("y")) {
+            waitingUserInfo.set(true);
+            connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
 
-        if (command != "y") {
-            System.out.println("Choose a username:");
+            displayLoadingMessage("Logging in", waitingUserInfo);    
+        } else {
+            System.out.println("Choose an username:");
             String username = prompt();
+
+            waitingUserInfo.set(true);
+            connectionHandler.sendToMainServer(new ConnectionCommand(username));
+
+            displayLoadingMessage("Creating an account", waitingUserInfo);    
         }
 
-        // Attempt connection to the server and check if the client is already connected
-        // to a game
+        // TODO check if the client is already connected to a game (handle reconnection)
 
         state = State.LOBBY;
-
-        // TODO handle reconnection
     }
 
     private void lobbyScreen() {
@@ -248,7 +265,7 @@ public class TUI implements UI {
      * ╘═══════════════╛
      */
     private void printLobbies() {
-        synchronized (lobbiesLock) {
+        synchronized (availableLobbiesLock) {
             if (this.availableLobbies == null || this.availableLobbies.isEmpty())
                 System.out.println("No lobbies available");
             else
@@ -258,14 +275,14 @@ public class TUI implements UI {
 
                     System.out.println("╒" + "═".repeat(length) + "╕");
                     System.out.println(
-                            "│ Lobby " + lobby.id + "".repeat(length - 9 - Integer.toString(lobby.id).length()) + "│");
+                            "│ Lobby " + lobby.id + " ".repeat(length - 7 - Integer.toString(lobby.id).length()) + "│");
                     System.out.println("├" + "─".repeat(length) + "┤");
 
                     lobby.users.stream().forEach(user -> {
                         boolean inLobby = user.equals(userInfo);
                         if (user.equals(lobby.manager)) {
                             System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).fg(CYAN).a(user).reset()
-                                    .a(" ".repeat(length - 2 - user.toString().length()) + "│"));
+                                    .a(" ".repeat(length - 1 - user.toString().length()) + "│"));
                         } else {
                             System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).a(user).reset().a(" ".repeat(length - 2 - user.toString().length()) + "│"));
                         }
@@ -273,8 +290,8 @@ public class TUI implements UI {
 
                     System.out.println("├" + "─".repeat(length) + "┤");
                     System.out.println(
-                            ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X")
-                                    + " ".repeat(length - 11) + "│");
+                            ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X").reset()
+                                    .a(" ".repeat(length - 11) + "│"));
                     System.out.println("╘" + "═".repeat(length) + "╛");
                 }
         }
@@ -287,7 +304,7 @@ public class TUI implements UI {
      * 
      * ╭─┬─────┬─╮
      * │Q│ 3 C │X│
-     * ├─┤ F   ├─┤
+     * ├─┤  F  ├─┤
      * │A│ FFA │ │
      * ╰─┴─────┴─╯
      * 
@@ -312,8 +329,10 @@ public class TUI implements UI {
 
     @Override
     public void handleUserInfo(UserInfo userInfo) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleUserInfo'");
+        synchronized(userInfoLock) {
+            this.userInfo = userInfo;
+            waitingUserInfo.set(false);
+        }
     }
 
     @Override
@@ -324,7 +343,7 @@ public class TUI implements UI {
 
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
-        synchronized (lobbiesLock) {
+        synchronized (availableLobbiesLock) {
             this.availableLobbies = lobbies;
 
             if (lobbies.stream().map(lobby -> lobby.manager).anyMatch(manager -> manager.equals(userInfo))) {
