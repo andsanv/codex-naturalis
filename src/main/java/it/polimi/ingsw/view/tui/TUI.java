@@ -1,8 +1,7 @@
 package it.polimi.ingsw.view.tui;
 
 import static org.fusesource.jansi.Ansi.ansi;
-import static org.fusesource.jansi.Ansi.Color.BLUE;
-import static org.fusesource.jansi.Ansi.Color.YELLOW;
+import static org.fusesource.jansi.Ansi.Color.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,20 +11,23 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.fusesource.jansi.AnsiConsole;
 
-import it.polimi.ingsw.client.ConnectionHandler;
-import it.polimi.ingsw.client.RMIConnectionHandler;
-import it.polimi.ingsw.client.SocketConnectionHandler;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
-import it.polimi.ingsw.client.UI;
+import it.polimi.ingsw.view.UI;
+import it.polimi.ingsw.view.connection.ConnectionHandler;
+import it.polimi.ingsw.view.connection.RMIConnectionHandler;
+import it.polimi.ingsw.view.connection.SocketConnectionHandler;
 
 public class TUI implements UI {
     private static String CODEX_NATURALIS = " _____           _             _   _       _                   _ _     \n"
@@ -38,19 +40,48 @@ public class TUI implements UI {
             "                                                                       \n" + //
             "                                                                       ";
 
-    private UserInfo userInfo = null;
-    private Scanner input = new Scanner(System.in);
-    private ConnectionHandler connectionHandler = null;
-
     public static void main(String[] args) {
         new TUI().start();
     }
 
+    private UserInfo userInfo = null;
+    private Scanner input = new Scanner(System.in);
+    private ConnectionHandler connectionHandler = null;
+    private State state = State.HOME;
+    private boolean running = true;
+
+    private List<LobbyInfo> availableLobbies = null;
+    private Object lobbiesLock;
+
+    private AtomicBoolean waitingForLobbyCreation = new AtomicBoolean(true);
+    private AtomicBoolean waitingUserInfo = new AtomicBoolean(true);
+
+    public TUI() {
+    }
+
     public void start() {
+        new Thread(this::userHandler).start();
+    }
+
+    private void userHandler() {
         AnsiConsole.systemInstall();
 
         System.out.println(ansi().eraseScreen().cursor(0, 0));
-        handleHomeScreen();
+
+        while (running) {
+            switch (state) {
+                case HOME:
+                    homeScreen();
+                    break;
+                case LOBBY:
+                    lobbyScreen();
+                    break;
+                case END:
+                default:
+                    running = false;
+                    break;
+            }
+        }
 
         AnsiConsole.systemUninstall();
     }
@@ -86,19 +117,66 @@ public class TUI implements UI {
         }
     }
 
+    /**
+     * Prints the prompt and reads user input.
+     * 
+     * @return the user's input
+     */
     private String prompt() {
         System.out.print(ansi().fg(BLUE).a("> ").reset());
         System.out.flush();
         return input.nextLine();
     }
 
-    private void handleHomeScreen() {
+    /**
+     * Prints an error message with formatting.
+     * 
+     * @param message
+     */
+    private void error(String message) {
+        System.out.println(ansi().fg(RED).a("ERROR: ").reset().a(message));
+    }
+
+    /**
+     * This function is called while waiting for a server event.
+     * It shows a loading message until the given condition becomes false.
+     * The condition is set to true before returning.
+     * 
+     * @param msg       message of loading animation
+     * @param condition an AtomicBoolean that stops the loading animation when set
+     *                  to false
+     */
+    private void displayLoadingMessage(String msg, AtomicBoolean condition) {
+        String[] sequence = { "", ".", "..", "..." };
+        int curr = 0;
+        while (condition.get()) {
+            System.out.print(ansi().eraseLine().cursorToColumn(0).a(msg + sequence[curr++ % sequence.length]));
+            System.out.flush();
+
+            try {
+                Thread.sleep(333);
+            } catch (InterruptedException e) {
+            }
+        }
+        System.out.println();
+        condition.set(true);
+    }
+
+    /**
+     * In the home screen, the user can choose wether to use a previously created
+     * account or a new one and the connection type (Socket or RMI).
+     * If he isn't in a game, he will see the lobby screen, otherwise he will
+     * reconnect to the game.
+     */
+    private void homeScreen() {
         System.out.println(ansi().a(CODEX_NATURALIS).reset());
+        System.out.println(ansi().bg(BLUE).a("\n┄┄ HOME ┄┄").reset());
 
-        System.out.println(ansi().a("Do you want to connect with Socket or RMI? (enter ").fg(YELLOW).a("s").reset().a(" for Socket, anything else for RMI)"));    
+        System.out.println(ansi().a("Do you want to connect with Socket or RMI? (enter ").fg(YELLOW).a("s").reset()
+                .a(" for Socket, anything else for RMI)"));
 
-        if (prompt()=="s") {
-            connectionHandler = new SocketConnectionHandler(this);
+        if (prompt() == "s") {
+            // connectionHandler = new SocketConnectionHandler(this);
         } else {
             connectionHandler = new RMIConnectionHandler(this);
         }
@@ -107,20 +185,96 @@ public class TUI implements UI {
 
         // Check if the user already has an account
         if (retrieveUserInfo()) {
-            System.out.println(ansi().a("The user " + userInfo + " has been found, do you want to continue with this account? (enter ").fg(YELLOW).a("y").reset().a(" to continue, anything else otherwise)"));
+            System.out.println(ansi()
+                    .a("The user " + userInfo + " has been found, do you want to continue with this account? (enter ")
+                    .fg(YELLOW).a("y").reset().a(" to continue, anything else otherwise)"));
             command = prompt();
         }
 
-        if(command != "y") {
+        if (command != "y") {
             System.out.println("Choose a username:");
             String username = prompt();
         }
 
-        // Attempt connection to the server and check if the client is already connected to a game
+        // Attempt connection to the server and check if the client is already connected
+        // to a game
+
+        state = State.LOBBY;
+
+        // TODO handle reconnection
     }
 
-    private void handleLobbyMenu() {
-        
+    private void lobbyScreen() {
+        System.out.println(ansi().bg(BLUE).a("┄┄MAIN MENU┄┄").reset());
+        System.out.println(ansi().a("You can do the following actions:"));
+        System.out.println(ansi().fg(YELLOW).a("  1").reset().a(" to create a lobby"));
+        System.out.println(ansi().fg(YELLOW).a("  2").reset().a(" to see available lobbies"));
+        System.out.println(ansi().fg(YELLOW).a("  3").reset().a(" to see join a lobby"));
+
+        String command = prompt();
+
+        switch (command) {
+            case "1":
+                connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
+                displayLoadingMessage("Waiting for lobby creation", waitingForLobbyCreation);
+                System.out.println("The lobby has been created!");
+                break;
+            case "2":
+                printLobbies();
+                break;
+            case "3":
+                connectionHandler.sendToMainServer(new JoinLobbyCommand(userInfo, 0));
+                break;
+            default:
+                error("Invalid option");
+                state = State.LOBBY;
+                break;
+        }
+    }
+
+    /**
+     * Prints available lobbies using the following format
+     * 
+     * ╒═══════════════╕
+     * │ Lobby 13      │
+     * ├───────────────┤
+     * │ user#21       │
+     * │ anotherUser#3 │
+     * │ lastUser#1    │
+     * ├───────────────┤
+     * │ In-Game? X    │
+     * ╘═══════════════╛
+     */
+    private void printLobbies() {
+        synchronized (lobbiesLock) {
+            if (this.availableLobbies == null || this.availableLobbies.isEmpty())
+                System.out.println("No lobbies available");
+            else
+                for (LobbyInfo lobby : availableLobbies) {
+                    final int length = Math.max(15,
+                            lobby.users.stream().mapToInt(user -> user.toString().length()).max().orElse(0));
+
+                    System.out.println("╒" + "═".repeat(length) + "╕");
+                    System.out.println(
+                            "│ Lobby " + lobby.id + "".repeat(length - 9 - Integer.toString(lobby.id).length()) + "│");
+                    System.out.println("├" + "─".repeat(length) + "┤");
+
+                    lobby.users.stream().forEach(user -> {
+                        if (user.equals(lobby.manager)) {
+                            System.out.println(ansi().a("│ ").fg(CYAN).a(user).reset()
+                                    .a("".repeat(length - 2 - user.toString().length()) + "│"));
+                        } else {
+                            System.out.println("│ " + user + "".repeat(length - 2 - user.toString().length()) + "│");
+                        }
+                    });
+
+                    System.out.println("├" + "─".repeat(length) + "┤");
+                    System.out.println(
+                            ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X")
+                                    + "".repeat(length - 11) + "│");
+                    System.out.println("╘" + "═".repeat(length) + "╛");
+                }
+        }
     }
 
     /**
@@ -130,7 +284,7 @@ public class TUI implements UI {
      * 
      * ╭─┬─────┬─╮
      * │Q│ 3 C │X│
-     * ├─┤  F  ├─┤
+     * ├─┤ F   ├─┤
      * │A│ FFA │ │
      * ╰─┴─────┴─╯
      * 
@@ -167,8 +321,9 @@ public class TUI implements UI {
 
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLobbiesEvent'");
+        synchronized (lobbiesLock) {
+            this.availableLobbies = lobbies;
+        }
     }
 
     @Override
@@ -316,5 +471,10 @@ public class TUI implements UI {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
     }
+}
 
+enum State {
+    HOME,
+    LOBBY,
+    END,
 }
