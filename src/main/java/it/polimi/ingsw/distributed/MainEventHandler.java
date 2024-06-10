@@ -12,4 +12,6 @@ public interface MainEventHandler {
   public void handleLobbiesEvent(List<LobbyInfo> lobbies);
 
   public void handleReceivedConnection();
+
+public void handleRefusedReconnection();
 }

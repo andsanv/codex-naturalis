@@ -19,6 +19,7 @@ import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
+import it.polimi.ingsw.distributed.events.main.RefusedConnectionEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
 import it.polimi.ingsw.distributed.server.socket.ClientHandler;
@@ -59,7 +60,6 @@ public enum Server {
   public void checkConnections() {
     new Thread(
             () -> {
-              System.out.println("Checking connections");
               while (true) {
                 connectedPlayers.entrySet().stream()
                     .filter(entry -> entry.getValue().second)
@@ -246,15 +246,24 @@ public enum Server {
   }
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
-    connectedPlayers.remove(userInfo);
-    connectedPlayers.entrySet().stream()
-        .forEach(entry -> {
-          System.out.println(entry.getKey());
-          System.out.println(entry.getValue().first);
-          System.out.println(entry.getValue().second);
-        
-        });
-    connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
+    System.out.println(userInfo);
+    System.out.println(playersInMenu.keySet());
+
+    System.out.println(userInfo.hashCode());
+    
+    playersInMenu.entrySet().stream().forEach(entry -> System.out.println(userInfo.equals(entry.getKey())));
+
+    // TODO Why result is false?
+    if(playersInMenu.keySet().contains(userInfo)) {
+      connectedPlayers.remove(userInfo);
+      connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
+    } else {
+      try {
+        clientMainView.receiveEvent(new RefusedConnectionEvent());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   public UserInfo addConnectedClient(String username, MainViewActions clientMainView) {
@@ -275,6 +284,7 @@ public enum Server {
     }
 
     connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
+    playersInMenu.put(userInfo, true);
 
     return userInfo;
   }

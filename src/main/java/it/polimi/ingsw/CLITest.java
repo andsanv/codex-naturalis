@@ -212,4 +212,9 @@ public class CLITest implements UI {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
   }
+
+  @Override
+  public void handleRefusedReconnection() {
+    System.out.println("Refused reconnection");
+  }
 }

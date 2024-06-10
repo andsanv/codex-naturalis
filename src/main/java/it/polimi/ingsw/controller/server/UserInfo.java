@@ -22,6 +22,14 @@ public final class UserInfo implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    
     UserInfo other = (UserInfo) obj;
     return this.name.equals(other.name) && this.id == other.id;
   }
