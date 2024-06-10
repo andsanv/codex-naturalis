@@ -34,6 +34,13 @@ public class SocketConnectionHandler extends ConnectionHandler {
     this.inputStream = new ObjectInputStream(socket.getInputStream());
 
     System.out.println("Connected to server and set up streams");
+    
+    createListenerThread();
+
+    System.out.println("started listening for events");
+  }
+
+  private void createListenerThread() {
     new Thread(
             () -> {
               while (true) {
@@ -65,15 +72,12 @@ public class SocketConnectionHandler extends ConnectionHandler {
               }
             })
         .start();
-
-    System.out.println("started listening for events");
   }
 
   @Override
   public boolean sendToMainServer(MainCommand command) {
     try {
       outputStream.writeObject(command);
-      System.out.println("Sent command to main server");
       outputStream.reset();
     } catch (IOException e) {
       e.printStackTrace();
@@ -113,9 +117,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
       return false;
     }
 
-    System.out.println("Reconnected to server");
+    createListenerThread();
 
-    return sendToMainServer(reconnectionCommand);
+    sendToMainServer(reconnectionCommand);
+
+    return true;
   }
 
   public void close() {

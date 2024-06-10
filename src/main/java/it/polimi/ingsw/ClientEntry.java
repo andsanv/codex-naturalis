@@ -53,6 +53,7 @@ public class ClientEntry {
       Thread.sleep(5000);
     } catch (InterruptedException e) {
     }
+
     connectionHandler.close();
     System.out.println("Connection closed");
 
@@ -64,5 +65,10 @@ public class ClientEntry {
     connectionHandler.reconnect();
     connectionHandler.sendToMainServer(new CreateLobbyCommand(cliTest.getUserInfo()));
 
+    System.out.println("Reconnected");
+    try {
+      Thread.sleep(15000);
+    } catch (InterruptedException e) {
+    }
   }
 }
