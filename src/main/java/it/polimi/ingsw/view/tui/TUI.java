@@ -72,12 +72,16 @@ public class TUI implements UI {
 
         System.out.println(ansi().eraseScreen().cursor(0, 0));
 
+        System.out.println(ansi().a(CODEX_NATURALIS).reset().a("\n"));
+
         while (running) {
             switch (state) {
                 case HOME:
+                    displayScreenTitle("HOME");
                     homeScreen();
                     break;
                 case LOBBY:
+                    displayScreenTitle("LOBBIES");
                     lobbyScreen();
                     break;
                 case END:
@@ -87,6 +91,7 @@ public class TUI implements UI {
             }
         }
 
+        // TODO end here or in prompt() (decide between moving to END state or exit(0))
         AnsiConsole.systemUninstall();
     }
 
@@ -129,16 +134,40 @@ public class TUI implements UI {
     private String prompt() {
         System.out.print(ansi().fg(BLUE).a("> ").reset());
         System.out.flush();
-        return input.nextLine();
+
+        String in = input.nextLine();
+
+        // System.out.println();
+
+        if (in.equalsIgnoreCase("exit")) {
+            System.out.println(ansi().a("\nClosing the game...").reset());
+            AnsiConsole.systemUninstall();
+            System.exit(0);
+        }
+
+        return in;
     }
 
     /**
      * Prints an error message with formatting.
      * 
-     * @param message
+     * @param msg error message
      */
-    private void displayError(String message) {
-        System.out.println(ansi().fg(RED).a("ERROR: ").reset().a(message));
+    private void displayError(String msg) {
+        System.out.println(ansi().fg(RED).a("ERROR: ").reset().a(msg));
+    }
+
+    /**
+     * Prints a screen title with formatting.
+     * The title can be at most 50 chars long.
+     * 
+     * @param title title to print
+     */
+    private void displayScreenTitle(String title) {
+        int padding = 71 - title.length();
+        System.out.println(ansi().bgBrightCyan()
+                .a(" ".repeat(Math.floorDiv(padding, 2)) + title + " ".repeat(Math.ceilDiv(padding, 2))).reset()
+                .a("\n"));
     }
 
     /**
@@ -154,7 +183,8 @@ public class TUI implements UI {
         String[] sequence = { "", ".", "..", "..." };
         int curr = 0;
         while (condition.get()) {
-            System.out.print(ansi().eraseLine().cursorToColumn(0).bg(GREEN).a("LOADING").reset().a(" " + msg + sequence[curr++ % sequence.length]));
+            System.out.print(ansi().eraseLine().cursorToColumn(0).bg(GREEN).a("LOADING").reset()
+                    .a(" " + msg + sequence[curr++ % sequence.length]));
             System.out.flush();
 
             try {
@@ -173,82 +203,107 @@ public class TUI implements UI {
      * reconnect to the game.
      */
     private void homeScreen() {
-        System.out.println(ansi().a(CODEX_NATURALIS).reset());
-        System.out.println(ansi().bg(BLUE).a("\n┄┄ HOME ┄┄").reset());
+        System.out
+                .println(ansi().a("Do you want to connect with Socket or RMI?\n(enter ").fg(YELLOW).a("socket").reset()
+                        .a(" for a Socket connection, ").fg(YELLOW).a("rmi").reset().a(" to use an RMI connection)\n"));
 
-        System.out.println(ansi().a("Do you want to connect with Socket or RMI?\n(enter ").fg(YELLOW).a("s").reset()
-                .a(" for Socket, anything else for RMI)"));
+        while (true) {
+            String connectionType = prompt();
 
-        if (prompt().equals("s")) {
-            // TODO remove try catch after connection handler is update
-            try {
-                connectionHandler = new SocketConnectionHandler(this);
-            } catch(Exception e) {
-                e.printStackTrace();
-            };
-        } else {
-            connectionHandler = new RMIConnectionHandler(this);
+            if (connectionType.equalsIgnoreCase("socket")) {
+                // TODO remove try catch after connection handler is updated
+                try {
+                    connectionHandler = new SocketConnectionHandler(this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            } else if (connectionType.equalsIgnoreCase("rmi")) {
+                connectionHandler = new RMIConnectionHandler(this);
+                break;
+            } else {
+                displayError("Invalid connection type, choose another one. ");
+            }
         }
 
-        String command = "";
+        // TODO check if connection is on or off
 
         // Check if the user already has an account
         if (retrieveUserInfo()) {
             System.out.println(ansi()
-                    .a("The user ").fg(CYAN).a(userInfo).reset().a(" has been found, do you want to continue with this account? (enter ")
-                    .fg(YELLOW).a("yes").reset().a(" to continue, ").fg(YELLOW).a("no").reset().a("to create a new account)"));
-            command = prompt();
-        }
-            
-        // Attempt connection to the server
-        if (command.equals("yes")) {
-            waitingUserInfo.set(true);
-            connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
-
-            displayLoadingMessage("Logging in", waitingUserInfo);    
-        } else if (command.equals("no")) {
-            System.out.println("Choose an username:");
-            String username = prompt();
-
-            waitingUserInfo.set(true);
-            connectionHandler.sendToMainServer(new ConnectionCommand(username));
-
-            displayLoadingMessage("Creating an account", waitingUserInfo);    
+                    .a("\nThe user ").fg(CYAN).a(userInfo).reset()
+                    .a(" has been found, do you want to continue with this account?\n(enter ")
+                    .fg(YELLOW).a("yes").reset().a(" to continue, ").fg(YELLOW).a("no").reset()
+                    .a(" to create a new account)\n"));
         }
 
+        while (true) {
+            String command = prompt();
+
+            // Attempt connection to the server
+            if (command.equalsIgnoreCase("yes")) {
+                waitingUserInfo.set(true);
+                connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
+
+                displayLoadingMessage("Logging in", waitingUserInfo);
+                break;
+            } else if (command.equalsIgnoreCase("no")) {
+                System.out.println("\nChoose an username:\n");
+
+                while (true) {
+                    String username = prompt();
+
+                    if (username.length() < 3) {
+                        displayError("The username lenght must be at least three characters long");
+                        continue;
+                    }
+
+                    waitingUserInfo.set(true);
+                    connectionHandler.sendToMainServer(new ConnectionCommand(username));
+                    break;
+                }
+
+                displayLoadingMessage("Creating an account", waitingUserInfo);
+                break;
+            } else {
+                displayError("Invalid choice, please try again.");
+            }
+        }
         // TODO check if the client is already connected to a game (handle reconnection)
 
         state = State.LOBBY;
     }
 
     private void lobbyScreen() {
-        System.out.println(ansi().bg(BLUE).a("┄┄MAIN MENU┄┄").reset());
+        // System.out.println(ansi().bg(BLUE).a("┄┄MAIN MENU┄┄").reset());
         System.out.println(ansi().a("You can do the following actions:"));
         System.out.println(ansi().fg(YELLOW).a("  1").reset().a(" to create a lobby"));
         System.out.println(ansi().fg(YELLOW).a("  2").reset().a(" to see available lobbies"));
-        System.out.println(ansi().fg(YELLOW).a("  3").reset().a(" to see join a lobby"));
+        System.out.println(ansi().fg(YELLOW).a("  3").reset().a(" to see join a lobby\n"));
 
-        String command = prompt();
+        while (true) {
+            String command = prompt();
 
-        switch (command) {
-            case "1":
+            if(command.equals("1")) {
                 waitingForLobbyCreation.set(true);
                 connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
                 displayLoadingMessage("Waiting for lobby creation", waitingForLobbyCreation);
-                System.out.println("The lobby has been created!");
+                System.out.println("Your lobby has been created!\n");
                 printLobbies();
-                break;
-            case "2":
+            }
+            else if (command.equals("2")) {
                 printLobbies();
-                break;
-            case "3":
+            }
+            else if (command.equals("3")) {
+
                 connectionHandler.sendToMainServer(new JoinLobbyCommand(userInfo, 0));
-                break;
-            default:
+                // TODO give option to start game
+            } else {
                 displayError("Invalid option");
-                state = State.LOBBY;
-                break;
+            }
         }
+
     }
 
     /**
@@ -270,7 +325,7 @@ public class TUI implements UI {
                 System.out.println("No lobbies available");
             else
                 for (LobbyInfo lobby : availableLobbies) {
-                    final int length = Math.max(11,
+                    final int length = Math.max(12,
                             lobby.users.stream().mapToInt(user -> user.toString().length()).max().orElse(0));
 
                     System.out.println("╒" + "═".repeat(length) + "╕");
@@ -284,13 +339,15 @@ public class TUI implements UI {
                             System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).fg(CYAN).a(user).reset()
                                     .a(" ".repeat(length - 1 - user.toString().length()) + "│"));
                         } else {
-                            System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).a(user).reset().a(" ".repeat(length - 2 - user.toString().length()) + "│"));
+                            System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).a(user).reset()
+                                    .a(" ".repeat(length - 2 - user.toString().length()) + "│"));
                         }
                     });
 
                     System.out.println("├" + "─".repeat(length) + "┤");
                     System.out.println(
-                            ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X").reset()
+                            ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X")
+                                    .reset()
                                     .a(" ".repeat(length - 11) + "│"));
                     System.out.println("╘" + "═".repeat(length) + "╛");
                 }
@@ -304,7 +361,7 @@ public class TUI implements UI {
      * 
      * ╭─┬─────┬─╮
      * │Q│ 3 C │X│
-     * ├─┤  F  ├─┤
+     * ├─┤ F   ├─┤
      * │A│ FFA │ │
      * ╰─┴─────┴─╯
      * 
@@ -329,7 +386,7 @@ public class TUI implements UI {
 
     @Override
     public void handleUserInfo(UserInfo userInfo) {
-        synchronized(userInfoLock) {
+        synchronized (userInfoLock) {
             this.userInfo = userInfo;
             waitingUserInfo.set(false);
             saveUserInfo();
