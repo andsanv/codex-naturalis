@@ -6,7 +6,6 @@ import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
-import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
@@ -41,7 +40,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
-      MainViewActions clientMainView = new RMIMainView(new CLITest(new User("user")));
+      MainViewActions clientMainView = new RMIMainView(new CLITest());
 
       UserInfo userInfo = new UserInfo(new User("rave"));
       mainServerActions.connectToMain(userInfo, clientMainView);

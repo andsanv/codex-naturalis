@@ -5,7 +5,6 @@ import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.ChosenObjectiveCardEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnObjectiveCardsEvent;
 import it.polimi.ingsw.distributed.events.game.EndedObjectiveCardPhaseEvent;
-import it.polimi.ingsw.distributed.events.game.EndedStarterCardPhaseEvent;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;

@@ -1,8 +1,6 @@
 package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.distributed.commands.Command;
-import it.polimi.ingsw.distributed.commands.KeepAliveCommand;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;

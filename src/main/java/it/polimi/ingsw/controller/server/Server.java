@@ -19,6 +19,8 @@ import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
+import it.polimi.ingsw.distributed.events.main.MainErrorEvent;
+import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.events.main.RefusedConnectionEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
@@ -171,7 +173,7 @@ public enum Server {
       // Aggiungi le view dei giocatori nel costruttore
       List<Observer> observers = connectedPlayers.entrySet().stream()
           .filter(entry -> entry.getValue().second)
-          .filter(entry -> lobby.getUsers().contains(entry.getKey()))
+          .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
           .map(entry -> entry.getValue().first)
           .collect(Collectors.toList());
 
@@ -224,6 +226,16 @@ public enum Server {
   public LobbyInfo createLobby(UserInfo userInfo) {
     synchronized (lobbies) {
       synchronized (users) {
+        if(getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo))) {
+          System.err.println("Error: User already in a lobby");
+          try {
+            connectedPlayers.get(userInfo).first.receiveEvent(new MainErrorEvent("User already in a lobby"));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          return null;
+        }
+
         System.out.println(users);
         System.out.println(userInfo);
         Optional<User> serverUser =
@@ -247,6 +259,15 @@ public enum Server {
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
     if(playersInMenu.keySet().contains(userInfo)) {
       connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
+      try {
+        if(playersInMenu.get(userInfo))
+          clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
+        else
+          clientMainView.receiveEvent(new ReconnectToGameEvent());
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     } else {
       try {
         clientMainView.receiveEvent(new RefusedConnectionEvent());

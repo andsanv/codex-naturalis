@@ -21,8 +21,7 @@ public class CLITest implements UI {
   private static MainServerActions mainServerActions;
   private static MainViewActions mainViewActions;
 
-  public CLITest(User user) {
-    userInfo = new UserInfo(user);
+  public CLITest() {
   }
 
   @Override
@@ -216,5 +215,11 @@ public class CLITest implements UI {
   @Override
   public void handleRefusedReconnection() {
     System.out.println("Refused reconnection");
+  }
+
+  @Override
+  public void handleReconnetionToGame() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
   }
 }

@@ -12,7 +12,6 @@ import it.polimi.ingsw.controller.states.PostGameState;
 import it.polimi.ingsw.controller.states.StarterCardSelectionState;
 import it.polimi.ingsw.controller.states.TokenSelectionState;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
-import it.polimi.ingsw.distributed.events.game.ChosenStarterCardSideEvent;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;

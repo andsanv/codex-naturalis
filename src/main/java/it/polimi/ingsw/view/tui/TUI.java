@@ -561,6 +561,12 @@ public class TUI implements UI {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleRefusedReconnection'");
     }
+
+    @Override
+    public void handleReconnetionToGame() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
+    }
 }
 
 enum State {

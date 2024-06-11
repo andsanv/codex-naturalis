@@ -1,10 +1,8 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
-import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 import it.polimi.ingsw.view.connection.SocketConnectionHandler;
@@ -19,14 +17,14 @@ public class ClientEntry {
   // private final ConnectionHandler connectionHandler;
 
   public static void main(String[] args) throws NotBoundException, UnknownHostException, IOException {
-    CLITest cliTest = new CLITest(new User("rave"));
+    CLITest cliTest = new CLITest();
     
     socketTest(cliTest);
   }
 
   public static void rmiTest() throws RemoteException {
 
-    CLITest clientEntry = new CLITest(new User("rave"));
+    CLITest clientEntry = new CLITest();
 
     ConnectionHandler connectionHandler = new RMIConnectionHandler(clientEntry);
 
@@ -47,6 +45,14 @@ public class ClientEntry {
     System.out.println("Sending connection command to server");
 
     connectionHandler.sendToMainServer(new ConnectionCommand("rave"));
+    
+    while (cliTest.getUserInfo() == null) {
+      try {
+        Thread.sleep(1000);
+        } catch (InterruptedException e) {
+      }
+    }
+
     connectionHandler.sendToMainServer(new CreateLobbyCommand(cliTest.getUserInfo()));
 
     try {
@@ -70,5 +76,6 @@ public class ClientEntry {
       Thread.sleep(15000);
     } catch (InterruptedException e) {
     }
+    connectionHandler.close();
   }
 }

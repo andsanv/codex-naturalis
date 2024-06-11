@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.game.PlayedCardEvent;
 import it.polimi.ingsw.distributed.events.game.PlayerElementsEvent;
 import it.polimi.ingsw.distributed.events.game.UpdatedScoreTrackEvent;

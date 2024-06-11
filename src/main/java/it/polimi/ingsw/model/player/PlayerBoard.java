@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.controller.observer.Observable;
-import it.polimi.ingsw.distributed.events.game.PlayerElementsEvent;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Items;
