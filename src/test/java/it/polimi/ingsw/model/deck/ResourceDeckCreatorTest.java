@@ -32,9 +32,9 @@ class ResourceDeckCreatorTest {
         ResourceCard resourceCard = optionalGoldCard.get();
         switch (resourceCard.getId()) {
           case 6:
-            assertTrue(resourceCard.getType().isPresent());
-            assertEquals(resourceCard.getType().get(), Resources.FUNGI);
-            assertEquals(resourceCard.getPointsType().name(), "ZERO");
+            assertTrue(resourceCard.type.isPresent());
+            assertEquals(resourceCard.type.get(), Resources.FUNGI);
+            assertEquals(resourceCard.pointsType.name(), "ZERO");
 
             assertTrue(
                 resourceCard
@@ -81,9 +81,9 @@ class ResourceDeckCreatorTest {
             break;
 
           case 39:
-            assertTrue(resourceCard.getType().isPresent());
-            assertEquals(resourceCard.getType().get(), Resources.INSECT);
-            assertEquals(resourceCard.getPointsType().name(), "ONE");
+            assertTrue(resourceCard.type.isPresent());
+            assertEquals(resourceCard.type.get(), Resources.INSECT);
+            assertEquals(resourceCard.pointsType.name(), "ONE");
 
             assertTrue(
                 resourceCard

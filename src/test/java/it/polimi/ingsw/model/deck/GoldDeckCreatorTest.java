@@ -31,9 +31,9 @@ class GoldDeckCreatorTest {
         GoldCard goldCard = optionalGoldCard.get();
         switch (goldCard.getId()) {
           case 43:
-            assertTrue(goldCard.getType().isPresent());
-            assertEquals(goldCard.getType().get(), Resources.FUNGI);
-            assertEquals(goldCard.getPointsType().name(), "ONE_PER_MANUSCRIPT");
+            assertTrue(goldCard.type.isPresent());
+            assertEquals(goldCard.type.get(), Resources.FUNGI);
+            assertEquals(goldCard.pointsType.name(), "ONE_PER_MANUSCRIPT");
 
             assertTrue(
                 goldCard.getRequiredResources().containsKey(Resources.FUNGI)
@@ -43,23 +43,19 @@ class GoldDeckCreatorTest {
                     && goldCard.getRequiredResources().get(Resources.INSECT).equals(1));
 
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.TOP_LEFT)
                     .equals(new Corner(Items.MANUSCRIPT, CornerTypes.VISIBLE)));
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.TOP_RIGHT)
                     .equals(new Corner(null, CornerTypes.VISIBLE)));
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.BOTTOM_RIGHT)
                     .equals(new Corner(null, CornerTypes.HIDDEN)));
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.BOTTOM_LEFT)
                     .equals(new Corner(null, CornerTypes.VISIBLE)));
 
@@ -86,9 +82,9 @@ class GoldDeckCreatorTest {
 
             break;
           case 75:
-            assertTrue(goldCard.getType().isPresent());
-            assertEquals(goldCard.getType().get(), Resources.INSECT);
-            assertEquals(goldCard.getPointsType().name(), "TWO_PER_COVERED_CORNER");
+            assertTrue(goldCard.type.isPresent());
+            assertEquals(goldCard.type.get(), Resources.INSECT);
+            assertEquals(goldCard.pointsType.name(), "TWO_PER_COVERED_CORNER");
 
             assertTrue(
                 goldCard.getRequiredResources().containsKey(Resources.INSECT)
@@ -98,23 +94,19 @@ class GoldDeckCreatorTest {
                     && goldCard.getRequiredResources().get(Resources.PLANT).equals(1));
 
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.TOP_LEFT)
                     .equals(new Corner(null, CornerTypes.VISIBLE)));
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.TOP_RIGHT)
                     .equals(new Corner(null, CornerTypes.VISIBLE)));
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.BOTTOM_RIGHT)
                     .equals(new Corner(null, CornerTypes.HIDDEN)));
             assertTrue(
-                goldCard
-                    .getFrontCorners()
+                goldCard.getFrontCorners()
                     .get(CornerPosition.BOTTOM_LEFT)
                     .equals(new Corner(null, CornerTypes.VISIBLE)));
 

@@ -11,7 +11,6 @@ import it.polimi.ingsw.model.deck.VisibleCardsList;
 import it.polimi.ingsw.model.player.*;
 
 import it.polimi.ingsw.util.Pair;
-import it.polimi.ingsw.util.Trio;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,7 +51,7 @@ public class GameModelUpdater {
     playerBoard
         .adjacentCorners(coords)
         .values()
-        .forEach(corner -> corner.setType(CornerTypes.COVERED));
+        .forEach(corner -> corner.type = CornerTypes.COVERED);
 
     playerBoard.updatePlayerItems(coords);
     PlayerElementsEvent playerElementsEvent = new PlayerElementsEvent(playerToken, new HashMap<>(playerBoard.getPlayerItems()));
@@ -60,7 +59,7 @@ public class GameModelUpdater {
     model.slimGameModel.updatePlayerItems(playerElementsEvent);
 
     int points;
-    switch (card.getPointsType()) {
+    switch (card.pointsType) {
       case ONE:
         points = 1;
         break;

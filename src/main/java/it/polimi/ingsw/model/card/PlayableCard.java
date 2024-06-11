@@ -8,93 +8,130 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** A playable card is a card that can be placed on the player board. */
+/**
+ * A playable card is a card that can be placed on the player's board.
+ * The class is abstract, as concrete cards will be ResourceCards and GoldCards.
+ *
+ * @see Card
+ */
 public abstract class PlayableCard extends Card {
-  /** This constant map represents the corners of the front of the card. */
+  /**
+   * Maps a CornerPosition to a Corner object, on the front card side.
+   */
   private final Map<CornerPosition, Corner> frontCorners;
 
-  /** This constant map represents the corners of the back of the card. */
+  /**
+   * Maps a CornerPosition to a Corner object, on the back card side.
+   */
   private final Map<CornerPosition, Corner> backCorners;
 
-  /** This map represents the corners of the played side of the card. */
-  private Map<CornerPosition, Corner> activeCorners;
+  /**
+   * Maps a CornerPosition to a Corner object, on the played card side.
+   * Null until the card is played.
+   * Can be considered "redundant", implemented for an increased ease of use.
+   */
+  private final Map<CornerPosition, Corner> activeCorners;
 
-  /** This map represents the side card that is played */
+  /**
+   * The played card side.
+   */
   private CardSide playedSide;
 
   /**
-   * This attribute represents the amount of points given to the player when he plays the front of
-   * this card.
+   * Card's seed.
+   * Optional to allow StarterCards to have an empty value.
+   */
+  public final Optional<Resources> type;
+
+  /**
+   * Type of points assigned to the player when placing this card on the front side.
+   *
+   * @see PointsType
    */
   public final PointsType pointsType;
 
   /**
-   * TODO: description
-   *
-   * @param frontCorners corners of the front of the card.
-   * @param backCorners corners of the back of the card.
+   * @param id unique id of the card
+   * @param frontCorners corners on the front of the card
+   * @param backCorners corners on the back of the card
+   * @param type card's seed
+   * @param pointsType type of points assignment
    */
   PlayableCard(
       int id,
       Map<CornerPosition, Corner> frontCorners,
       Map<CornerPosition, Corner> backCorners,
+      Resources type,
       PointsType pointsType) {
     super(id);
+
     this.frontCorners = frontCorners;
     this.backCorners = backCorners;
+    this.activeCorners = new HashMap<>();
+
+    this.type = Optional.ofNullable(type);
     this.pointsType = pointsType;
+
+    this.playedSide = null;
   }
 
   /**
+   * Method to verify if the player has enough resources to play the card, on the specified side.
+   *
    * @param playerResources resources owned by the player
-   * @return True if there are enough resources to play the card, false otherwise
+   * @param side played card side
+   * @return true as in default case, a card has zero resources needed
    */
   public boolean enoughResources(Map<Elements, Integer> playerResources, CardSide side) {
     return true;
   }
 
+  /**
+   * Allows a user to play a side of the card.
+   *
+   * @param playedSide card side chosen
+   */
   public void playSide(CardSide playedSide) {
     this.playedSide = playedSide;
-    this.activeCorners = new HashMap<>(playedSide == CardSide.FRONT ? frontCorners : backCorners);
+    activeCorners.clear();
+    activeCorners.putAll(playedSide == CardSide.FRONT ? frontCorners : backCorners);
   }
 
   /**
-   * @return The card's type (resource domain) if it's a resource or gold card, an empty optional if
-   *     it's a starter.
+   * playedSide's getter.
+   *
+   * @return null if the card has not been played yet, a CardSide otherwise
    */
-  public Optional<Resources> getType() {
-    return Optional.empty();
-  }
-
-  public Map<CornerPosition, Corner> getActiveCorners() {
-    return activeCorners;
-  }
-
   public CardSide getPlayedSide() {
     return playedSide;
   }
 
-  public void setCorner(CornerPosition cornerPosition, Corner corner) {
-    this.activeCorners.put(cornerPosition, corner);
-  }
-
+  /**
+   * frontCorners' getter.
+   * Private final and getter with copy (instead of public) to make the map constant.
+   *
+   * @return (a copy of) card's front corners
+   */
   public Map<CornerPosition, Corner> getFrontCorners() {
     return new HashMap<>(frontCorners);
   }
 
+  /**
+   * backCorners' getter.
+   * Private final and getter with copy (instead of public) to make the map constant.
+   *
+   * @return (a copy of) card's back corners
+   */
   public Map<CornerPosition, Corner> getBackCorners() {
     return new HashMap<>(backCorners);
   }
 
-  public void setActiveCorners(Map<CornerPosition, Corner> activeCorners) {
-    this.activeCorners = activeCorners;
-  }
-
-  public void setPlayedSide(CardSide playedSide) {
-    this.playedSide = playedSide;
-  }
-
-  public PointsType getPointsType() {
-    return this.pointsType;
+  /**
+   * activeCorners' getter.
+   *
+   * @return card's active corners
+   */
+  public Map<CornerPosition, Corner> getActiveCorners() {
+    return activeCorners;
   }
 }

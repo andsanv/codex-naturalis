@@ -4,7 +4,9 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
 
-/** A player is an entity representing one client in game. */
+/**
+ * The class represents one client in game.
+ */
 public class Player {
   /** Attribute that represents the player's board. */
   private PlayerBoard playerBoard;

@@ -3,37 +3,44 @@ package it.polimi.ingsw.model.card;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
-import it.polimi.ingsw.model.player.PlayerBoard;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * A starter card is the first card placed on each player's board. At the start of the match, each
- * player randomly draws one starter card.
+ * A starter card is the first card placed on each player's board.
+ * At the start of the match, each player randomly draws one starter card from the deck.
  *
- * @see PlayerBoard
+ * @see Card
+ * @see PlayableCard
  */
 public class StarterCard extends PlayableCard {
-  /** This set holds the resources of the front of the card. */
-  public final Set<Resources> centralResources;
+  /**
+   * Set to hold the resources of the front of the card.
+   */
+  private final Set<Resources> centralResources;
 
   /**
-   * TODO: add description
-   *
-   * @param centralResources resources of the front of the card.
-   * @param frontCorners corners of the front of the card.
-   * @param backCorners corners of the back of the card.
+   * @param centralResources resources of the front of the card
+   * @param frontCorners corners of the front of the card
+   * @param backCorners corners of the back of the card
    */
   public StarterCard(
       int id,
       Set<Resources> centralResources,
       Map<CornerPosition, Corner> frontCorners,
       Map<CornerPosition, Corner> backCorners) {
-    super(id, frontCorners, backCorners, PointsType.ZERO);
+    super(id, frontCorners, backCorners, null, PointsType.ZERO);
+
     this.centralResources = centralResources;
   }
 
+  /**
+   * CentralResources' getter.
+   * Private final and getter with copy (instead of public) to make the set constant.
+   *
+   * @return (a copy of) card's central resources
+   */
   public Set<Resources> getCentralResources() {
     return new HashSet<>(centralResources);
   }

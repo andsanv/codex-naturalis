@@ -5,23 +5,27 @@ import it.polimi.ingsw.model.player.PlayerBoard;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Strategy to calculate points for an objective card based on items on a player board. */
+/**
+ * Strategy to calculate points for an objective card based on items on a player board.
+ *
+ * @see ObjectiveStrategy
+ */
 public class ItemsObjectiveStrategy implements ObjectiveStrategy {
-  /** Map that defines amount of items required to complete the objective. */
-  Map<Elements, Integer> requiredItems;
+  /**
+   * Map that defines amount of items required to complete the objective
+   */
+  private final Map<Elements, Integer> requiredItems;
 
   /**
-   * Constructor that requires the following parameters.
-   *
-   * @param requiredItems map for amount of required items.
+   * @param requiredItems the required items to get points for the objective
    */
   public ItemsObjectiveStrategy(Map<Elements, Integer> requiredItems) {
     this.requiredItems = requiredItems;
   }
 
   /**
-   * @param playerBoard the player's board.
-   * @return number of times the objective has been completed.
+   * @param playerBoard the player's board
+   * @return number of times the objective has been completed
    */
   @Override
   public int getCompletedOccurrences(PlayerBoard playerBoard) {
@@ -31,6 +35,7 @@ public class ItemsObjectiveStrategy implements ObjectiveStrategy {
         .min()
         .orElse(0);
   }
+
 
   public Map<Elements, Integer> getRequiredItems() {
     return new HashMap<>(requiredItems);

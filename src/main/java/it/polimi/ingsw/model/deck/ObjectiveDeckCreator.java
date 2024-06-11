@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.deck;
 
 import com.google.gson.*;
+import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.objective.ItemsObjectiveStrategy;
 import it.polimi.ingsw.model.card.objective.PatternObjectiveStrategy;
@@ -14,9 +15,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * Implementation of DeckCreator for ObjectiveCard cards.
+ *
+ * @see Deck
+ * @see ObjectiveCard
+ */
 public class ObjectiveDeckCreator implements DeckCreator {
+  /**
+   * Path to json file containing all ObjectiveCard cards
+   */
   private static final Path path = Paths.get("src/main/resources/json/objectiveCards.json");
 
+  /**
+   * Creates and returns an ObjectiveCard cards deck.
+   *
+   * @return the deck created
+   */
   public static Deck<ObjectiveCard> createDeck() {
     try {
       String content = new String(Files.readAllBytes(path));
@@ -137,6 +152,7 @@ public class ObjectiveDeckCreator implements DeckCreator {
 
       return new Deck<>(cards);
     } catch (IOException exception) {
+      exception.printStackTrace();
       System.out.println("Creation of objective deck failed!!");
       System.exit(1);
     }

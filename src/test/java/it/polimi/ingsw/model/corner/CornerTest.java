@@ -51,13 +51,13 @@ public class CornerTest {
     Corner corner;
 
     corner = new Corner(Resources.INSECT, CornerTypes.VISIBLE);
-    assertEquals(Optional.of(Resources.INSECT), corner.getItem());
+    assertEquals(Optional.of(Resources.INSECT), corner.element);
 
     corner = new Corner(Resources.PLANT, CornerTypes.COVERED);
-    assertEquals(Optional.of(Resources.PLANT), corner.getItem());
+    assertEquals(Optional.of(Resources.PLANT), corner.element);
 
     corner = new Corner(null, CornerTypes.HIDDEN);
-    assertEquals(Optional.empty(), corner.getItem());
+    assertEquals(Optional.empty(), corner.element);
   }
 
   @Test
@@ -65,12 +65,12 @@ public class CornerTest {
     Corner corner;
 
     corner = new Corner(null, CornerTypes.VISIBLE);
-    assertEquals(CornerTypes.VISIBLE, corner.getType());
+    assertEquals(CornerTypes.VISIBLE, corner.type);
 
     corner = new Corner(Resources.FUNGI, CornerTypes.COVERED);
-    assertEquals(CornerTypes.COVERED, corner.getType());
+    assertEquals(CornerTypes.COVERED, corner.type);
 
     corner = new Corner(null, CornerTypes.HIDDEN);
-    assertEquals(CornerTypes.HIDDEN, corner.getType());
+    assertEquals(CornerTypes.HIDDEN, corner.type);
   }
 }

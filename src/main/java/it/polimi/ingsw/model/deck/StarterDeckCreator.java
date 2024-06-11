@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.deck;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.model.card.ResourceCard;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.*;
@@ -13,9 +14,23 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of DeckCreator for StarterCard cards.
+ *
+ * @see Deck
+ * @see StarterCard
+ */
 public class StarterDeckCreator implements DeckCreator {
+  /**
+   * Path to json file containing all StarterCard cards
+   */
   private static final Path path = Paths.get("src/main/resources/json/starterCards.json");
 
+  /**
+   * Creates and returns a StarterCard cards deck.
+   *
+   * @return the deck created
+   */
   public static Deck<StarterCard> createDeck() {
     try {
       String content = new String(Files.readAllBytes(path));
@@ -97,6 +112,7 @@ public class StarterDeckCreator implements DeckCreator {
 
       return new Deck<>(cards);
     } catch (IOException exception) {
+      exception.printStackTrace();
       System.out.println("Creation of starter deck failed!!");
       System.exit(1);
     }

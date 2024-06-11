@@ -1,4 +1,9 @@
 package it.polimi.ingsw.model.common;
 
-/** This interface defines the possible elements (resources and items in the game). */
+/**
+ * This interface defines the possible elements (resources and items in the game).
+ *
+ * @see Items
+ * @see Elements
+ */
 public interface Elements {}

@@ -4,23 +4,20 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * A resource card is a playable card that doesn't require any resources to be placed on the board.
  * Some resource cards can give points when played on the front side.
  *
- * @see ResourceCardPoints
+ * @see Card
+ * @see PlayableCard
  */
 public class ResourceCard extends PlayableCard {
-  /** This attribute represents the resource domain of the card. */
-  private final Resources type;
-
   /**
-   * @param type resource domain of the card
-   * @param pointsType points given when playing the front of the card.
-   * @param frontCorners corners of the front of the card.
-   * @param backCorners corners of the back of the card.
+   * @param type card's seed
+   * @param pointsType points given when playing the front of the card
+   * @param frontCorners corners of the front of the card
+   * @param backCorners corners of the back of the card
    */
   public ResourceCard(
       int id,
@@ -28,12 +25,7 @@ public class ResourceCard extends PlayableCard {
       PointsType pointsType,
       Map<CornerPosition, Corner> frontCorners,
       Map<CornerPosition, Corner> backCorners) {
-    super(id, frontCorners, backCorners, pointsType);
-    this.type = type;
+    super(id, frontCorners, backCorners, type, pointsType);
   }
 
-  @Override
-  public Optional<Resources> getType() {
-    return Optional.of(type);
-  }
 }

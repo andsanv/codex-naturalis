@@ -15,9 +15,23 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of DeckCreator for GoldCard cards.
+ *
+ * @see Deck
+ * @see GoldCard
+ */
 public class GoldDeckCreator implements DeckCreator {
+  /**
+   * Path to json file containing all GoldCard cards
+   */
   private static final Path path = Paths.get("src/main/resources/json/goldCards.json");
 
+  /**
+   * Creates and returns a GoldCard cards deck.
+   *
+   * @return the deck created
+   */
   public static Deck<GoldCard> createDeck() {
     try {
       String content = new String(Files.readAllBytes(path));
@@ -61,7 +75,7 @@ public class GoldDeckCreator implements DeckCreator {
           Type cornerItemsType = new TypeToken<Map<String, String>>() {}.getType();
           Map<String, String> cornerItemsString = gson.fromJson(cornerItemsObj, cornerItemsType);
           Map<CornerPosition, Corner> frontCorners = new HashMap<>();
-          Map<CornerPosition, Corner> backCorner = new HashMap<>();
+          Map<CornerPosition, Corner> backCorners = new HashMap<>();
 
           for (Map.Entry<String, String> entry : cornerItemsString.entrySet()) {
 
@@ -90,19 +104,19 @@ public class GoldDeckCreator implements DeckCreator {
 
             frontCorners.put(CornerPosition.valueOf(entry.getKey().toUpperCase()), corner);
 
-            backCorner.put(
+            backCorners.put(
                 CornerPosition.valueOf(entry.getKey().toUpperCase()),
                 new Corner(null, CornerTypes.VISIBLE));
           }
 
           cards.add(
-              new GoldCard(
-                  id, resourceType, goldCardPoint, requiredResources, frontCorners, backCorner));
+              new GoldCard(id, frontCorners, backCorners,resourceType, goldCardPoint, requiredResources));
         }
       }
 
       return new Deck<>(cards);
     } catch (IOException exception) {
+      exception.printStackTrace();
       System.out.println("Creation of gold deck failed!!");
       System.exit(1);
     }

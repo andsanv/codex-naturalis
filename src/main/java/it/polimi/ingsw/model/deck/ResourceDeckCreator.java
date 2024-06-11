@@ -14,9 +14,23 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of DeckCreator for ResourceCard cards.
+ *
+ * @see Deck
+ * @see ResourceCard
+ */
 public class ResourceDeckCreator implements DeckCreator {
+  /**
+   * Path to json file containing all ResourceCard cards
+   */
   private static final Path path = Paths.get("src/main/resources/json/resourceCards.json");
 
+  /**
+   * Creates and returns a ResourceCard cards deck.
+   *
+   * @return the deck created
+   */
   public static Deck<ResourceCard> createDeck() {
     try {
       String content = new String(Files.readAllBytes(path));
@@ -89,6 +103,7 @@ public class ResourceDeckCreator implements DeckCreator {
 
       return new Deck<>(cards);
     } catch (IOException exception) {
+      exception.printStackTrace();
       System.out.println("Creation of resource deck failed!!");
       System.exit(1);
     }

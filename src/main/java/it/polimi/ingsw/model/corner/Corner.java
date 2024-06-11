@@ -5,53 +5,48 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * This class represents a corner of a card. Each card has four corners that can have different
- * states.
+ * This class represents a corner of a card.
+ * Each card has four corners.
  */
 public class Corner {
-  private final Optional<Elements> cornerElement;
-  private CornerTypes cornerType;
+  /**
+   * The element on the corner.
+   * There could be no elements on a corner.
+   */
+  public final Optional<Elements> element;
 
   /**
-   * @param cornerElement the element contained in corner
-   * @param cornerType the corner's type (hidden, covered or visible)
+   * Type of corner, which specifies its visibility.
+   * Not final as it can change at runtime.
    */
-  public Corner(Elements cornerElement, CornerTypes cornerType) {
-    this.cornerElement = Optional.ofNullable(cornerElement);
-    this.cornerType = cornerType;
+  public CornerTypes type;
+
+  /**
+   * @param element the element contained in the corner
+   * @param type the corner's type (hidden, covered or visible)
+   */
+  public Corner(Elements element, CornerTypes type) {
+    this.element = Optional.ofNullable(element);
+    this.type = type;
   }
 
   /**
-   * @return True if a card can be placed on the corner, false otherwise
+   * @return true if a card can be placed on the corner, false otherwise
    */
   public boolean canPlaceCardAbove() {
-    return cornerType == CornerTypes.VISIBLE;
-  }
-  ;
-
-  /**
-   * @return An optional containing the element in the corner.
-   */
-  public Optional<Elements> getItem() {
-    return cornerElement;
+    return type == CornerTypes.VISIBLE;
   }
 
   /**
-   * @return the type of the corner
+   * Override of Object::equals method for Corner class.
+   *
+   * @param other corner to which this is compared
+   * @return true if the corners are the same, false otherwise
    */
-  public CornerTypes getType() {
-    return cornerType;
-  }
-
-  public void setType(CornerTypes cornerType) {
-    this.cornerType = cornerType;
-  }
-
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Corner corner = (Corner) o;
-    return Objects.equals(cornerElement, corner.cornerElement) && cornerType == corner.cornerType;
+  public boolean equals(Object other) {
+    if (other == null || getClass() != other.getClass()) return false;
+
+    return this == other || Objects.equals(element, ((Corner) other).element) && type == ((Corner) other).type;
   }
 }

@@ -7,37 +7,59 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
-/** TODO: add javadoc, after discussion (see below) */
-// TODO discuss implementation of a deck factory/abstract factory
-public class Deck<T extends Card> extends Observable {
-  private final Stack<T> deck;
+/**
+ * A deck is a collection of cards, implemented as a stack of generic cards.
+ * All cards in a Deck must be of the same type.
+ *
+ * @param <CardType>
+ */
+public class Deck<CardType extends Card> extends Observable {
+  /**
+   * The actual stack.
+   */
+  private final Stack<CardType> deck;
 
-  public Optional<T> draw() {
-    return deck.empty() ? Optional.empty() : Optional.of(deck.pop());
-  }
-
-  public boolean isEmpty() {
-    return deck.empty();
-  }
-
-  Deck(List<T> cards) {
+  /**
+   * @param cards list of cards that will be added to the deck
+   */
+  public Deck(List<CardType> cards) {
     deck = new Stack<>();
+
     Collections.shuffle(cards);
     deck.addAll(cards);
   }
 
+  public Optional<CardType> draw() {
+    return deck.empty() ? Optional.empty() : Optional.of(deck.pop());
+  }
+
+  /**
+   * Override of Object::toString method for Deck class.
+   *
+   * @return a string that represents the deck
+   */
   @Override
   public String toString() {
     StringBuilder stringBuilder = new StringBuilder();
 
-    deck.stream()
-        .forEach(
-            e -> {
-              stringBuilder.append(e.toString() + "\n");
-            });
+    deck.forEach(e -> stringBuilder.append(e.toString()).append("\n"));
     return stringBuilder.toString();
   }
 
+  /**
+   * Reimplementation of Stack::empty method.
+   *
+   * @return true if deck is empty, false otherwise
+   */
+  public boolean isEmpty() {
+    return deck.empty();
+  }
+
+  /**
+   * Reimplementation of Stack::size method.
+   *
+   * @return the size of the deck
+   */
   public int size() {
     return deck.size();
   }

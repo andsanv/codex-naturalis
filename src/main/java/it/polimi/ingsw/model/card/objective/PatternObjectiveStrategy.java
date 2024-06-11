@@ -6,13 +6,17 @@ import it.polimi.ingsw.model.player.PlayerBoard;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** Strategy to calculate points for an objective card based on patterns on a player board. */
+/**
+ * Strategy to calculate points for an objective card based on patterns on a player board.
+ *
+ * @see ObjectiveStrategy
+ */
 public class PatternObjectiveStrategy implements ObjectiveStrategy {
   /**
-   * Map representing a matrix of the required pattern for objective completion. The cell in the
-   * bottom-left of the smallest matrix containing the pattern must have (0,0) coordinates.
+   * Map representing a matrix of the required pattern for objective completion.
+   * The cell in the bottom-left of the smallest matrix containing the pattern must have (0,0) coordinates.
    */
-  private Map<Coords, Resources> pattern;
+  private final Map<Coords, Resources> pattern;
 
   /**
    * @param patternMap the pattern to be matched
@@ -21,14 +25,9 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
     this.pattern = patternMap;
   }
 
-  @Override
-  public int hashCode() {
-    return 0;
-  }
-
   /**
    * @param playerBoard the player's board
-   * @return number of times the objective has been completed.
+   * @return number of times the objective has been completed
    */
   @Override
   public int getCompletedOccurrences(PlayerBoard playerBoard) {
@@ -40,13 +39,12 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
                     Map.Entry::getKey,
                     e ->
                         e.getValue()
-                            .getType()
-                            .get() // isPresent() isn't checked since the starter card has been
-                    // filtered out.
+                            .type
+                            .get() // isPresent() isn't checked since the starter card has been filtered out
                     ));
 
     // Early return if only the starter card has been placed
-    if (board.keySet().size() == 0) return 0;
+    if (board.keySet().isEmpty()) return 0;
 
     int x_max = Integer.MIN_VALUE;
     int x_min = Integer.MAX_VALUE;
@@ -100,6 +98,12 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
     return pattern_count;
   }
 
+  /**
+   * pattern's getter.
+   * Private final and getter with copy (instead of public) to make the map constant.
+   *
+   * @return (a copy of) pattern
+   */
   public Map<Coords, Resources> getPattern() {
     return new HashMap<>(pattern);
   }

@@ -5,41 +5,46 @@ import it.polimi.ingsw.model.card.PlayableCard;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Class that represents the three cards in a player's hand. */
+/**
+ * This class represents the three cards in a player's hand.
+ *
+ * @see Player
+ * @see PlayableCard
+ */
 public class PlayerHand extends Observable {
-  /** The list that holds the cards in the player's hand. */
-  private List<PlayableCard> cards;
+  /**
+   * The list that holds the cards in the player's hand.
+   */
+  private final List<PlayableCard> cards;
 
-  /** Empty player hand. */
+  /**
+   * Initializes the player hand as empty.
+   */
   public PlayerHand() {
     this.cards = new ArrayList<>();
   }
 
   /**
-   * Constructor by copy.
-   *
-   * @param other other PlayerHand object.
-   */
-  public PlayerHand(PlayerHand other) {
-    this.cards = other.getCards();
-  }
-
-  /**
-   * @param card card to add to the player's hand.
+   * Adds a card to the hand of the player.
+   * 
+   * @param card card to add
    */
   public void addCard(PlayableCard card) {
     cards.add(card);
   }
 
   /**
-   * @param card card to remove from player's hand.
+   * Removes a card from the hand of the player.
+   *
+   * @param card card to remove
    */
   public void removeCard(PlayableCard card) {
     cards.remove(card);
   }
 
   /**
-   * Method to get a list of cards.
+   * cards' getter.
+   * Private final and getter with copy (instead of public) to make the list constant.
    *
    * @return list of cards.
    */

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.corner;
 
 /**
- * /** This enum defines the position of a corner in a card.
+ * This enum defines the position of a corner in a card.
  *
  * @see Corner
  */
@@ -11,6 +11,11 @@ public enum CornerPosition {
   BOTTOM_RIGHT,
   BOTTOM_LEFT;
 
+  /**
+   * Allows to get opposite position.
+   *
+   * @return the opposite position
+   */
   public CornerPosition getOpposite() {
     switch (this) {
       case TOP_LEFT:
@@ -21,8 +26,8 @@ public enum CornerPosition {
         return TOP_LEFT;
       case BOTTOM_LEFT:
         return TOP_RIGHT;
-      default:
-        return TOP_LEFT;
     }
+
+    return TOP_LEFT;
   }
 }

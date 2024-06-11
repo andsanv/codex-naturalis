@@ -54,12 +54,12 @@ public class PlayerBoard extends Observable {
         };
 
     if (starterCard.getPlayedSide() == CardSide.BACK)
-      for (Resources resource : starterCard.centralResources)
+      for (Resources resource : starterCard.getCentralResources())
         playerItems.put(resource, playerItems.get(resource) + 1);
 
     for (Corner corner : starterCard.getActiveCorners().values())
-      if (corner.getType() == CornerTypes.VISIBLE && corner.getItem().isPresent()) {
-        Elements e = corner.getItem().get();
+      if (corner.type == CornerTypes.VISIBLE && corner.element.isPresent()) {
+        Elements e = corner.element.get();
         playerItems.put(e, playerItems.get(e) + 1);
       }
   }
@@ -175,7 +175,7 @@ public class PlayerBoard extends Observable {
   public void updatePlayerItems(Coords coords) {
     // Remove covered items
     adjacentCorners(coords).values().stream()
-        .map(Corner::getItem)
+        .map(x -> x.element)
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
@@ -186,13 +186,13 @@ public class PlayerBoard extends Observable {
     // Add card type resource
     PlayableCard placedCard = this.getCard(coords);
     if (placedCard.getPlayedSide() == CardSide.BACK) {
-      Resources cardResource = placedCard.getType().get();
+      Resources cardResource = placedCard.type.get();
       playerItems.put(cardResource, playerItems.get(cardResource) + 1);
     }
 
     // Add corner items
     placedCard.getActiveCorners().values().stream()
-        .map(Corner::getItem)
+        .map(x -> x.element)
         .filter(Optional::isPresent)
         .map(Optional::get)
         .forEach(
