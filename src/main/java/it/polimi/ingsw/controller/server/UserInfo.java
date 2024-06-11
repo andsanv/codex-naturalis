@@ -33,4 +33,9 @@ public final class UserInfo implements Serializable {
     UserInfo other = (UserInfo) obj;
     return this.name.equals(other.name) && this.id == other.id;
   }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode() + id;
+  }
 }

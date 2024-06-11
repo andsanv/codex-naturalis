@@ -70,8 +70,7 @@ public enum Server {
                             System.out.println("Sent keep alive to " + entry.getKey());
                             System.out.println(entry.getValue().first);
                           } catch (IOException e) {
-                            //connectedPlayers.put(entry.getKey(), new Pair<MainViewActions,Boolean>(entry.getValue().first, false));
-                            connectedPlayers.remove(entry.getKey());
+                            connectedPlayers.put(entry.getKey(), new Pair<>(entry.getValue().first, false));
                             System.err.println("Error: Couldn't send message to " + entry.getValue().first);
                             System.err.println("Client probably disconnected");
                           }                          
@@ -246,16 +245,7 @@ public enum Server {
   }
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
-    System.out.println(userInfo);
-    System.out.println(playersInMenu.keySet());
-
-    System.out.println(userInfo.hashCode());
-    
-    playersInMenu.entrySet().stream().forEach(entry -> System.out.println(userInfo.equals(entry.getKey())));
-
-    // TODO Why result is false?
     if(playersInMenu.keySet().contains(userInfo)) {
-      connectedPlayers.remove(userInfo);
       connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
     } else {
       try {
