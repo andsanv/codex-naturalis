@@ -104,7 +104,7 @@ public class PlayerBoard extends Observable {
    * @param coords coordinates of a point
    * @return A map containing the adjacent slots' coordinates
    */
-  public static Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
+  public Map<CornerPosition, Coords> adjacentCoords(Coords coords) {
     return new HashMap<CornerPosition, Coords>() {
       {
         put(CornerPosition.TOP_LEFT, new Coords(coords.x - 1, coords.y + 1));
@@ -113,6 +113,19 @@ public class PlayerBoard extends Observable {
         put(CornerPosition.BOTTOM_LEFT, new Coords(coords.x - 1, coords.y - 1));
       }
     };
+  }
+
+  /**
+   * Used to get all available slots for card placement
+   *
+   * @return list of available coords
+   */
+  public List<Coords> availableCoords() {
+    return board.keySet().stream()
+            .flatMap(x -> adjacentCoords(x).values().stream())
+            .filter(x -> !getBoard().containsKey(x))
+            .filter(x -> adjacentCorners(x).values().stream().allMatch(Corner::canPlaceCardAbove))
+            .collect(Collectors.toList());
   }
 
   /**

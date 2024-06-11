@@ -59,5 +59,5 @@ public interface GameEventHandler {
 
   public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults);
 
-  public void handleCardsPlayabilityEvent(PlayerToken playerToken, Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability);
+  public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability);
 }

@@ -15,6 +15,9 @@ public class DrawGoldDeckCardCommand extends GameCommand {
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    return gameFlowManager.getCurrentState().drawGoldDeckCard(playerToken);
+    boolean result = gameFlowManager.getCurrentState().drawGoldDeckCard(playerToken);
+    gameFlowManager.addCommand(new CardsPlayabilityCommand(playerToken));
+
+    return result;
   }
 }

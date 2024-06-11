@@ -10,10 +10,10 @@ import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.deck.VisibleCardsList;
 import it.polimi.ingsw.model.player.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Handles updates of the model */
@@ -98,6 +98,32 @@ public class GameModelUpdater {
   }
 
   /**
+   * Checks at which coordinates each card in the hand of the player can be placed, and
+   * sends him an event with the results
+   *
+   * @param playerToken token representing the player
+   * @return true
+   */
+  public boolean computeCardsPlayability(PlayerToken playerToken) {
+    PlayerBoard playerBoard = getPlayers().get(playerToken).getBoard();
+    List<PlayableCard> handCards = getPlayers().get(playerToken).getHand().getCards();
+    List<Coords> availableSlots = playerBoard.availableCoords();
+
+    Map<Integer, List<Pair<CardSide, Boolean>>> enoughResources = new HashMap<>();
+    for(PlayableCard card : handCards) {
+      ArrayList<Pair<CardSide, Boolean>> enoughResourcesByCardSide = new ArrayList<>();
+      enoughResourcesByCardSide.add(new Pair<>(CardSide.FRONT, card.enoughResources(playerBoard.getPlayerItems(), CardSide.FRONT)));
+      enoughResourcesByCardSide.add(new Pair<>(CardSide.BACK, card.enoughResources(playerBoard.getPlayerItems(), CardSide.BACK)));
+
+      enoughResources.put(card.getId(), enoughResourcesByCardSide);
+    }
+
+    playerBoard.notify(new CardsPlayabilityEvent(playerToken, availableSlots, enoughResources));
+
+    return true;
+  }
+
+  /**
    * @param playerToken the token of the player
    * @return true if the action has been completed successfully, false otherwise
    */
@@ -121,6 +147,7 @@ public class GameModelUpdater {
 
   /**
    * @param playerToken the token of the player
+   *
    * @return true if the action has been completed successfully, false otherwise
    */
   public boolean drawGoldDeckCard(PlayerToken playerToken) {

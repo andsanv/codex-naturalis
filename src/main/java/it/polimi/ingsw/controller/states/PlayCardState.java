@@ -29,4 +29,14 @@ public class PlayCardState extends GameState {
     return gameFlowManager.getTurn().equals(playerToken)
         && gameModelUpdater.playCard(playerToken, coords, card, cardSide);
   }
+
+  /**
+   * Allows a user to discover at which coordinates he can play the cards in his hand
+   *
+   * @return a boolean that depends on whether the operation was successful or not
+   */
+  @Override
+  public boolean getCardsPlayability(PlayerToken playerToken) {
+    return gameModelUpdater.computeCardsPlayability(playerToken);
+  }
 }

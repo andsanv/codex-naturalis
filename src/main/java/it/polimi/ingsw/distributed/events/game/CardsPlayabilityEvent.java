@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,16 +22,23 @@ public class CardsPlayabilityEvent extends GameEvent {
     public final PlayerToken playerToken;
 
     /**
-     * Map where keys are cardIds, and each value is a pair of CardSide and list of coordinates at which that side of the card can be placed
+     * Map that track whether a card can be placed or not, both sides considered
      */
-    public final Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability;
+    public final Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability;
 
-    public CardsPlayabilityEvent(PlayerToken playerToken, Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability) {
+    /**
+     * Tracks coordinates of slots on which cards can be played
+     * Coordinates do not depend on the card
+     */
+    public final List<Coords> availableSlots;
+
+    public CardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
         this.playerToken = playerToken;
         this.cardsPlayability = cardsPlayability;
+        this.availableSlots = availableSlots;
     }
 
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleCardsPlayabilityEvent(playerToken, cardsPlayability);
+        gameUpdateHandler.handleCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability);
     }
 }

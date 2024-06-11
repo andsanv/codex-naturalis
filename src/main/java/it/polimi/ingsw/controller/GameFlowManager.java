@@ -254,6 +254,7 @@ public class GameFlowManager implements Runnable {
       }
     }
 
+
     turn += 1;
     setState(playCardState);
   }
