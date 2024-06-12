@@ -62,7 +62,7 @@ public class TokenSelectionState extends GameState {
    * @return The final player to chosen token map
    */
   @Override
-  public Map<String, PlayerToken> handleTokenSelection() {
+  public Map<String, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
     Timer timer = new Timer();
 
     Queue<GameCommand> commands = gameFlowManager.commands;
@@ -108,7 +108,7 @@ public class TokenSelectionState extends GameState {
       }
     }
 
-    IdToToken.forEach((id, playerToken) -> gameFlowManager.playerTokens.add(playerToken));
+    IdToToken.forEach((id, playerToken) -> playerTokens.add(playerToken));
     gameFlowManager.setState(gameFlowManager.starterCardSelectionState);
     gameFlowManager.notify(new EndedTokenPhaseEvent());
     return new HashMap<>(IdToToken);

@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.deck;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.PointsType;
 import it.polimi.ingsw.model.common.Items;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +34,7 @@ public class GoldDeckCreator implements DeckCreator {
    *
    * @return the deck created
    */
-  public static Deck<GoldCard> createDeck() {
+  public static Deck<GoldCard> createDeck(List<Observer> observers, AtomicInteger lastEventId) {
     try {
       String content = new String(Files.readAllBytes(path));
 
@@ -114,7 +116,7 @@ public class GoldDeckCreator implements DeckCreator {
         }
       }
 
-      return new Deck<>(cards);
+      return new Deck<>(cards, observers, lastEventId);
     } catch (IOException exception) {
       exception.printStackTrace();
       System.out.println("Creation of gold deck failed!!");

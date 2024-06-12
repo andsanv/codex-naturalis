@@ -538,8 +538,7 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleCardsPlayabilityEvent(PlayerToken playerToken,
-            Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability) {
+    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
     }

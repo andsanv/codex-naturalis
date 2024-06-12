@@ -1,52 +1,71 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.distributed.events.game.LimitPointsReachedEvent;
 import it.polimi.ingsw.distributed.events.game.UpdatedScoreTrackEvent;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class that represents the scoreboard.
  *
  * @see Player
+ * @see GameModel
  */
 public class ScoreTrack extends Observable {
-  /** Map that holds players' scores. */
-  private Map<PlayerToken, Integer> scores;
-
-  private int maxScore;
+  /**
+   * Map that holds players' scores.
+   */
+  private final Map<PlayerToken, Integer> scores;
 
   /**
-   * @param playerTokens list of tokens currently playing
+   * When a player reaches limitScore, last turn of the game starts
    */
-  public ScoreTrack(List<PlayerToken> playerTokens) {
-    this.scores = new HashMap<>();
+  private final int limitScore = 20;
 
-    for (PlayerToken playerToken : playerTokens) this.scores.put(playerToken, 0);
+  /**
+   * Used to check whether someone reaching limitScore was already notified to players.
+   */
+  private boolean alreadyNotified = false;
+
+  /**
+   * @param scores initial scores of the players (all zero)
+   * @param observers list of observers
+   * @param lastEventId integer used to uniquely identify events
+   */
+  public ScoreTrack(Map<PlayerToken, Integer> scores, List<Observer> observers, AtomicInteger lastEventId) {
+    super(observers, lastEventId);
+    this.scores = scores;
   }
 
   /**
+   * Allows to update a player's score.
+   *
    * @param playerToken token of the player that gets the points
-   * @param incrementPoints points to add to the player's current points
+   * @param incrementPoints points to insert to the player's current points
    */
-  public int updatePlayerScore(PlayerToken playerToken, Integer incrementPoints) {
+  public void updatePlayerScore(PlayerToken playerToken, Integer incrementPoints) {
     int newScore = scores.get(playerToken) + incrementPoints;
     scores.put(playerToken, newScore);
 
-    if (scores.get(playerToken) > maxScore) maxScore = newScore;
+    if(limitPointsReached() && !alreadyNotified) {
+      notify(new LimitPointsReachedEvent(playerToken, newScore, limitScore));
+      alreadyNotified = true;
+    }
 
     notify(new UpdatedScoreTrackEvent(playerToken, newScore));
-    return newScore;
   }
 
   /**
-   * @return True if someone reached 20 points, false otherwise.
+   * @return true if someone reached limitScore, false otherwise.
    */
-  public boolean isGameFinished() {
-    return maxScore >= 20;
+  public boolean limitPointsReached() {
+    return scores.values().stream().anyMatch(x -> x >= limitScore);
   }
 
   /**

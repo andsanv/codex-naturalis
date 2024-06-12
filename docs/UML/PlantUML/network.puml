@@ -160,11 +160,11 @@ package client {
         + handleChosenSecretObjective()
         + handleStarterCardSelf()
         + handleTokenAssignment()
-        ' TODO add gameUpdate
+        ' TODO insert gameUpdate
         + handleReconnection()
     }
 
-    ' TODO add eventQueue to a client class
+    ' TODO insert eventQueue to a client class
 
     abstract class UserInterface implements GameUpdateHandler {
 

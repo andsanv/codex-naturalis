@@ -91,7 +91,7 @@ class PlayerBoardTest {
     return new GoldCard(id, type, goldCardPoints, requiredResources, frontCorners, backCorners);
   }
 
-  // TODO: add more complex testing in different card mapping (e.g.
+  // TODO: insert more complex testing in different card mapping (e.g.
   // allMatch(Corner::canPlaceCardAbove) angelo )
   @Test
   void canPlaceCardAtTestPosition() {
@@ -114,7 +114,7 @@ class PlayerBoardTest {
 
     // Test after card placement
     card1.playSide(CardSide.FRONT);
-    playerBoard.setCard(new Coords(1, 1), card1);
+    playerBoard.placeCard(new Coords(1, 1), card1);
 
     assertTrue(playerBoard.canPlaceCardAt(new Coords(2, 2), card2, CardSide.BACK));
     assertTrue(playerBoard.canPlaceCardAt(new Coords(0, 2), card2, CardSide.BACK));

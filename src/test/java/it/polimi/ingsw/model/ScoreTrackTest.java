@@ -55,10 +55,10 @@ public class ScoreTrackTest {
     scoreTrack.updatePlayerScore(PlayerToken.RED, 19);
     scoreTrack.updatePlayerScore(PlayerToken.GREEN, 5);
 
-    assertFalse(scoreTrack.isGameFinished());
+    assertFalse(scoreTrack.limitPointsReached());
 
     scoreTrack.updatePlayerScore(PlayerToken.RED, 1);
 
-    assertTrue(scoreTrack.isGameFinished());
+    assertTrue(scoreTrack.limitPointsReached());
   }
 }

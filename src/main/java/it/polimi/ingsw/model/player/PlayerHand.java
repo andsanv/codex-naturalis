@@ -11,7 +11,7 @@ import java.util.List;
  * @see Player
  * @see PlayableCard
  */
-public class PlayerHand extends Observable {
+public class PlayerHand {
   /**
    * The list that holds the cards in the player's hand.
    */
@@ -20,14 +20,14 @@ public class PlayerHand extends Observable {
   /**
    * Initializes the player hand as empty.
    */
-  public PlayerHand() {
-    this.cards = new ArrayList<>();
+  public PlayerHand(List<PlayableCard> initialCards) {
+    this.cards = new ArrayList<>(initialCards);
   }
 
   /**
    * Adds a card to the hand of the player.
    * 
-   * @param card card to add
+   * @param card card to insert
    */
   public void addCard(PlayableCard card) {
     cards.add(card);

@@ -1,20 +1,34 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.GameModelUpdater;
+import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
+import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * State through which the flow manager initializes the model
  */
 public class InitializationState extends GameState {
-  public InitializationState(GameFlowManager gameFlowManager) {
+  private final List<Observer> observers;
+  private final AtomicInteger lastEventId;
+  private final Decks decks;
+
+  public InitializationState(GameFlowManager gameFlowManager, Decks decks, List<Observer> observers, AtomicInteger lastEventId) {
     super(gameFlowManager);
+
+    this.decks = decks;
+    this.observers = observers;
+    this.lastEventId = lastEventId;
   }
 
     /**
@@ -31,37 +45,17 @@ public class InitializationState extends GameState {
       Map<String, PlayerToken> idToToken,
       Map<PlayerToken, StarterCard> tokenToStarterCard,
       Map<PlayerToken, CardSide> tokenToCardSide,
-      Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard) {
-    // set up ScoreTrack
-    gameModelUpdater.setScoreTrack(new ArrayList<>(idToToken.values()));
+      Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard
+  ) {
+    // set up model
+    List<ObjectiveCard> commonObjectives = new ArrayList<>(Arrays.asList(decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow(), decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow()));
+    List<PlayerToken> playerTokens = new ArrayList<>(idToToken.values());
 
-    // add Player objects
-    idToToken
-        .values()
-        .forEach(
-            playerToken ->
-                gameModelUpdater.addPlayer(
-                    playerToken,
-                    tokenToStarterCard.get(playerToken),
-                    tokenToCardSide.get(playerToken),
-                    tokenToObjectiveCard.get(playerToken)));
-
-    // fill players' hands
-    idToToken
-        .values()
-        .forEach(
-            playerToken -> {
-              gameModelUpdater.drawResourceDeckCard(playerToken);
-              gameModelUpdater.drawResourceDeckCard(playerToken);
-              gameModelUpdater.drawGoldDeckCard(playerToken);
-            });
-
-    // set common objectives
-    gameModelUpdater.setCommonObjectives(
-        new ArrayList<>(
-            Arrays.asList(
-                gameModelUpdater.drawObjectiveCard().get(),
-                gameModelUpdater.drawObjectiveCard().get())));
+    GameModelUpdater gameModelUpdater = new GameModelUpdater(
+            new GameModel(decks, playerTokens, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard, commonObjectives, observers, lastEventId)
+    );
+    gameFlowManager.setGameModelUpdater(gameModelUpdater);
+    gameFlowManager.initializeGameStates();
 
     // start the game
     gameFlowManager.setState(gameFlowManager.playCardState);

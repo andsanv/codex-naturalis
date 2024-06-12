@@ -6,21 +6,20 @@ import it.polimi.ingsw.model.player.PlayerToken;
 /** Event to signal that a player has drawn his possible objective cards */
 public class DrawnObjectiveCardsEvent extends GameEvent {
   private final PlayerToken playerToken;
-  private final int firstCardId;
-  private final int secondCardId;
+  private final int firstDrawnCardId;
+  private final int secondDrawnCardId;
 
   /**
    * @param playerToken token of the player drawing the cards
-   * @param firstCardId id of the first objective card drawn
-   * @param secondCardId id of the second objective card drawn
+   * @param firstDrawnCardId id of the objective card drawn
    */
-  public DrawnObjectiveCardsEvent(PlayerToken playerToken, int firstCardId, int secondCardId) {
+  public DrawnObjectiveCardsEvent(PlayerToken playerToken, int firstDrawnCardId, int secondDrawnCardId) {
     this.playerToken = playerToken;
-    this.firstCardId = firstCardId;
-    this.secondCardId = secondCardId;
+    this.firstDrawnCardId = firstDrawnCardId;
+    this.secondDrawnCardId = secondDrawnCardId;
   }
 
   public void execute(GameEventHandler gameUpdateHandler) {
-    gameUpdateHandler.handleDrawnObjectiveCardsEvent(playerToken, firstCardId, secondCardId);
+    gameUpdateHandler.handleDrawnObjectiveCardsEvent(playerToken, firstDrawnCardId, secondDrawnCardId);
   }
 }

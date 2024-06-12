@@ -15,7 +15,7 @@ public interface DeckCreator {
    * @return a Deck
    * @throws IOException if an I/O error occurs
    */
-  static Deck<? extends Card> createDeck() throws IOException {
+  static Deck<? extends Card> createDeck() {
     return null;
   }
 }

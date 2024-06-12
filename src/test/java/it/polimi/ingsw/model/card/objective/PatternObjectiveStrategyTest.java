@@ -162,6 +162,6 @@ public class PatternObjectiveStrategyTest {
 
   void playCard(PlayerBoard board, PlayableCard card, CardSide side, Coords coords) {
     card.playSide(side);
-    board.setCard(coords, card);
+    board.placeCard(coords, card);
   }
 }

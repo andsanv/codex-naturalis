@@ -7,6 +7,7 @@ import it.polimi.ingsw.distributed.events.game.DrawnStarterCardEvent;
 import it.polimi.ingsw.distributed.events.game.EndedStarterCardPhaseEvent;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.StarterCard;
+import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
@@ -21,6 +22,11 @@ public class StarterCardSelectionState extends GameState {
    * List of tokens in the match
    */
   private final List<PlayerToken> playerTokens;
+
+  /**
+   * Decks used to draw setup cards.
+   */
+  private final Decks decks;
 
   /**
    * Time limit within which players need to decide their starter card side
@@ -43,11 +49,12 @@ public class StarterCardSelectionState extends GameState {
   private final Map<PlayerToken, CardSide> TokenToCardSide;
 
   public StarterCardSelectionState(
-          GameFlowManager gameFlowManager, List<PlayerToken> playerTokens, long timeLimit) {
+          GameFlowManager gameFlowManager, Decks decks, List<PlayerToken> playerTokens, long timeLimit) {
     super(gameFlowManager);
 
     this.timeLimit = timeLimit;
 
+    this.decks = decks;
     this.playerTokens = playerTokens;
     this.TokenToStarterCard = new HashMap<>();
     this.TokenToCardSide = new HashMap<>();
@@ -62,8 +69,7 @@ public class StarterCardSelectionState extends GameState {
    * @return The two maps containing information on what card and what side each player chose
    */
   @Override
-  public Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>>
-      handleStarterCardSelection() {
+  public Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> handleStarterCardSelection() {
     Timer timer = new Timer();
 
     Queue<GameCommand> commands = gameFlowManager.commands;
@@ -98,7 +104,7 @@ public class StarterCardSelectionState extends GameState {
         playerTokens.stream()
             .filter(pt -> !TokenToStarterCard.containsKey(pt))
             .forEach(
-                pt -> TokenToStarterCard.put(pt, gameModelUpdater.drawStarterCard().orElse(null)));
+                pt -> TokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt).orElseThrow()));
         playerTokens.stream()
             .filter(pt -> !TokenToCardSide.containsKey(pt))
             .forEach(pt -> TokenToCardSide.put(pt, sides.get(random.nextInt(sides.size()))));
@@ -124,16 +130,10 @@ public class StarterCardSelectionState extends GameState {
   public boolean drawStarterCard(PlayerToken playerToken) {
     if (TokenToStarterCard.containsKey(playerToken)) return false;
 
-    Optional<StarterCard> starterCard = gameModelUpdater.drawStarterCard();
+    StarterCard starterCard = decks.starterCardsDeck.draw(playerToken).orElseThrow();
 
-    if(!starterCard.isPresent()) {
-      TokenToStarterCard.put(playerToken, null);
-      System.err.println("ERROR: draw starter card failed.");
-      return false;
-    }
-
-    TokenToStarterCard.put(playerToken, starterCard.get());
-    gameFlowManager.notify(new DrawnStarterCardEvent(playerToken, starterCard.get().getId()));
+    TokenToStarterCard.put(playerToken, starterCard);
+    decks.starterCardsDeck.notify(new DrawnStarterCardEvent(playerToken, starterCard.id));
     return true;
   }
 
@@ -152,7 +152,7 @@ public class StarterCardSelectionState extends GameState {
 
     TokenToCardSide.put(playerToken, cardSide);
 
-    gameFlowManager.notify(new ChosenStarterCardSideEvent(playerToken, cardSide));
+    decks.starterCardsDeck.notify(new ChosenStarterCardSideEvent(playerToken, cardSide));
     return true;
   }
 }

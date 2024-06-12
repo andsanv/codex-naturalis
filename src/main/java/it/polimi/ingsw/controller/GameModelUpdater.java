@@ -1,120 +1,91 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.observer.Observable;
-import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.events.game.*;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
-import it.polimi.ingsw.model.corner.CornerTypes;
-import it.polimi.ingsw.model.deck.VisibleCardsList;
 import it.polimi.ingsw.model.player.*;
 
 import it.polimi.ingsw.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
-/** Handles updates of the model */
+/**
+ * One of the tree main classes that manage a game.
+ * It receives instructions by the GameFlowManager, and acts on the GameModel, updating it.
+ *
+ * @see GameFlowManager
+ * @see GameModel
+ */
 public class GameModelUpdater {
-  private final GameModel model;
-  private final AtomicInteger lastEventId;
+  /**
+   * The model of the game.
+   */
+  public final GameModel gameModel;
 
-  public GameModelUpdater(GameModel model, List<Observer> observers) {
-    this.model = model;
-    this.lastEventId = new AtomicInteger(1);
-
-    Observable.setObservers(observers);
-    Observable.setLastEventId(lastEventId);
+  /**
+   * @param gameModel model of the game
+   */
+  public GameModelUpdater(GameModel gameModel) {
+    this.gameModel = gameModel;
   }
 
   /**
-   * Method that plays the given card at the given coordinates
+   * Allows a player to play the given card (and side) at the given coordinates.
+   * It updates player elements in case the card placement was successful.
    *
+   * @param playerToken token of the player playing the card
    * @param coords coords at which to play the card
    * @param card card to play
-   * @return boolean based on whether the card was placed or not
+   * @param cardSide side of the card to play
+   * @return false if the card cannot be played at that coordinates, true otherwise
    */
-  public boolean playCard(
-      PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
-    Player player = model.tokenToPlayer.get(playerToken);
-    PlayerBoard playerBoard = player.getBoard();
-    PlayerHand playerHand = player.getHand();
+  public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+    Player player = gameModel.tokenToPlayer.get(playerToken);
+    PlayerBoard playerBoard = player.playerBoard;
 
-    if (!player.getBoard().canPlaceCardAt(coords, card, cardSide)) return false;
+    if (!playerBoard.canPlaceCardAt(coords, card, cardSide)) return false;
 
-    playerHand.removeCard(card);
-    card.playSide(cardSide);
-    playerBoard.setCard(coords, card);
+    player.playerHand.removeCard(card);
+    PlayedCardEvent playedCardEvent = playerBoard.placeCard(playerToken, coords, card, cardSide);
+    gameModel.slimGameModel.addPlayedCard(playedCardEvent);
 
-    // playability is already checked, so no HIDDEN corners are present
-    playerBoard
-        .adjacentCorners(coords)
-        .values()
-        .forEach(corner -> corner.type = CornerTypes.COVERED);
+    playerBoard.updatePlayerElements(playerToken, coords);
 
-    playerBoard.updatePlayerItems(coords);
-    PlayerElementsEvent playerElementsEvent = new PlayerElementsEvent(playerToken, new HashMap<>(playerBoard.getPlayerItems()));
-    playerBoard.notify(playerElementsEvent);
-    model.slimGameModel.updatePlayerItems(playerElementsEvent);
+    int points = switch (card.pointsType) {
+        case ONE -> 1;
+        case THREE -> 3;
+        case FIVE -> 5;
+        case ONE_PER_QUILL -> playerBoard.playerElements.get(Items.QUILL);
+        case ONE_PER_INKWELL -> playerBoard.playerElements.get(Items.INKWELL);
+        case ONE_PER_MANUSCRIPT -> playerBoard.playerElements.get(Items.MANUSCRIPT);
+        case TWO_PER_COVERED_CORNER -> 2 * playerBoard.adjacentCards(coords).keySet().size();
+        default -> 0;
+    };
 
-    int points;
-    switch (card.pointsType) {
-      case ONE:
-        points = 1;
-        break;
-      case THREE:
-        points = 3;
-        break;
-      case FIVE:
-        points = 5;
-        break;
-      case ONE_PER_QUILL:
-        points = playerBoard.getPlayerItems().get(Items.QUILL);
-        break;
-      case ONE_PER_INKWELL:
-        points = playerBoard.getPlayerItems().get(Items.INKWELL);
-        break;
-      case ONE_PER_MANUSCRIPT:
-        points = playerBoard.getPlayerItems().get(Items.MANUSCRIPT);
-        break;
-      case TWO_PER_COVERED_CORNER:
-        points = 2 * playerBoard.adjacentCards(coords).keySet().size();
-        break;
-      default:
-        points = 0;
-        break;
-    }
-
-    int updatedScore = model.getScoreTrack().updatePlayerScore(playerToken, points);
-    model.slimGameModel.updateScores(new UpdatedScoreTrackEvent(playerToken, updatedScore));
-
-    PlayedCardEvent playedCardEvent = new PlayedCardEvent(playerToken, card.getId(), cardSide, coords);
-    playerBoard.notify(playedCardEvent);
-    model.slimGameModel.addPlayedCard(playedCardEvent);
+    gameModel.scoreTrack.updatePlayerScore(playerToken, points);
 
     return true;
   }
 
   /**
-   * Checks at which coordinates each card in the hand of the player can be placed, and
-   * sends him an event with the results
+   * Checks at which coordinates each card in the hand of the player can be placed, and sends him an event with the results.
    *
    * @param playerToken token representing the player
    * @return true
    */
   public boolean computeCardsPlayability(PlayerToken playerToken) {
-    PlayerBoard playerBoard = getPlayers().get(playerToken).getBoard();
-    List<PlayableCard> handCards = getPlayers().get(playerToken).getHand().getCards();
+    PlayerBoard playerBoard = gameModel.tokenToPlayer.get(playerToken).playerBoard;
+    List<PlayableCard> handCards = gameModel.tokenToPlayer.get(playerToken).playerHand.getCards();
     List<Coords> availableSlots = playerBoard.availableCoords();
 
     Map<Integer, List<Pair<CardSide, Boolean>>> enoughResources = new HashMap<>();
     for(PlayableCard card : handCards) {
       ArrayList<Pair<CardSide, Boolean>> enoughResourcesByCardSide = new ArrayList<>();
-      enoughResourcesByCardSide.add(new Pair<>(CardSide.FRONT, card.enoughResources(playerBoard.getPlayerItems(), CardSide.FRONT)));
-      enoughResourcesByCardSide.add(new Pair<>(CardSide.BACK, card.enoughResources(playerBoard.getPlayerItems(), CardSide.BACK)));
+      enoughResourcesByCardSide.add(new Pair<>(CardSide.FRONT, card.enoughResources(playerBoard.playerElements, CardSide.FRONT)));
+      enoughResourcesByCardSide.add(new Pair<>(CardSide.BACK, card.enoughResources(playerBoard.playerElements, CardSide.BACK)));
 
-      enoughResources.put(card.getId(), enoughResourcesByCardSide);
+      enoughResources.put(card.id, enoughResourcesByCardSide);
     }
 
     playerBoard.notify(new CardsPlayabilityEvent(playerToken, availableSlots, enoughResources));
@@ -123,159 +94,102 @@ public class GameModelUpdater {
   }
 
   /**
+   * Allows a player to draw a ResourceCard card.
+   * Draws a card from the ResourceCard deck, and adds it to player's hand
+   *
    * @param playerToken the token of the player
-   * @return true if the action has been completed successfully, false otherwise
+   * @return false if player's hand is full or deck is empty, true otherwise
    */
   public boolean drawResourceDeckCard(PlayerToken playerToken) {
-    Player player = model.tokenToPlayer.get(playerToken);
-    PlayerHand playerHand = player.getHand();
+    PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() == 3) return false;
+    if (playerHand.getCards().size() >= 3) return false;
 
-    Optional<ResourceCard> card = model.getResourceCardsDeck().draw();
+    Optional<ResourceCard> card = gameModel.resourceCardsDeck.draw(playerToken);
 
-    if (!card.isPresent()) return false;
-    else
-      model
-          .getResourceCardsDeck()
-          .notify(new DrawnResourceDeckCardEvent(playerToken, card.get().getId()));
+    if (card.isEmpty()) return false;
 
     playerHand.addCard(card.get());
     return true;
   }
 
   /**
-   * @param playerToken the token of the player
+   * Allows a player to draw a GoldCard card.
+   * Draws a card from the GoldCard deck, and adds it to player's hand
    *
-   * @return true if the action has been completed successfully, false otherwise
+   * @param playerToken the token of the player
+   * @return false if player's hand is full or deck is empty, true otherwise
    */
   public boolean drawGoldDeckCard(PlayerToken playerToken) {
-    Player player = model.tokenToPlayer.get(playerToken);
-    PlayerHand playerHand = player.getHand();
+    PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() == 3) return false;
+    if (playerHand.getCards().size() >= 3) return false;
 
-    Optional<GoldCard> card = model.getGoldCardsDeck().draw();
+    Optional<GoldCard> card = gameModel.goldCardsDeck.draw(playerToken);
 
-    if (!card.isPresent()) return false;
-    else
-      model.getGoldCardsDeck().notify(new DrawnGoldDeckCardEvent(playerToken, card.get().getId()));
+    if (card.isEmpty()) return false;
 
     playerHand.addCard(card.get());
     return true;
   }
 
   /**
+   * Allows a player to draw a ResourceCard card.
+   * Draws a card from the ResourceCard visible list, and adds it to player's hand.
+   *
    * @param playerToken the token of the player
-   * @param chosen the card to draw from visible resource cards (0 or 1)
-   * @return true if the action has been completed successfully, false otherwise
+   * @param chosen list index of the card chosen
+   * @return false if player's hand is full or deck is empty, true otherwise
    */
   public boolean drawVisibleResourceCard(PlayerToken playerToken, int chosen) {
-    Player player = model.tokenToPlayer.get(playerToken);
-    PlayerHand playerHand = player.getHand();
+    PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() == 3) return false;
+    if (playerHand.getCards().size() >= 3) return false;
 
-    VisibleCardsList<ResourceCard> visibleResourceCards = model.getVisibleResourceCards();
-    ResourceCard card = visibleResourceCards.get(chosen);
+    Optional<ResourceCard> card = gameModel.visibleResourceCards.draw(playerToken, chosen);
 
-    if (card == null) return false;
-    else
-      visibleResourceCards.notify(
-          new DrawnVisibleResourceCardEvent(playerToken, chosen, card.getId()));
+    if (card.isEmpty()) return false;
 
-    visibleResourceCards.remove(chosen);
-    playerHand.addCard(card);
-
-    Optional<ResourceCard> newCard = model.getResourceCardsDeck().draw();
-    visibleResourceCards.add(chosen, newCard.orElse(null));
+    playerHand.addCard(card.get());
     return true;
   }
 
   /**
+   * Allows a player to draw a ResourceCard card.
+   * Draws a card from the GoldCard visible list, and adds it to player's hand.
+   *
    * @param playerToken the token of the player
    * @param chosen the card to draw from visible gold cards (0 or 1)
    * @return true if the action has been completed successfully, false otherwise
    */
   public boolean drawVisibleGoldCard(PlayerToken playerToken, int chosen) {
-    Player player = model.tokenToPlayer.get(playerToken);
-    PlayerHand playerHand = player.getHand();
+    PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() == 3) return false;
+    if (playerHand.getCards().size() >= 3) return false;
 
-    VisibleCardsList<GoldCard> visibleGoldCards = model.getVisibleGoldCards();
-    GoldCard card = visibleGoldCards.get(chosen);
+    Optional<GoldCard> card = gameModel.visibleGoldCards.draw(playerToken, chosen);
 
-    if (card == null) return false;
-    else visibleGoldCards.notify(new DrawnVisibleGoldCardEvent(playerToken, chosen, card.getId()));
+    if (card.isEmpty()) return false;
 
-    visibleGoldCards.remove(chosen);
-    playerHand.addCard(card);
-
-    Optional<GoldCard> newCard = model.getGoldCardsDeck().draw();
-    visibleGoldCards.add(chosen, newCard.orElse(null));
-
+    playerHand.addCard(card.get());
     return true;
   }
 
-  public Optional<ObjectiveCard> drawObjectiveCard() {
-    return model.getObjectiveCardsDeck().draw();
-  }
-
-  public Optional<StarterCard> drawStarterCard() {
-    return model.getStarterCardsDeck().draw();
-  }
-
-  public boolean limitPointsReached() {
-    return model.getScoreTrack().isGameFinished();
+  /**
+   * Checks whether limit score is reached by any player.
+   *
+   * @return true if any player has reached limit score, false otherwise
+   */
+  public boolean limitScoreReached() {
+    return gameModel.scoreTrack.limitPointsReached();
   }
 
   /**
-   * Checks whether one of the two decks is empty
+   * Checks whether one of the two decks is empty.
    *
-   * @return A boolean
+   * @return true if one of the two decks is empty, false otherwise
    */
-  public boolean someDecksEmpty() {
-    return model.getResourceCardsDeck().isEmpty() || model.getGoldCardsDeck().isEmpty();
-  }
-
-  /**
-   * Adds a player to the tokenToPlayer map in the model. Used in the setup phase of the game
-   *
-   * @param token PlayerToken chosen by the player
-   * @param starterCard StarterCard drawn by the player
-   * @param starterCardSide StarterCard chosen by the player
-   * @param objectiveCard ObjectiveCard chosen by the player
-   * @return A boolean that depends on whether the player was added or not
-   */
-  public boolean addPlayer(
-      PlayerToken token,
-      StarterCard starterCard,
-      CardSide starterCardSide,
-      ObjectiveCard objectiveCard) {
-    if (model.tokenToPlayer.containsKey(token)) return false;
-
-    model.tokenToPlayer.put(token, new Player(starterCard, starterCardSide, objectiveCard));
-    return true;
-  }
-
-  public Map<PlayerToken, Player> getPlayers() {
-    return model.tokenToPlayer;
-  }
-
-  public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
-    model.setCommonObjectives(commonObjectives);
-  }
-
-  public List<ObjectiveCard> getCommonObjectives() {
-    return model.getCommonObjectives();
-  }
-
-  public void setScoreTrack(List<PlayerToken> playerTokens) {
-    model.setScoreTrack(playerTokens);
-  }
-
-  public GameModel getModel() {
-    return model;
+  public boolean anyDeckEmpty() {
+    return gameModel.resourceCardsDeck.isEmpty() || gameModel.goldCardsDeck.isEmpty();
   }
 }

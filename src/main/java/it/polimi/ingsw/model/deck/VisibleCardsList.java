@@ -1,10 +1,21 @@
 package it.polimi.ingsw.model.deck;
 
 import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.distributed.events.game.DrawnVisibleGoldCardEvent;
+import it.polimi.ingsw.distributed.events.game.DrawnVisibleResourceCardEvent;
 import it.polimi.ingsw.model.card.Card;
+import it.polimi.ingsw.model.card.GoldCard;
+import it.polimi.ingsw.model.card.ResourceCard;
+import it.polimi.ingsw.model.common.Resources;
+import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Trio;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The class represents a list of visible cards on the game table.
@@ -12,59 +23,64 @@ import java.util.List;
  *
  * @param <CardType> type of the visible cards' list
  * @see Card
+ * @see Deck
  */
-public class VisibleCardsList<CardType> extends Observable {
+public class VisibleCardsList<CardType extends Card> extends Observable {
   /**
    * The actual list of cards.
    */
   public final List<CardType> cards;
 
   /**
-   * @param cards list from which this is created.
+   * Deck with the same CardType as this, from which replacement cards will be drawn.
    */
-  public VisibleCardsList(List<CardType> cards) {
-    this.cards = new ArrayList<>(cards);
+  public final Deck<CardType> deck;
+
+  /**
+   * @param deck deck from which the class pops new cards.
+   * @param observers list of observers
+   * @param lastEventId integer used to uniquely identify events
+   */
+  public VisibleCardsList(Deck<CardType> deck, List<Observer> observers, AtomicInteger lastEventId) {
+    super(observers, lastEventId);
+
+    this.deck = deck;
+    this.cards = new ArrayList<>(Arrays.asList(deck.anonymousDraw().first.orElseThrow(), deck.anonymousDraw().first.orElseThrow()));
   }
 
   /**
-   * Reimplementation of List::add method (index).
+   * Allows players to draw from the visible cards list.
+   * Replaces the drawn card with a card drawn from the deck.
+   * If the deck is empty, it replaces the card with null.
    *
-   * @param card card to be appended to the list
-   * @return true if add was successful, false otherwise
-   */
-  public boolean add(CardType card) {
-    if (cards.size() < 2) return cards.add(card);
-
-    return false;
-  }
-
-  /**
-   * Reimplementation of List::add method (element and index).
-   *
-   * @param index index at which the specified element is to be inserted
-   * @param card card to be inserted
-   */
-  public void add(int index, CardType card) {
-    cards.add(index, card);
-  }
-
-  /**
-   * Reimplementation of List::get method.
-   *
-   * @param index index of the element to return
-   * @return the element at the specified position in this list
-   */
-  public CardType get(int index) {
-    return cards.get(index);
-  }
-
-  /**
-   * Reimplementation of List::remove method.
-   *
+   * @param playerToken token of the player drawing the card
    * @param index the index of the element to be removed
-   * @return the element previously at the specified position
+   * @return Optional.empty() if index out of bound or no card was in specified position, Optional.of(drawn card) otherwise
    */
-  public CardType remove(int index) {
-    return cards.remove(index);
+  public Optional<CardType> draw(PlayerToken playerToken, int index) {
+    if(index < 0 || index > 1 || cards.get(index) == null) return Optional.empty();
+
+    CardType card = cards.get(index);
+    Trio<Optional<CardType>, Boolean, Optional<Resources>> deckDrawResult = deck.anonymousDraw();
+
+    if (card instanceof ResourceCard) {
+      notify(new DrawnVisibleResourceCardEvent(
+              playerToken,
+              index,
+              card.id,
+              deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
+              deckDrawResult.second, deckDrawResult.third));
+    }
+    else if (card instanceof GoldCard) {
+      notify(new DrawnVisibleGoldCardEvent(
+              playerToken,
+              index,
+              card.id,
+              deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
+              deckDrawResult.second, deckDrawResult.third));    }
+    else throw new RuntimeException();
+
+    cards.set(index, deckDrawResult.first.orElse(null));
+    return Optional.of(card);
   }
 }

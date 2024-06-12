@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.card.StarterCard;
+import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
@@ -79,7 +80,7 @@ public abstract class GameState {
 
   // TokenSelectionState methods
 
-  public Map<String, PlayerToken> handleTokenSelection() {
+  public Map<String, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
     return null;
   }
 
@@ -135,4 +136,5 @@ public abstract class GameState {
   public boolean postGame() {
     return false;
   }
+
 }

@@ -12,7 +12,7 @@ public enum CornerPosition {
   BOTTOM_LEFT;
 
   /**
-   * Allows to get opposite position.
+   * Allows to draw opposite position.
    *
    * @return the opposite position
    */

@@ -6,6 +6,7 @@ import it.polimi.ingsw.distributed.events.game.ChosenObjectiveCardEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnObjectiveCardsEvent;
 import it.polimi.ingsw.distributed.events.game.EndedObjectiveCardPhaseEvent;
 import it.polimi.ingsw.model.card.ObjectiveCard;
+import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
@@ -20,6 +21,11 @@ public class ObjectiveCardSelectionState extends GameState {
    * List of tokens in the match
    */
   private final List<PlayerToken> playerTokens;
+
+  /**
+   * Decks used to draw setup cards.
+   */
+  private final Decks decks;
 
   /**
    * Map that keeps track of objective cards drawn by every player
@@ -43,9 +49,10 @@ public class ObjectiveCardSelectionState extends GameState {
 
 
   public ObjectiveCardSelectionState(
-      GameFlowManager gameFlowManager, List<PlayerToken> playerTokens, long timeLimit) {
+          GameFlowManager gameFlowManager, Decks decks, List<PlayerToken> playerTokens, long timeLimit) {
     super(gameFlowManager);
 
+    this.decks = decks;
     this.playerTokens = playerTokens;
     this.timeLimit = timeLimit;
 
@@ -93,18 +100,14 @@ public class ObjectiveCardSelectionState extends GameState {
         Random random = new Random();
 
         playerTokens.stream()
-            .filter(pt -> !TokenToDrawnObjectiveCards.containsKey(pt))
-            .forEach(pt -> {
-              Optional<ObjectiveCard> firstCard = gameModelUpdater.drawObjectiveCard();
-              Optional<ObjectiveCard> secondCard = gameModelUpdater.drawObjectiveCard();
+            .filter(playerToken -> !TokenToDrawnObjectiveCards.containsKey(playerToken))
+            .forEach(playerToken -> {
+              ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
+              ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
 
-              if (!firstCard.isPresent() || !secondCard.isPresent()) {
-                System.err.println("ERROR: draw objective cards failed");
-                TokenToDrawnObjectiveCards.put(pt, new Pair<>(null, null));
-                return;
-              }
+              decks.objectiveCardsDeck.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.id, secondCard.id));
 
-              TokenToDrawnObjectiveCards.put(pt, new Pair<>(firstCard.get(), secondCard.get()));
+              TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
             });
 
         playerTokens.stream()
@@ -137,17 +140,11 @@ public class ObjectiveCardSelectionState extends GameState {
   public boolean drawObjectiveCards(PlayerToken playerToken) {
     if (TokenToDrawnObjectiveCards.containsKey(playerToken)) return false;
 
-    Optional<ObjectiveCard> firstCard = gameModelUpdater.drawObjectiveCard();
-    Optional<ObjectiveCard> secondCard = gameModelUpdater.drawObjectiveCard();
+    ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
+    ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
 
-    if(!firstCard.isPresent() || !secondCard.isPresent()) {
-      TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(null, null));
-      System.err.println("ERROR: draw objective cards failed");
-      return false;
-    }
-
-    gameFlowManager.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.get().getId(), secondCard.get().getId()));
-    TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard.get(), secondCard.get()));
+    decks.objectiveCardsDeck.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.id, secondCard.id));
+    TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
     return true;
   }
 
@@ -170,7 +167,7 @@ public class ObjectiveCardSelectionState extends GameState {
             : TokenToDrawnObjectiveCards.get(playerToken).second;
     TokenToChosenObjectiveCard.put(playerToken, chosenCard);
 
-    gameFlowManager.notify(new ChosenObjectiveCardEvent(playerToken, chosenCard.getId()));
+    decks.objectiveCardsDeck.notify(new ChosenObjectiveCardEvent(playerToken, chosenCard.id));
     return true;
   }
 }
