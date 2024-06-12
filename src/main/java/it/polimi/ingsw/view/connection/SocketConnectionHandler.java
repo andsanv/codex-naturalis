@@ -37,11 +37,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
     this.outputStream.flush();
     this.inputStream = new ObjectInputStream(socket.getInputStream());
 
-    System.out.println("Connected to server and set up streams");
+    //System.out.println("Connected to server and set up streams");
     
     createListenerThread();
 
-    System.out.println("started listening for events");
+    //System.out.println("started listening for events");
   }
 
   private void createListenerThread() {
@@ -50,7 +50,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
               while (true) {
                 try {
                   Event event = (Event) inputStream.readObject();
-                  System.out.println("Received event: " + event);
+                  //System.out.println("Received event: " + event);
                   
                   if(event instanceof KeepAliveEvent) {
                     ;
@@ -61,16 +61,16 @@ public class SocketConnectionHandler extends ConnectionHandler {
                     MainEvent mainEvent = (MainEvent) event;
                     mainEvent.execute(userInterface);
                   } else {
-                    System.err.println("Received unknown event");
+                    //System.err.println("Received unknown event");
                   }
 
                 } catch (IOException e) {
-                  System.err.println("Failed to receive event");
-                  System.err.println("Server probably disconnected");
+                  //System.err.println("Failed to receive event");
+                  //System.err.println("Server probably disconnected");
 
                   break;
                 } catch (ClassNotFoundException e) {
-                  System.err.println("Failed to decode event");
+                  //System.err.println("Failed to decode event");
                   e.printStackTrace();
                 }
               }
@@ -80,6 +80,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
   @Override
   public boolean sendToMainServer(MainCommand command) {
+    if(userInterface.getUserInfo() == null) {
+      //System.err.println("User info is null");
+      return false;
+    }
     try {
       outputStream.writeObject(command);
       outputStream.reset();
@@ -93,6 +97,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
   @Override
   public boolean sendToGameServer(GameCommand command) {
+    if(userInterface.getUserInfo() == null) {
+      //System.err.println("User info is null");
+      return false;
+    }
     try {
       outputStream.writeObject(command);
       outputStream.reset();
@@ -125,7 +133,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
           try {
             Object obj = inputStream.readObject();
             System.out.println("Received object: " + obj);
-            
+
             Event event = (Event) obj;
             System.out.println("Received event (reconnect): " + event);
 
@@ -183,7 +191,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
       
     } catch (IOException e) {
       e.printStackTrace();
-      System.err.println("Failed to reconnect to server");
+      //System.err.println("Failed to reconnect to server");
       return false;
     }
 
@@ -196,11 +204,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
       inputStream.close();
       socket.close();
     } catch (IOException e) {
-      System.err.println("Failed to close socket");
+      //System.err.println("Failed to close socket");
       return false;
     }
 
-    System.out.println("Closed socket");
+    //System.out.println("Closed socket");
     return true;
   }
 }

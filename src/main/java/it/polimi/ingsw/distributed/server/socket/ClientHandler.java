@@ -22,7 +22,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   private final ObjectOutputStream out;
   private GameFlowManager gameFlowManager;
 
-  public ClientHandler(ObjectOutputStream out, ObjectInputStream in) throws IOException {
+  public ClientHandler(ObjectOutputStream out, ObjectInputStream in) {
     this.out = out;
     this.in = in;
   }
@@ -60,14 +60,12 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   public void receiveEvent(MainEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
-    
   }
 
   @Override
   public void receiveEvent(GameEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
-    
   }
 
   public void setGameFlowManager(GameFlowManager gameFlowManager) {
