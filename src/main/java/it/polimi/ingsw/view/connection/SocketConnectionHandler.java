@@ -122,14 +122,17 @@ public class SocketConnectionHandler extends ConnectionHandler {
     return true;
   }
 
-  public void close() {
+  public boolean close() {
     try {
       outputStream.close();
       inputStream.close();
       socket.close();
     } catch (IOException e) {
       System.err.println("Failed to close socket");
+      return false;
     }
+
     System.out.println("Closed socket");
+    return true;
   }
 }
