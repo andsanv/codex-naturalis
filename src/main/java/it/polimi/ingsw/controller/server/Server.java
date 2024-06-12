@@ -36,6 +36,7 @@ public enum Server {
 
   /** A map from the lobby id to the corresponding lobby */
   private final Map<Integer, Lobby> lobbies;
+  private final Map<Lobby, GameFlowManager> lobbyToGameFlowManager;
 
   /** The set containing all the users. */
   // TODO could be moved to the User class as a static set
@@ -55,6 +56,7 @@ public enum Server {
     this.users = new HashSet<>();
     this.connectedPlayers = new ConcurrentHashMap<>();
     this.playersInMenu = new ConcurrentHashMap<>();
+    this.lobbyToGameFlowManager = new HashMap<>();
     this.gameServersExecutor = Executors.newCachedThreadPool();
     checkConnections();
   }
@@ -178,6 +180,7 @@ public enum Server {
           .collect(Collectors.toList());
 
       GameFlowManager gameFlowManager = new GameFlowManager(lobby, observers);
+      lobbyToGameFlowManager.put(lobby, gameFlowManager);
 
       // set gameflow to redirect requests to, on client handler only for the users in the starting game
       // update playersInGame map
@@ -262,8 +265,13 @@ public enum Server {
       try {
         if(playersInMenu.get(userInfo))
           clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
-        else
-          clientMainView.receiveEvent(new ReconnectToGameEvent());
+        else {
+          GameFlowManager gameFlowManager = lobbyToGameFlowManager.get(lobbies.values().stream()
+              .filter(lobby -> lobby.getUsers().contains(userInfoToUser(userInfo)))
+              .findFirst()
+              .orElse(null));
+          clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.getGameModel().slimGameModel));
+        }
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

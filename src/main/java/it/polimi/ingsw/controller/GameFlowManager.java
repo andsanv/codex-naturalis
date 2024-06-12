@@ -39,6 +39,9 @@ public class GameFlowManager implements Runnable {
   /** Part of the controller that updates the model */
   public GameModelUpdater gameModelUpdater;
 
+  /** The model of the game */
+  public GameModel gameModel;
+
   /**
    * Represents the lobby, or the "room" containing the players (more games can be started
    * sequentially from a single lobby)
@@ -105,7 +108,9 @@ public class GameFlowManager implements Runnable {
 
     this.observers = observers;
 
-    this.gameModelUpdater = new GameModelUpdater(new GameModel(), this.observers);
+    this.gameModel = new GameModel();
+
+    this.gameModelUpdater = new GameModelUpdater(this.gameModel, this.observers);
 
     this.tokenSelectionState = new TokenSelectionState(this, users, timeLimit);
     this.starterCardSelectionState = new StarterCardSelectionState(this, playerTokens, timeLimit);
@@ -286,5 +291,12 @@ public class GameFlowManager implements Runnable {
    */
   public void notify(GameEvent gameEvent) {
     observers.forEach(observer -> observer.update(gameEvent));
+  }
+
+  /**
+   * Returns the game model
+   */
+  public GameModel getGameModel() {
+    return gameModel;
   }
 }
