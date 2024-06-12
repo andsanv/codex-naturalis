@@ -9,3 +9,6 @@ target/
 
 # Ignore MacOS related files
 .DS_Store
+
+# Ignore .ser files
+*.ser

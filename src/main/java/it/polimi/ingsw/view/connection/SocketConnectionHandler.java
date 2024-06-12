@@ -44,10 +44,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
               while (true) {
                 try {
                   Event event = (Event) inputStream.readObject();
-                  System.out.println(event);
+                  System.out.println("Received event: " + event);
                   
                   if(event instanceof KeepAliveEvent) {
-                    System.out.println("Received keep alive event");
+                    ;
                   } else if (event instanceof GameEvent) {
                     GameEvent gameEvent = (GameEvent) event;
                     gameEvent.execute(userInterface);
