@@ -1,7 +1,6 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
@@ -200,13 +199,6 @@ public class CLITest implements UI {
   }
 
   @Override
-  public void handleCardsPlayabilityEvent(PlayerToken playerToken,
-      Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
-  }
-
-  @Override
   public void connectionToGameResult(boolean connectedToGame) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
@@ -221,5 +213,12 @@ public class CLITest implements UI {
   public void handleReconnetionToGame() {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
+  }
+
+  @Override
+  public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
+      Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
   }
 }

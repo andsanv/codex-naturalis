@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.fusesource.jansi.AnsiConsole;
 
@@ -21,6 +22,7 @@ import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
+import it.polimi.ingsw.distributed.commands.main.StartGameCommand;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
@@ -59,6 +61,10 @@ public class TUI implements UI {
 
     private AtomicBoolean waitingForLobbyCreation = new AtomicBoolean(false);
     private AtomicBoolean waitingUserInfo = new AtomicBoolean(false);
+    private AtomicBoolean waitingForLobbyJoining = new AtomicBoolean(false);
+    private AtomicBoolean waitingStartGame = new AtomicBoolean(false);
+
+    private AtomicInteger currentLobbyid = new AtomicInteger(-1);
 
     public TUI() {
     }
@@ -205,7 +211,7 @@ public class TUI implements UI {
     private void homeScreen() {
         System.out
                 .println(ansi().a("Do you want to connect with Socket or RMI?\n(enter ").fg(YELLOW).a("socket").reset()
-                        .a(" for a Socket connection, ").fg(YELLOW).a("rmi").reset().a(" to use an RMI connection)\n"));
+                        .a(" for a Socket connection, ").fg(YELLOW).a("rmi").reset().a(" to use an RMI connection)"));
 
         while (true) {
             String connectionType = prompt();
@@ -229,76 +235,107 @@ public class TUI implements UI {
 
         // TODO check if connection is on or off
 
+        boolean askForUsername = true;
+
         // Check if the user already has an account
         if (retrieveUserInfo()) {
             System.out.println(ansi()
                     .a("\nThe user ").fg(CYAN).a(userInfo).reset()
                     .a(" has been found, do you want to continue with this account?\n(enter ")
                     .fg(YELLOW).a("yes").reset().a(" to continue, ").fg(YELLOW).a("no").reset()
-                    .a(" to create a new account)\n"));
-        }
+                    .a(" to create a new account)"));
 
-        while (true) {
-            String command = prompt();
+            while (true) {
+                String command = prompt();
 
-            // Attempt connection to the server
-            if (command.equalsIgnoreCase("yes")) {
-                waitingUserInfo.set(true);
-                connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
-
-                displayLoadingMessage("Logging in", waitingUserInfo);
-                break;
-            } else if (command.equalsIgnoreCase("no")) {
-                System.out.println("\nChoose an username:\n");
-
-                while (true) {
-                    String username = prompt();
-
-                    if (username.length() < 3) {
-                        displayError("The username lenght must be at least three characters long");
-                        continue;
-                    }
-
+                if (command.equalsIgnoreCase("yes")) {
                     waitingUserInfo.set(true);
-                    connectionHandler.sendToMainServer(new ConnectionCommand(username));
-                    break;
-                }
 
-                displayLoadingMessage("Creating an account", waitingUserInfo);
-                break;
-            } else {
-                displayError("Invalid choice, please try again.");
+                    // Attempt connection to the server
+                    connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
+                    displayLoadingMessage("Logging in", waitingUserInfo);
+
+                    askForUsername = false;
+                    break;
+                } else if (command.equalsIgnoreCase("no")) {
+                    break;
+                } else {
+                    displayError("Invalid choice, please try again.");
+                }
             }
         }
+
+        // Enter this loop if the user wants a new account
+        if (askForUsername) {
+            System.out.println("\nChoose an username:");
+
+            while (true) {
+                String username = prompt();
+
+                if (username.length() < 3) {
+                    displayError("The username lenght must be at least three characters long");
+                    continue;
+                }
+
+                waitingUserInfo.set(true);
+                connectionHandler.sendToMainServer(new ConnectionCommand(username));
+                break;
+            }
+
+            displayLoadingMessage("Creating an account", waitingUserInfo);
+        }
+
         // TODO check if the client is already connected to a game (handle reconnection)
 
-        state = State.LOBBY;
+        state=State.LOBBY;
     }
 
     private void lobbyScreen() {
         // System.out.println(ansi().bg(BLUE).a("┄┄MAIN MENU┄┄").reset());
         System.out.println(ansi().a("You can do the following actions:"));
-        System.out.println(ansi().fg(YELLOW).a("  1").reset().a(" to create a lobby"));
-        System.out.println(ansi().fg(YELLOW).a("  2").reset().a(" to see available lobbies"));
-        System.out.println(ansi().fg(YELLOW).a("  3").reset().a(" to see join a lobby\n"));
+        System.out.println(ansi().fg(YELLOW).a("  list").reset().a(" available lobbies"));
+        System.out.println(ansi().fg(YELLOW).a("  join [").reset().a("id").fg(YELLOW).a("]").reset().a(" an existing lobby"));
+        System.out.println(ansi().fg(YELLOW).a("  create").reset().a(" a new lobby"));
+        System.out.println(ansi().fg(YELLOW).a("  start").reset().a(" a game (you must be the lobby leader)\n"));
 
         while (true) {
-            String command = prompt();
+            String[] command = prompt().split("\\s+");
 
-            if(command.equals("1")) {
+            if (command[0].equalsIgnoreCase("list")) {
+                printLobbies();
+            } else if (command[0].equalsIgnoreCase("join")) {
+                int lobbyId;
+
+                try {
+                    lobbyId = Integer.valueOf(command[1]);
+                } catch (Exception e) {
+                    displayError("Invalid lobby number");
+                    continue;
+                }
+
+                waitingForLobbyJoining.set(true);
+                connectionHandler.sendToMainServer(new JoinLobbyCommand(userInfo, lobbyId));
+                displayLoadingMessage("Joining the lobby", waitingForLobbyJoining);
+
+                System.out.println("\nLobby joined!\n");
+
+                printLobbies();
+            } else if (command[0].equalsIgnoreCase("create")) {
                 waitingForLobbyCreation.set(true);
                 connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
                 displayLoadingMessage("Waiting for lobby creation", waitingForLobbyCreation);
-                System.out.println("Your lobby has been created!\n");
-                printLobbies();
-            }
-            else if (command.equals("2")) {
-                printLobbies();
-            }
-            else if (command.equals("3")) {
 
-                connectionHandler.sendToMainServer(new JoinLobbyCommand(userInfo, 0));
-                // TODO give option to start game
+                System.out.println("\nYour lobby has been created!\n");
+                printLobbies();
+            } else if (command[0].equalsIgnoreCase("start")) {
+                waitingForLobbyJoining.set(true);
+                
+                if(currentLobbyid.get() != -1) {
+                    connectionHandler.sendToMainServer(new StartGameCommand(userInfo, currentLobbyid.get()));
+                    displayLoadingMessage("Starting the game", waitingForLobbyJoining);
+                } else {
+                    displayError("You are not in a lobby");
+                }
             } else {
                 displayError("Invalid option");
             }
@@ -326,7 +363,7 @@ public class TUI implements UI {
             else
                 for (LobbyInfo lobby : availableLobbies) {
                     final int length = Math.max(12,
-                            lobby.users.stream().mapToInt(user -> user.toString().length()).max().orElse(0));
+                            lobby.users.stream().mapToInt(user -> user.toString().length()+2).max().orElse(0));
 
                     System.out.println("╒" + "═".repeat(length) + "╕");
                     System.out.println(
@@ -336,11 +373,11 @@ public class TUI implements UI {
                     lobby.users.stream().forEach(user -> {
                         boolean inLobby = user.equals(userInfo);
                         if (user.equals(lobby.manager)) {
-                            System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).fg(CYAN).a(user).reset()
+                            System.out.println(ansi().a("│ ").bg(WHITE).fg(inLobby ? CYAN : DEFAULT).a(user).reset()
                                     .a(" ".repeat(length - 1 - user.toString().length()) + "│"));
                         } else {
-                            System.out.println(ansi().a("│ ").bg(inLobby ? YELLOW : BLACK).a(user).reset()
-                                    .a(" ".repeat(length - 2 - user.toString().length()) + "│"));
+                            System.out.println(ansi().a("│ ").fg(inLobby ? CYAN : DEFAULT).a(user).reset()
+                                    .a(" ".repeat(length - 1 - user.toString().length()) + "│"));
                         }
                     });
 
@@ -354,36 +391,6 @@ public class TUI implements UI {
         }
     }
 
-    /**
-     * This method is used to draw a card on screen.
-     * 
-     * The cards will be printed using the following shape:
-     * 
-     * ╭─┬─────┬─╮
-     * │Q│ 3 C │X│
-     * ├─┤ F   ├─┤
-     * │A│ FFA │ │
-     * ╰─┴─────┴─╯
-     * 
-     * @param h      horizontal starting position
-     * @param v      vertical starting position
-     * @param cardId the id of the card to place
-     */
-    private void printCard(int h, int v, int cardId) {
-
-    }
-
-    /**
-     *
-     * 
-     * 
-     * @param lobby
-     */
-    private void printLobby(LobbyInfo lobby) {
-        // Generate the code to print a box containing the lobby information
-        System.out.println(lobby);
-    }
-
     @Override
     public void handleUserInfo(UserInfo userInfo) {
         synchronized (userInfoLock) {
@@ -395,6 +402,7 @@ public class TUI implements UI {
 
     @Override
     public void handleServerError(String error) {
+        System.err.println(error);
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleServerError'");
     }
@@ -404,9 +412,22 @@ public class TUI implements UI {
         synchronized (availableLobbiesLock) {
             this.availableLobbies = lobbies;
 
-            if (lobbies.stream().map(lobby -> lobby.manager).anyMatch(manager -> manager.equals(userInfo))) {
-                waitingForLobbyCreation.set(false);
+            // Check if the user is in a lobby
+            boolean found = false;
+            for(LobbyInfo lobby : lobbies){
+                if (lobby.users.contains(userInfo)) {
+                    currentLobbyid.set(lobby.id);
+                    waitingForLobbyJoining.set(false);
+                    found = true;
+                    break;
+                }
             }
+            if(!found)
+                currentLobbyid.set(-1);
+
+            // Check if a lobby with the current user as manager exists
+            if (lobbies.stream().map(lobby -> lobby.manager).anyMatch(manager -> manager.equals(userInfo)))
+                waitingForLobbyCreation.set(false);
         }
     }
 
@@ -538,13 +559,6 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleCardsPlayabilityEvent(PlayerToken playerToken,
-            Map<Integer, Pair<CardSide, List<Coords>>> cardsPlayability) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
-    }
-
-    @Override
     public UserInfo getUserInfo() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
@@ -552,8 +566,7 @@ public class TUI implements UI {
 
     @Override
     public void connectionToGameResult(boolean connectedToGame) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
+        waitingStartGame.set(false);
     }
 
     @Override
@@ -566,6 +579,13 @@ public class TUI implements UI {
     public void handleReconnetionToGame() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
+    }
+
+    @Override
+    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
+            Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
     }
 }
 
