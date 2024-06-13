@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.distributed.events.Event;
@@ -37,11 +37,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
     this.outputStream.flush();
     this.inputStream = new ObjectInputStream(socket.getInputStream());
 
-    //System.out.println("Connected to server and set up streams");
+    System.out.println("Connected to server and set up streams");
     
     createListenerThread();
 
-    //System.out.println("started listening for events");
+    System.out.println("Started listening for events");
   }
 
   private void createListenerThread() {
@@ -50,7 +50,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
               while (true) {
                 try {
                   Event event = (Event) inputStream.readObject();
-                  //System.out.println("Received event: " + event);
+                  System.out.println("Received event: " + event);
                   
                   if(event instanceof KeepAliveEvent) {
                     ;
@@ -61,16 +61,16 @@ public class SocketConnectionHandler extends ConnectionHandler {
                     MainEvent mainEvent = (MainEvent) event;
                     mainEvent.execute(userInterface);
                   } else {
-                    //System.err.println("Received unknown event");
+                    System.err.println("Received unknown event");
                   }
 
                 } catch (IOException e) {
-                  //System.err.println("Failed to receive event");
-                  //System.err.println("Server probably disconnected");
+                  System.err.println("Failed to receive event");
+                  System.err.println("Server probably disconnected");
 
                   break;
                 } catch (ClassNotFoundException e) {
-                  //System.err.println("Failed to decode event");
+                  System.err.println("Failed to decode event");
                   e.printStackTrace();
                 }
               }
@@ -80,7 +80,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
   @Override
   public boolean sendToMainServer(MainCommand command) {
-    if(userInterface.getUserInfo() == null) {
+    if(userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand) && !(command instanceof ConnectionCommand)) {
       //System.err.println("User info is null");
       return false;
     }
@@ -167,6 +167,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
         while(!events.isEmpty()) {
           Event event = events.poll();
+          System.out.println("Queued event: " + event);
           if(event instanceof KeepAliveEvent) {
             ;
           } else if (event instanceof GameEvent) {
@@ -184,14 +185,17 @@ public class SocketConnectionHandler extends ConnectionHandler {
             e.printStackTrace();
           }
         }
+
+        createListenerThread();
+        
       }).start();      
 
-      createListenerThread();
+      
 
       
     } catch (IOException e) {
       e.printStackTrace();
-      //System.err.println("Failed to reconnect to server");
+      System.err.println("Failed to reconnect to server");
       return false;
     }
 
@@ -204,11 +208,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
       inputStream.close();
       socket.close();
     } catch (IOException e) {
-      //System.err.println("Failed to close socket");
+      System.err.println("Failed to close socket");
       return false;
     }
 
-    //System.out.println("Closed socket");
+    System.out.println("Closed socket");
     return true;
   }
 }

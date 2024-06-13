@@ -7,6 +7,7 @@ import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.server.GameServerActions;
@@ -45,7 +46,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       UserInfo userInfo = new UserInfo(new User("rave"));
       mainServerActions.connectToMain(userInfo, clientMainView);
 
-      mainServerActions.send(new SignUpCommand("test"));
+      mainServerActions.send(new CreateLobbyCommand(userInfo));
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();

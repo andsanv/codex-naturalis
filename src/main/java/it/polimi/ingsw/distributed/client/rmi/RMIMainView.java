@@ -1,25 +1,18 @@
 package it.polimi.ingsw.distributed.client.rmi;
 
-import it.polimi.ingsw.Config;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
-import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
-import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-
-public class RMIMainView extends UnicastRemoteObject implements MainViewActions, Runnable {
+public class RMIMainView extends UnicastRemoteObject implements MainViewActions {
   private UserInfo userInfo;
   private final MainEventHandler mainEventHandler;
   private RMIConnectionHandler connectionHandler;
@@ -35,38 +28,6 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions,
   @Override
   public void receiveEvent(MainEvent serverEvent) throws RemoteException {
     serverEvent.execute(mainEventHandler);
-  }
-
-  @Override
-  public void run() {
-    Registry registry;
-    try {
-      // Connect to the server
-      registry = LocateRegistry.getRegistry(Config.RMIServerPort);
-      MainServerActions mainServerActions =
-          (MainServerActions) registry.lookup(Config.RMIServerName);
-
-      // Send the virtual view to the server
-
-      mainServerActions.connectToMain(userInfo, this);
-
-      // Create an user
-      mainServerActions.send(new SignUpCommand("rave"));
-
-      // Create a lobby
-      mainServerActions.send(new CreateLobbyCommand(userInfo));
-
-      while (true) {
-        Thread.sleep(1000);
-      }
-
-    } catch (RemoteException | NotBoundException e) {
-      System.err.println("Error: failed to connect to the RMI server");
-      e.printStackTrace();
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
   }
 
   @Override

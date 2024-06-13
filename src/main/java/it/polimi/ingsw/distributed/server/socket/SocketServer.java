@@ -49,8 +49,8 @@ public class SocketServer {
                   ClientHandler connection = new ClientHandler(out, in);
 
                   if (command instanceof ConnectionCommand) {
-                    ConnectionCommand connectionEvent = (ConnectionCommand) command;
-                    String username = connectionEvent.username;
+                    ConnectionCommand connectionCommand = (ConnectionCommand) command;
+                    String username = connectionCommand.username;
 
                     System.out.println("New connection from " + username);
 
