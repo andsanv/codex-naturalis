@@ -2,7 +2,6 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.Lobby;
-import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.controller.states.DrawCardState;
 import it.polimi.ingsw.controller.states.GameState;
@@ -283,7 +282,7 @@ public class GameFlowManager implements Runnable {
    * @return token of the player whose turn it is.
    */
   public PlayerToken getTurn() {
-    return userInfoToToken.get(users.get(turn % users.size()).name);
+    return userInfoToToken.get(users.get(turn % users.size()));
   }
 
   /**
