@@ -7,14 +7,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Strategy to calculate points for an objective card based on patterns on a player board.
+ * Strategy to calculate points for an objective card based on how many times a
+ * pattern is found on the player board.
  *
  * @see ObjectiveStrategy
  */
 public class PatternObjectiveStrategy implements ObjectiveStrategy {
   /**
    * Map representing a matrix of the required pattern for objective completion.
-   * The cell in the bottom-left of the smallest matrix containing the pattern must have (0,0) coordinates.
+   * The cell in the bottom-left of the smallest matrix containing the pattern
+   * must have (0,0) coordinates.
    */
   private final Map<Coords, Resources> pattern;
 
@@ -26,25 +28,25 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
   }
 
   /**
+   * Method that computes how many times the objective has been completed.
+   * 
    * @param playerBoard the player's board
    * @return number of times the objective has been completed
    */
   @Override
   public int getCompletedOccurrences(PlayerBoard playerBoard) {
-    Map<Coords, Resources> board =
-        playerBoard.board.entrySet().stream()
-            .filter(e -> !e.getKey().equals(new Coords(0, 0)))
-            .collect(
-                Collectors.toMap(
-                    Map.Entry::getKey,
-                    e ->
-                        e.getValue()
-                            .type
-                            .get() // isPresent() isn't checked since the starter card has been filtered out
-                    ));
+    Map<Coords, Resources> board = playerBoard.board.entrySet().stream()
+        .filter(e -> !e.getKey().equals(new Coords(0, 0)))
+        .collect(
+            Collectors.toMap(
+                Map.Entry::getKey,
+                e -> e.getValue().type
+                    .get() // isPresent() isn't checked since the starter card has been filtered out
+            ));
 
     // Early return if only the starter card has been placed
-    if (board.keySet().isEmpty()) return 0;
+    if (board.keySet().isEmpty())
+      return 0;
 
     int x_max = Integer.MIN_VALUE;
     int x_min = Integer.MAX_VALUE;
@@ -53,10 +55,14 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
 
     for (Coords c : board.keySet()) {
       System.out.println(c);
-      if (c.x > x_max) x_max = c.x;
-      if (c.x < x_min) x_min = c.x;
-      if (c.y > y_max) y_max = c.y;
-      if (c.y < y_min) y_min = c.y;
+      if (c.x > x_max)
+        x_max = c.x;
+      if (c.x < x_min)
+        x_min = c.x;
+      if (c.y > y_max)
+        y_max = c.y;
+      if (c.y < y_min)
+        y_min = c.y;
     }
 
     // i_min and j_min are (0,0) (check pattern attribute description)
@@ -64,8 +70,10 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
     int j_max = Integer.MIN_VALUE;
 
     for (Coords c : pattern.keySet()) {
-      if (c.x > i_max) i_max = c.x;
-      if (c.y > j_max) j_max = c.y;
+      if (c.x > i_max)
+        i_max = c.x;
+      if (c.y > j_max)
+        j_max = c.y;
     }
 
     int pattern_count = 0;
@@ -83,14 +91,16 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
 
             if (pattern_resource != null && pattern_resource != board.get(current_coords))
               pattern_found = false;
-            else used_coordinates.add(current_coords);
+            else
+              used_coordinates.add(current_coords);
           }
         }
 
         if (pattern_found) {
           pattern_count++;
 
-          for (Coords c : used_coordinates) board.remove(c);
+          for (Coords c : used_coordinates)
+            board.remove(c);
         }
       }
     }
@@ -99,10 +109,9 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
   }
 
   /**
-   * pattern's getter.
-   * Private final and getter with copy (instead of public) to make the map constant.
+   * Getter of the pattern used by the objective strategy.
    *
-   * @return (a copy of) pattern
+   * @return a copy of the matrix representing the pattern
    */
   public Map<Coords, Resources> getPattern() {
     return new HashMap<>(pattern);
