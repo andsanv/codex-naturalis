@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.controller.states.DrawCardState;
 import it.polimi.ingsw.controller.states.GameState;
 import it.polimi.ingsw.controller.states.InitializationState;
@@ -31,6 +32,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+// CHANGE FROM USER TO USERINFO
+//
+
 /**
  * This class allows to manage a single game.
  * It's the middle point between the clients and the game model.
@@ -58,7 +62,7 @@ public class GameFlowManager implements Runnable {
   /**
    * Map that keeps track of active connections (non AFK players)
    */
-  private final Map<User, Boolean> isConnected;
+  private final Map<UserInfo, Boolean> isConnected;
 
   /**
    * List containing all in game users.
@@ -78,9 +82,9 @@ public class GameFlowManager implements Runnable {
   public final Queue<GameCommand> commands;
 
   /**
-   * Map from players' ids to their token.
+   * Map from UserInfo of players to their token.
    */
-  public final Map<String, PlayerToken> idToToken;
+  public final Map<UserInfo, PlayerToken> userInfoToToken;
 
   /**
    * List of tokens playing.
@@ -123,14 +127,14 @@ public class GameFlowManager implements Runnable {
 
   /**
    * @param lobby lobby from which the game was started
+   * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
    * @param observers list of observers
    */
-  public GameFlowManager(Lobby lobby, List<Observer> observers) {
+  public GameFlowManager(Lobby lobby, Map<UserInfo, Boolean> isConnected, List<Observer> observers) {
     this.lobby = lobby;
-    this.isConnected = new HashMap<>();
-    (this.users = lobby.getUsers()).forEach(user -> this.isConnected.put(user, false));
+    this.isConnected = isConnected;
 
-    this.idToToken = new HashMap<>();
+    this.userInfoToToken = new HashMap<>();
     this.playerTokens = new ArrayList<>();
 
     this.observers = observers;
@@ -203,18 +207,24 @@ public class GameFlowManager implements Runnable {
     timer.schedule(timeElapsedTask, timeLimit * 1000);
 
     while (true) {
-      if (!timeLimitReached.get())
-        synchronized (commands) {
-          if (!commands.isEmpty() && commands.poll().execute(this)) {
-            timer.cancel();
+      if (timeLimitReached.get()) {
+        // time limit reached event
+        break;
+      }
+      if (!isConnected.get(userInfoToToken.keySet().stream().filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow())) {
+        // user not connected event
+        break;
+      }
+      synchronized (commands) {
+        if (!commands.isEmpty() && commands.poll().execute(this)) {
+          timer.cancel();
 
-            if (currentState.equals(playCardState)) currentState = drawCardState;
-            else switchTurn();
+          if (currentState.equals(playCardState)) currentState = drawCardState;
+          else switchTurn();
 
-            return;
-          }
+          return;
         }
-      else break;
+      }
     }
 
     if (currentState.equals(drawCardState)) drawRandomCard(getTurn());
@@ -271,7 +281,7 @@ public class GameFlowManager implements Runnable {
    * @return token of the player whose turn it is.
    */
   public PlayerToken getTurn() {
-    return idToToken.get(users.get(turn % users.size()).name);
+    return userInfoToToken.get(users.get(turn % users.size()).name);
   }
 
   /**
