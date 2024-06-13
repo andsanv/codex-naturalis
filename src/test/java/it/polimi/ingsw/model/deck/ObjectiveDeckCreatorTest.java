@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.objective.ItemsObjectiveStrategy;
 import it.polimi.ingsw.model.card.objective.PatternObjectiveStrategy;
@@ -9,10 +10,16 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
+import it.polimi.ingsw.model.player.PlayerToken;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,9 +27,12 @@ class ObjectiveDeckCreatorTest {
 
   Deck<ObjectiveCard> deck;
 
+  List<Observer> obsList = new ArrayList<>();
+  AtomicInteger atomicInt = new AtomicInteger(0);
+
   @BeforeEach
   void setUp() throws IOException {
-    deck = ObjectiveDeckCreator.createDeck();
+    deck = ObjectiveDeckCreator.createDeck(obsList, atomicInt);
   }
 
   @Test
@@ -30,10 +40,10 @@ class ObjectiveDeckCreatorTest {
     assertEquals(16, deck.size());
 
     for (int i = 0; i < 40; i++) {
-      Optional<ObjectiveCard> objectiveStarterCard = deck.draw();
+      Optional<ObjectiveCard> objectiveStarterCard = deck.draw(PlayerToken.RED, 0);
       if (objectiveStarterCard.isPresent()) {
         ObjectiveCard objectiveCard = objectiveStarterCard.get();
-        switch (objectiveCard.getId()) {
+        switch (objectiveCard.id) {
           case 87:
             assertEquals(objectiveCard.getPoints(), 2);
 
@@ -120,8 +130,8 @@ class ObjectiveDeckCreatorTest {
             requiredItems.put(Items.QUILL, 1);
             requiredItems.put(Items.MANUSCRIPT, 1);
 
-            Map<Elements, Integer> map =
-                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
+            Map<Elements, Integer> map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy())
+                .getRequiredItems();
 
             assertTrue(requiredItems.keySet().containsAll(map.keySet()));
 
@@ -137,8 +147,7 @@ class ObjectiveDeckCreatorTest {
             requiredItems = new HashMap<>();
             requiredItems.put(Items.QUILL, 2);
 
-            map =
-                ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
+            map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
 
             assertTrue(requiredItems.keySet().containsAll(map.keySet()));
 

@@ -2,23 +2,33 @@ package it.polimi.ingsw.model.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import it.polimi.ingsw.model.corner.CornerTypes;
+import it.polimi.ingsw.model.player.PlayerToken;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GoldDeckCreatorTest {
   Deck<GoldCard> deck;
 
+  List<Observer> obsList = new ArrayList<>();
+  AtomicInteger atomicInt = new AtomicInteger(0);
+
   @BeforeEach
   void setUp() throws IOException {
-    deck = GoldDeckCreator.createDeck();
+    deck = GoldDeckCreator.createDeck(obsList, atomicInt);
   }
 
   @Test
@@ -26,10 +36,10 @@ class GoldDeckCreatorTest {
     assertEquals(deck.size(), 40);
 
     for (int i = 0; i < 40; i++) {
-      Optional<GoldCard> optionalGoldCard = deck.draw();
+      Optional<GoldCard> optionalGoldCard = deck.draw(PlayerToken.RED, 0);
       if (optionalGoldCard.isPresent()) {
         GoldCard goldCard = optionalGoldCard.get();
-        switch (goldCard.getId()) {
+        switch (goldCard.id) {
           case 43:
             assertTrue(goldCard.type.isPresent());
             assertEquals(goldCard.type.get(), Resources.FUNGI);
