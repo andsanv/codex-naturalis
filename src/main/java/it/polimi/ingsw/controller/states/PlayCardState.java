@@ -19,15 +19,15 @@ public class PlayCardState extends GameState {
    *
    * @param playerToken Token that represents the player
    * @param coords Coordinates where to play the card on the board
-   * @param card The card to play
+   * @param cardId id of the card to play
    * @param cardSide The side of the card to play
    * @return A boolean that depends on whether the operation was successful or not
    */
   @Override
   public boolean playCard(
-      PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+      PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
     return gameFlowManager.getTurn().equals(playerToken)
-        && gameModelUpdater.playCard(playerToken, coords, card, cardSide);
+        && gameModelUpdater.playCard(playerToken, coords, cardId, cardSide);
   }
 
   /**

@@ -154,8 +154,7 @@ public class PlayerBoard extends Observable {
   }
 
   /**
-   * Updates playerElements after placing the card at coords. Must be called after successfully placing
-   * a card.
+   * Updates playerElements after placing the card at coords. Must be called after successfully placing a card.
    *
    * @param playerToken token of the player
    * @param coords coordinates of the placed card
@@ -202,7 +201,7 @@ public class PlayerBoard extends Observable {
   }
 
   /**
-   * Sets the given card at the given position and sets adjacent corners to covered
+   * Sets the given card at the given position and sets adjacent corners to covered.
    *
    * @param playerToken token of the player placing the card
    * @param coords coordinates where to place the card

@@ -31,11 +31,12 @@ public class GoldCard extends PlayableCard {
    */
   public GoldCard(
       int id,
-      Map<CornerPosition, Corner> frontCorners,
-      Map<CornerPosition, Corner> backCorners,
       Resources type,
       PointsType points,
-      Map<Resources, Integer> requiredResources) {
+      Map<Resources, Integer> requiredResources,
+      Map<CornerPosition, Corner> frontCorners,
+      Map<CornerPosition, Corner> backCorners
+      ) {
     super(id, frontCorners, backCorners, type, points);
     this.requiredResources = requiredResources;
   }

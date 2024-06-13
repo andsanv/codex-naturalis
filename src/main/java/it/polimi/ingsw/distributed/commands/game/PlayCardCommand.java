@@ -12,19 +12,19 @@ import it.polimi.ingsw.model.player.PlayerToken;
 public class PlayCardCommand extends GameCommand {
   public final PlayerToken playerToken;
   public final Coords coords;
-  public final PlayableCard card;
+  public final int cardId;
   public final CardSide cardSide;
 
   public PlayCardCommand(
-      PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+      PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
     this.playerToken = playerToken;
     this.coords = coords;
-    this.card = card;
+    this.cardId = cardId;
     this.cardSide = cardSide;
   }
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    return gameFlowManager.currentState.playCard(playerToken, coords, card, cardSide);
+    return gameFlowManager.currentState.playCard(playerToken, coords, cardId, cardSide);
   }
 }

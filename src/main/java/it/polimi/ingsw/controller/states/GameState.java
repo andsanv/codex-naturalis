@@ -50,7 +50,7 @@ public abstract class GameState {
   // PlayCardState methods
 
   public boolean playCard(
-      PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+      PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
     return false;
   }
 

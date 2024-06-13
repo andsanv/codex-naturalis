@@ -6,34 +6,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
 public class ScoreTrackTest {
   private ScoreTrack scoreTrack;
-  private List<PlayerToken> playerTokens;
+  private Map<PlayerToken, Integer> initialScores;
 
   @BeforeEach
-  void init() {
-    playerTokens =
-        new ArrayList<>(
-            Arrays.asList(
-                PlayerToken.RED, PlayerToken.GREEN, PlayerToken.BLUE, PlayerToken.YELLOW));
+  void setUp() {
+    initialScores = new HashMap<>() {{
+      put(PlayerToken.RED, 0);
+      put(PlayerToken.GREEN, 0);
+      put(PlayerToken.BLUE, 0);
+      put(PlayerToken.YELLOW, 0);
+    }};
 
-    scoreTrack = new ScoreTrack(playerTokens);
+    scoreTrack = new ScoreTrack(initialScores, new ArrayList<>(), new AtomicInteger(0));
   }
 
   @Test
-  void testGetScore() {
-    for (PlayerToken playerToken : playerTokens) {
-      assertEquals(0, scoreTrack.getScores().get(playerToken).intValue());
-    }
-  }
-
-  @Test
-  void testUpdatePlayerScore() {
+  void updatePlayerScoreTest() {
     int score1 = 10;
     int score2 = 3;
 
@@ -51,14 +49,21 @@ public class ScoreTrackTest {
   }
 
   @Test
-  void testGameEnded() {
-    scoreTrack.updatePlayerScore(PlayerToken.RED, 19);
-    scoreTrack.updatePlayerScore(PlayerToken.GREEN, 5);
-
+  void limitPointsReachedTest() {
+    scoreTrack.updatePlayerScore(PlayerToken.RED, 10);
     assertFalse(scoreTrack.limitPointsReached());
-
-    scoreTrack.updatePlayerScore(PlayerToken.RED, 1);
-
+  
+    scoreTrack.updatePlayerScore(PlayerToken.GREEN, 21);
     assertTrue(scoreTrack.limitPointsReached());
+  }
+
+  @Test
+  void getScoresTest() {
+    initialScores.keySet().forEach(
+      x -> assertEquals(0, scoreTrack.getScores().get(x))
+    );
+
+    scoreTrack.updatePlayerScore(PlayerToken.YELLOW, 4);
+    assertEquals(4, scoreTrack.getScores().get(PlayerToken.YELLOW));
   }
 }

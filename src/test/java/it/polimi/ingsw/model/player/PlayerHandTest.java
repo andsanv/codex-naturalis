@@ -32,34 +32,90 @@ class PlayerHandTest {
     card1 = Mockito.mock(ResourceCard.class);
     card2 = Mockito.mock(ResourceCard.class);
     card3 = Mockito.mock(GoldCard.class);
+  }
 
+  @Test
+  void constructorTest() {
+    try {
+      new PlayerHand(Arrays.asList(card1, card2));
+      assertFalse(true);
+    } catch (Exception e) {}
+
+    try {
+      new PlayerHand(Arrays.asList(card1, card2, card3, card1));
+      assertFalse(true);
+    } catch (Exception e) {}
+    
+    try {
+      new PlayerHand(Arrays.asList(card1));
+      assertFalse(true);
+    } catch (Exception e) {}
+
+    try {
+      new PlayerHand(Arrays.asList(null, null, null));
+    }
+    catch(Exception e) {
+      assertFalse(true);
+    }
   }
 
   @Test
   void addTest() {
-    int size = playerHand.getCards().size();
+    cards = new ArrayList<>(Arrays.asList(card1, card2, card3));
+    playerHand = new PlayerHand(cards);
 
-    playerHand.add(card3);
+    playerHand.remove(card1);
+    playerHand.remove(card2);
+    playerHand.remove(card3);
 
-    assertEquals(size + 1, playerHand.getCards().size());
-    assertTrue(playerHand.getCards().contains(card3));
+    assertEquals(0, playerHand.add(card1));
+    assertEquals(1, playerHand.add(card3));
+    assertEquals(2, playerHand.add(card2));
+
+    assertEquals(-1, playerHand.add(card2));
+    
+    playerHand.remove(card3);
+    assertEquals(1, playerHand.add(card1));
   }
 
   @Test
   void removeTest() {
-    playerHand.add(card3);
+    cards = new ArrayList<>(Arrays.asList(card1, card2, card3));
+    playerHand = new PlayerHand(cards);
 
-    int size = playerHand.getCards().size();
+    assertTrue(playerHand.remove(card3));
+    assertNotNull(playerHand.getCards().get(0));
+    assertNotNull(playerHand.getCards().get(1));
+    assertNull(playerHand.getCards().get(2));
 
-    playerHand.remove(card3);
+    assertFalse(playerHand.remove(card3));
+    assertNotNull(playerHand.getCards().get(0));
+    assertNotNull(playerHand.getCards().get(1));
+    assertNull(playerHand.getCards().get(2));
 
-    assertEquals(size - 1, playerHand.getCards().size());
-    assertFalse(playerHand.getCards().contains(card3));
+    assertTrue(playerHand.remove(card1));
+    assertNull(playerHand.getCards().get(0));
+    assertNotNull(playerHand.getCards().get(1));
+    assertNull(playerHand.getCards().get(2));
+  }
+
+  @Test
+  void getTest() {    
+    PlayableCard card4 = new ResourceCard(0, null, null, null, null);
+    PlayableCard card5 = new GoldCard(1, null, null, null, null, null);
+    PlayableCard card6 = new GoldCard(2, null, null, null, null, null);
+    playerHand = new PlayerHand(Arrays.asList(card4, card5, card6));
+
+    assertEquals(card4, playerHand.get(card4.id));
+    assertEquals(card5, playerHand.get(card5.id));
+    assertEquals(card6, playerHand.get(card6.id));
+    playerHand.remove(card6);
+    assertNull(playerHand.get(card6.id));
   }
 
   @Test
   void sizeTest() {
-    cards = new ArrayList<>(Arrays.asList(card1, card2, card3));
+    cards = new ArrayList<>(Arrays.asList(card3, card2, card3));
     playerHand = new PlayerHand(cards);
 
     assertEquals(3, playerHand.size());

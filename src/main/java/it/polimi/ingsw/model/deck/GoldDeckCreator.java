@@ -112,7 +112,7 @@ public class GoldDeckCreator {
           }
 
           cards.add(
-              new GoldCard(id, frontCorners, backCorners,resourceType, goldCardPoint, requiredResources));
+              new GoldCard(id, resourceType, goldCardPoint, requiredResources, frontCorners, backCorners));
         }
       }
 

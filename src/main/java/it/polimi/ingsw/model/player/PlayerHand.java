@@ -1,10 +1,8 @@
 package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.card.PlayableCard;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -77,10 +75,20 @@ public class PlayerHand {
    * cards' getter.
    * Private final and getter with copy (instead of public) to make the list constant.
    *
-   * @return list of cards.
+   * @return list of cards
    */
   public List<PlayableCard> getCards() {
     return new ArrayList<>(Arrays.asList(cards));
+  }
+
+  /**
+   * Used to get a card in the player's hand from its id.
+   *
+   * @param id id of the card of interest
+   * @return the card if present, null otherwise
+   */
+  public PlayableCard get(int id) {
+    return Arrays.stream(cards).filter(Objects::nonNull).filter(x -> x.id == id).findFirst().orElse(null);
   }
 
   /**

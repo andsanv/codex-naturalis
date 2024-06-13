@@ -36,17 +36,19 @@ public class GameModelUpdater {
    *
    * @param playerToken token of the player playing the card
    * @param coords coords at which to play the card
-   * @param card card to play
+   * @param cardId id of the card to play
    * @param cardSide side of the card to play
    * @return false if the card cannot be played at that coordinates, true otherwise
    */
-  public boolean playCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+  public boolean playCard(PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
     Player player = gameModel.tokenToPlayer.get(playerToken);
     PlayerBoard playerBoard = player.playerBoard;
+    PlayerHand playerHand = player.playerHand;
+    PlayableCard card = playerHand.get(cardId);
 
-    if (!playerBoard.canPlaceCardAt(coords, card, cardSide)) return false;
+    if (card == null || !playerBoard.canPlaceCardAt(coords, card, cardSide)) return false;
 
-    player.playerHand.remove(card);
+    playerHand.remove(card);
     PlayedCardEvent playedCardEvent = playerBoard.placeCard(playerToken, coords, card, cardSide);
     gameModel.slimGameModel.addPlayedCard(playedCardEvent);
 
