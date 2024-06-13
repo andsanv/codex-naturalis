@@ -32,7 +32,7 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
   @Override
   public int getCompletedOccurrences(PlayerBoard playerBoard) {
     Map<Coords, Resources> board =
-        playerBoard.getBoard().entrySet().stream()
+        playerBoard.board.entrySet().stream()
             .filter(e -> !e.getKey().equals(new Coords(0, 0)))
             .collect(
                 Collectors.toMap(
