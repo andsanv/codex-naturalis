@@ -1,7 +1,6 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.EndedTokenPhaseEvent;
@@ -22,18 +21,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * The state represents the game phase where players decide their game tokens
  */
 public class TokenSelectionState extends GameState {
-  /**
-   * List of users
-   */
-  private final List<User> users;
 
   /**
-   * Map that tracks connection between a player and his token
+   * Map that tracks connection between a player and his token.
    */
-  private final Map<String, PlayerToken> IdToToken;
+  private final Map<UserInfo, PlayerToken> userInfoToToken;
 
   /**
-   * time limit within which the players need to choose their token
+   * time limit within which the players need to choose their token.
    */
   private final long timeLimit; // in seconds
 
@@ -43,14 +38,14 @@ public class TokenSelectionState extends GameState {
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
 
-  public TokenSelectionState(GameFlowManager gameFlowManager, List<User> users, long timeLimit) {
+  public TokenSelectionState(GameFlowManager gameFlowManager, List<UserInfo> users, long timeLimit) {
     super(gameFlowManager);
     this.users = users;
 
     this.timeLimit = timeLimit;
     this.timeLimitReached.set(true);
 
-    this.IdToToken = new HashMap<>();
+    this.userInfoToToken = new HashMap<>();
   }
 
   /**
@@ -62,7 +57,7 @@ public class TokenSelectionState extends GameState {
    * @return The final player to chosen token map
    */
   @Override
-  public Map<String, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
+  public Map<UserInfo, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
     Timer timer = new Timer();
 
     Queue<GameCommand> commands = gameFlowManager.commands;
@@ -82,7 +77,7 @@ public class TokenSelectionState extends GameState {
       if (!timeLimitReached.get())
         synchronized (commands) {
           if (!commands.isEmpty() && commands.poll().execute(gameFlowManager)) {
-            if (IdToToken.keySet().size() == users.size()) {
+            if (userInfoToToken.keySet().size() == users.size()) {
               timer.cancel();
               break;
             }
@@ -95,23 +90,23 @@ public class TokenSelectionState extends GameState {
             new ArrayList<>(
                 Arrays.asList(
                     PlayerToken.RED, PlayerToken.GREEN, PlayerToken.BLUE, PlayerToken.YELLOW));
-        availableTokens.stream().filter(IdToToken::containsValue).forEach(availableTokens::remove);
+        availableTokens.stream().filter(userInfoToToken::containsValue).forEach(availableTokens::remove);
 
         users.stream()
-            .filter(u -> !IdToToken.containsKey(u.name))
+            .filter(u -> !userInfoToToken.containsKey(u))
             .forEach(
                 u ->
-                    IdToToken.put(
-                        u.name, availableTokens.get(random.nextInt(availableTokens.size()))));
+                    userInfoToToken.put(
+                        u, availableTokens.get(random.nextInt(availableTokens.size()))));
 
         break;
       }
     }
 
-    IdToToken.forEach((id, playerToken) -> playerTokens.add(playerToken));
+    userInfoToToken.forEach((id, playerToken) -> playerTokens.add(playerToken));
     gameFlowManager.setState(gameFlowManager.starterCardSelectionState);
     gameFlowManager.notify(new EndedTokenPhaseEvent());
-    return new HashMap<>(IdToToken);
+    return new HashMap<>(userInfoToToken);
   }
 
   /**
@@ -125,10 +120,10 @@ public class TokenSelectionState extends GameState {
    */
   @Override
   public boolean selectToken(UserInfo player, PlayerToken playerToken) {
-    synchronized (IdToToken) {
-      if (IdToToken.containsKey(player.name) || IdToToken.containsValue(playerToken)) return false;
+    synchronized (userInfoToToken) {
+      if (userInfoToToken.containsKey(player) || userInfoToToken.containsValue(playerToken)) return false;
 
-      IdToToken.put(player.name, playerToken);
+      userInfoToToken.put(player, playerToken);
       gameFlowManager.notify(new TokenAssignmentEvent(player, playerToken));
       return true;
     }

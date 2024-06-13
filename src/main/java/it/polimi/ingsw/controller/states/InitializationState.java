@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller.states;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
 import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
@@ -34,7 +35,7 @@ public class InitializationState extends GameState {
     /**
      * Handles the initialization phase
      *
-     * @param idToToken maps players to their tokens
+     * @param userInfoToToken maps players to their tokens
      * @param tokenToStarterCard maps players tokens to their starter card
      * @param tokenToCardSide maps players to their chosen starter card side
      * @param tokenToObjectiveCard maps players to their objective card
@@ -42,14 +43,14 @@ public class InitializationState extends GameState {
      */
   @Override
   public boolean handleInitialization(
-      Map<String, PlayerToken> idToToken,
+      Map<UserInfo, PlayerToken> userInfoToToken,
       Map<PlayerToken, StarterCard> tokenToStarterCard,
       Map<PlayerToken, CardSide> tokenToCardSide,
       Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard
   ) {
     // set up model
     List<ObjectiveCard> commonObjectives = new ArrayList<>(Arrays.asList(decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow(), decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow()));
-    List<PlayerToken> playerTokens = new ArrayList<>(idToToken.values());
+    List<PlayerToken> playerTokens = new ArrayList<>(userInfoToToken.values());
 
     GameModelUpdater gameModelUpdater = new GameModelUpdater(
             new GameModel(decks, playerTokens, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard, commonObjectives, observers, lastEventId)

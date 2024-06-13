@@ -69,7 +69,7 @@ public class GameFlowManager implements Runnable {
   /**
    * List containing all in game users.
    */
-  public List<User> users;
+  public List<UserInfo> users;
 
   /**
    * List of observers (the clients connected), which will be notified for every event thrown.
@@ -163,7 +163,7 @@ public class GameFlowManager implements Runnable {
   @Override
   public void run() {
     // pre-game phase
-    Map<String, PlayerToken> idToToken = currentState.handleTokenSelection(playerTokens); // select token phase
+    Map<UserInfo, PlayerToken> idToToken = currentState.handleTokenSelection(playerTokens); // select token phase
     Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> tokenToStarterCardAndCardSide = currentState.handleStarterCardSelection(); // select starter card side phase
     Map<PlayerToken, StarterCard> tokenToStarterCard = tokenToStarterCardAndCardSide.first;
     Map<PlayerToken, CardSide> tokenToCardSide = tokenToStarterCardAndCardSide.second;

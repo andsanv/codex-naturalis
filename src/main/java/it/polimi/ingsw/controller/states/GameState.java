@@ -33,7 +33,7 @@ public abstract class GameState {
   /**
    * list of players in the game
    */
-  protected List<User> users;
+  protected List<UserInfo> users;
 
   /**
    * GameState constructor
@@ -80,7 +80,7 @@ public abstract class GameState {
 
   // TokenSelectionState methods
 
-  public Map<String, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
+  public Map<UserInfo, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
     return null;
   }
 
@@ -123,7 +123,7 @@ public abstract class GameState {
   // InitializationState methods
 
   public boolean handleInitialization(
-      Map<String, PlayerToken> idToToken,
+      Map<UserInfo, PlayerToken> idToToken,
       Map<PlayerToken, StarterCard> tokenToStarterCard,
       Map<PlayerToken, CardSide> tokenToCardSide,
       Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard) {
