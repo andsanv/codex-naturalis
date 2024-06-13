@@ -46,7 +46,7 @@ public class GameModelUpdater {
 
     if (!playerBoard.canPlaceCardAt(coords, card, cardSide)) return false;
 
-    player.playerHand.removeCard(card);
+    player.playerHand.remove(card);
     PlayedCardEvent playedCardEvent = playerBoard.placeCard(playerToken, coords, card, cardSide);
     gameModel.slimGameModel.addPlayedCard(playedCardEvent);
 
@@ -103,13 +103,13 @@ public class GameModelUpdater {
   public boolean drawResourceDeckCard(PlayerToken playerToken) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() >= 3) return false;
+    if (playerHand.getCards().size() >= 3 || playerHand.getFirstFree() == -1) return false;
 
-    Optional<ResourceCard> card = gameModel.resourceCardsDeck.draw(playerToken);
+    Optional<ResourceCard> card = gameModel.resourceCardsDeck.draw(playerToken, playerHand.getFirstFree());
 
     if (card.isEmpty()) return false;
 
-    playerHand.addCard(card.get());
+    playerHand.add(card.get());
     return true;
   }
 
@@ -123,13 +123,13 @@ public class GameModelUpdater {
   public boolean drawGoldDeckCard(PlayerToken playerToken) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() >= 3) return false;
+    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1) return false;
 
-    Optional<GoldCard> card = gameModel.goldCardsDeck.draw(playerToken);
+    Optional<GoldCard> card = gameModel.goldCardsDeck.draw(playerToken, playerHand.getFirstFree());
 
     if (card.isEmpty()) return false;
 
-    playerHand.addCard(card.get());
+    playerHand.add(card.get());
     return true;
   }
 
@@ -144,13 +144,13 @@ public class GameModelUpdater {
   public boolean drawVisibleResourceCard(PlayerToken playerToken, int chosen) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() >= 3) return false;
+    if (playerHand.getCards().size() >= 3 || playerHand.getFirstFree() == -1) return false;
 
-    Optional<ResourceCard> card = gameModel.visibleResourceCards.draw(playerToken, chosen);
+    Optional<ResourceCard> card = gameModel.visibleResourceCards.draw(playerToken, chosen, playerHand.getFirstFree());
 
     if (card.isEmpty()) return false;
 
-    playerHand.addCard(card.get());
+    playerHand.add(card.get());
     return true;
   }
 
@@ -165,13 +165,13 @@ public class GameModelUpdater {
   public boolean drawVisibleGoldCard(PlayerToken playerToken, int chosen) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.getCards().size() >= 3) return false;
+    if (playerHand.getCards().size() >= 3 || playerHand.getFirstFree() == -1) return false;
 
-    Optional<GoldCard> card = gameModel.visibleGoldCards.draw(playerToken, chosen);
+    Optional<GoldCard> card = gameModel.visibleGoldCards.draw(playerToken, chosen, playerHand.getFirstFree());
 
     if (card.isEmpty()) return false;
 
-    playerHand.addCard(card.get());
+    playerHand.add(card.get());
     return true;
   }
 

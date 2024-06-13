@@ -46,9 +46,10 @@ public class Deck<CardType extends Card> extends Observable {
    * Allows to draw a card from the top of the deck.
    *
    * @param playerToken token of the player drawing the card
+   * @param handIndex index of the hand where card will be placed
    * @return Optional.of(drawn card) if the deck was not empty, Optional.empty() otherwise
    */
-  public Optional<CardType> draw(PlayerToken playerToken) {
+  public Optional<CardType> draw(PlayerToken playerToken, int handIndex) {
     if (isEmpty()) return Optional.empty();
 
     CardType card = deck.pop();
@@ -63,10 +64,10 @@ public class Deck<CardType extends Card> extends Observable {
         nextCardSeed = ((GoldCard) nextCard).type;
     }
 
-    if(card instanceof ResourceCard )
-      notify(new DrawnResourceDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardSeed));
+    if(card instanceof ResourceCard)
+      notify(new DrawnResourceDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardSeed, handIndex));
     else if (card instanceof GoldCard)
-      notify(new DrawnGoldDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardSeed));
+      notify(new DrawnGoldDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardSeed, handIndex));
     else if(card instanceof StarterCard)
       notify(new DrawnStarterCardEvent(playerToken, card.id));
 

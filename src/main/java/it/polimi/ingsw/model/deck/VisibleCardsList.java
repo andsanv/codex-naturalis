@@ -54,33 +54,37 @@ public class VisibleCardsList<CardType extends Card> extends Observable {
    * If the deck is empty, it replaces the card with null.
    *
    * @param playerToken token of the player drawing the card
-   * @param index the index of the element to be removed
-   * @return Optional.empty() if index out of bound or no card was in specified position, Optional.of(drawn card) otherwise
+   * @param listIndex the list index of the element to be removed
+   * @param handIndex index in the player's hand where card will be placed
+   * @return Optional.empty() if listIndex out of bound or no card was in specified position, Optional.of(drawn card) otherwise
    */
-  public Optional<CardType> draw(PlayerToken playerToken, int index) {
-    if(index < 0 || index > 1 || cards.get(index) == null) return Optional.empty();
+  public Optional<CardType> draw(PlayerToken playerToken, int listIndex, int handIndex) {
+    if(listIndex < 0 || listIndex > 1 || cards.get(listIndex) == null) return Optional.empty();
 
-    CardType card = cards.get(index);
+    CardType card = cards.get(listIndex);
     Trio<Optional<CardType>, Boolean, Optional<Resources>> deckDrawResult = deck.anonymousDraw();
 
     if (card instanceof ResourceCard) {
       notify(new DrawnVisibleResourceCardEvent(
               playerToken,
-              index,
+              listIndex,
               card.id,
               deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
-              deckDrawResult.second, deckDrawResult.third));
+              deckDrawResult.second, deckDrawResult.third,
+              handIndex));
     }
     else if (card instanceof GoldCard) {
       notify(new DrawnVisibleGoldCardEvent(
               playerToken,
-              index,
+              listIndex,
               card.id,
               deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
-              deckDrawResult.second, deckDrawResult.third));    }
-    else throw new RuntimeException();
+              deckDrawResult.second, deckDrawResult.third,
+              handIndex));
+    }
+    else throw new RuntimeException("Illegal card type");
 
-    cards.set(index, deckDrawResult.first.orElse(null));
+    cards.set(listIndex, deckDrawResult.first.orElse(null));
     return Optional.of(card);
   }
 }

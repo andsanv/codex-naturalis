@@ -104,7 +104,7 @@ public class StarterCardSelectionState extends GameState {
         playerTokens.stream()
             .filter(pt -> !TokenToStarterCard.containsKey(pt))
             .forEach(
-                pt -> TokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt).orElseThrow()));
+                pt -> TokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt, 0).orElseThrow()));
         playerTokens.stream()
             .filter(pt -> !TokenToCardSide.containsKey(pt))
             .forEach(pt -> TokenToCardSide.put(pt, sides.get(random.nextInt(sides.size()))));
@@ -130,7 +130,7 @@ public class StarterCardSelectionState extends GameState {
   public boolean drawStarterCard(PlayerToken playerToken) {
     if (TokenToStarterCard.containsKey(playerToken)) return false;
 
-    StarterCard starterCard = decks.starterCardsDeck.draw(playerToken).orElseThrow();
+    StarterCard starterCard = decks.starterCardsDeck.draw(playerToken, 0).orElseThrow();
 
     TokenToStarterCard.put(playerToken, starterCard);
     decks.starterCardsDeck.notify(new DrawnStarterCardEvent(playerToken, starterCard.id));

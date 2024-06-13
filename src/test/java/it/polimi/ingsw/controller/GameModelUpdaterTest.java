@@ -239,7 +239,7 @@ class GameModelUpdaterTest {
           .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     ArrayList<PlayableCard> tempCards =
@@ -284,7 +284,7 @@ class GameModelUpdaterTest {
           .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     ArrayList<PlayableCard> tempCards =
@@ -334,7 +334,7 @@ class GameModelUpdaterTest {
           .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     // first draw should complete successfully
@@ -379,7 +379,7 @@ class GameModelUpdaterTest {
           .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     assertTrue(gameModelUpdater.drawVisibleGoldCard(PlayerToken.RED, 1));

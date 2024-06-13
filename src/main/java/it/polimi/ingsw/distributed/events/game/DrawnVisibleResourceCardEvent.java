@@ -14,6 +14,7 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
   private final Optional<Integer> replacementCardId;
   private final boolean emptiedDeck;
   private final Optional<Resources> nextCardSeed;
+  private final int handIndex;
 
   /**
    * @param playerToken the token of the player that draws the card
@@ -22,6 +23,7 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
    * @param replacementCardId the id of the replacement card
    * @param emptiedDeck true if deck was emptied drawing the replacement card, false otherwise
    * @param nextCardSeed seed of the next card
+   * @param handIndex index of the playerHand where drawn card will be placed
    */
   public DrawnVisibleResourceCardEvent(
       PlayerToken playerToken,
@@ -29,7 +31,8 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
       int drawnCardId,
       Optional<Integer> replacementCardId,
       boolean emptiedDeck,
-      Optional<Resources> nextCardSeed
+      Optional<Resources> nextCardSeed,
+      int handIndex
   ) {
     this.playerToken = playerToken;
     this.drawnCardPosition = drawnCardPosition;
@@ -37,6 +40,7 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
     this.replacementCardId = replacementCardId;
     this.emptiedDeck = emptiedDeck;
     this.nextCardSeed = nextCardSeed;
+    this.handIndex = handIndex;
   }
 
   @Override
@@ -47,7 +51,8 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
         drawnCardId,
         replacementCardId,
         emptiedDeck,
-        nextCardSeed
+        nextCardSeed,
+        handIndex
     );
   }
 }
