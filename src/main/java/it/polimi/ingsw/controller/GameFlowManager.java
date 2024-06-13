@@ -19,6 +19,8 @@ import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -290,7 +292,13 @@ public class GameFlowManager implements Runnable {
    * @param gameEvent event sent to clients
    */
   public void notify(GameEvent gameEvent) {
-    observers.forEach(observer -> observer.update(gameEvent));
+    observers.forEach(observer -> {
+      try {
+        observer.update(gameEvent);
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   /**

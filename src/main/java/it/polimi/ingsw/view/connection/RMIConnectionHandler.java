@@ -38,6 +38,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
     gameServerActions = null;
 
     try {
+      System.out.println("Connecting to main server");
       Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
@@ -46,12 +47,20 @@ public class RMIConnectionHandler extends ConnectionHandler {
       UserInfo userInfo = new UserInfo(new User("rave"));
       mainServerActions.connectToMain(userInfo, clientMainView);
 
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+      }
+
+      System.out.println(userInterface.getUserInfo());
+
+
       mainServerActions.send(new CreateLobbyCommand(userInfo));
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
     } catch (RemoteException | NotBoundException e) {
-
+      e.printStackTrace();
     }
   }
 

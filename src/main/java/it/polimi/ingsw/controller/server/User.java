@@ -42,7 +42,7 @@ public final class User {
     return this.name.equals(other.name) && this.id == other.id;
   }
 
-  // TODO add hashcode impl
+  
   @Override
   public int hashCode() {
     return super.hashCode();

@@ -72,7 +72,6 @@ public enum Server {
                           try {
                             entry.getValue().first.receiveEvent(new KeepAliveEvent());
                             System.out.println("Sent keep alive to " + entry.getKey());
-                            System.out.println(entry.getValue().first);
                           } catch (IOException e) {
                             connectedPlayers.put(entry.getKey(), new Pair<>(entry.getValue().first, false));
                             System.err.println("Error: Couldn't send message to " + entry.getValue().first);

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.controller.observer;
 
 import it.polimi.ingsw.distributed.events.game.GameEvent;
+
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,7 +30,14 @@ public abstract class Observable {
   public void notify(GameEvent event) {
     event.setId(lastEventId.getAndIncrement());
     synchronized (observers) {
-      observers.forEach(observer -> observer.update(event));
+      observers.forEach(observer -> {
+        try {
+          observer.update(event);
+        } catch (RemoteException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      });
     }
   }
 }

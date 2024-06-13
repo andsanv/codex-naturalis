@@ -17,26 +17,14 @@ public class ClientEntry {
   // private final ConnectionHandler connectionHandler;
 
   public static void main(String[] args) throws NotBoundException, UnknownHostException, IOException {
-    CLITest cliTest = new CLITest();
-    
-    socketTest(cliTest);
+    rmiTest();
   }
 
   public static void rmiTest() throws RemoteException {
 
     CLITest clientEntry = new CLITest();
 
-    ConnectionHandler connectionHandler = new RMIConnectionHandler(clientEntry);
-
-    UserInfo userInfo = clientEntry.getUserInfo();
-
-    connectionHandler.sendToMainServer(new CreateLobbyCommand(userInfo));
-
-
-    try {
-      Thread.sleep(200);
-    } catch (InterruptedException e) {
-    }
+    RMIConnectionHandler connectionHandler = new RMIConnectionHandler(clientEntry);    
   }
 
   public static void socketTest(CLITest cliTest) throws UnknownHostException, IOException {
