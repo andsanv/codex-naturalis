@@ -111,13 +111,13 @@ class ObjectiveDeckCreatorTest {
             assertEquals(
                 requiredItems.get(Resources.FUNGI),
                 ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy())
-                    .getRequiredItems()
+                    .getRequiredElements()
                     .get(Resources.FUNGI));
 
             assertEquals(
                 requiredItems.size(),
                 ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy())
-                    .getRequiredItems()
+                    .getRequiredElements()
                     .size());
 
             break;
@@ -131,7 +131,7 @@ class ObjectiveDeckCreatorTest {
             requiredItems.put(Items.MANUSCRIPT, 1);
 
             Map<Elements, Integer> map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy())
-                .getRequiredItems();
+                .getRequiredElements();
 
             assertTrue(requiredItems.keySet().containsAll(map.keySet()));
 
@@ -147,7 +147,7 @@ class ObjectiveDeckCreatorTest {
             requiredItems = new HashMap<>();
             requiredItems.put(Items.QUILL, 2);
 
-            map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredItems();
+            map = ((ItemsObjectiveStrategy) objectiveCard.getObjectiveStrategy()).getRequiredElements();
 
             assertTrue(requiredItems.keySet().containsAll(map.keySet()));
 
