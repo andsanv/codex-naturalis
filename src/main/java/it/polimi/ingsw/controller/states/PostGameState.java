@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  * State that represents the "post-game" part of the game.
- * No actions on the boards are allowed
+ * No actions on the boards are allowed.
  */
 public class PostGameState extends GameState {
   public PostGameState(GameFlowManager gameFlowManager) {
@@ -18,14 +18,14 @@ public class PostGameState extends GameState {
   }
 
   /**
-   * Manages post-game operations
+   * Manages post-game operations.
    *
-   * @return A boolean that depends on whether the game ended successfully or not
+   * @return boolean that depends on whether the game ended successfully or not
    */
   @Override
   public boolean postGame() {
     List<Pair<PlayerToken, Integer>> results =
-        gameModelUpdater.getModel().getScoreTrack().getScores().entrySet().stream()
+        gameModelUpdater.gameModel.scoreTrack.getScores().entrySet().stream()
             .sorted(Map.Entry.comparingByValue())
             .map(entry -> new Pair<>(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());

@@ -12,22 +12,17 @@ public enum CornerPosition {
   BOTTOM_LEFT;
 
   /**
-   * Allows to get opposite position.
+   * Allows to draw opposite position.
    *
    * @return the opposite position
    */
   public CornerPosition getOpposite() {
-    switch (this) {
-      case TOP_LEFT:
-        return BOTTOM_RIGHT;
-      case TOP_RIGHT:
-        return BOTTOM_LEFT;
-      case BOTTOM_RIGHT:
-        return TOP_LEFT;
-      case BOTTOM_LEFT:
-        return TOP_RIGHT;
-    }
+      return switch (this) {
+          case TOP_LEFT -> BOTTOM_RIGHT;
+          case TOP_RIGHT -> BOTTOM_LEFT;
+          case BOTTOM_RIGHT -> TOP_LEFT;
+          case BOTTOM_LEFT -> TOP_RIGHT;
+      };
 
-    return TOP_LEFT;
   }
 }

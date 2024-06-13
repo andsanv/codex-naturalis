@@ -47,12 +47,12 @@ class GameFlowManagerTest {
     assertTrue(
         gameFlowManager.getIsConnected().values().stream().allMatch(value -> value.equals(false)));
 
-    assertEquals(0, gameFlowManager.idToToken.size());
+    assertEquals(0, gameFlowManager.UserInfoToToken.size());
     assertEquals(gameFlowManager.setupState, gameFlowManager.getCurrentState());
 
     gameFlowManager.getCurrentState().setup();
 
-    assertEquals(2, gameFlowManager.idToToken.keySet().size());
+    assertEquals(2, gameFlowManager.UserInfoToToken.keySet().size());
     assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().size());
 
     for (Player player : gameFlowManager.gameModelUpdater.getPlayers().values()) {
@@ -86,8 +86,8 @@ class GameFlowManagerTest {
 
     // used for the specific starter card
     Set<Resources> centralElements = new HashSet<>();
-    centralElements.add(Resources.FUNGI);
-    centralElements.add(Resources.INSECT);
+    centralElements.insert(Resources.FUNGI);
+    centralElements.insert(Resources.INSECT);
 
     // the specific card
     ResourceCard resourceCard =
@@ -127,18 +127,18 @@ class GameFlowManagerTest {
         resourceCard,
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getBoard()
             .getCard(new Coords(1, 1)));
     gameFlowManager
         .gameModelUpdater
         .getPlayers()
-        .get(gameFlowManager.idToToken.get(firstPlayer))
+        .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
         .setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
     gameFlowManager
         .gameModelUpdater
         .getPlayers()
-        .get(gameFlowManager.idToToken.get(firstPlayer))
+        .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
         .getHand()
         .addCard(resourceCard);
 
@@ -157,7 +157,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size());
@@ -185,7 +185,7 @@ class GameFlowManagerTest {
     assertNull(
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getBoard()
             .getCard(new Coords(1, 1)));
 
@@ -200,7 +200,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size());
@@ -215,7 +215,7 @@ class GameFlowManagerTest {
         resourceCard,
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getBoard()
             .getCard(new Coords(-1, 1)));
 
@@ -225,7 +225,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size());
@@ -240,7 +240,7 @@ class GameFlowManagerTest {
     assertNull(
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getBoard()
             .getCard(new Coords(-1, 1)));
 
@@ -260,7 +260,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size());
@@ -270,7 +270,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size();
@@ -284,7 +284,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size());
@@ -293,13 +293,13 @@ class GameFlowManagerTest {
     // game phase
     gameFlowManager.gameModelUpdater.setScoreTrack(
         Arrays.asList(
-            gameFlowManager.idToToken.get(firstPlayer),
-            gameFlowManager.idToToken.get(secondPlayer)));
+            gameFlowManager.UserInfoToToken.draw(firstPlayer),
+            gameFlowManager.UserInfoToToken.draw(secondPlayer)));
     gameFlowManager
         .gameModelUpdater
         .getModel()
         .getScoreTrack()
-        .updatePlayerScore(gameFlowManager.idToToken.get(firstPlayer), 23);
+        .updatePlayerScore(gameFlowManager.UserInfoToToken.draw(firstPlayer), 23);
 
     // should not be last round yet
     assertFalse(gameFlowManager.isLastRound);
@@ -314,20 +314,20 @@ class GameFlowManagerTest {
         resourceCard,
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getBoard()
             .getCard(new Coords(1, 1)));
 
     gameFlowManager
         .gameModelUpdater
         .getPlayers()
-        .get(gameFlowManager.idToToken.get(secondPlayer))
+        .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
         .setPlayerHand(new PlayerHand()); // emptying player's hand, otherwise drawCard fails
     tempSize =
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getHand()
             .getCards()
             .size();
@@ -342,7 +342,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getHand()
             .getCards()
             .size());
@@ -359,7 +359,7 @@ class GameFlowManagerTest {
     assertNull(
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getBoard()
             .getCard(new Coords(2, 2)));
 
@@ -373,7 +373,7 @@ class GameFlowManagerTest {
         resourceCard,
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getBoard()
             .getCard(new Coords(-1, -1)));
 
@@ -381,7 +381,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getHand()
             .getCards()
             .size();
@@ -395,7 +395,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getHand()
             .getCards()
             .size());
@@ -404,7 +404,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size();
@@ -418,7 +418,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getHand()
             .getCards()
             .size());
@@ -441,7 +441,7 @@ class GameFlowManagerTest {
         resourceCard,
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getBoard()
             .getCard(new Coords(2, 2)));
 
@@ -449,7 +449,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getHand()
             .getCards()
             .size();
@@ -463,7 +463,7 @@ class GameFlowManagerTest {
         gameFlowManager
             .gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getHand()
             .getCards()
             .size());
@@ -487,7 +487,7 @@ class GameFlowManagerTest {
     assertNull(
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(firstPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(firstPlayer))
             .getBoard()
             .getCard(new Coords(2, 2)));
 
@@ -500,7 +500,7 @@ class GameFlowManagerTest {
     assertNull(
         gameModelUpdater
             .getPlayers()
-            .get(gameFlowManager.idToToken.get(secondPlayer))
+            .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getBoard()
             .getCard(new Coords(1, 3)));
   }

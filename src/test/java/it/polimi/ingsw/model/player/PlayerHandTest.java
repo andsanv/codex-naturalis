@@ -36,27 +36,27 @@ class PlayerHandTest {
 
     playerHand = new PlayerHand();
 
-    playerHand.addCard(card1);
-    playerHand.addCard(card2);
+    playerHand.add(card1);
+    playerHand.add(card2);
   }
 
   @Test
   void addCard() {
     int size = playerHand.getCards().size();
 
-    playerHand.addCard(card3);
+    playerHand.add(card3);
 
     assertEquals(size + 1, playerHand.getCards().size());
     assertTrue(playerHand.getCards().contains(card3));
   }
 
   @Test
-  void removeCard() {
-    playerHand.addCard(card3);
+  void remove() {
+    playerHand.add(card3);
 
     int size = playerHand.getCards().size();
 
-    playerHand.removeCard(card3);
+    playerHand.remove(card3);
 
     assertEquals(size - 1, playerHand.getCards().size());
     assertFalse(playerHand.getCards().contains(card3));
@@ -64,7 +64,7 @@ class PlayerHandTest {
 
   @Test
   void getCards() {
-    playerHand.addCard(card3);
+    playerHand.add(card3);
 
     List<PlayableCard> cardsTest = new ArrayList<PlayableCard>();
 

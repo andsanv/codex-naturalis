@@ -89,7 +89,7 @@ public class GameView {
 
 
         //set events handling methods for stack panes in player hand
-        //todo: add red layout for inaccessible cells
+        //todo: insert red layout for inaccessible cells
         for (Node node : gridPane.getChildren()) {
             if (node instanceof StackPane) {
 

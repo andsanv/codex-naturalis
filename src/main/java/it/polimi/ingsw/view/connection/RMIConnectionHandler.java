@@ -64,7 +64,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
     }
   }
 
-  // Methods to add commands to the queue, handled by the CommandConsumer
+  // Methods to insert commands to the queue, handled by the CommandConsumer
   public void addCommand(MainCommand command) {
     serverCommandQueue.add(command);
   }

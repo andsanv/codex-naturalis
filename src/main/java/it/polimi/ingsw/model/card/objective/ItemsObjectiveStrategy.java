@@ -17,7 +17,7 @@ public class ItemsObjectiveStrategy implements ObjectiveStrategy {
   private final Map<Elements, Integer> requiredItems;
 
   /**
-   * @param requiredItems the required items to get points for the objective
+   * @param requiredItems the required items to draw points for the objective
    */
   public ItemsObjectiveStrategy(Map<Elements, Integer> requiredItems) {
     this.requiredItems = requiredItems;

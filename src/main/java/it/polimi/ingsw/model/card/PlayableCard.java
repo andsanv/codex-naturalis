@@ -57,7 +57,7 @@ public abstract class PlayableCard extends Card {
    * @param type card's seed
    * @param pointsType type of points assignment
    */
-  PlayableCard(
+  public PlayableCard(
       int id,
       Map<CornerPosition, Corner> frontCorners,
       Map<CornerPosition, Corner> backCorners,

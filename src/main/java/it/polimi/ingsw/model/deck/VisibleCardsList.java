@@ -1,10 +1,21 @@
 package it.polimi.ingsw.model.deck;
 
 import it.polimi.ingsw.controller.observer.Observable;
+import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.distributed.events.game.DrawnVisibleGoldCardEvent;
+import it.polimi.ingsw.distributed.events.game.DrawnVisibleResourceCardEvent;
 import it.polimi.ingsw.model.card.Card;
+import it.polimi.ingsw.model.card.GoldCard;
+import it.polimi.ingsw.model.card.ResourceCard;
+import it.polimi.ingsw.model.common.Resources;
+import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Trio;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The class represents a list of visible cards on the game table.
@@ -12,59 +23,68 @@ import java.util.List;
  *
  * @param <CardType> type of the visible cards' list
  * @see Card
+ * @see Deck
  */
-public class VisibleCardsList<CardType> extends Observable {
+public class VisibleCardsList<CardType extends Card> extends Observable {
   /**
    * The actual list of cards.
    */
   public final List<CardType> cards;
 
   /**
-   * @param cards list from which this is created.
+   * Deck with the same CardType as this, from which replacement cards will be drawn.
    */
-  public VisibleCardsList(List<CardType> cards) {
-    this.cards = new ArrayList<>(cards);
+  public final Deck<CardType> deck;
+
+  /**
+   * @param deck deck from which the class pops new cards.
+   * @param observers list of observers
+   * @param lastEventId integer used to uniquely identify events
+   */
+  public VisibleCardsList(Deck<CardType> deck, List<Observer> observers, AtomicInteger lastEventId) {
+    super(observers, lastEventId);
+
+    this.deck = deck;
+    this.cards = new ArrayList<>(Arrays.asList(deck.anonymousDraw().first.orElseThrow(), deck.anonymousDraw().first.orElseThrow()));
   }
 
   /**
-   * Reimplementation of List::add method (index).
+   * Allows players to draw from the visible cards list.
+   * Replaces the drawn card with a card drawn from the deck.
+   * If the deck is empty, it replaces the card with null.
    *
-   * @param card card to be appended to the list
-   * @return true if add was successful, false otherwise
+   * @param playerToken token of the player drawing the card
+   * @param listIndex the list index of the element to be removed
+   * @param handIndex index in the player's hand where card will be placed
+   * @return Optional.empty() if listIndex out of bound or no card was in specified position, Optional.of(drawn card) otherwise
    */
-  public boolean add(CardType card) {
-    if (cards.size() < 2) return cards.add(card);
+  public Optional<CardType> draw(PlayerToken playerToken, int listIndex, int handIndex) {
+    if(listIndex < 0 || listIndex > 1 || cards.get(listIndex) == null) return Optional.empty();
 
-    return false;
-  }
+    CardType card = cards.get(listIndex);
+    Trio<Optional<CardType>, Boolean, Optional<Resources>> deckDrawResult = deck.anonymousDraw();
 
-  /**
-   * Reimplementation of List::add method (element and index).
-   *
-   * @param index index at which the specified element is to be inserted
-   * @param card card to be inserted
-   */
-  public void add(int index, CardType card) {
-    cards.add(index, card);
-  }
+    if (card instanceof ResourceCard) {
+      notify(new DrawnVisibleResourceCardEvent(
+              playerToken,
+              listIndex,
+              card.id,
+              deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
+              deckDrawResult.second, deckDrawResult.third,
+              handIndex));
+    }
+    else if (card instanceof GoldCard) {
+      notify(new DrawnVisibleGoldCardEvent(
+              playerToken,
+              listIndex,
+              card.id,
+              deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
+              deckDrawResult.second, deckDrawResult.third,
+              handIndex));
+    }
+    else throw new RuntimeException("Illegal card type");
 
-  /**
-   * Reimplementation of List::get method.
-   *
-   * @param index index of the element to return
-   * @return the element at the specified position in this list
-   */
-  public CardType get(int index) {
-    return cards.get(index);
-  }
-
-  /**
-   * Reimplementation of List::remove method.
-   *
-   * @param index the index of the element to be removed
-   * @return the element previously at the specified position
-   */
-  public CardType remove(int index) {
-    return cards.remove(index);
+    cards.set(listIndex, deckDrawResult.first.orElse(null));
+    return Optional.of(card);
   }
 }

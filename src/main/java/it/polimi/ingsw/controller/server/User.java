@@ -41,10 +41,4 @@ public final class User {
     User other = (User) obj;
     return this.name.equals(other.name) && this.id == other.id;
   }
-
-  
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
 }

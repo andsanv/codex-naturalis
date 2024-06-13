@@ -1,112 +1,145 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.GameModelUpdater;
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.player.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
- * This class contains the state of the game items. There are no informations about players' turns
- * and connections/disconnections, as they are handled in the controller package.
+ * This class contains the state of the game items.
+ * There is no information about players' turns and connections/disconnections, as they are handled in the controller package.
+ *
+ * @see GameModelUpdater
  */
 public class GameModel {
+  /**
+   * Maps a token to its corresponding player object.
+   */
   public final Map<PlayerToken, Player> tokenToPlayer;
 
-  private Deck<ResourceCard> resourceCardsDeck;
-  private final VisibleCardsList<ResourceCard> visibleResourceCards;
+  /**
+   * ResourceCard cards deck.
+   */
+  public final Deck<ResourceCard> resourceCardsDeck;
 
-  private Deck<GoldCard> goldCardsDeck;
-  private VisibleCardsList<GoldCard> visibleGoldCards;
+  /**
+   * GoldCard cards deck.
+   */
+  public final Deck<GoldCard> goldCardsDeck;
 
-  private Deck<ObjectiveCard> objectiveCardsDeck;
-  private Deck<StarterCard> starterCardsDeck;
+  /**
+   * ObjectiveCard cards deck.
+   */
+  public final Deck<ObjectiveCard> objectiveCardsDeck;
 
-  private List<ObjectiveCard> commonObjectives;
+  /**
+   * StarterCard cards deck.
+   */
+  public final Deck<StarterCard> starterCardsDeck;
 
-  private ScoreTrack scoreTrack;
+  /**
+   * List of visible ResourceCard cards.
+   */
+  public final VisibleCardsList<ResourceCard> visibleResourceCards;
+
+  /**
+   * List of visible GoldCard cards.
+   */
+  public final VisibleCardsList<GoldCard> visibleGoldCards;
+
+  /**
+   * List of common objectives.
+   */
+  public final List<ObjectiveCard> commonObjectives;
+
+  /**
+   * Score track of the game
+   */
+  public final ScoreTrack scoreTrack;
 
   /**
    * A "simpler" model, that will be sent to clients during their reconnection phase
    */
   public SlimGameModel slimGameModel;
 
-  /** After creating the GameModel, a TODO must be called. */
-  public GameModel() {
-    objectiveCardsDeck = ObjectiveDeckCreator.createDeck();
-    starterCardsDeck = StarterDeckCreator.createDeck();
-    resourceCardsDeck = ResourceDeckCreator.createDeck();
-    goldCardsDeck = GoldDeckCreator.createDeck();
-
-    visibleResourceCards =
-        new VisibleCardsList<>(
-            Arrays.asList(resourceCardsDeck.draw().get(), resourceCardsDeck.draw().get()));
-    visibleGoldCards =
-        new VisibleCardsList<>(
-            Arrays.asList(goldCardsDeck.draw().get(), goldCardsDeck.draw().get()));
-
-    tokenToPlayer = new HashMap<>();
-
-    slimGameModel = new SlimGameModel();
-
-    scoreTrack = null;
-  }
-
   /**
-   * @return the resource cards deck
+   * Model is only created after all players chose their cards.
+   *
+   * @param decks decks to be used during game phase
+   * @param playerTokens tokens playing
+   * @param tokenToStarterCard map from token to the StarterCard card chosen
+   * @param tokenToCardSide map from token to the CardSide chosen
+   * @param tokenToObjectiveCard map from token to the ObjectiveCard card chosen
+   * @param commonObjectives common objectives drawn
+   * @param observers list of observers
+   * @param lastEventId integer used to uniquely identify events
    */
-  public Deck<ResourceCard> getResourceCardsDeck() {
-    return resourceCardsDeck;
-  }
+  public GameModel(
+          Decks decks,
+          List<PlayerToken> playerTokens,
+          Map<PlayerToken, StarterCard> tokenToStarterCard,
+          Map<PlayerToken, CardSide> tokenToCardSide,
+          Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard,
+          List<ObjectiveCard> commonObjectives,
+          List<Observer> observers,
+          AtomicInteger lastEventId
+  ) {
+    // initialize decks
+    this.objectiveCardsDeck = decks.objectiveCardsDeck;
+    this.starterCardsDeck = decks.starterCardsDeck;
+    this.resourceCardsDeck = decks.resourceCardsDeck;
+    this.goldCardsDeck = decks.goldCardsDeck;
 
-  /**
-   * @return the visible resource cards list
-   */
-  public VisibleCardsList<ResourceCard> getVisibleResourceCards() {
-    return visibleResourceCards;
-  }
+    this.visibleResourceCards =
+        new VisibleCardsList<>(resourceCardsDeck, observers, lastEventId);
+    this.visibleGoldCards =
+        new VisibleCardsList<>(goldCardsDeck, observers, lastEventId);
 
-  /**
-   * @return the gold cards deck
-   */
-  public Deck<GoldCard> getGoldCardsDeck() {
-    return goldCardsDeck;
-  }
+    // set up game related objects
+    Map<PlayerToken, List<PlayableCard>> tokenToInitialCards = new HashMap<>(
+      playerTokens.stream().collect(Collectors.toMap(
+              token -> token,
+              token -> {
+                List<PlayableCard> cards = new ArrayList<>(Arrays.asList(
+                        resourceCardsDeck.anonymousDraw().first.orElseThrow(),
+                        resourceCardsDeck.anonymousDraw().first.orElseThrow(),
+                        goldCardsDeck.anonymousDraw().first.orElseThrow()
+                ));
+                Collections.shuffle(cards);
+                return cards;
+              }
+              )
+      )
+    );
 
-  /**
-   * @return the visible gold cards list
-   */
-  public VisibleCardsList<GoldCard> getVisibleGoldCards() {
-    return visibleGoldCards;
-  }
+    this.tokenToPlayer = playerTokens.stream()
+            .collect(Collectors.toMap(
+                    token -> token,
+                    token -> new Player(
+                            tokenToStarterCard.get(token),
+                            tokenToCardSide.get(token),
+                            tokenToObjectiveCard.get(token),
+                            tokenToInitialCards.get(token),
+                            observers,
+                            lastEventId
+                    )
+            ));
 
-  /**
-   * @return the objective cards deck
-   */
-  public Deck<ObjectiveCard> getObjectiveCardsDeck() {
-    return objectiveCardsDeck;
-  }
+    Map<PlayerToken, Integer> initialScores = playerTokens.stream()
+            .collect(Collectors.toMap(
+                    token -> token,
+                    token -> 0
+                    ));
 
-  /**
-   * @return the game's score track
-   */
-  public ScoreTrack getScoreTrack() {
-    return scoreTrack;
-  }
+    this.scoreTrack = new ScoreTrack(initialScores, observers, lastEventId);
 
-  public Deck<StarterCard> getStarterCardsDeck() {
-    return starterCardsDeck;
-  }
-  ;
+    this.commonObjectives = new ArrayList<>(commonObjectives);
 
-  public void setCommonObjectives(List<ObjectiveCard> commonObjectives) {
-    this.commonObjectives = commonObjectives;
-  }
-
-  public List<ObjectiveCard> getCommonObjectives() {
-    return commonObjectives;
-  }
-
-  public void setScoreTrack(List<PlayerToken> playerTokens) {
-    this.scoreTrack = new ScoreTrack(playerTokens);
+    // set up the slim game model
+    this.slimGameModel = new SlimGameModel(this, playerTokens, tokenToStarterCard, tokenToCardSide, initialScores);
   }
 }

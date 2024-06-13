@@ -52,10 +52,10 @@ public class Lobby {
   }
 
   /**
-   * Tries to add an user to the lobby. This method fails if the lobby is full or if the same user
+   * Tries to insert an user to the lobby. This method fails if the lobby is full or if the same user
    * is already connected.
    *
-   * @param user The user to add to the lobby
+   * @param user The user to insert to the lobby
    * @return true if successfull, false otherwise
    */
   public synchronized boolean addUser(User user) {
@@ -91,7 +91,7 @@ public class Lobby {
    * @return false if the game was already started, true otherwise
    */
   public synchronized boolean startGame() {
-    if (gameStarted) return false;
+    if (gameStarted || users.size() < 2) return false;
 
     gameStarted = true;
     return true;

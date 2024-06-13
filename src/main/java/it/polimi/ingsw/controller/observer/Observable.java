@@ -11,15 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * keep track of current observers must be used.
  */
 public abstract class Observable {
-  private static List<Observer> observers;
-  private static AtomicInteger lastEventId;
+  private final List<Observer> observers;
+  private final AtomicInteger lastEventId;
 
-  public static void setObservers(List<Observer> observers) {
-    Observable.observers = observers;
-  }
-
-  public static void setLastEventId(AtomicInteger lastEventId) {
-    Observable.lastEventId = lastEventId;
+  public Observable(List<Observer> observers, AtomicInteger lastEventId) {
+    this.observers = observers;
+    this.lastEventId = lastEventId;
   }
 
   /**

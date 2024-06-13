@@ -6,6 +6,7 @@ import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
@@ -14,6 +15,7 @@ import it.polimi.ingsw.view.UI;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CLITest implements UI {
   private static UserInfo userInfo = null;
@@ -73,6 +75,26 @@ public class CLITest implements UI {
   }
 
   @Override
+  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
+  }
+
+  @Override
+  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
+  }
+
+  @Override
+  public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
+  }
+
+  @Override
+  public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
+  }
+
+  /*@Override
   public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
     System.out.println("Drawn gold deck card event received");
     System.out.println("Player Token: " + playerToken);
@@ -93,7 +115,7 @@ public class CLITest implements UI {
     System.out.println("Player Token: " + playerToken);
     System.out.println("Drawn Card Position: " + drawnCardPosition);
     System.out.println("Drawn Card ID: " + drawnCardId);
-  }
+  }*/
 
   @Override
   public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId) {
@@ -220,5 +242,10 @@ public class CLITest implements UI {
       Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
+  }
+
+  @Override
+  public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
+
   }
 }

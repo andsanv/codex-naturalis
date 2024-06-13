@@ -10,10 +10,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import it.polimi.ingsw.model.common.Resources;
 import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
@@ -451,21 +453,23 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
     }
 
     @Override
-    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnVisibleResourceCardEvent'");
+    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
+    }
+
+    @Override
+    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+
     }
 
     @Override
@@ -559,6 +563,17 @@ public class TUI implements UI {
     }
 
     @Override
+    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
+    }
+
+    @Override
+    public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
+
+    }
+
+    @Override
     public UserInfo getUserInfo() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
@@ -579,13 +594,6 @@ public class TUI implements UI {
     public void handleReconnetionToGame() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
-    }
-
-    @Override
-    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
-            Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
     }
 }
 

@@ -131,9 +131,9 @@ def translate_starter_cards() -> None:
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Translates CSV to Java code.")
-    parser.add_argument("-r","--resource", action="store_true", help="add this option to translate resource cards")
-    parser.add_argument("-g", "--gold", action="store_true", help="add this option to translate gold cards")
-    parser.add_argument("-s", "--starter", action="store_true", help="add this option to translate starter cards")
+    parser.add_argument("-r","--resource", action="store_true", help="insert this option to translate resource cards")
+    parser.add_argument("-g", "--gold", action="store_true", help="insert this option to translate gold cards")
+    parser.add_argument("-s", "--starter", action="store_true", help="insert this option to translate starter cards")
 
     args = parser.parse_args()
 

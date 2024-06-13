@@ -45,8 +45,8 @@ class GameModelUpdaterTest {
     backCorners.put(CornerPosition.BOTTOM_LEFT, new Corner(null, CornerTypes.VISIBLE));
 
     Set<Resources> centralElements = new HashSet<>();
-    centralElements.add(Resources.FUNGI);
-    centralElements.add(Resources.INSECT);
+    centralElements.insert(Resources.FUNGI);
+    centralElements.insert(Resources.INSECT);
 
     resourceCard1 =
         new ResourceCard(0, Resources.ANIMAL, PointsType.ONE, frontCorners, backCorners);
@@ -55,11 +55,11 @@ class GameModelUpdaterTest {
     specificStarterCard = new StarterCard(2, centralElements, backCorners, backCorners);
 
     gameModelUpdater.addPlayer(
-        PlayerToken.RED, starterCard.get(), CardSide.FRONT, objectiveCard.get());
+        PlayerToken.RED, starterCard.draw(), CardSide.FRONT, objectiveCard.draw());
     gameModelUpdater.addPlayer(
-        PlayerToken.GREEN, starterCard.get(), CardSide.FRONT, objectiveCard.get());
+        PlayerToken.GREEN, starterCard.draw(), CardSide.FRONT, objectiveCard.draw());
     gameModelUpdater.addPlayer(
-        PlayerToken.YELLOW, starterCard.get(), CardSide.FRONT, objectiveCard.get());
+        PlayerToken.YELLOW, starterCard.draw(), CardSide.FRONT, objectiveCard.draw());
 
     gameModelUpdater.setScoreTrack(
         new ArrayList<>(Arrays.asList(PlayerToken.RED, PlayerToken.GREEN, PlayerToken.YELLOW)));
@@ -67,7 +67,7 @@ class GameModelUpdaterTest {
 
   @Test
   void playCardPlacementTest() {
-    Player player = model.tokenToPlayer.get(PlayerToken.RED);
+    Player player = model.tokenToPlayer.draw(PlayerToken.RED);
     PlayerHand playerHand = player.getHand();
     PlayerBoard playerBoard = player.getBoard();
 
@@ -95,7 +95,7 @@ class GameModelUpdaterTest {
         playerBoard
             .getCard(new Coords(0, 0))
             .getActiveCorners()
-            .get(CornerPosition.TOP_RIGHT)
+            .draw(CornerPosition.TOP_RIGHT)
             .getType());
 
     // cornerType of covering card should not change
@@ -104,7 +104,7 @@ class GameModelUpdaterTest {
         playerBoard
             .getCard(new Coords(1, 1))
             .getActiveCorners()
-            .get(CornerPosition.BOTTOM_LEFT)
+            .draw(CornerPosition.BOTTOM_LEFT)
             .getType());
 
     playerHand.addCard(resourceCard2);
@@ -125,21 +125,21 @@ class GameModelUpdaterTest {
         playerBoard
             .getCard(new Coords(-1, 1))
             .getActiveCorners()
-            .get(CornerPosition.BOTTOM_RIGHT)
+            .draw(CornerPosition.BOTTOM_RIGHT)
             .getType());
     assertEquals(
         CornerTypes.COVERED,
         playerBoard
             .getCard(new Coords(0, 0))
             .getActiveCorners()
-            .get(CornerPosition.TOP_LEFT)
+            .draw(CornerPosition.TOP_LEFT)
             .getType());
     assertEquals(
         CornerTypes.COVERED,
         playerBoard
             .getCard(new Coords(0, 2))
             .getActiveCorners()
-            .get(CornerPosition.BOTTOM_LEFT)
+            .draw(CornerPosition.BOTTOM_LEFT)
             .getType());
   }
 
@@ -147,33 +147,33 @@ class GameModelUpdaterTest {
   void playCardPointsAndResourcesTest() {
     // let's only consider one player
     gameModelUpdater.addPlayer(
-        PlayerToken.BLUE, specificStarterCard, CardSide.BACK, objectiveCard.get());
+        PlayerToken.BLUE, specificStarterCard, CardSide.BACK, objectiveCard.draw());
     gameModelUpdater.setScoreTrack(
         new ArrayList<>(
             Arrays.asList(
                 PlayerToken.RED, PlayerToken.GREEN, PlayerToken.YELLOW, PlayerToken.BLUE)));
 
-    Player player = model.tokenToPlayer.get(PlayerToken.BLUE);
+    Player player = model.tokenToPlayer.draw(PlayerToken.BLUE);
     PlayerHand playerHand = player.getHand();
     PlayerBoard playerBoard = player.getBoard();
 
     // playCard should be successful and resources should be updated summing all resources
     gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(1, 1), resourceCard1, CardSide.FRONT);
-    assertEquals(2, playerBoard.getPlayerItems().get(Resources.INSECT));
-    assertEquals(1, playerBoard.getPlayerItems().get(Resources.FUNGI));
-    assertEquals(0, playerBoard.getPlayerItems().get(Resources.ANIMAL));
-    assertEquals(1, playerBoard.getPlayerItems().get(Resources.PLANT));
+    assertEquals(2, playerBoard.getPlayerItems().draw(Resources.INSECT));
+    assertEquals(1, playerBoard.getPlayerItems().draw(Resources.FUNGI));
+    assertEquals(0, playerBoard.getPlayerItems().draw(Resources.ANIMAL));
+    assertEquals(1, playerBoard.getPlayerItems().draw(Resources.PLANT));
 
     // one INSECT resource should be covered, and a INSECT resource and a PLANT resource should be
     // added to resources count
     gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(0, 2), resourceCard2, CardSide.FRONT);
-    assertEquals(2, playerBoard.getPlayerItems().get(Resources.INSECT));
-    assertEquals(1, playerBoard.getPlayerItems().get(Resources.FUNGI));
-    assertEquals(0, playerBoard.getPlayerItems().get(Resources.ANIMAL));
-    assertEquals(2, playerBoard.getPlayerItems().get(Resources.PLANT));
+    assertEquals(2, playerBoard.getPlayerItems().draw(Resources.INSECT));
+    assertEquals(1, playerBoard.getPlayerItems().draw(Resources.FUNGI));
+    assertEquals(0, playerBoard.getPlayerItems().draw(Resources.ANIMAL));
+    assertEquals(2, playerBoard.getPlayerItems().draw(Resources.PLANT));
 
     // every card we placed should give 1 point each
-    assertEquals(2, model.getScoreTrack().getScores().get(PlayerToken.BLUE));
+    assertEquals(2, model.getScoreTrack().getScores().draw(PlayerToken.BLUE));
 
     // changing card's pointType
     resourceCard2 =
@@ -183,32 +183,32 @@ class GameModelUpdaterTest {
     // card covers 1 corner, so 2 more points should be given. A PLANT resource is covered, a PLANT
     // resource and an ANIMAL resource are added
     gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(2, 0), resourceCard2, CardSide.BACK);
-    assertEquals(2, playerBoard.getPlayerItems().get(Resources.INSECT));
-    assertEquals(1, playerBoard.getPlayerItems().get(Resources.FUNGI));
-    assertEquals(1, playerBoard.getPlayerItems().get(Resources.ANIMAL));
-    assertEquals(1, playerBoard.getPlayerItems().get(Resources.PLANT));
+    assertEquals(2, playerBoard.getPlayerItems().draw(Resources.INSECT));
+    assertEquals(1, playerBoard.getPlayerItems().draw(Resources.FUNGI));
+    assertEquals(1, playerBoard.getPlayerItems().draw(Resources.ANIMAL));
+    assertEquals(1, playerBoard.getPlayerItems().draw(Resources.PLANT));
 
-    assertEquals(4, model.getScoreTrack().getScores().get(PlayerToken.BLUE));
+    assertEquals(4, model.getScoreTrack().getScores().draw(PlayerToken.BLUE));
 
     // card placed covers 2 corners, so 4 points should be given.
     gameModelUpdater.playCard(PlayerToken.BLUE, new Coords(1, -1), resourceCard2, CardSide.BACK);
-    assertEquals(8, model.getScoreTrack().getScores().get(PlayerToken.BLUE));
+    assertEquals(8, model.getScoreTrack().getScores().draw(PlayerToken.BLUE));
   }
 
   @Test
   void drawResourceDeckCardTest() {
     // hand should be empty
-    assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
+    assertTrue(model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().isEmpty());
 
     // hand should contain the drawn cards until size 3 of playerHand is reached
     gameModelUpdater.drawResourceDeckCard(PlayerToken.RED);
-    assertEquals(1, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(1, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     gameModelUpdater.drawResourceDeckCard(PlayerToken.RED);
-    assertEquals(2, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(2, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     gameModelUpdater.drawResourceDeckCard(PlayerToken.RED);
-    assertEquals(3, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(3, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     int tempSize = model.getResourceCardsDeck().size();
     assertFalse(
@@ -218,7 +218,7 @@ class GameModelUpdaterTest {
         3,
         model
             .tokenToPlayer
-            .get(PlayerToken.RED)
+            .draw(PlayerToken.RED)
             .getHand()
             .getCards()
             .size()); // hand size should not change
@@ -236,42 +236,42 @@ class GameModelUpdaterTest {
 
       model
           .tokenToPlayer
-          .get(PlayerToken.GREEN)
+          .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.get(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     ArrayList<PlayableCard> tempCards =
-        new ArrayList<>(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards());
+        new ArrayList<>(model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards());
 
     // draw should not be completed as deck is empty
     assertFalse(gameModelUpdater.drawResourceDeckCard(PlayerToken.RED));
     // hand should not be changed since deck is empty
     assertTrue(
-        model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().containsAll(tempCards)
+        model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().containsAll(tempCards)
             && tempCards.containsAll(
-                model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards()));
+                model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards()));
   }
 
   @Test
   void drawGoldDeckCardTest() {
     // following tests are exactly the same as the previous test method. Implemented for
     // completeness
-    assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
+    assertTrue(model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().isEmpty());
 
     gameModelUpdater.drawGoldDeckCard(PlayerToken.RED);
-    assertEquals(1, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(1, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     gameModelUpdater.drawGoldDeckCard(PlayerToken.RED);
-    assertEquals(2, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(2, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     gameModelUpdater.drawGoldDeckCard(PlayerToken.RED);
-    assertEquals(3, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(3, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     int tempSize = model.getGoldCardsDeck().size();
     assertFalse(gameModelUpdater.drawGoldDeckCard(PlayerToken.RED));
-    assertEquals(3, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(3, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
     assertEquals(tempSize, model.getGoldCardsDeck().size());
 
     for (int i = 0; !model.getGoldCardsDeck().isEmpty(); i++) {
@@ -281,40 +281,40 @@ class GameModelUpdaterTest {
 
       model
           .tokenToPlayer
-          .get(PlayerToken.GREEN)
+          .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.get(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     ArrayList<PlayableCard> tempCards =
-        new ArrayList<>(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards());
+        new ArrayList<>(model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards());
 
     assertFalse(gameModelUpdater.drawGoldDeckCard(PlayerToken.RED));
     assertTrue(
-        model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().containsAll(tempCards)
+        model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().containsAll(tempCards)
             && tempCards.containsAll(
-                model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards()));
+                model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards()));
   }
 
   @Test
   void drawVisibleResourceCardTest() {
     // hand should be empty
-    assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
+    assertTrue(model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().isEmpty());
 
     // there should be 2 visible cards
     assertEquals(2, model.getVisibleResourceCards().size());
 
     // drawCard should be successful and card should be added to hand
     assertTrue(gameModelUpdater.drawVisibleResourceCard(PlayerToken.RED, 0));
-    assertEquals(1, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(1, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
     assertTrue(gameModelUpdater.drawVisibleResourceCard(PlayerToken.RED, 1));
-    assertEquals(2, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(2, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     // cards drawn into player's hand must not be in the visibleCards list
     model
         .tokenToPlayer
-        .get(PlayerToken.RED)
+        .draw(PlayerToken.RED)
         .getHand()
         .getCards()
         .forEach(
@@ -331,10 +331,10 @@ class GameModelUpdaterTest {
 
       model
           .tokenToPlayer
-          .get(PlayerToken.GREEN)
+          .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.get(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     // first draw should complete successfully
@@ -351,18 +351,18 @@ class GameModelUpdaterTest {
   void drawVisibleGoldCardTest() {
     // following tests are exactly the same as the previous test method. Implemented for
     // completeness
-    assertTrue(model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().isEmpty());
+    assertTrue(model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().isEmpty());
 
     assertEquals(2, model.getVisibleGoldCards().size());
 
     assertTrue(gameModelUpdater.drawVisibleGoldCard(PlayerToken.RED, 0));
-    assertEquals(1, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(1, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
     assertTrue(gameModelUpdater.drawVisibleGoldCard(PlayerToken.RED, 1));
-    assertEquals(2, model.tokenToPlayer.get(PlayerToken.RED).getHand().getCards().size());
+    assertEquals(2, model.tokenToPlayer.draw(PlayerToken.RED).getHand().getCards().size());
 
     model
         .tokenToPlayer
-        .get(PlayerToken.RED)
+        .draw(PlayerToken.RED)
         .getHand()
         .getCards()
         .forEach(card -> assertFalse(model.getVisibleGoldCards().contains((GoldCard) card)));
@@ -376,10 +376,10 @@ class GameModelUpdaterTest {
 
       model
           .tokenToPlayer
-          .get(PlayerToken.GREEN)
+          .draw(PlayerToken.GREEN)
           .getHand()
           .getCards()
-          .forEach(card -> model.tokenToPlayer.get(PlayerToken.GREEN).getHand().removeCard(card));
+          .forEach(card -> model.tokenToPlayer.draw(PlayerToken.GREEN).getHand().remove(card));
     }
 
     assertTrue(gameModelUpdater.drawVisibleGoldCard(PlayerToken.RED, 1));
@@ -393,14 +393,14 @@ class GameModelUpdaterTest {
   void addPlayerTest() {
     assertFalse(
         gameModelUpdater.addPlayer(
-            PlayerToken.RED, starterCard.get(), CardSide.FRONT, objectiveCard.get()));
+            PlayerToken.RED, starterCard.draw(), CardSide.FRONT, objectiveCard.draw()));
 
     assertTrue(
         gameModelUpdater.addPlayer(
-            PlayerToken.BLUE, starterCard.get(), CardSide.FRONT, objectiveCard.get()));
+            PlayerToken.BLUE, starterCard.draw(), CardSide.FRONT, objectiveCard.draw()));
     assertFalse(
         gameModelUpdater.addPlayer(
-            PlayerToken.BLUE, starterCard.get(), CardSide.FRONT, objectiveCard.get()));
+            PlayerToken.BLUE, starterCard.draw(), CardSide.FRONT, objectiveCard.draw()));
   }
 }
 */

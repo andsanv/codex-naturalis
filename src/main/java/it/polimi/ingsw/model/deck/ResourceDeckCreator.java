@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.deck;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
  * @see Deck
  * @see ResourceCard
  */
-public class ResourceDeckCreator implements DeckCreator {
+public class ResourceDeckCreator {
   /**
    * Path to json file containing all ResourceCard cards
    */
@@ -31,7 +33,7 @@ public class ResourceDeckCreator implements DeckCreator {
    *
    * @return the deck created
    */
-  public static Deck<ResourceCard> createDeck() {
+  public static Deck<ResourceCard> createDeck(List<Observer> observers, AtomicInteger lastEventId) {
     try {
       String content = new String(Files.readAllBytes(path));
 
@@ -101,7 +103,7 @@ public class ResourceDeckCreator implements DeckCreator {
         }
       }
 
-      return new Deck<>(cards);
+      return new Deck<>(cards, observers, lastEventId);
     } catch (IOException exception) {
       exception.printStackTrace();
       System.out.println("Creation of resource deck failed!!");

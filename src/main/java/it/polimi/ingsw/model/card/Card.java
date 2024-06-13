@@ -6,17 +6,13 @@ package it.polimi.ingsw.model.card;
  */
 public abstract class Card {
   /** Card's unique id */
-  private final int id;
+  public final int id;
 
   /**
    * @param id Unique id of the card
    */
   public Card(int id) {
     this.id = id;
-  }
-
-  public int getId() {
-    return id;
   }
 
   /**
