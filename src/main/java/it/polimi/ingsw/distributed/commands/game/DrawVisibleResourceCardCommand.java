@@ -17,7 +17,7 @@ public class DrawVisibleResourceCardCommand extends GameCommand {
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    boolean result = gameFlowManager.getCurrentState().drawVisibleResourceCard(playerToken, choice);
+    boolean result = gameFlowManager.currentState.drawVisibleResourceCard(playerToken, choice);
     gameFlowManager.addCommand(new CardsPlayabilityCommand(playerToken));
 
     return result;

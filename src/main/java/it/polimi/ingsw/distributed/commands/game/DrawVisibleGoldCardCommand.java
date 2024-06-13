@@ -17,7 +17,7 @@ public class DrawVisibleGoldCardCommand extends GameCommand {
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    boolean result = gameFlowManager.getCurrentState().drawVisibleGoldCard(playerToken, choice);
+    boolean result = gameFlowManager.currentState.drawVisibleGoldCard(playerToken, choice);
     gameFlowManager.addCommand(new CardsPlayabilityCommand(playerToken));
 
     return result;

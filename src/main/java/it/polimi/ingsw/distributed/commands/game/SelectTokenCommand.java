@@ -17,6 +17,6 @@ public class SelectTokenCommand {
   }
 
   public boolean execute(GameFlowManager gameFlowManager) {
-    return gameFlowManager.getCurrentState().selectToken(player, playerToken);
+    return gameFlowManager.currentState.selectToken(player, playerToken);
   }
 }

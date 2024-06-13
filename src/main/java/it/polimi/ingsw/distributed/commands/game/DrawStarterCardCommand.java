@@ -14,6 +14,6 @@ public class DrawStarterCardCommand extends GameCommand {
   }
 
   public boolean execute(GameFlowManager gameFlowManager) {
-    return gameFlowManager.getCurrentState().drawStarterCard(playerToken);
+    return gameFlowManager.currentState.drawStarterCard(playerToken);
   }
 }

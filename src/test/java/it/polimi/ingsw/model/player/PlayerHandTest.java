@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.card.ResourceCard;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,16 +33,10 @@ class PlayerHandTest {
     card2 = Mockito.mock(ResourceCard.class);
     card3 = Mockito.mock(GoldCard.class);
 
-    cards = new ArrayList<PlayableCard>();
-
-    playerHand = new PlayerHand();
-
-    playerHand.add(card1);
-    playerHand.add(card2);
   }
 
   @Test
-  void addCard() {
+  void addTest() {
     int size = playerHand.getCards().size();
 
     playerHand.add(card3);
@@ -51,7 +46,7 @@ class PlayerHandTest {
   }
 
   @Test
-  void remove() {
+  void removeTest() {
     playerHand.add(card3);
 
     int size = playerHand.getCards().size();
@@ -63,16 +58,54 @@ class PlayerHandTest {
   }
 
   @Test
-  void getCards() {
+  void sizeTest() {
+    cards = new ArrayList<>(Arrays.asList(card1, card2, card3));
+    playerHand = new PlayerHand(cards);
+
+    assertEquals(3, playerHand.size());
+    
+    playerHand.remove(card1);
+    assertEquals(2, playerHand.size());
+
+    playerHand.remove(card3);
+    assertEquals(1, playerHand.size());
+
+    playerHand.add(card1);
+    assertEquals(2, playerHand.size());
+
+    playerHand.remove(card2);
+    assertEquals(1, playerHand.size());
+
+    playerHand.remove(card1);
+    assertEquals(0, playerHand.size());
+
+    playerHand.add(card1);
+    playerHand.add(card2);
     playerHand.add(card3);
+    assertEquals(3, playerHand.size());
 
-    List<PlayableCard> cardsTest = new ArrayList<PlayableCard>();
+  }
 
-    cardsTest.add(card1);
-    cardsTest.add(card2);
-    cardsTest.add(card3);
+  @Test
+  void getFirstFreeTest() {
+    cards = new ArrayList<>(Arrays.asList(card1, card2, card3));
+    playerHand = new PlayerHand(cards);
+    assertEquals(-1, playerHand.getFirstFree());
 
-    assertTrue(playerHand.getCards().containsAll(cardsTest));
-    assertTrue(cardsTest.containsAll(playerHand.getCards()));
+    playerHand.remove(card2);
+    assertEquals(1, playerHand.getFirstFree());
+
+    playerHand.remove(card1);
+    assertEquals(0, playerHand.getFirstFree());
+
+    playerHand.add(card1);
+    playerHand.add(card2);
+
+    assertEquals(-1, playerHand.getFirstFree());
+    playerHand.remove(card3);
+    assertEquals(2, playerHand.getFirstFree());
+
+    playerHand.remove(card1);
+    assertEquals(0, playerHand.getFirstFree());
   }
 }

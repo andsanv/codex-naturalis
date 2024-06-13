@@ -18,6 +18,6 @@ public class SelectStarterCardSideCommand extends GameCommand {
   }
 
   public boolean execute(GameFlowManager gameFlowManager) {
-    return gameFlowManager.getCurrentState().selectStarterCardSide(playerToken, cardSide);
+    return gameFlowManager.currentState.selectStarterCardSide(playerToken, cardSide);
   }
 }

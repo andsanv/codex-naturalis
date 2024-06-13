@@ -22,6 +22,6 @@ public class CardsPlayabilityCommand extends GameCommand {
 
     @Override
     public boolean execute(GameFlowManager gameFlowManager) {
-        return gameFlowManager.getCurrentState().getCardsPlayability(playerToken);
+        return gameFlowManager.currentState.getCardsPlayability(playerToken);
     }
 }

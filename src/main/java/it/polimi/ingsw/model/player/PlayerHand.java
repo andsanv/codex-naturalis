@@ -94,6 +94,6 @@ public class PlayerHand {
    * @return the first index where there is no card in the player's hand, '-1' if hand is full
    */
   public int getFirstFree() {
-    return IntStream.range(0, HAND_SIZE).filter(Objects::nonNull).findFirst().orElse(-1);
+    return IntStream.range(0, HAND_SIZE).filter(x -> cards[x] == null).findFirst().orElse(-1);
   }
 }

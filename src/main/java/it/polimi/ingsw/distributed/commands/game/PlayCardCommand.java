@@ -25,6 +25,6 @@ public class PlayCardCommand extends GameCommand {
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    return gameFlowManager.getCurrentState().playCard(playerToken, coords, card, cardSide);
+    return gameFlowManager.currentState.playCard(playerToken, coords, card, cardSide);
   }
 }
