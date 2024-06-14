@@ -272,6 +272,7 @@ public enum Server {
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
     if(playersInMenu.keySet().contains(userInfo)) {
+      MainViewActions oldMainViewActions = connectedPlayers.get(userInfo).first;
       connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
       try {
         if(playersInMenu.get(userInfo))
@@ -282,6 +283,9 @@ public enum Server {
               .findFirst()
               .orElse(null));
           clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.gameModel.slimGameModel));
+          
+          gameFlowManager.observers.remove(oldMainViewActions);
+          gameFlowManager.observers.add(clientMainView);
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
