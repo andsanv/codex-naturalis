@@ -10,7 +10,7 @@ import it.polimi.ingsw.distributed.server.socket.SocketServer;
 // Server entrypoint
 public class ServerEntry {
   public static void main(String[] args) throws AlreadyBoundException, IOException {
-    rmiTest();
+    socketTest();
   } 
 
   public static void rmiTest() throws RemoteException {

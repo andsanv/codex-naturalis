@@ -100,6 +100,8 @@ public enum Server {
   public boolean joinLobby(UserInfo user, int lobbyId) {
     synchronized (lobbies) {
       Lobby lobby = lobbies.get(lobbyId);
+      System.out.println("joining lobby = " + lobby);
+      System.out.println("joining user = " + user);
 
       boolean result = lobby != null && lobby.addUser(userInfoToUser(user));
 

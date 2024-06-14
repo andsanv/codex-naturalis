@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CLITest implements UI {
-  private static UserInfo userInfo = null;
-  private static MainServerActions mainServerActions;
-  private static MainViewActions mainViewActions;
+  private UserInfo userInfo = null;
+  private MainServerActions mainServerActions;
+  private MainViewActions mainViewActions;
 
   public CLITest() {
   }
@@ -168,7 +168,7 @@ public class CLITest implements UI {
 
   @Override
   public void handleUserInfo(UserInfo userInfo) {
-    CLITest.userInfo = userInfo;
+    this.userInfo = userInfo;
     System.out.println("UserInfo: " + userInfo);
   }
 

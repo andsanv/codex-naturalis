@@ -59,11 +59,16 @@ public class Lobby {
    * @return true if successfull, false otherwise
    */
   public synchronized boolean addUser(User user) {
+    System.out.println(users);
+    System.out.println(users.size());
+    System.out.println(users.contains(user));
+    System.out.println(user);
     if (users.size() == 4) return false;
 
     if (users.contains(user)) return false;
 
     users.add(user);
+    System.out.println(users);
     return true;
   }
 
