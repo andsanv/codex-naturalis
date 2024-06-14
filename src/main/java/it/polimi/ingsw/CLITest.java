@@ -33,11 +33,6 @@ public class CLITest implements UI {
   @Override
   public void handleReceivedConnection() {
     System.out.println("Connection event received");
-    try {
-      mainServerActions.connectToMain(userInfo, mainViewActions);
-    } catch (RemoteException e) {
-      e.printStackTrace();
-    }
   }
 
   @Override
