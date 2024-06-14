@@ -3,15 +3,18 @@ package it.polimi.ingsw.view.tui;
 import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
+import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.PointsType;
@@ -24,6 +27,7 @@ import it.polimi.ingsw.model.deck.Deck;
 import it.polimi.ingsw.model.deck.GoldDeckCreator;
 import it.polimi.ingsw.model.deck.ResourceDeckCreator;
 import it.polimi.ingsw.model.deck.StarterDeckCreator;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
  * Use this class for printing cards.
@@ -74,6 +78,8 @@ public class TUICardPrinter {
     }
 
     private static boolean init = false;
+    private static AtomicInteger atomicInt = new AtomicInteger(0);
+    private static List<Observer> observersList = new ArrayList<>();
 
     private static Map<Integer, LightResourceCard> resourceCards;
     private static Map<Integer, LightGoldCard> goldCards;
@@ -605,11 +611,11 @@ public class TUICardPrinter {
 
     private static void loadResourceCards() {
         resourceCards = new HashMap<>();
-        Deck<ResourceCard> deck = ResourceDeckCreator.createDeck();
+        Deck<ResourceCard> deck = ResourceDeckCreator.createDeck(observersList, atomicInt);
 
         while (!deck.isEmpty()) {
-            ResourceCard card = deck.draw().get();
-            resourceCards.put(card.getId(), new LightResourceCard(
+            ResourceCard card = deck.draw(PlayerToken.RED, 0).get();
+            resourceCards.put(card.id, new LightResourceCard(
                     card.type.get().toString().substring(0, 1),
                     card.getFrontCorners().entrySet().stream().collect(
                             Collectors.toMap(
@@ -629,10 +635,10 @@ public class TUICardPrinter {
 
     private static void loadGoldCards() {
         goldCards = new HashMap<>();
-        Deck<GoldCard> deck = GoldDeckCreator.createDeck();
+        Deck<GoldCard> deck = GoldDeckCreator.createDeck(observersList, atomicInt);
 
         while (!deck.isEmpty()) {
-            GoldCard card = deck.draw().get();
+            GoldCard card = deck.draw(PlayerToken.RED, 0).get();
 
             String pointsType;
 
@@ -660,7 +666,7 @@ public class TUICardPrinter {
                     break;
             }
 
-            goldCards.put(card.getId(), new LightGoldCard(
+            goldCards.put(card.id, new LightGoldCard(
                     card.type.get().toString().substring(0, 1),
                     card.getFrontCorners().entrySet().stream().collect(
                             Collectors.toMap(
@@ -684,11 +690,11 @@ public class TUICardPrinter {
 
     private static void loadStarterCards() {
         starterCards = new HashMap<>();
-        Deck<StarterCard> deck = StarterDeckCreator.createDeck();
+        Deck<StarterCard> deck = StarterDeckCreator.createDeck(observersList, atomicInt);
 
         while (!deck.isEmpty()) {
-            StarterCard card = deck.draw().get();
-            starterCards.put(card.getId(), new LightStarterCard(
+            StarterCard card = deck.draw(PlayerToken.RED, 0).get();
+            starterCards.put(card.id, new LightStarterCard(
                     card.getCentralResources().stream().map(res -> res.toString().substring(0, 1)).sorted()
                             .collect(Collectors.toList()),
                     card.getFrontCorners().entrySet().stream().collect(
