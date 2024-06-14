@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.controller.observer.Observable;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.GoldCard;

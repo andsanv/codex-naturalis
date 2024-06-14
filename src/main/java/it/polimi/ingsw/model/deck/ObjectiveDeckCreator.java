@@ -2,7 +2,6 @@ package it.polimi.ingsw.model.deck;
 
 import com.google.gson.*;
 import it.polimi.ingsw.controller.observer.Observer;
-import it.polimi.ingsw.model.card.GoldCard;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.objective.ItemsObjectiveStrategy;
 import it.polimi.ingsw.model.card.objective.PatternObjectiveStrategy;

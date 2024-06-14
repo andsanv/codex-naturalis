@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.card;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
@@ -10,22 +9,21 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 class PlayableCardTest {
   private PlayableCard card;
 
-  @Mock private Map<CornerPosition, Corner> mockFrontCorners;
+  private Map<CornerPosition, Corner> mockFrontCorners;
 
-  @Mock private Map<CornerPosition, Corner> mockBackCorners;
+  private Map<CornerPosition, Corner> mockBackCorners;
 
-  @Mock private Map<Resources, Integer> mockRequiredResources;
+  private Map<Resources, Integer> mockRequiredResources;
 
   @BeforeEach
   void init() {
-    mockRequiredResources = mock(HashMap.class);
-    mockFrontCorners = mock(HashMap.class);
-    mockBackCorners = mock(HashMap.class);
+    mockRequiredResources = new HashMap<>();
+    mockFrontCorners = new HashMap<>();
+    mockBackCorners = new HashMap<>();
 
     card =
         new GoldCard(
