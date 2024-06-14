@@ -1,15 +1,10 @@
 package it.polimi.ingsw.view.connection;
 
-import it.polimi.ingsw.CLITest;
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.server.User;
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
-import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
-import it.polimi.ingsw.distributed.commands.main.SignUpCommand;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.view.UI;
@@ -29,6 +24,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
   private final BlockingQueue<MainCommand> serverCommandQueue;
   private final BlockingQueue<GameCommand> gameCommandQueue;
 
+  private RMIMainView clientMainView;
+
   public RMIConnectionHandler(UI userInterface) {
     super(userInterface);
 
@@ -36,26 +33,12 @@ public class RMIConnectionHandler extends ConnectionHandler {
     gameCommandQueue = new LinkedBlockingQueue<>();
 
     gameServerActions = null;
+    
 
     try {
-      System.out.println("Connecting to main server");
       Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
-
-      MainViewActions clientMainView = new RMIMainView(new CLITest());
-
-      UserInfo userInfo = new UserInfo(new User("rave"));
-      mainServerActions.connectToMain(userInfo, clientMainView);
-
-      try {
-        Thread.sleep(2000);
-      } catch (InterruptedException e) {
-      }
-
-      System.out.println(userInterface.getUserInfo());
-
-
-      mainServerActions.send(new CreateLobbyCommand(userInfo));
+      this.clientMainView = new RMIMainView(userInterface);
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
@@ -75,11 +58,31 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
   @Override
   public boolean sendToMainServer(MainCommand mainCommand) {
-    try {
-      mainServerActions.send(mainCommand);
-      return true;
-    } catch (Exception e) {
-      e.printStackTrace();
+    if(mainCommand instanceof ConnectionCommand) {
+      try {
+        mainServerActions.connectToMain(((ConnectionCommand) mainCommand).username, this.clientMainView);
+        
+        System.out.println("Waiting for user info");
+        System.out.println(userInterface.getUserInfo());
+        while(userInterface.getUserInfo() == null) {
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+          }
+        }
+        System.out.println(userInterface.getUserInfo());
+        
+        return true;
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
+    } else {
+      try {
+        mainServerActions.send(mainCommand);
+        return true;
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     return false;

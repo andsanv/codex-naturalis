@@ -16,30 +16,9 @@ public class ClientEntry {
   // private final ConnectionHandler connectionHandler;
 
   public static void main(String[] args) throws NotBoundException, UnknownHostException, IOException {
-    new Thread(() -> {
-      try {
-        CLITest clientEntry = new CLITest();
-        System.out.println(clientEntry.getUserInfo());
-        socketTest(clientEntry);
-      } catch (RemoteException e) {
-        e.printStackTrace();
-      } catch (UnknownHostException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }).start();
     
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-    }
 
-    CLITest clientEntry2 = new CLITest();
-    System.out.println("INIZIO " + clientEntry2.getUserInfo());
-    socketTest2(clientEntry2);
+    rmiTest();
 
   }
 
@@ -47,7 +26,34 @@ public class ClientEntry {
 
     CLITest clientEntry = new CLITest();
 
-    RMIConnectionHandler connectionHandler = new RMIConnectionHandler(clientEntry);  
+    RMIConnectionHandler connectionHandler = new RMIConnectionHandler(clientEntry);
+    connectionHandler.sendToMainServer(new ConnectionCommand("rave"));
+
+    while (clientEntry.getUserInfo() == null) {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+      }
+    }
+
+    System.out.println("RMI:" + clientEntry.getUserInfo());
+
+    connectionHandler.sendToMainServer(new CreateLobbyCommand(clientEntry.getUserInfo()));
+
+    new Thread(() -> {
+      try {
+        socketTest2(new CLITest());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }).start();
+
+    
+    try {
+      Thread.sleep(10000);
+    } catch (InterruptedException e) {
+    }
+
   }
 
   public static void socketTest(CLITest cliTest) throws UnknownHostException, IOException {
