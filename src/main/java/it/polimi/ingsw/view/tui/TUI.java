@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polimi.ingsw.model.common.Resources;
+
+import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
@@ -85,13 +87,15 @@ public class TUI implements UI {
         while (running) {
             switch (state) {
                 case HOME:
-                    displayScreenTitle("HOME");
+                    displayScreenTitle("HOME", CYAN);
                     homeScreen();
                     break;
                 case LOBBY:
-                    displayScreenTitle("LOBBIES");
+                    displayScreenTitle("LOBBIES", CYAN);
                     lobbyScreen();
                     break;
+                case RECONNECTION:
+                    displayScreenTitle("OFFLINE", RED);
                 case END:
                 default:
                     running = false;
@@ -148,12 +152,20 @@ public class TUI implements UI {
         // System.out.println();
 
         if (in.equalsIgnoreCase("exit")) {
-            System.out.println(ansi().a("\nClosing the game...").reset());
-            AnsiConsole.systemUninstall();
-            System.exit(0);
+            System.out.println();
+            quit();
         }
 
         return in;
+    }
+
+    /**
+     * This function closes the game.
+     */
+    private void quit() {
+        System.out.println(ansi().a("Closing the game...").reset());
+        AnsiConsole.systemUninstall();
+        System.exit(0);
     }
 
     /**
@@ -171,9 +183,9 @@ public class TUI implements UI {
      * 
      * @param title title to print
      */
-    private void displayScreenTitle(String title) {
+    private void displayScreenTitle(String title, Ansi.Color color) {
         int padding = 71 - title.length();
-        System.out.println(ansi().bgBrightCyan()
+        System.out.println(ansi().bg(color)
                 .a(" ".repeat(Math.floorDiv(padding, 2)) + title + " ".repeat(Math.ceilDiv(padding, 2))).reset()
                 .a("\n"));
     }
@@ -223,9 +235,9 @@ public class TUI implements UI {
                 try {
                     connectionHandler = new SocketConnectionHandler(this);
                 } catch (Exception e) {
-                    displayError("The server is currently unavailable, couldn't connect through sockets, please try later.");
-                    System.exit(0);
-                    return;
+                    displayError(
+                            "The server is currently unavailable, couldn't connect through sockets, please try later.\n");
+                    quit();
                 }
 
                 break;
@@ -233,8 +245,9 @@ public class TUI implements UI {
                 try {
                     connectionHandler = new RMIConnectionHandler(this);
                 } catch (Exception e) {
-                    displayError("The server is currently unavailable, couldn't connect through RMI, please try later.");
-                    System.exit(0);
+                    displayError(
+                            "The server is currently unavailable, couldn't connect through RMI, please try later.\n");
+                    quit();
                 }
                 break;
             } else {
@@ -296,14 +309,25 @@ public class TUI implements UI {
 
         // TODO check if the client is already connected to a game (handle reconnection)
 
-        state=State.LOBBY;
+        state = State.LOBBY;
     }
 
+    /**
+     * The user enters the reconnection screen when he loses connection to the
+     * server, both in game and in the main menu.
+     */
+    private void reconnectionScreen() {
+        System.out.println(ansi().a("You have been disconnected:"));
+    }
+
+    /**
+     * In the lobby screen the user can join, create, see and quit lobbies.
+     */
     private void lobbyScreen() {
-        // System.out.println(ansi().bg(BLUE).a("┄┄MAIN MENU┄┄").reset());
         System.out.println(ansi().a("You can do the following actions:"));
         System.out.println(ansi().fg(YELLOW).a("  list").reset().a(" available lobbies"));
-        System.out.println(ansi().fg(YELLOW).a("  join [").reset().a("id").fg(YELLOW).a("]").reset().a(" an existing lobby"));
+        System.out.println(
+                ansi().fg(YELLOW).a("  join [").reset().a("id").fg(YELLOW).a("]").reset().a(" an existing lobby"));
         System.out.println(ansi().fg(YELLOW).a("  create").reset().a(" a new lobby"));
         System.out.println(ansi().fg(YELLOW).a("  start").reset().a(" a game (you must be the lobby leader)\n"));
 
@@ -338,8 +362,8 @@ public class TUI implements UI {
                 printLobbies();
             } else if (command[0].equalsIgnoreCase("start")) {
                 waitingForLobbyJoining.set(true);
-                
-                if(currentLobbyid.get() != -1) {
+
+                if (currentLobbyid.get() != -1) {
                     connectionHandler.sendToMainServer(new StartGameCommand(userInfo, currentLobbyid.get()));
                     displayLoadingMessage("Starting the game", waitingForLobbyJoining);
                 } else {
@@ -356,13 +380,13 @@ public class TUI implements UI {
      * Prints available lobbies using the following format
      * 
      * ╒═══════════════╕
-     * │ Lobby 13      │
+     * │ Lobby 13 │
      * ├───────────────┤
-     * │ user#21       │
+     * │ user#21 │
      * │ anotherUser#3 │
-     * │ lastUser#1    │
+     * │ lastUser#1 │
      * ├───────────────┤
-     * │ In-Game? X    │
+     * │ In-Game? X │
      * ╘═══════════════╛
      */
     private void printLobbies() {
@@ -372,7 +396,7 @@ public class TUI implements UI {
             else
                 for (LobbyInfo lobby : availableLobbies) {
                     final int length = Math.max(12,
-                            lobby.users.stream().mapToInt(user -> user.toString().length()+2).max().orElse(0));
+                            lobby.users.stream().mapToInt(user -> user.toString().length() + 2).max().orElse(0));
 
                     System.out.println("╒" + "═".repeat(length) + "╕");
                     System.out.println(
@@ -423,7 +447,7 @@ public class TUI implements UI {
 
             // Check if the user is in a lobby
             boolean found = false;
-            for(LobbyInfo lobby : lobbies){
+            for (LobbyInfo lobby : lobbies) {
                 if (lobby.users.contains(userInfo)) {
                     currentLobbyid.set(lobby.id);
                     waitingForLobbyJoining.set(false);
@@ -431,7 +455,7 @@ public class TUI implements UI {
                     break;
                 }
             }
-            if(!found)
+            if (!found)
                 currentLobbyid.set(-1);
 
             // Check if a lobby with the current user as manager exists
@@ -460,22 +484,26 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Optional<Resources> nextCardSeed, int handIndex) {
 
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Optional<Resources> nextCardSeed, int handIndex) {
 
     }
 
     @Override
-    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+            Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
 
     }
 
     @Override
-    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+            Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
 
     }
 
@@ -570,7 +598,8 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
+            Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
     }
@@ -607,5 +636,6 @@ public class TUI implements UI {
 enum State {
     HOME,
     LOBBY,
+    RECONNECTION,
     END,
 }

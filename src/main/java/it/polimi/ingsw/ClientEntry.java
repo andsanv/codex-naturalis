@@ -8,21 +8,19 @@ import it.polimi.ingsw.view.connection.SocketConnectionHandler;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 
 // Client entrypoint
 public class ClientEntry {
   // private final ConnectionHandler connectionHandler;
 
-  public static void main(String[] args) throws NotBoundException, UnknownHostException, IOException {
+  public static void main(String[] args) throws Exception {
     
 
     rmiTest();
 
   }
 
-  public static void rmiTest() throws RemoteException {
+  public static void rmiTest() throws Exception {
 
     CLITest clientEntry = new CLITest();
 
