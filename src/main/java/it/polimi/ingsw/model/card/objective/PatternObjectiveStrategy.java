@@ -54,7 +54,6 @@ public class PatternObjectiveStrategy implements ObjectiveStrategy {
     int y_min = Integer.MAX_VALUE;
 
     for (Coords c : board.keySet()) {
-      System.out.println(c);
       if (c.x > x_max)
         x_max = c.x;
       if (c.x < x_min)

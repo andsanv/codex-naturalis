@@ -1,15 +1,18 @@
 package it.polimi.ingsw.model.card;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.jupiter.api.*;
 
 class GoldCardTest {
   private Map<Elements, Integer> playerResources;
