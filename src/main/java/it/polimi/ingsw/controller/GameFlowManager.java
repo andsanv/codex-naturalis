@@ -63,7 +63,7 @@ public class GameFlowManager implements Runnable {
   /**
    * Map that keeps track of active connections (non AFK players)
    */
-  private final Map<UserInfo, Boolean> isConnected;
+  private final Map<UserInfo, AtomicBoolean> isConnected;
 
   /**
    * List containing all in game users.
@@ -131,7 +131,7 @@ public class GameFlowManager implements Runnable {
    * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
    * @param observers list of observers
    */
-  public GameFlowManager(Lobby lobby, Map<UserInfo, Boolean> isConnected, List<Observer> observers) {
+  public GameFlowManager(Lobby lobby, Map<UserInfo, AtomicBoolean> isConnected, List<Observer> observers) {
     this.lobby = lobby;
     this.isConnected = isConnected;
 
@@ -212,9 +212,9 @@ public class GameFlowManager implements Runnable {
         // time limit reached event
         break;
       }
-      if (!isConnected.get(userInfoToToken.keySet().stream().filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow())) {
-        // user not connected event
-        break;
+      if (!isConnected.get(userInfoToToken.keySet().stream().filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow()).get()) {
+          // user not connected event
+          break;
       }
       synchronized (commands) {
         if (!commands.isEmpty() && commands.poll().execute(this)) {

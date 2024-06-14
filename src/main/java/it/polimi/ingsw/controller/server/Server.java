@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
@@ -46,7 +47,7 @@ public enum Server {
    * Links the Virtual Views to their status. The value is true if the client is in the menu, false
    * if it's in-game. When the client is in the menu, he receives updates on the list of lobbies.
    */
-  private ConcurrentHashMap<UserInfo, Pair<MainViewActions, Boolean>> connectedPlayers;
+  private ConcurrentHashMap<UserInfo, Pair<MainViewActions, AtomicBoolean>> connectedPlayers;
   private ConcurrentHashMap<UserInfo, Boolean> playersInMenu;
 
   private final ExecutorService gameServersExecutor;
@@ -66,14 +67,14 @@ public enum Server {
             () -> {
               while (true) {
                 connectedPlayers.entrySet().stream()
-                    .filter(entry -> entry.getValue().second)
+                    .filter(entry -> entry.getValue().second.get())
                     .forEach(
                         entry -> {
                           try {
                             entry.getValue().first.receiveEvent(new KeepAliveEvent());
                             System.out.println("Sent keep alive to " + entry.getKey());
                           } catch (IOException e) {
-                            connectedPlayers.put(entry.getKey(), new Pair<>(entry.getValue().first, false));
+                            connectedPlayers.put(entry.getKey(), new Pair<>(entry.getValue().first, new AtomicBoolean(false)));
                             System.err.println("Error: Couldn't send message to " + entry.getValue().first);
                             System.err.println("Client probably disconnected");
                           }                          
@@ -177,18 +178,19 @@ public enum Server {
 
       // Aggiungi le view dei giocatori nel costruttore
       List<Observer> observers = connectedPlayers.entrySet().stream()
-          .filter(entry -> entry.getValue().second)
+          .filter(entry -> entry.getValue().second.get())
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
           .map(entry -> entry.getValue().first)
           .collect(Collectors.toList());
 
+      
       GameFlowManager gameFlowManager = new GameFlowManager(lobby, observers);
       lobbyToGameFlowManager.put(lobby, gameFlowManager);
 
       // set gameflow to redirect requests to, on client handler only for the users in the starting game
       // update playersInGame map
       connectedPlayers.entrySet().stream()
-          .filter(entry -> entry.getValue().second)
+          .filter(entry -> entry.getValue().second.get())
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
           .forEach(
               entry -> {
@@ -264,7 +266,7 @@ public enum Server {
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
     if(playersInMenu.keySet().contains(userInfo)) {
-      connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
+      connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
       try {
         if(playersInMenu.get(userInfo))
           clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
@@ -305,7 +307,7 @@ public enum Server {
       e.printStackTrace();
     }
 
-    connectedPlayers.put(userInfo, new Pair<>(clientMainView, true));
+    connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
     playersInMenu.put(userInfo, true);
 
     return userInfo;
@@ -340,7 +342,7 @@ public enum Server {
               connectedPlayers.entrySet().stream()
                   .filter(entry -> playersInMenu.get(entry.getKey()) != null)
                   .filter(entry -> playersInMenu.get(entry.getKey()))
-                  .filter(entry -> entry.getValue().second)
+                  .filter(entry -> entry.getValue().second.get())
                   .forEach(
                       entry -> {
                         try {
