@@ -3,7 +3,6 @@ package it.polimi.ingsw.model.deck;
 import it.polimi.ingsw.controller.observer.Observable;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.events.game.DrawnGoldDeckCardEvent;
-import it.polimi.ingsw.distributed.events.game.DrawnObjectiveCardsEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnResourceDeckCardEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnStarterCardEvent;
 import it.polimi.ingsw.model.card.*;

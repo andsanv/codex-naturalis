@@ -4,9 +4,12 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
- * Command to allow a player to draw a resource card from the deck
+ * Command to allow a player to draw a resource card from the deck.
  */
 public class DrawResourceDeckCardCommand extends GameCommand {
+  /**
+   * Token of the player drawing the card.
+   */
   private final PlayerToken playerToken;
 
   public DrawResourceDeckCardCommand(PlayerToken playerToken) {

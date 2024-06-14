@@ -29,7 +29,7 @@ public class VisibleCardsList<CardType extends Card> extends Observable {
   /**
    * The actual list of cards.
    */
-  public final List<CardType> cards;
+  private final List<CardType> cards;
 
   /**
    * Deck with the same CardType as this, from which replacement cards will be drawn.
@@ -86,5 +86,26 @@ public class VisibleCardsList<CardType extends Card> extends Observable {
 
     cards.set(listIndex, deckDrawResult.first.orElse(null));
     return Optional.of(card);
+  }
+
+  /**
+   * cards' getter, allows to have cards as private.
+   * 
+   * @return list of cards in the list
+   */
+  public List<CardType> getCards() {
+    return new ArrayList<>(cards);
+  }
+
+  /**
+   * Allows to get the card in the list at a certain index.
+   * 
+   * @param index index in the list of the card of interest
+   * @return the card at the index in the list
+   */
+  public CardType get(int index) {
+    if(index < 0 || index > 1) return null;
+
+    return cards.get(index);
   }
 }

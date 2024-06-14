@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

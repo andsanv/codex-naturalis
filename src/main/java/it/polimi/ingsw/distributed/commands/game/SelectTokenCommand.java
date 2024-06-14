@@ -5,10 +5,17 @@ import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
- * Command to allow a player to choose his token
+ * Command to allow a player to choose his token during game setup phase.
  */
 public class SelectTokenCommand {
+  /**
+   * Player choosing the token.
+   */
   public final UserInfo player;
+  
+  /**
+   * The token chosen
+   */
   public final PlayerToken playerToken;
 
   public SelectTokenCommand(UserInfo player, PlayerToken playerToken) {

@@ -115,7 +115,7 @@ class PlayerHandTest {
 
   @Test
   void sizeTest() {
-    cards = new ArrayList<>(Arrays.asList(card3, card2, card3));
+    cards = new ArrayList<>(Arrays.asList(card1, card2, card3));
     playerHand = new PlayerHand(cards);
 
     assertEquals(3, playerHand.size());
