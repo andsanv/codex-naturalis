@@ -76,7 +76,7 @@ public enum Server {
                           } catch (IOException e) {
                             connectedPlayers.put(entry.getKey(), new Pair<>(entry.getValue().first, new AtomicBoolean(false)));
                             System.err.println("Error: Couldn't send message to " + entry.getValue().first);
-                            System.err.println("Client probably disconnected");
+                            System.err.println("Client " + entry.getKey() + " is disconnected");
                           }                          
                         });
                 try {
