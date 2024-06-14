@@ -183,8 +183,14 @@ public enum Server {
           .map(entry -> entry.getValue().first)
           .collect(Collectors.toList());
 
-      
-      GameFlowManager gameFlowManager = new GameFlowManager(lobby, observers);
+      ConcurrentHashMap<UserInfo, AtomicBoolean> isConnected = new ConcurrentHashMap<>();
+      connectedPlayers
+        .entrySet()
+        .stream()
+        .filter(e -> lobby.getUsers().contains(userInfoToUser(e.getKey())))
+        .forEach(e -> isConnected.put(e.getKey(), e.getValue().second));
+          
+      GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
       lobbyToGameFlowManager.put(lobby, gameFlowManager);
 
       // set gameflow to redirect requests to, on client handler only for the users in the starting game
