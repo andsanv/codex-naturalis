@@ -13,7 +13,9 @@ public interface MainEventHandler {
 
   public void handleReceivedConnection();
 
-public void handleRefusedReconnection();
+  public void handleRefusedReconnection();
 
-public void handleReconnetionToGame();
+  public void handleReconnetionToGame();
+
+  public void handleAlreadyInLobbyErrorEvent();
 }

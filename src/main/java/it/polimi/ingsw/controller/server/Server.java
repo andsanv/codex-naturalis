@@ -20,6 +20,7 @@ import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
+import it.polimi.ingsw.distributed.events.main.AlreadyInLobbyErrorEvent;
 import it.polimi.ingsw.distributed.events.main.MainErrorEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.events.main.RefusedConnectionEvent;
@@ -245,7 +246,7 @@ public enum Server {
         if(getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo))) {
           System.err.println("Error: User already in a lobby");
           try {
-            connectedPlayers.get(userInfo).first.receiveEvent(new MainErrorEvent("User already in a lobby"));
+            connectedPlayers.get(userInfo).first.receiveEvent(new AlreadyInLobbyErrorEvent());
           } catch (IOException e) {
             e.printStackTrace();
           }

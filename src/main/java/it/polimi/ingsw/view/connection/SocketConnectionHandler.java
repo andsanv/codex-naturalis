@@ -50,7 +50,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
               while (true) {
                 try {
                   Event event = (Event) inputStream.readObject();
-                  System.out.println("Received event: " + event);
+                  // System.out.println("Received event: " + event);
                   
                   if(event instanceof KeepAliveEvent) {
                     ;

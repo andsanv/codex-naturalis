@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -69,6 +71,8 @@ public class TUI implements UI {
     private AtomicBoolean waitingStartGame = new AtomicBoolean(false);
 
     private AtomicInteger currentLobbyid = new AtomicInteger(-1);
+
+    private ExecutorService helperThread = Executors.newSingleThreadExecutor();
 
     public TUI() {
     }
@@ -317,7 +321,29 @@ public class TUI implements UI {
      * server, both in game and in the main menu.
      */
     private void reconnectionScreen() {
-        System.out.println(ansi().a("You have been disconnected:"));
+        AtomicBoolean waitingReconnectionResult = new AtomicBoolean(true);
+        AtomicBoolean reconnected = new AtomicBoolean(false);
+
+        System.out.println(ansi().a("Connection to the server lost\n")
+            .fg(YELLOW).a("  exit").reset().a(" to close the game\n")
+            .fg(YELLOW).a("  enter").reset().a(" (or anything else) to attempt reconnection"));
+
+        while(true) {
+            prompt();
+
+            helperThread.submit(() -> {
+                reconnected.set(this.connectionHandler.reconnect());
+            });
+            displayLoadingMessage("Reconnecting", waitingReconnectionResult);
+            
+            if(reconnected.get()) {
+                System.out.println(ansi().fg(GREEN).a("Successfully reconnected"));
+
+                break;
+            } else {
+                System.out.println(ansi().fg(RED).a("Reconnection failed, please try again"));
+            }
+        }
     }
 
     /**
@@ -335,6 +361,7 @@ public class TUI implements UI {
             String[] command = prompt().split("\\s+");
 
             if (command[0].equalsIgnoreCase("list")) {
+                System.out.println();
                 printLobbies();
             } else if (command[0].equalsIgnoreCase("join")) {
                 int lobbyId;
@@ -392,7 +419,7 @@ public class TUI implements UI {
     private void printLobbies() {
         synchronized (availableLobbiesLock) {
             if (this.availableLobbies == null || this.availableLobbies.isEmpty())
-                System.out.println("No lobbies available");
+                System.out.println("No lobbies available\n");
             else
                 for (LobbyInfo lobby : availableLobbies) {
                     final int length = Math.max(12,
@@ -611,8 +638,9 @@ public class TUI implements UI {
 
     @Override
     public UserInfo getUserInfo() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
+        synchronized(userInfoLock) {
+            return userInfo;
+        }
     }
 
     @Override
@@ -630,6 +658,12 @@ public class TUI implements UI {
     public void handleReconnetionToGame() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
+    }
+
+    @Override
+    public void handleAlreadyInLobbyErrorEvent() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleAlreadyInLobbyErrorEvent'");
     }
 }
 

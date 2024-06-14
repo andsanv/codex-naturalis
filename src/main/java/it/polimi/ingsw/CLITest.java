@@ -243,4 +243,10 @@ public class CLITest implements UI {
   public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
 
   }
+
+  @Override
+  public void handleAlreadyInLobbyErrorEvent() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleAlreadyInLobbyErrorEvent'");
+  }
 }
