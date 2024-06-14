@@ -281,7 +281,7 @@ public enum Server {
               .filter(lobby -> lobby.getUsers().contains(userInfoToUser(userInfo)))
               .findFirst()
               .orElse(null));
-          clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.getGameModel().slimGameModel));
+          clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.gameModel.slimGameModel));
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
