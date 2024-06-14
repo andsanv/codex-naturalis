@@ -26,7 +26,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
   private RMIMainView clientMainView;
 
-  public RMIConnectionHandler(UI userInterface) {
+  public RMIConnectionHandler(UI userInterface) throws Exception {
     super(userInterface);
 
     serverCommandQueue = new LinkedBlockingQueue<>();
@@ -42,8 +42,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
-    } catch (RemoteException | NotBoundException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      throw new Exception("Failed to connect to RMI server");
     }
   }
 

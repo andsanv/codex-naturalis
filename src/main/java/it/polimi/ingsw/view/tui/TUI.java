@@ -223,12 +223,19 @@ public class TUI implements UI {
                 try {
                     connectionHandler = new SocketConnectionHandler(this);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    displayError("The server is currently unavailable, couldn't connect through sockets, please try later.");
+                    System.exit(0);
+                    return;
                 }
 
                 break;
             } else if (connectionType.equalsIgnoreCase("rmi")) {
-                connectionHandler = new RMIConnectionHandler(this);
+                try {
+                    connectionHandler = new RMIConnectionHandler(this);
+                } catch (Exception e) {
+                    displayError("The server is currently unavailable, couldn't connect through RMI, please try later.");
+                    System.exit(0);
+                }
                 break;
             } else {
                 displayError("Invalid connection type, choose another one. ");
