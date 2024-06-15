@@ -278,7 +278,7 @@ public class TUI implements UI {
                     waitingUserInfo.set(true);
 
                     // Attempt connection to the server
-                    connectionHandler.sendToMainServer(new ReconnectionCommand(userInfo));
+                    connectionHandler.reconnect();
                     displayLoadingMessage("Logging in", waitingUserInfo);
 
                     askForUsername = false;

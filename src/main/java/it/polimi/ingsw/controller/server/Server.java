@@ -288,10 +288,13 @@ public enum Server {
   }
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
+    System.out.println(clientMainView);
     if(playersInMenu.keySet().contains(userInfo)) {
       MainViewActions oldMainViewActions = connectedPlayers.get(userInfo).first;
       AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
       atomicBoolean.set(true);
+      
+      connectedPlayers.put(userInfo, new Pair<MainViewActions,AtomicBoolean>(clientMainView, atomicBoolean));
       
       try {
         if(playersInMenu.get(userInfo))

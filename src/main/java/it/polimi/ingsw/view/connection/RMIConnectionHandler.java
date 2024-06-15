@@ -5,6 +5,7 @@ import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
+import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.view.UI;
@@ -61,7 +62,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
     if(mainCommand instanceof ConnectionCommand) {
       try {
         mainServerActions.connectToMain(((ConnectionCommand) mainCommand).username, this.clientMainView);
-        
+      
         System.out.println("Waiting for user info");
         System.out.println(userInterface.getUserInfo());
         while(userInterface.getUserInfo() == null) {
@@ -75,6 +76,17 @@ public class RMIConnectionHandler extends ConnectionHandler {
         return true;
       } catch (RemoteException e) {
         e.printStackTrace();
+        return false;
+      }
+    } else if (mainCommand instanceof ReconnectionCommand) {
+      try {
+        this.clientMainView = new RMIMainView(userInterface);
+        
+        System.out.println(this.clientMainView);
+        mainServerActions.reconnect(((ReconnectionCommand) mainCommand).userInfo, this.clientMainView);
+      } catch (RemoteException e) {
+        e.printStackTrace();
+        return false;
       }
     } else {
       try {
@@ -104,7 +116,9 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
   @Override
   public boolean reconnect() {
-    return false;
+    ReconnectionCommand reconnectionCommand = new ReconnectionCommand(userInterface.getUserInfo());
+    System.out.println(3);
+    return sendToMainServer(reconnectionCommand);
   }
 
   public void setGameServerActions(GameServerActions gameServerActions) {

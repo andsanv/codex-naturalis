@@ -51,6 +51,7 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
 
   @Override
   public void reconnect(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException {
+    System.out.println("Reconnection from " + userInfo);
     executorService.submit(
         () -> {
           Server.INSTANCE.addReconnectedClient(userInfo, clientMainView);
