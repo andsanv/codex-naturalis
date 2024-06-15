@@ -147,6 +147,18 @@ public enum Server {
     }
   }
 
+  /**
+   * Deletes a lobby.
+   * Must be called when the match ends.
+   * 
+   * @param lobbyId the id of the lobby
+   */
+  public void deleteLobby(int lobbyId) {
+    synchronized(lobbies) {
+      lobbies.remove(lobbyId);
+    }
+  }
+
   public boolean leaveLobby(UserInfo userInfo, int lobbyId) {
     User user = userInfoToUser(userInfo);
     return user != null && leaveLobby(user, lobbyId);
