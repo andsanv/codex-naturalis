@@ -100,25 +100,37 @@ public enum Server {
    * @return True if joining was successfull, false if the lobby doesn't exist or if the user is
    *     already in the lobby.
    */
-  public boolean joinLobby(UserInfo user, int lobbyId) {
+  public boolean joinLobby(UserInfo userInfo, int lobbyId) {
     synchronized (lobbies) {
+      if(getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo))) {
+        System.err.println("Error: User already in a lobby");
+        
+        try {
+          connectedPlayers.get(userInfo).first.receiveEvent(new AlreadyInLobbyErrorEvent());
+        } catch (IOException e) {
+          e.printStackTrace();
+          return false;
+        }
+      }
+      
       Lobby lobby = lobbies.get(lobbyId);
       System.out.println("joining lobby = " + lobby);
-      System.out.println("joining user = " + user);
+      System.out.println("joining user = " + userInfo);
 
-      boolean result = lobby != null && lobby.addUser(userInfoToUser(user));
+      boolean result = lobby != null && lobby.addUser(userInfoToUser(userInfo));
 
       if (result) 
         broadcastLobbies(getLobbies());
       else {
         try {
-          connectedPlayers.get(user).first.receiveEvent(new MainErrorEvent("Error: Couldn't join lobby"));
+          connectedPlayers.get(userInfo).first.receiveEvent(new MainErrorEvent("Error: Couldn't join lobby"));
         } catch (IOException e) {
           return result;
         }
       }
 
       return result;
+      
     }
   }
 
