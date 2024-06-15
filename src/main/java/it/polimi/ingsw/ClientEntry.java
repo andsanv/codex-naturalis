@@ -5,6 +5,7 @@ import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 import it.polimi.ingsw.view.connection.SocketConnectionHandler;
+import it.polimi.ingsw.view.tui.TUI;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -15,8 +16,8 @@ public class ClientEntry {
 
   public static void main(String[] args) throws Exception {
     
-
-    rmiTest();
+    TUI tui = new TUI();
+    tui.start();
 
   }
 

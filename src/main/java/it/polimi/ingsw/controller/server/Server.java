@@ -75,7 +75,9 @@ public enum Server {
                             entry.getValue().first.receiveEvent(new KeepAliveEvent());
                             System.out.println("Sent keep alive to " + entry.getKey());
                           } catch (IOException e) {
-                            connectedPlayers.put(entry.getKey(), new Pair<>(entry.getValue().first, new AtomicBoolean(false)));
+                            AtomicBoolean atomicBoolean = connectedPlayers.get(entry.getKey()).second;
+                            atomicBoolean.set(false);
+                            
                             System.err.println("Error: Couldn't send message to " + entry.getValue().first);
                             System.err.println("Client " + entry.getKey() + " is disconnected");
                           }                          
@@ -288,7 +290,9 @@ public enum Server {
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
     if(playersInMenu.keySet().contains(userInfo)) {
       MainViewActions oldMainViewActions = connectedPlayers.get(userInfo).first;
-      connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
+      AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
+      atomicBoolean.set(true);
+      
       try {
         if(playersInMenu.get(userInfo))
           clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
@@ -333,6 +337,7 @@ public enum Server {
     }
 
     connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
+    
     playersInMenu.put(userInfo, true);
 
     return userInfo;
