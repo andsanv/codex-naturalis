@@ -6,7 +6,8 @@ import java.util.List;
 
 /**
  * This interface represents the main event handler, which is used to handle the main events 
- * coming from the server
+ * coming from the server.
+ * This interface is implemented by the UI abstract class.
  */
 public interface MainEventHandler {
 
