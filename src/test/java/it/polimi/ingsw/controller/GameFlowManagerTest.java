@@ -1,4 +1,4 @@
-/*package it.polimi.ingsw.controller;
+package it.polimi.ingsw.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.*;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.PointsType;
@@ -18,37 +19,43 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerHand;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 class GameFlowManagerTest {
-  @Mock private Lobby mockLobby;
+  private UserInfo creator;
+  private UserInfo player;
+  private Lobby lobby;
+
+  private List<it.polimi.ingsw.controller.observer.Observer> observers;
+  private Map<UserInfo, AtomicBoolean> isConnected;
 
   private GameFlowManager gameFlowManager;
-  private User user1, user2;
   private GameModelUpdater gameModelUpdater;
 
   @BeforeEach
-  void init() {
-    mockLobby = mock(Lobby.class);
-    user1 = new User("Andrea");
-    user2 = new User("Maradona");
-    when(mockLobby.getUsers()).thenReturn(Arrays.asList(user1, user2));
+  void setUp() {
+    observers = new ArrayList<>();
 
-    gameFlowManager = new GameFlowManager(mockLobby);
+    lobby = new Lobby(new User(creator.name));
+    lobby.addUser(new User(player.name));
+
+    isConnected = new HashMap<UserInfo, AtomicBoolean>() {{
+      put(creator, new AtomicBoolean(true));
+      put(player, new AtomicBoolean(true));
+    }};
+
+    gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
     gameModelUpdater = gameFlowManager.gameModelUpdater;
   }
 
   @Test
-  void gameFlowManagerSetupTest() {
-    assertEquals(2, gameFlowManager.getIsConnected().keySet().size());
-
-    assertTrue(
-        gameFlowManager.getIsConnected().values().stream().allMatch(value -> value.equals(false)));
-
-    assertEquals(0, gameFlowManager.UserInfoToToken.size());
-    assertEquals(gameFlowManager.setupState, gameFlowManager.getCurrentState());
+  void gameFlowManagerConstructorTest() {
+    assertEquals(0, gameFlowManager.userInfoToToken.size());
+    assertEquals(gameFlowManager.tokenSelectionState, gameFlowManager.currentState);
 
     gameFlowManager.getCurrentState().setup();
 
@@ -505,4 +512,3 @@ class GameFlowManagerTest {
             .getCard(new Coords(1, 3)));
   }
 }
-*/
