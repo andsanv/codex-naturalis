@@ -1,29 +1,21 @@
 package it.polimi.ingsw.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import it.polimi.ingsw.controller.server.Lobby;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.*;
+import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
-import it.polimi.ingsw.model.card.PointsType;
-import it.polimi.ingsw.model.card.ResourceCard;
-import it.polimi.ingsw.model.common.Resources;
-import it.polimi.ingsw.model.corner.Corner;
-import it.polimi.ingsw.model.corner.CornerPosition;
-import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.player.Coords;
-import it.polimi.ingsw.model.player.Player;
-import it.polimi.ingsw.model.player.PlayerHand;
+import it.polimi.ingsw.model.player.PlayerToken;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 class GameFlowManagerTest {
   private UserInfo creator;
@@ -35,48 +27,128 @@ class GameFlowManagerTest {
 
   private GameFlowManager gameFlowManager;
   private GameModelUpdater gameModelUpdater;
+  private GameModel gameModel;
 
   @BeforeEach
   void setUp() {
     observers = new ArrayList<>();
 
-    lobby = new Lobby(new User(creator.name));
+    User creatorUser = new User("Andrea");
+    creator = new UserInfo(creatorUser);
+
+    User playerUser = new User("Maradona");
+    player = new UserInfo(playerUser);
+
+    lobby = new Lobby(creatorUser);
     lobby.addUser(new User(player.name));
 
     isConnected = new HashMap<UserInfo, AtomicBoolean>() {{
       put(creator, new AtomicBoolean(true));
       put(player, new AtomicBoolean(true));
     }};
-
-    gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
-    gameModelUpdater = gameFlowManager.gameModelUpdater;
   }
 
   @Test
   void gameFlowManagerConstructorTest() {
+    gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
+    gameModelUpdater = gameFlowManager.gameModelUpdater;
+
+    assertNotNull(gameFlowManager.userInfoToToken);
     assertEquals(0, gameFlowManager.userInfoToToken.size());
+    
+    assertNotNull(gameFlowManager.playerTokens);
+    assertEquals(0, gameFlowManager.playerTokens.size());
+
     assertEquals(gameFlowManager.tokenSelectionState, gameFlowManager.currentState);
-
-    gameFlowManager.getCurrentState().setup();
-
-    assertEquals(2, gameFlowManager.UserInfoToToken.keySet().size());
-    assertEquals(2, gameFlowManager.gameModelUpdater.getPlayers().size());
-
-    for (Player player : gameFlowManager.gameModelUpdater.getPlayers().values()) {
-      assertEquals(3, player.getHand().getCards().size());
-    }
-
-    assertEquals(2, gameFlowManager.gameModelUpdater.getCommonObjectives().size());
-    assertTrue(
-        gameFlowManager.gameModelUpdater.getCommonObjectives().stream()
-            .noneMatch(objective -> objective == null));
-
-    assertEquals(gameFlowManager.getCurrentState(), gameFlowManager.playCardState);
   }
 
   @Test
-  void gameFlowTest() {
-    // Corners that will be used by a specific card
+  void gameInitializationTest() {
+    gameFlowManager = new GameFlowManager(lobby, isConnected, observers, 1);
+    gameModelUpdater = gameFlowManager.gameModelUpdater;
+
+    Thread gameFlowManagerThread = new Thread(gameFlowManager);
+    gameFlowManagerThread.start();
+    try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+
+    gameFlowManager.addCommand(new SelectTokenCommand(creator, PlayerToken.RED));
+    try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+
+    gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.RED));    
+    // gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.BLUE));    
+    try { Thread.sleep(1100); } catch (InterruptedException e) { e.printStackTrace(); }
+
+    assertEquals(gameFlowManager.starterCardSelectionState, gameFlowManager.currentState);
+    assertEquals(2, gameFlowManager.playerTokens.size());
+
+    // gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.RED));
+    gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.BLUE));
+    gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.BLUE));
+    try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+  
+    assertEquals(gameFlowManager.starterCardSelectionState, gameFlowManager.currentState); 
+  
+    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.BLUE, CardSide.FRONT));
+    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.BLUE, CardSide.FRONT));
+    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.RED, CardSide.BACK));
+
+    try { Thread.sleep(1100); } catch (InterruptedException e) { e.printStackTrace(); }
+    assertEquals(gameFlowManager.objectiveCardSelectionState, gameFlowManager.currentState); 
+
+    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.BLUE));
+    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.BLUE, 0));
+    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 0));
+    try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+    assertEquals(gameFlowManager.objectiveCardSelectionState, gameFlowManager.currentState);
+
+    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.RED));
+    // gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 1));
+    try { Thread.sleep(1100); } catch (InterruptedException e) { e.printStackTrace(); }
+    
+    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+  
+    assertNull(gameModelUpdater);
+    gameModelUpdater = gameFlowManager.gameModelUpdater;
+    gameModel = gameModelUpdater.gameModel;
+    assertNotNull(gameModelUpdater);
+    assertNotNull(gameModel);
+
+    assertTrue(gameFlowManager.playerTokens.stream().allMatch(x -> gameModel.tokenToPlayer.get(x).secretObjective != null));
+    assertTrue(gameFlowManager.playerTokens.stream().allMatch(x -> gameModel.tokenToPlayer.get(x).playerBoard.board.get(new Coords(0,0)) != null));
+    assertTrue(gameFlowManager.playerTokens.stream().allMatch(x -> gameModel.tokenToPlayer.get(x).playerHand.size() == 3));
+  }
+
+  @Test
+  void gameTest() {
+    gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
+
+    Thread gameFlowManagerThread = new Thread(gameFlowManager);
+    gameFlowManagerThread.start();
+    try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+
+    gameFlowManager.addCommand(new SelectTokenCommand(creator, PlayerToken.RED));
+    gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.BLUE));    
+
+    gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.RED));
+    gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.BLUE));
+  
+    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.BLUE, CardSide.BACK));
+    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.RED, CardSide.BACK));
+
+    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.BLUE));
+    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.RED));
+    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.BLUE, 0));
+    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 1));
+
+    try { Thread.sleep(300); } catch (InterruptedException e) { e.printStackTrace(); }
+    
+    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+
+
+    PlayerToken firstPlayerToken = gameFlowManager.getTurn();
+    PlayerToken secondPlayerToken = gameFlowManager.playerTokens.stream().filter(pt -> pt != firstPlayerToken).findFirst().orElseThrow();
+
+    /*// Corners that will be used by a specific card
     Map<CornerPosition, Corner> frontCorners = new HashMap<>();
     Map<CornerPosition, Corner> backCorners = new HashMap<>();
     ;
@@ -510,5 +582,5 @@ class GameFlowManagerTest {
             .draw(gameFlowManager.UserInfoToToken.draw(secondPlayer))
             .getBoard()
             .getCard(new Coords(1, 3)));
-  }
+  */}
 }

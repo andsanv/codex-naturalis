@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.player.PlayerToken;
 /**
  * Command to allow a player to draw the two objective cards from the deck durin game setup phase.
  */
-public class DrawObjectiveCardsCommand {
+public class DrawObjectiveCardsCommand extends GameCommand {
   /**
    * Token of the player drawing the card.
    */
@@ -16,6 +16,7 @@ public class DrawObjectiveCardsCommand {
     this.playerToken = playerToken;
   }
 
+  @Override
   public boolean execute(GameFlowManager gameFlowManager) {
     return gameFlowManager.currentState.drawObjectiveCards(playerToken);
   }

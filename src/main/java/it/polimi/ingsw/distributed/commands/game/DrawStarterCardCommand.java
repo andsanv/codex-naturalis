@@ -16,6 +16,7 @@ public class DrawStarterCardCommand extends GameCommand {
     this.playerToken = playerToken;
   }
 
+  @Override
   public boolean execute(GameFlowManager gameFlowManager) {
     return gameFlowManager.currentState.drawStarterCard(playerToken);
   }
