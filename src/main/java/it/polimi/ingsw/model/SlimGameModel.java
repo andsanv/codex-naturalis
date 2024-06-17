@@ -2,7 +2,6 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.distributed.events.game.PlayedCardEvent;
 import it.polimi.ingsw.model.card.CardSide;
-import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
@@ -39,14 +38,14 @@ public class SlimGameModel implements Serializable {
     public final Map<PlayerToken, Integer> scores;
 
     /**
-     * List of common objectives.
+     * List containing the ids of the common objectives.
      */
-    public final List<ObjectiveCard> commonObjectives;
+    public final List<Integer> commonObjectives;
 
     /**
-     * List of private objectives.
+     * Map that keeps the id of the private objective of a player, for every player.
      */
-    public final Map<PlayerToken, ObjectiveCard> secretObjectives;
+    public final Map<PlayerToken, Integer> tokenTosecretObjective;
 
     /**
      * @param gameModel GameModel used for initialization
@@ -86,11 +85,12 @@ public class SlimGameModel implements Serializable {
 
         this.scores = initialScores;
 
-        this.commonObjectives = gameModel.commonObjectives;
-        this.secretObjectives = new HashMap<>(
+        this.commonObjectives = new ArrayList<>(gameModel.commonObjectives.stream().map(x -> x.id).collect(Collectors.toList()));
+        
+        this.tokenTosecretObjective = new HashMap<>(
             playerTokens.stream().collect(Collectors.toMap(
                     token -> token,
-                    token -> gameModel.tokenToPlayer.get(token).secretObjective
+                    token -> gameModel.tokenToPlayer.get(token).secretObjective.id
             ))
         );
     }
@@ -100,11 +100,32 @@ public class SlimGameModel implements Serializable {
      * @param other the main slimGameModel in the gameModel
      */
     public SlimGameModel(SlimGameModel other) {
-        this.tokenToPlayedCards = new HashMap<>(other.tokenToPlayedCards);
-        this.tokenToItems = new HashMap<>(other.tokenToItems);
         this.scores = new HashMap<>(other.scores);
         this.commonObjectives = new ArrayList<>(other.commonObjectives);
-        this.secretObjectives = new HashMap<>(other.secretObjectives);
+        this.tokenTosecretObjective = new HashMap<>(other.tokenTosecretObjective);
+
+        this.tokenToPlayedCards = new HashMap<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> () {{
+            other.tokenToPlayedCards.entrySet().stream().forEach(
+                x -> put(x.getKey(), new HashMap<Integer, Trio<Integer, CardSide, Coords>>() {{
+                    other.tokenToPlayedCards.get(x.getKey()).entrySet().stream().forEach(
+                        y -> put(
+                            y.getKey(), 
+                            new Trio<>(
+                                other.tokenToPlayedCards.get(x.getKey()).get(y.getKey()).first,
+                                other.tokenToPlayedCards.get(x.getKey()).get(y.getKey()).second,
+                                other.tokenToPlayedCards.get(x.getKey()).get(y.getKey()).third
+                            )
+                        )
+                    );
+                }})
+            );
+        }};
+        
+        this.tokenToItems = new HashMap<PlayerToken, Map<Elements, Integer>>() {{
+            other.tokenToItems.entrySet().stream().forEach(
+                x -> put(x.getKey(), new HashMap<>(other.tokenToItems.get(x.getKey())))
+            );
+        }};
     }
 
     /**
@@ -113,12 +134,7 @@ public class SlimGameModel implements Serializable {
      */
     public void addPlayedCard(PlayedCardEvent event) {
         Optional<Integer> index = tokenToPlayedCards.get(event.senderToken).keySet().stream().max(Integer::compare);
-        if(index.isPresent())
-            tokenToPlayedCards.get(event.senderToken).put(index.get() + 1, new Trio<>(event.playedCardId, event.playedCardSide, event.playedCardCoordinates));
-        else {
-            HashMap<Integer, Trio<Integer, CardSide, Coords>> map = new HashMap<>();
-            map.put(1, new Trio<>(event.playedCardId, event.playedCardSide, event.playedCardCoordinates));
-            tokenToPlayedCards.put(event.senderToken, map);
-        }
+    
+        tokenToPlayedCards.get(event.senderToken).put(index.orElseThrow() + 1, new Trio<>(event.playedCardId, event.playedCardSide, event.playedCardCoordinates));
     }
 }
