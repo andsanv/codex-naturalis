@@ -15,13 +15,30 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
+/**
+ * This class represents the server side of the socket connection.
+ * It is the entry server, that keeps listening for new client, 
+ * delegating the communication to the ClientHandler class.
+ */
 public class SocketServer {
 
+  /** The server socket instance */
   private final ServerSocket serverSocket;
+
+  /** The executor service to manage client handlers */
   private final ExecutorService executorService;
 
+  /** Map from user info to corresponding client handler */
   private final ConcurrentHashMap<UserInfo, ClientHandler> connections;
 
+  /**
+   * This constructor is the starting point for the server.
+   * It creates a new socket, initializes the attributes.
+   * It also calls the startAcceptingClients method and ends.
+   * @param port the port which the server will listen on
+   * @throws IOException if the server cannot be started
+   */
   public SocketServer(int port) throws IOException {
     this.executorService = Executors.newCachedThreadPool();
     this.serverSocket = new ServerSocket(port);
@@ -29,6 +46,18 @@ public class SocketServer {
 
     System.out.println("Socket server started on port " + port);
 
+    startAcceptingClients();
+  }
+
+  /**
+   * This method starts a thread that keeps listening for new clients.
+   * Once a new client is accpted, object streams are configured and the client handler is created.
+   * The first command received must be either a ConnectionCommand or a ReconnectionCommand. If not request is ignored.
+   * If the command is a ConnectionCommand, the server controller creates a new UserInfo for the client.
+   * If the command is Reconnection command, the UserInfo is contained in the request.
+   * In both cases, the UserInfo and the ClientHandler are added to the connections map.
+   */
+  public void startAcceptingClients() {
     new Thread(
             () -> {
               while (true) {
@@ -40,13 +69,11 @@ public class SocketServer {
                   out.flush();
                   ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-                  System.out.println(in + " " + out);
+                  ClientHandler connection = new ClientHandler(out, in);
 
                   Command command = (Command) in.readObject();
 
                   System.out.println("Received command: " + command);
-
-                  ClientHandler connection = new ClientHandler(out, in);
 
                   if (command instanceof ConnectionCommand) {
                     ConnectionCommand connectionCommand = (ConnectionCommand) command;
@@ -78,6 +105,10 @@ public class SocketServer {
         .start();
   }
 
+  /**
+   * This method returns the connections map.
+   * @return the connections map
+   */
   public ConcurrentHashMap<UserInfo, ClientHandler> getConnections() {
     return connections;
   }
