@@ -6,6 +6,9 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * This class represents the action that can be performed on the main server.
+ */
 public interface MainServerActions extends Remote {
 
   /**
@@ -29,9 +32,9 @@ public interface MainServerActions extends Remote {
   /**
    * This method must be called when connecting to the server for the first time.
    *
-   * @param userInfo the client's info
+   * @param username the client's username
    * @param clientMainView the client's main view
    * @throws RemoteException
    */
-  void connectToMain(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException;
+  void connectToMain(String username, MainViewActions clientMainView) throws RemoteException;
 }

@@ -56,12 +56,12 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
    * The addConnectedClient method will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
    */
   @Override
-  public void connectToMain(UserInfo userInfo, MainViewActions clientMainView)
+  public void connectToMain(String username, MainViewActions clientMainView)
       throws RemoteException {
-        System.out.println("User " + userInfo.name + "main view " + clientMainView);
+        System.out.println("User " + username + "main view " + clientMainView);
     executorService.submit(
         () -> {
-          Server.INSTANCE.addConnectedClient(userInfo.name, clientMainView);
+          Server.INSTANCE.addConnectedClient(username, clientMainView);
         });
   }
 

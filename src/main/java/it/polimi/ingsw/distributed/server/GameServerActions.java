@@ -6,6 +6,9 @@ import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * This class represents the action that can be performed on the game server.
+ */
 public interface GameServerActions extends Remote {
   /**
    * This method is used to transmit a game command to the server.

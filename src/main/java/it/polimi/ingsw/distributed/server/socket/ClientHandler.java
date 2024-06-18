@@ -109,6 +109,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
   /**
    * {@inheritDoc}
    * This method update the client on changes on the game model on the server.
+   * This method is inherited from the Observer interface.
    */
   @Override
   public void update(GameEvent event) {

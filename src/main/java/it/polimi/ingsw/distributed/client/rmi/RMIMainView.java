@@ -10,28 +10,55 @@ import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 
+/**
+ * This class is the RMI implementation of the MainViewActions interface.
+ * So it used from the server to perform actions on the client main view.
+ */
 public class RMIMainView extends UnicastRemoteObject implements MainViewActions {
+
+  /** 
+   * This is the main event handler that will handle the main events received from the server.
+   */
   private final MainEventHandler mainEventHandler;
+
+  /** 
+   * This conncetion handler will be used to handle the communication with the server.
+   */
   private RMIConnectionHandler connectionHandler;
 
-  // private final Object printLock;
-
+  /**
+   * This constructor creates a new RMIMainView.
+   * @param mainEventHandler the main event handler to propagate the updates (events) to.
+   * @throws RemoteException
+   */
   public RMIMainView(MainEventHandler mainEventHandler) throws RemoteException {
     this.mainEventHandler = mainEventHandler;
   }
 
+  /**
+   * {@inheritDoc}
+   * This method is used by the server to send an event to the client.
+   */
   @Override
   public void receiveEvent(MainEvent serverEvent) throws RemoteException {
     System.out.println("Received event: " + serverEvent);
     serverEvent.execute(mainEventHandler);
   }
 
+  /**
+   * {@inheritDoc}
+   * This method is used by the server to set the game server actions on the client.
+   */
   @Override
   public void setGameServer(GameServerActions gameServer) throws RemoteException {
     this.connectionHandler.setGameServerActions(gameServer);
   }
 
+  /**
+   * This method is used by the server to update the client with a game event.
+   */
   @Override
   public void update(GameEvent event) throws RemoteException {
-    }
+    // TODO: Review Observer implementation for rmi and socket
+  }
 }
