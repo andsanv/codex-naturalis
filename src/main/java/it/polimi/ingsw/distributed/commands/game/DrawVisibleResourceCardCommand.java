@@ -24,9 +24,11 @@ public class DrawVisibleResourceCardCommand extends GameCommand {
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    boolean result = gameFlowManager.currentState.drawVisibleResourceCard(playerToken, choice);
-    gameFlowManager.addCommand(new CardsPlayabilityCommand(playerToken));
+    if(gameFlowManager.currentState.drawVisibleResourceCard(playerToken, choice)) {
+      gameFlowManager.gameModelUpdater.computeCardsPlayability(playerToken);
+      return true;
+    }
 
-    return result;
+    return false;
   }
 }

@@ -51,10 +51,6 @@ public abstract class GameState {
     return false;
   }
 
-  public boolean getCardsPlayability(PlayerToken playerToken) {
-    return false;
-  }
-
 
   // DrawCardState methods
 

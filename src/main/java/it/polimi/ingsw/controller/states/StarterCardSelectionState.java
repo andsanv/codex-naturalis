@@ -79,41 +79,59 @@ public class StarterCardSelectionState extends GameState {
 
     Queue<GameCommand> commands = gameFlowManager.commands;
 
-    TimerTask timeElapsedTask = new TimerTask() {
-      @Override
-      public void run() {
-        synchronized (timeLimitReached) {
-          timeLimitReached.set(true);
-        }
-      }
-    };
+    TimerTask timeElapsedTask =
+        new TimerTask() {
+          @Override
+          public void run() {
+            synchronized (timeLimitReached) {
+              timeLimitReached.set(true);
+              
+              synchronized(commands) {
+                commands.notifyAll();
+              }
+            }
+          }
+        };
     timer.schedule(timeElapsedTask, timeLimit * 1000);
 
     while (true) {
-      if (!timeLimitReached.get())
-        synchronized (commands) {
-          if (!commands.isEmpty() && commands.poll().execute(gameFlowManager)) {
-            if (tokenToStarterCard.keySet().size() == playerTokens.size()
-                && tokenToCardSide.keySet().size() == playerTokens.size()) {
-              timer.cancel();
-              break;
-            }
+      synchronized (commands) {
+        if(commands.isEmpty()) {
+          try {
+            commands.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
         }
-      else {
-        Random random = new Random();
 
-        List<CardSide> sides = new ArrayList<>(Arrays.asList(CardSide.FRONT, CardSide.BACK));
+        if (timeLimitReached.get()) {
+          // TODO time limit reached event
+          Random random = new Random();
 
-        playerTokens.stream()
+          List<CardSide> sides = new ArrayList<>(Arrays.asList(CardSide.FRONT, CardSide.BACK));
+
+          playerTokens.stream()
             .filter(pt -> !tokenToStarterCard.containsKey(pt))
             .forEach(
-                pt -> tokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt, 0).orElseThrow()));
-        playerTokens.stream()
+                  pt -> tokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt, 0).orElseThrow()));
+          playerTokens.stream()
             .filter(pt -> !tokenToCardSide.containsKey(pt))
             .forEach(pt -> tokenToCardSide.put(pt, sides.get(random.nextInt(sides.size()))));
 
-        break;
+          break;
+        }
+        
+        if(commands.isEmpty()) continue;
+
+        if (commands.poll().execute(gameFlowManager)) {
+          if (tokenToStarterCard.keySet().size() == playerTokens.size() && tokenToCardSide.keySet().size() == playerTokens.size()) {
+            timer.cancel();
+            break;
+          }
+        }
+        else {
+          // cannot execute command event
+        }
       }
     }
 

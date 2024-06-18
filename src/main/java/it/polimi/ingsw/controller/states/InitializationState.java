@@ -55,6 +55,9 @@ public class InitializationState extends GameState {
     GameModelUpdater gameModelUpdater = new GameModelUpdater(
             new GameModel(decks, playerTokens, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard, commonObjectives, observers, lastEventId)
     );
+
+    // set up controller
+    userInfoToToken.entrySet().forEach(x -> gameFlowManager.userInfoToToken.put(x.getKey(), x.getValue()));
     gameFlowManager.setGameModelUpdater(gameModelUpdater);
     gameFlowManager.initializeGameStates();
 

@@ -30,12 +30,12 @@ public class ObjectiveCardSelectionState extends GameState {
   /**
    * Map that keeps track of objective cards drawn by every player
    */
-  private final Map<PlayerToken, Pair<ObjectiveCard, ObjectiveCard>> TokenToDrawnObjectiveCards;
+  private final Map<PlayerToken, Pair<ObjectiveCard, ObjectiveCard>> tokenToDrawnObjectiveCards;
 
   /**
    * Map that keeps track of chosen objective card by every player
    */
-  private final Map<PlayerToken, ObjectiveCard> TokenToChosenObjectiveCard;
+  private final Map<PlayerToken, ObjectiveCard> tokenToChosenObjectiveCard;
 
   /**
    * Time limit within witch players need to choose their card
@@ -56,8 +56,8 @@ public class ObjectiveCardSelectionState extends GameState {
     this.playerTokens = playerTokens;
     this.timeLimit = timeLimit;
 
-    this.TokenToDrawnObjectiveCards = new HashMap<>();
-    this.TokenToChosenObjectiveCard = new HashMap<>();
+    this.tokenToDrawnObjectiveCards = new HashMap<>();
+    this.tokenToChosenObjectiveCard = new HashMap<>();
   }
 
   /**
@@ -80,77 +80,94 @@ public class ObjectiveCardSelectionState extends GameState {
           public void run() {
             synchronized (timeLimitReached) {
               timeLimitReached.set(true);
+              
+              synchronized(commands) {
+                commands.notifyAll();
+              }
             }
           }
         };
     timer.schedule(timeElapsedTask, timeLimit * 1000);
 
     while (true) {
-      if (!timeLimitReached.get())
-        synchronized (commands) {
-          if (!commands.isEmpty() && commands.poll().execute(gameFlowManager)) {
-            if (TokenToDrawnObjectiveCards.keySet().size() == playerTokens.size()
-                && TokenToChosenObjectiveCard.keySet().size() == playerTokens.size()) {
-              timer.cancel();
-              break;
-            }
+      synchronized (commands) {
+        if(commands.isEmpty()) {
+          try {
+            commands.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
         }
-      else {
-        Random random = new Random();
 
-        playerTokens.stream()
-            .filter(playerToken -> !TokenToDrawnObjectiveCards.containsKey(playerToken))
+        if (timeLimitReached.get()) {
+          // TODO time limit reached event
+          Random random = new Random();
+
+          playerTokens.stream()
+            .filter(playerToken -> !tokenToDrawnObjectiveCards.containsKey(playerToken))
             .forEach(playerToken -> {
               ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
               ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
 
-              decks.objectiveCardsDeck.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.id, secondCard.id));
+                decks.objectiveCardsDeck.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.id, secondCard.id));
 
-              TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
-            });
+                tokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
+              });
 
-        playerTokens.stream()
-            .filter(pt -> !TokenToChosenObjectiveCard.containsKey(pt))
+          playerTokens.stream()
+            .filter(pt -> !tokenToChosenObjectiveCard.containsKey(pt))
             .forEach(
-                pt ->
-                    TokenToChosenObjectiveCard.put(
-                        pt,
-                        random.nextInt(2) == 0
-                            ? TokenToDrawnObjectiveCards.get(pt).first
-                            : TokenToDrawnObjectiveCards.get(pt).second));
+              pt ->
+                tokenToChosenObjectiveCard.put(
+                  pt,
+                  random.nextInt(2) == 0
+                    ? tokenToDrawnObjectiveCards.get(pt).first
+                    : tokenToDrawnObjectiveCards.get(pt).second));
 
-        break;
+          break;
+        }
+        
+        if(commands.isEmpty()) continue;
+
+        if (commands.poll().execute(gameFlowManager)) {
+          if (tokenToDrawnObjectiveCards.keySet().size() == playerTokens.size() && tokenToChosenObjectiveCard.keySet().size() == playerTokens.size()) {
+            timer.cancel();
+            break;
+          }
+        }
+        else {
+          // cannot execute command event
+        }
       }
     }
 
     gameFlowManager.setState(gameFlowManager.initializationState);
     gameFlowManager.notify(new EndedObjectiveCardPhaseEvent());
-    return new HashMap<>(TokenToChosenObjectiveCard);
+    return new HashMap<>(tokenToChosenObjectiveCard);
   }
 
   /**
    * Handles DrawObjectiveCardsCommand.
-   * Updates the TokenToDrawnObjectiveCards map with the drawn cards
+   * Updates the tokenToDrawnObjectiveCards map with the drawn cards
    *
    * @param playerToken player drawing the cards
    * @return false if a player already drew his cards or there was an error, true otherwise
    */
   @Override
   public boolean drawObjectiveCards(PlayerToken playerToken) {
-    if (TokenToDrawnObjectiveCards.containsKey(playerToken)) return false;
+    if (tokenToDrawnObjectiveCards.containsKey(playerToken)) return false;
 
     ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
     ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
 
     decks.objectiveCardsDeck.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.id, secondCard.id));
-    TokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
+    tokenToDrawnObjectiveCards.put(playerToken, new Pair<>(firstCard, secondCard));
     return true;
   }
 
   /**
    * Handles SelectObjectiveCardCommand.
-   * Updates the TokenToChosenObjectiveCard map with the chosen card.
+   * Updates the tokenToChosenObjectiveCard map with the chosen card.
    *
    * @param playerToken player choosing the card
    * @param choice integer representing the choice
@@ -158,14 +175,14 @@ public class ObjectiveCardSelectionState extends GameState {
    */
   @Override
   public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
-    if (!TokenToDrawnObjectiveCards.containsKey(playerToken)
-        || TokenToChosenObjectiveCard.containsKey(playerToken)) return false;
+    if (!tokenToDrawnObjectiveCards.containsKey(playerToken)
+        || tokenToChosenObjectiveCard.containsKey(playerToken)) return false;
 
     ObjectiveCard chosenCard =
         (choice == 0)
-            ? TokenToDrawnObjectiveCards.get(playerToken).first
-            : TokenToDrawnObjectiveCards.get(playerToken).second;
-    TokenToChosenObjectiveCard.put(playerToken, chosenCard);
+            ? tokenToDrawnObjectiveCards.get(playerToken).first
+            : tokenToDrawnObjectiveCards.get(playerToken).second;
+    tokenToChosenObjectiveCard.put(playerToken, chosenCard);
 
     decks.objectiveCardsDeck.notify(new ChosenObjectiveCardEvent(playerToken, chosenCard.id));
     return true;
