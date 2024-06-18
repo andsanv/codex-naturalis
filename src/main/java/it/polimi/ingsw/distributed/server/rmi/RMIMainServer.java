@@ -15,14 +15,26 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * This class represents the RMI Main server to connect to.
+ * The main server is used in client communications that are not in-game.
+ * The class implements runnable so it can be delegated to a dedicated thread.
+ */
 public class RMIMainServer extends UnicastRemoteObject implements MainServerActions, Runnable {
 
+  /**
+   * This executor service is used to make rmi function calls async.
+   * The execution of the functions on the server.java instace are done in separate threads.
+   */
   private final ExecutorService executorService;
 
   public RMIMainServer() throws RemoteException {
     executorService = Executors.newCachedThreadPool();
   }
 
+  /**
+   * This method sets up the RMI server registry.
+   */
   @Override
   public void run() {
     Registry registry;
@@ -39,25 +51,36 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
     }
   }
 
+  /**
+   * This method is used from the client (via RMI) to connect to the main server.
+   * The addConnectedClient method will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
+   */
   @Override
-  public void connectToMain(String username, MainViewActions clientMainView)
+  public void connectToMain(UserInfo userInfo, MainViewActions clientMainView)
       throws RemoteException {
-        System.out.println("User " + username + "main view " + clientMainView);
+        System.out.println("User " + userInfo.name + "main view " + clientMainView);
     executorService.submit(
         () -> {
-          Server.INSTANCE.addConnectedClient(username, clientMainView);
+          Server.INSTANCE.addConnectedClient(userInfo.name, clientMainView);
         });
   }
 
+  /**
+   * This method is used from the client when it wants to reconnect to the server.
+   * The addReconnectedClient will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
+   */
   @Override
   public void reconnect(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException {
-    System.out.println("Reconnection from " + userInfo);
     executorService.submit(
         () -> {
           Server.INSTANCE.addReconnectedClient(userInfo, clientMainView);
         });
   }
 
+  /**
+   * This method is used from the client to send a command to the server.
+   * Commands received are executed calling the execute method.
+   */
   @Override
   public void send(MainCommand command) throws RemoteException {
     System.out.println(command);

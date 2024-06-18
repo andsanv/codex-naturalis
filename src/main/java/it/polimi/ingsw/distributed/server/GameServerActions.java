@@ -7,6 +7,11 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface GameServerActions extends Remote {
+  /**
+   * This method is used to transmit a game command to the server.
+   * @param command the command to be sent
+   * @throws RemoteException
+   */
   public void send(GameCommand command) throws RemoteException;
 
   /**

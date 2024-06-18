@@ -8,6 +8,11 @@ import java.rmi.RemoteException;
 
 public interface MainServerActions extends Remote {
 
+  /**
+   * This method is used to transmit a main command to the server.
+   * @param command the command to be sent
+   * @throws RemoteException
+   */
   public void send(MainCommand command) throws RemoteException;
 
   /**
@@ -28,5 +33,5 @@ public interface MainServerActions extends Remote {
    * @param clientMainView the client's main view
    * @throws RemoteException
    */
-  void connectToMain(String username, MainViewActions clientMainView) throws RemoteException;
+  void connectToMain(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException;
 }
