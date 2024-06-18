@@ -239,4 +239,16 @@ public class CLITest implements UI {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleAlreadyInLobbyErrorEvent'");
   }
+
+  @Override
+  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
+  }
+
+  @Override
+  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
+  }
 }
