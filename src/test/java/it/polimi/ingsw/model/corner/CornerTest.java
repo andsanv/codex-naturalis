@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.corner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import it.polimi.ingsw.model.common.Items;
@@ -29,21 +30,23 @@ public class CornerTest {
     Corner corner1;
     Corner corner2;
 
+    
     corner1 = new Corner(Resources.ANIMAL, CornerTypes.VISIBLE);
     corner2 = new Corner(Resources.ANIMAL, CornerTypes.VISIBLE);
     assertEquals(corner1, corner2);
 
-    corner1 = new Corner(null, CornerTypes.VISIBLE);
-    corner2 = new Corner(null, CornerTypes.VISIBLE);
-    assertEquals(corner1, corner2);
-
-    corner1 = new Corner(Items.MANUSCRIPT, CornerTypes.HIDDEN);
-    corner2 = new Corner(Items.MANUSCRIPT, CornerTypes.HIDDEN);
-    assertEquals(corner1, corner2);
+    corner1 = new Corner(Resources.ANIMAL, CornerTypes.VISIBLE);
+    corner2 = new Corner(Resources.ANIMAL, CornerTypes.HIDDEN);
+    assertNotEquals(corner1, corner2);
 
     corner1 = new Corner(Resources.PLANT, CornerTypes.COVERED);
-    corner2 = new Corner(Resources.PLANT, CornerTypes.COVERED);
-    assertEquals(corner1, corner2);
+    corner2 = new Corner(Resources.ANIMAL, CornerTypes.COVERED);
+    assertNotEquals(corner1, corner2);
+
+    assertNotEquals(corner1, null);
+    assertNotEquals(corner1, false);
+
+    assertEquals(corner1, corner1);
   }
 
   @Test
