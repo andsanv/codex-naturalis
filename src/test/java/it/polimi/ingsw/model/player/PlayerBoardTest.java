@@ -2,7 +2,6 @@ package it.polimi.ingsw.model.player;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import it.polimi.ingsw.distributed.events.game.PlayedCardEvent;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
@@ -146,6 +145,12 @@ class PlayerBoardTest {
 
     assertEquals(starterCard, playerBoard.getCard(new Coords(0, 0)));
     assertEquals(1, playerBoard.board.keySet().size());
+
+    assertEquals(1, playerBoard.cardsPlacementOrder.size());
+    assertTrue(playerBoard.cardsPlacementOrder.containsKey(0));
+    assertEquals(starterCard, playerBoard.cardsPlacementOrder.get(0).first);
+    assertEquals(starterCardSide, playerBoard.cardsPlacementOrder.get(0).first.getPlayedSide());
+    assertEquals(new Coords(0,0), playerBoard.cardsPlacementOrder.get(0).second);
   }
 
   @Test
@@ -178,13 +183,14 @@ class PlayerBoardTest {
   void placeCardTest() {
     assertEquals(CornerTypes.VISIBLE, playerBoard.getCard(new Coords(0,0)).getActiveCorners().get(CornerPosition.TOP_RIGHT).type);
     
-    PlayedCardEvent event = playerBoard.placeCard(playerToken, new Coords(1,1), firstResourceCard, CardSide.FRONT);
-    assertEquals(playerToken, event.senderToken);
-    assertEquals(firstResourceCard.id, event.playedCardId);
-    assertEquals(CardSide.FRONT, event.playedCardSide);
-    assertEquals(new Coords(1,1), event.playedCardCoordinates);
+    playerBoard.placeCard(playerToken, new Coords(1,1), firstResourceCard, CardSide.FRONT);
     assertEquals(firstResourceCard, playerBoard.getCard(new Coords(1,1)));
     assertEquals(CornerTypes.COVERED, playerBoard.getCard(new Coords(0,0)).getActiveCorners().get(CornerPosition.TOP_RIGHT).type);
+    assertTrue(playerBoard.cardsPlacementOrder.containsKey(1));
+    assertEquals(2, playerBoard.cardsPlacementOrder.size());
+    assertEquals(firstResourceCard, playerBoard.cardsPlacementOrder.get(1).first);
+    assertEquals(CardSide.FRONT, playerBoard.cardsPlacementOrder.get(1).first.getPlayedSide());
+    assertEquals(new Coords(1,1), playerBoard.cardsPlacementOrder.get(1).second);
   }
 
   @Test

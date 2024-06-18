@@ -5,6 +5,7 @@ import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.player.*;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -60,11 +61,6 @@ public class GameModel {
    * Score track of the game
    */
   public final ScoreTrack scoreTrack;
-
-  /**
-   * A "simpler" model, that will be sent to clients during their reconnection phase
-   */
-  public SlimGameModel slimGameModel;
 
   /**
    * Model is only created after all players chose their cards.
@@ -138,8 +134,5 @@ public class GameModel {
     this.scoreTrack = new ScoreTrack(initialScores, observers, lastEventId);
 
     this.commonObjectives = new ArrayList<>(commonObjectives);
-
-    // set up the slim game model
-    this.slimGameModel = new SlimGameModel(this, playerTokens, tokenToStarterCard, tokenToCardSide, initialScores);
   }
 }

@@ -11,6 +11,8 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
 import it.polimi.ingsw.model.corner.CornerPosition;
 import it.polimi.ingsw.model.corner.CornerTypes;
+import it.polimi.ingsw.util.Pair;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -31,6 +33,11 @@ public class PlayerBoard extends Observable {
    * Implemented as a map from coordinates to played card.
    */
   public final Map<Coords, PlayableCard> board;
+
+  /**
+   * Map containing information on the order of cards placement.
+   */
+  public final Map<Integer, Pair<PlayableCard, Coords>> cardsPlacementOrder;
 
   /**
    * Number of elements available on the board.
@@ -77,6 +84,10 @@ public class PlayerBoard extends Observable {
         Elements e = corner.element.get();
         playerElements.put(e, playerElements.get(e) + 1);
       }
+
+    this.cardsPlacementOrder = new HashMap<>() {{
+      put(0, new Pair<PlayableCard, Coords>(starterCard, new Coords(STARTER_CARD_COORDINATES.x, STARTER_CARD_COORDINATES.y)));
+    }};
   }
 
   /**
@@ -201,23 +212,23 @@ public class PlayerBoard extends Observable {
   }
 
   /**
-   * Sets the given card at the given position and sets adjacent corners to covered.
+   * Sets the given card at the given position, sets adjacent corners to covered, updates the map with cards placement order.
    *
    * @param playerToken token of the player placing the card
    * @param coords coordinates where to place the card
    * @param card card to place
    * @param cardSide side of the card played
-   * @return an event to signal a card has been placed
    */
-  public PlayedCardEvent placeCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
+  public void placeCard(PlayerToken playerToken, Coords coords, PlayableCard card, CardSide cardSide) {
     card.playSide(cardSide);
     board.put(coords, card);
 
     // playability is already checked, so no HIDDEN corners are present
     adjacentCorners(coords).values().forEach(corner -> corner.type = CornerTypes.COVERED);
 
-    PlayedCardEvent event = new PlayedCardEvent(playerToken, card.id, cardSide, coords);
-    notify(event);
-    return event;
+    notify(new PlayedCardEvent(playerToken, card.id, cardSide, coords));
+
+    Integer index = cardsPlacementOrder.keySet().stream().max(Integer::compare).orElseThrow(null);
+    cardsPlacementOrder.put(index + 1, new Pair<>(card, coords));
   }
 }

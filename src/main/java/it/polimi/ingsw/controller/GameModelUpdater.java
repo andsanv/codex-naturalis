@@ -2,13 +2,18 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.distributed.events.game.*;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.*;
+import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Items;
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.*;
 
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * One of the tree main classes that manage a game.
@@ -49,8 +54,7 @@ public class GameModelUpdater {
     if (card == null || !playerBoard.canPlaceCardAt(coords, card, cardSide)) return false;
 
     playerHand.remove(card);
-    PlayedCardEvent playedCardEvent = playerBoard.placeCard(playerToken, coords, card, cardSide);
-    gameModel.slimGameModel.addPlayedCard(playedCardEvent);
+    playerBoard.placeCard(playerToken, coords, card, cardSide);
 
     playerBoard.updatePlayerElements(playerToken, coords);
 
@@ -175,6 +179,80 @@ public class GameModelUpdater {
 
     playerHand.add(card.get());
     return true;
+  }
+
+  /**
+   * Builds a SlimGameModel to send to a player who just reconnected to the game.
+   * 
+   * @return the SlimGameModel
+   */
+  public SlimGameModel getSlimGameModel() {
+    Map<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> tokenToPlayedCards = gameModel.tokenToPlayer.entrySet().stream()
+      .collect(Collectors.toMap(
+        x -> x.getKey(),
+        x -> x.getValue().playerBoard.cardsPlacementOrder.entrySet().stream().collect(Collectors.toMap(
+          y -> y.getKey(),
+          y -> new Trio<>(
+            y.getValue().first.id,
+            y.getValue().first.getPlayedSide(),
+            new Coords(y.getValue().second.x, y.getValue().second.y)
+          )
+        ))
+      ));
+
+    Map<PlayerToken, Trio<Integer, Integer, Integer>> tokenToHand = gameModel.tokenToPlayer.entrySet().stream()
+      .collect(Collectors.toMap(
+        Map.Entry::getKey,
+        x -> new Trio<>(
+          x.getValue().playerHand.getCards().get(0) != null ? x.getValue().playerHand.getCards().get(0).id : null,
+          x.getValue().playerHand.getCards().get(1) != null ? x.getValue().playerHand.getCards().get(1).id : null,
+          x.getValue().playerHand.getCards().get(2) != null ? x.getValue().playerHand.getCards().get(2).id : null
+        )
+      ));
+
+    Map<PlayerToken, Map<Elements, Integer>> tokenToElements = gameModel.tokenToPlayer.entrySet().stream()
+      .collect(Collectors.toMap(
+        Map.Entry::getKey,
+        x -> new HashMap<Elements, Integer>(x.getValue().playerBoard.playerElements)
+      ));
+
+    Map<PlayerToken, Integer> tokenToSecretObjective = gameModel.tokenToPlayer.entrySet().stream()
+      .collect(Collectors.toMap(
+        Map.Entry::getKey,
+        x -> x.getValue().secretObjective.id
+      ));
+    
+    List<Integer> commonObjectives = gameModel.commonObjectives.stream().map(x -> x.id).collect(Collectors.toList());
+
+    List<Pair<Boolean, Resources>> decks = Arrays.asList(gameModel.resourceCardsDeck, gameModel.goldCardsDeck, gameModel.starterCardsDeck, gameModel.objectiveCardsDeck).stream()
+      .map(
+        x -> new Pair<>(x.isEmpty(), x.getNextCardSeed().orElse(null))
+      )
+      .collect(Collectors.toList());
+
+    Pair<Integer,Integer> visibleResourceCardsList = new Pair<>(
+      gameModel.visibleResourceCards.getCards().get(0) != null ? gameModel.visibleResourceCards.getCards().get(0).id : null,
+      gameModel.visibleResourceCards.getCards().get(1) != null ? gameModel.visibleResourceCards.getCards().get(1).id : null
+    );
+
+    Pair<Integer,Integer> visibleGoldCardsList = new Pair<>(
+      gameModel.visibleGoldCards.getCards().get(0) != null ? gameModel.visibleGoldCards.getCards().get(0).id : null,
+      gameModel.visibleGoldCards.getCards().get(1) != null ? gameModel.visibleGoldCards.getCards().get(1).id : null
+    );
+
+    Map<PlayerToken, Integer> scores = gameModel.scoreTrack.getScores();
+
+    return new SlimGameModel(
+      tokenToPlayedCards,
+      tokenToHand,
+      tokenToElements,
+      tokenToSecretObjective,
+      commonObjectives,
+      decks,
+      visibleResourceCardsList,
+      visibleGoldCardsList,
+      scores
+    );
   }
 
   /**
