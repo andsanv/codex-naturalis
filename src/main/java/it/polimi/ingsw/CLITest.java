@@ -70,16 +70,6 @@ public class CLITest implements UI {
   }
 
   @Override
-  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
-
-  }
-
-  @Override
-  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
-
-  }
-
-  @Override
   public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
 
   }

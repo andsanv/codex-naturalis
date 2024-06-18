@@ -43,4 +43,9 @@ public interface MainEventHandler {
    * This method handles the reconnection to an active game
    */
   public void handleReconnetionToGame();
+
+  /**
+   * This method is called when the user tries to join a lobby or create one while being in another.
+   */
+  public void handleAlreadyInLobbyErrorEvent();
 }
