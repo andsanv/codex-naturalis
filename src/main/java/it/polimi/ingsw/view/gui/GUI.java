@@ -1,9 +1,22 @@
 package it.polimi.ingsw.view.gui;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.card.CardSide;
+import it.polimi.ingsw.model.common.Elements;
+import it.polimi.ingsw.model.common.Resources;
+import it.polimi.ingsw.model.player.Coords;
+import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.view.UI;
+import it.polimi.ingsw.view.gui.controllers.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +36,8 @@ import java.io.IOException;
 
 public class GUI extends Application {
     private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+
+    public Controller currentController;
 
     public static void main(String[] args) {
         launch(args);
@@ -119,6 +134,4 @@ public class GUI extends Application {
             e.printStackTrace();
         }
     }
-
-
 }
