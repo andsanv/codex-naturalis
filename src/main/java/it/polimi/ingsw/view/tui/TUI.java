@@ -276,7 +276,7 @@ public class TUI implements UI {
 
                 if (command.equalsIgnoreCase("yes")) {
                     waitingUserInfo.set(true);
-
+                    
                     // Attempt connection to the server
                     connectionHandler.reconnect();
                     displayLoadingMessage("Logging in", waitingUserInfo);

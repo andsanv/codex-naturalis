@@ -63,7 +63,7 @@ public class SocketServer {
               while (true) {
                 try {
                   Socket socket = serverSocket.accept();
-                  System.out.println("New connection from " + socket.getInetAddress());
+                  System.out.println("New connection from " + socket.getInetAddress() + ":" + socket.getPort());
                   
                   ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                   out.flush();

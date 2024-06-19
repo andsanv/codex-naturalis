@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.Config;
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
@@ -12,6 +13,7 @@ import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.events.main.RefusedConnectionEvent;
+import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.view.UI;
 
 import java.io.IOException;
@@ -72,7 +74,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
               while (true) {
                 try {
                   Event event = (Event) inputStream.readObject();
-                  // System.out.println("Received event: " + event);
+                  //System.out.println("Received event: " + event);
                   
                   if(event instanceof KeepAliveEvent) {
                     ;
@@ -108,6 +110,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
    */
   @Override
   public boolean sendToMainServer(MainCommand command) {
+    System.out.println("Sending command to main server");
     if(userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand) && !(command instanceof ConnectionCommand)) {
       //System.err.println("User info is null");
       return false;
@@ -156,15 +159,19 @@ public class SocketConnectionHandler extends ConnectionHandler {
    */
   @Override
   public boolean reconnect() {
+    this.close();
+    
     ReconnectionCommand reconnectionCommand = new ReconnectionCommand(userInterface.getUserInfo());
     
     try {
       socket = new Socket(Config.ServerIP, Config.MainSocketPort);
+      System.out.println(socket);
 
       this.outputStream = new ObjectOutputStream(socket.getOutputStream());
       this.outputStream.flush();
 
       this.inputStream = new ObjectInputStream(socket.getInputStream());
+
 
       sendToMainServer(reconnectionCommand);
 
@@ -231,7 +238,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
         createListenerThread();
         
       }).start();      
-      
+
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("Failed to reconnect to server");

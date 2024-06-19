@@ -115,11 +115,14 @@ public class RMIConnectionHandler extends ConnectionHandler {
     } else if (mainCommand instanceof ReconnectionCommand) {
       try {
         this.clientMainView = new RMIMainView(userInterface);
-
-        UserInfo oldUserInfo = userInterface.getUserInfo();
         
         System.out.println(this.clientMainView);
         mainServerActions.reconnect(((ReconnectionCommand) mainCommand).userInfo, this.clientMainView);
+
+        try {
+          Thread.sleep(500);
+        } catch (InterruptedException e) {
+        }
 
       } catch (RemoteException e) {
         e.printStackTrace();
@@ -164,7 +167,6 @@ public class RMIConnectionHandler extends ConnectionHandler {
   @Override
   public boolean reconnect() {
     ReconnectionCommand reconnectionCommand = new ReconnectionCommand(userInterface.getUserInfo());
-    System.out.println(3);
     return sendToMainServer(reconnectionCommand);
   }
 

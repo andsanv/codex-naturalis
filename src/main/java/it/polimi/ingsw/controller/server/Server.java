@@ -234,7 +234,7 @@ public enum Server {
                     if (entry.getValue().first instanceof ClientHandler) {
                     ClientHandler client = (ClientHandler) entry.getValue().first;
                     client.setGameFlowManager(gameFlowManager);
-                  } else if (entry.getValue().first instanceof MainViewActions) {
+                  } else if (entry.getValue().first instanceof RMIMainView) {
                     RMIGameServer gameServer = new RMIGameServer(gameFlowManager, "gameServer" + lobbyId);
                     RMIMainView client = (RMIMainView) entry.getValue().first;
                     client.setGameServer(gameServer);
@@ -301,12 +301,12 @@ public enum Server {
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
     System.out.println(clientMainView);
-    if(playersInMenu.keySet().contains(userInfo)) {
+    if(playersInMenu.containsKey(userInfo)) {
       MainViewActions oldMainViewActions = connectedPlayers.get(userInfo).first;
       AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
-      atomicBoolean.set(true);
       
       connectedPlayers.put(userInfo, new Pair<MainViewActions,AtomicBoolean>(clientMainView, atomicBoolean));
+      atomicBoolean.set(true);
       
       try {
         if(playersInMenu.get(userInfo))
@@ -326,11 +326,8 @@ public enum Server {
         e.printStackTrace();
       }
     } else {
-      try {
-        clientMainView.receiveEvent(new RefusedConnectionEvent());
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      System.out.println("Error: User not found in recent sessions, assigning new user");
+      addConnectedClient(userInfo.name, clientMainView);
     }
   }
 
