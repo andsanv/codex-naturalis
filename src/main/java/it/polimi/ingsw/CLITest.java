@@ -1,5 +1,9 @@
 package it.polimi.ingsw;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
@@ -11,11 +15,6 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.UI;
-
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class CLITest implements UI {
   private UserInfo userInfo = null;
@@ -241,13 +240,15 @@ public class CLITest implements UI {
   }
 
   @Override
-  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+      Optional<Resources> nextCardSeed, int handIndex) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
   }
 
   @Override
-  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+      Optional<Resources> nextCardSeed, int handIndex) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
   }

@@ -13,157 +13,199 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * This interface represents the game event handler, which is used to handle the game events coming from the server.
+ * This interface represents the game event handler, which is used to handle the
+ * game events coming from the server.
  * This interface is implemented by the UI abstract class.
  */
 public interface GameEventHandler {
 
-    /**
-     * This method handles the received update of the score track
-     * @param senderToken the player token to which the score update refers
-     * @param score the new score of the player
-     */
-  public void handleScoreTrackEvent(PlayerToken senderToken, int score);
+   /**
+    * This method handles the received update of the score track
+    * 
+    * @param senderToken the player token to which the score update refers
+    * @param score       the new score of the player
+    */
+   public void handleScoreTrackEvent(PlayerToken senderToken, int score);
 
-  /**
-   * This method handles the received update of a played card
-   * @param playerToken the player token which played the card
-   * @param playedCardId the id of the played card
-   * @param playedCardSide the side of the played card
-   * @param playedCardCoordinates the coordinates of the played card
-   */
-  public void handlePlayedCardEvent(
-      PlayerToken playerToken,
-      int playedCardId,
-      CardSide playedCardSide,
-      Coords playedCardCoordinates);
+   /**
+    * This method handles the received update of a played card
+    * 
+    * @param playerToken           the player token which played the card
+    * @param playedCardId          the id of the played card
+    * @param playedCardSide        the side of the played card
+    * @param playedCardCoordinates the coordinates of the played card
+    */
+   public void handlePlayedCardEvent(
+         PlayerToken playerToken,
+         int playedCardId,
+         CardSide playedCardSide,
+         Coords playedCardCoordinates);
 
-    /**
-     * This method handles the received update of a drawn card from the gold deck
-     * @param playerToken the player token which drew the card
-     * @param drawnCardId the id of the drawn card
-     */
-  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId);
+   /**
+    * This method handles the received update of a drawn card from the gold deck
+    * 
+    * @param playerToken  the token of the player who draws the card from the gold
+    *                     deck
+    * @param drawnCardId  the drawn card id
+    * @param deckEmptied  a flag that is true if the deck is now empty, false
+    *                     otherwise
+    * @param nextCardSeed the seed of the next card; it is an empty optional if
+    *                     there is no next card
+    * @param handIndex    the position (0,1,2) of the drawn card in the player hand
+    */
+   public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+         Optional<Resources> nextCardSeed, int handIndex);
 
-  /**
-   * This method handles the received update of a drawn card from the resource deck
-   * @param playerToken the player token which drew the card
-   * @param drawnCardId the id of the drawn card
-   */
-  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId);
+   /**
+    * This method handles the received update of a drawn card from the resource
+    * deck
+    * 
+    * @param playerToken  the player token which drew the card
+    * @param drawnCardId  the id of the drawn card
+    * @param deckEmptied  a flag that is true if the deck is now empty, false
+    *                     otherwise
+    * @param nextCardSeed the seed of the next card; it is an empty optional if
+    *                     there is no next card
+    * @param handIndex    the position (0,1,2) of the drawn card in the player hand
+    */
+   public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+         Optional<Resources> nextCardSeed, int handIndex);
 
-    /**
-     * This method handles the received update of a drawn card from the visible resource deck
-     * @param playerToken the player token which drew the card
-     * @param drawnCardPosition the position of the drawn card between the visibles
-     * @param drawnCardId the id of the drawn card
-     */
-  public void handleDrawnVisibleResourceCardEvent(
-      PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex);
+   /**
+    * This method handles the received update of a drawn card from the visible
+    * resource deck
+    * 
+    * @param playerToken       the player token which drew the card
+    * @param drawnCardPosition the position of the drawn card between the visibles
+    * @param drawnCardId       the id of the drawn card
+    */
+   public void handleDrawnVisibleResourceCardEvent(
+         PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId,
+         boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex);
 
-  public void handleDrawnVisibleGoldCardEvent(
-          PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex);
+   public void handleDrawnVisibleGoldCardEvent(
+         PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId,
+         boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex);
 
-    /**
-     * This method handles the received update of a drawn card from the starter deck
-     * @param playerToken the player token which drew the card
-     * @param drawnCardId the id of the drawn card
-     */
-  public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId);
+   /**
+    * This method handles the received update of a drawn card from the starter deck
+    * 
+    * @param playerToken the player token which drew the card
+    * @param drawnCardId the id of the drawn card
+    */
+   public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId);
 
-    /**
-     * This method handles the received update of the chosen side of a starter card
-     * @param playerToken the player token which chose the side
-     * @param cardSide the chosen side
-     */
-  public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide);
+   /**
+    * This method handles the received update of the chosen side of a starter card
+    * 
+    * @param playerToken the player token which chose the side
+    * @param cardSide    the chosen side
+    */
+   public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide);
 
-    /**
-     * This method handles the received update about the end of the starter card drawn phase
-     */
-  public void handleEndedStarterCardPhaseEvent();
+   /**
+    * This method handles the received update about the end of the starter card
+    * drawn phase
+    */
+   public void handleEndedStarterCardPhaseEvent();
 
-    /**
-     * This method handles the received update of the drawn cards from the objective deck
-     * @param playerToken the player token which drew the cards
-     * @param firstDrawnCardId the id of the first drawn card
-     * @param secondDrawnCardId the id of the second drawn card
-     */
-  public void handleDrawnObjectiveCardsEvent(
-      PlayerToken playerToken, int drawnCardId, int secondDrawnCardId);
+   /**
+    * This method handles the received update of the drawn cards from the objective
+    * deck
+    * 
+    * @param playerToken       the player token which drew the cards
+    * @param firstDrawnCardId  the id of the first drawn card
+    * @param secondDrawnCardId the id of the second drawn card
+    */
+   public void handleDrawnObjectiveCardsEvent(
+         PlayerToken playerToken, int drawnCardId, int secondDrawnCardId);
 
-    /**
-     * This method handles the received update of the chosen objective card
-     * @param playerToken the player token which chose the card
-     * @param chosenCardId the id of the chosen card
-     */
-  public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId);
+   /**
+    * This method handles the received update of the chosen objective card
+    * 
+    * @param playerToken  the player token which chose the card
+    * @param chosenCardId the id of the chosen card
+    */
+   public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId);
 
-    /**
-     * This method handles the received update about the end of the objective card drawn phase
-     */
-  public void handleEndedObjectiveCardPhaseEvent();
+   /**
+    * This method handles the received update about the end of the objective card
+    * drawn phase
+    */
+   public void handleEndedObjectiveCardPhaseEvent();
 
-    /**
-     * This method handles the received update about the drawn common objective cards
-     * @param firstCommonObjectiveId the id of the first common objective card
-     * @param secondCommonObjectiveId the id of the second common objective card
-     */
-  public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId);
+   /**
+    * This method handles the received update about the drawn common objective
+    * cards
+    * 
+    * @param firstCommonObjectiveId  the id of the first common objective card
+    * @param secondCommonObjectiveId the id of the second common objective card
+    */
+   public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId);
 
-    /**
-     * This method handles the received update about a direct player to player message
-     * @param senderToken the player token which sent the message
-     * @param receiverToken the player token which receive the message
-     * @param message the content of the message
-     */
-  public void handleDirectMessageEvent(
-      PlayerToken senderToken, PlayerToken receiverToken, String message);
+   /**
+    * This method handles the received update about a direct player to player
+    * message
+    * 
+    * @param senderToken   the player token which sent the message
+    * @param receiverToken the player token which receive the message
+    * @param message       the content of the message
+    */
+   public void handleDirectMessageEvent(
+         PlayerToken senderToken, PlayerToken receiverToken, String message);
 
-    /**
-     * This method handles the received update about a group message
-     * @param senderToken the player token which sent the message
-     * @param message the content of the message
-     */
-  public void handleGroupMessageEvent(PlayerToken senderToken, String message);
+   /**
+    * This method handles the received update about a group message
+    * 
+    * @param senderToken the player token which sent the message
+    * @param message     the content of the message
+    */
+   public void handleGroupMessageEvent(PlayerToken senderToken, String message);
 
-    /**
-     * This method handles the received update about the start of the game
-     * @param player the player which chose the token
-     * @param assignedToken the token assigned to the player
-     */
-  public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken);
+   /**
+    * This method handles the received update about the start of the game
+    * 
+    * @param player        the player which chose the token
+    * @param assignedToken the token assigned to the player
+    */
+   public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken);
 
-  /**
-   * This method handles the received update about the end of the token selection phase
-   */
-  public void handleEndedTokenPhaseEvent();
+   /**
+    * This method handles the received update about the end of the token selection
+    * phase
+    */
+   public void handleEndedTokenPhaseEvent();
 
-  // TODO: change name to the method. It is not clear what it does
-  public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId);
+   // TODO: change name to the method. It is not clear what it does
+   public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId);
 
-  // TODO: change method name
-  public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources);
+   // TODO: change method name
+   public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources);
 
-  /**
-   * This method handles the received update about a generic game error
-   * @param error
-   */
-  public void handleGameError(String error);
+   /**
+    * This method handles the received update about a generic game error
+    * 
+    * @param error
+    */
+   public void handleGameError(String error);
 
-  /**
-   * This method handles the received update about the results of the game
-   * @param gameResults this list constains the information about the game
-   */
-  public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults);
+   /**
+    * This method handles the received update about the results of the game
+    * 
+    * @param gameResults this list constains the information about the game
+    */
+   public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults);
 
-  /**
-   * This method handles the received event about the possible coordinates where a card can the placed
-   * @param playerToken the player token which can place the card
-   * @param availableSlots the list of the available slots
-   * @param cardsPlayability the map of the cards playability
-   */
-  public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability);
+   /**
+    * This method handles the received event about the possible coordinates where a
+    * card can the placed
+    * 
+    * @param playerToken      the player token which can place the card
+    * @param availableSlots   the list of the available slots
+    * @param cardsPlayability the map of the cards playability
+    */
+   public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
+         Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability);
 
-  public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints);
+   public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints);
 }

@@ -1,11 +1,10 @@
 package it.polimi.ingsw.distributed.events.game;
 
+import java.util.Optional;
+
 import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.PlayerToken;
-
-import javax.swing.text.html.Option;
-import java.util.Optional;
 
 /**
  * Event to signal that a card has been drawn from visible gold cards.
@@ -20,13 +19,16 @@ public final class DrawnVisibleGoldCardEvent extends GameEvent {
   private final int handIndex;
 
   /**
-   * @param playerToken the token of the player that draws the card
-   * @param drawnCardPosition the drawn card position in the visible resource cards
-   * @param drawnCardId the id of the drawn card
+   * @param playerToken       the token of the player that draws the card
+   * @param drawnCardPosition the drawn card position in the visible resource
+   *                          cards
+   * @param drawnCardId       the id of the drawn card
    * @param replacementCardId the id of the replacement card
-   * @param emptiedDeck true if deck was emptied drawing the replacement card, false otherwise
-   * @param nextCardSeed seed of the next card
-   * @param handIndex index of the playerHand where drawn card will be placed
+   * @param emptiedDeck       true if deck was emptied drawing the replacement
+   *                          card, false otherwise
+   * @param nextCardSeed      seed of the next card
+   * @param handIndex         index of the playerHand where drawn card will be
+   *                          placed
    */
   public DrawnVisibleGoldCardEvent(
       PlayerToken playerToken,
@@ -35,8 +37,7 @@ public final class DrawnVisibleGoldCardEvent extends GameEvent {
       Optional<Integer> replacementCardId,
       boolean emptiedDeck,
       Optional<Resources> nextCardSeed,
-      int handIndex
-  ) {
+      int handIndex) {
     this.playerToken = playerToken;
     this.drawnCardPosition = drawnCardPosition;
     this.drawnCardId = drawnCardId;
@@ -55,7 +56,6 @@ public final class DrawnVisibleGoldCardEvent extends GameEvent {
         replacementCardId,
         emptiedDeck,
         nextCardSeed,
-        handIndex
-    );
+        handIndex);
   }
 }

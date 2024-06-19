@@ -15,10 +15,17 @@ public final class DrawnResourceDeckCardEvent extends GameEvent {
   private final int handIndex;
 
   /**
-   * @param playerToken the token of the player who draws the card from the resource deck
-   * @param drawnCardId the drawn card id
+   * @param playerToken  the token of the player who draws the card from the
+   *                     resource deck
+   * @param drawnCardId  the drawn card id
+   * @param deckEmptied  a flag that is true if the deck is now empty, false
+   *                     otherwise
+   * @param nextCardSeed the seed of the next card; it is an empty optional if
+   *                     there is no next card
+   * @param handIndex    the position (0,1,2) of the drawn card in the player hand
    */
-  public DrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+  public DrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+      Optional<Resources> nextCardSeed, int handIndex) {
     this.playerToken = playerToken;
     this.drawnCardId = drawnCardId;
     this.deckEmptied = deckEmptied;

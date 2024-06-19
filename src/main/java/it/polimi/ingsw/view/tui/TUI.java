@@ -276,7 +276,7 @@ public class TUI implements UI {
 
                 if (command.equalsIgnoreCase("yes")) {
                     waitingUserInfo.set(true);
-                    
+
                     // Attempt connection to the server
                     connectionHandler.reconnect();
                     displayLoadingMessage("Logging in", waitingUserInfo);
@@ -325,18 +325,18 @@ public class TUI implements UI {
         AtomicBoolean reconnected = new AtomicBoolean(false);
 
         System.out.println(ansi().a("Connection to the server lost\n")
-            .fg(YELLOW).a("  exit").reset().a(" to close the game\n")
-            .fg(YELLOW).a("  enter").reset().a(" (or anything else) to attempt reconnection"));
+                .fg(YELLOW).a("  exit").reset().a(" to close the game\n")
+                .fg(YELLOW).a("  enter").reset().a(" (or anything else) to attempt reconnection"));
 
-        while(true) {
+        while (true) {
             prompt();
 
             helperThread.submit(() -> {
                 reconnected.set(this.connectionHandler.reconnect());
             });
             displayLoadingMessage("Reconnecting", waitingReconnectionResult);
-            
-            if(reconnected.get()) {
+
+            if (reconnected.get()) {
                 System.out.println(ansi().fg(GREEN).a("Successfully reconnected"));
 
                 break;
@@ -626,7 +626,7 @@ public class TUI implements UI {
 
     @Override
     public UserInfo getUserInfo() {
-        synchronized(userInfoLock) {
+        synchronized (userInfoLock) {
             return userInfo;
         }
     }
@@ -655,13 +655,15 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Optional<Resources> nextCardSeed, int handIndex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Optional<Resources> nextCardSeed, int handIndex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
     }
