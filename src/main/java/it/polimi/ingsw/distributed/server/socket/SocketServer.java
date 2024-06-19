@@ -98,7 +98,8 @@ public class SocketServer {
                   executorService.submit(connection);
 
                 } catch (Exception e) {
-                  e.printStackTrace();
+                  System.err.println("Error while accepting client: " + e.getMessage());
+                  
                 }
               }
             })
