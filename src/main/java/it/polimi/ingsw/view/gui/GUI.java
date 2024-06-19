@@ -4,13 +4,11 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import it.polimi.ingsw.view.gui.controllers.MainMenu;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -23,11 +21,8 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 
-public class Gui extends Application {
-
-
-
-    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+public class GUI extends Application {
+    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
 
     public static void main(String[] args) {
         launch(args);
@@ -36,18 +31,17 @@ public class Gui extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/gui.fxml"));
-            Parent root = fxmlLoader.load(); // Load the FXML file
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/configView.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
 
-            Scene scene = new Scene(root);
             primaryStage.setScene(scene);
+            primaryStage.setTitle("Codex Naturalis");
             primaryStage.show();
 
             initialize(); // Call initialize after the FXML is loaded
 
             ServerEventHandlerTask serverEventHandlerTask = new ServerEventHandlerTask();
             executorService.submit(serverEventHandlerTask);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,9 +49,10 @@ public class Gui extends Application {
 
     @Override
     public void stop() throws Exception {
-        super.stop();
         // shut down the executor service so that the application can exit
         executorService.shutdownNow();
+
+        super.stop();
     }
 
     @FXML

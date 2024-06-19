@@ -11,24 +11,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Objects;
 
-public class MainMenu {
-
-    @FXML
-    private Button createGame;
-
-    @FXML
-    private Button joinGame;
-
-    @FXML
-    private Button back;
-
-    @FXML
-    private VBox menuPane;
-
-    @FXML
-    private Text helloText;
+public class MainMenuController {
+    @FXML private Button createGame;
+    @FXML private Button joinGame;
+    @FXML private Button back;
+    @FXML private VBox menuPane;
+    @FXML private Text helloText;
 
 
     public void Setup(String text) {
@@ -42,7 +31,7 @@ public class MainMenu {
     @FXML
     void handleBackButtonClick(MouseEvent event) throws IOException {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/gui.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/configView.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
