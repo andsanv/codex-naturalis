@@ -1,0 +1,8 @@
+/* CSS Styles */
+.menuPane {
+    -fx-background-color: #ede4bc;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: black; /* Border color */
+    -fx-border-width: 3; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}

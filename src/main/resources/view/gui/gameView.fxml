@@ -1,43 +1,277 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameView2">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameView">
    <children>
-      <BorderPane prefHeight="1080.0" prefWidth="1920.0" AnchorPane.rightAnchor="0.0">
-         <bottom>
-            <HBox prefHeight="300.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-         </bottom>
-         <top>
-            <HBox prefHeight="150.0" prefWidth="300.0" BorderPane.alignment="CENTER" />
-         </top>
-         <left>
-            <VBox prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-         </left>
-         <right>
-            <VBox prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-         </right>
-         <center>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <children>
-                  <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="630.0" prefViewportHeight="630.0" prefViewportWidth="1520.0" prefWidth="1520.0" vbarPolicy="NEVER">
-                    <content>
-                        <ImageView fx:id="mapView" fitHeight="4000.0" fitWidth="4000.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/grid_cells.png" />
-                           </image>
-                        </ImageView>
-                    </content>
-                  </ScrollPane>
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" prefHeight="1080.0" prefWidth="1920.0" vbarPolicy="NEVER">
+         <content>
+            <StackPane fx:id="stackPane" maxHeight="1800" maxWidth="3350" minHeight="1800" minWidth="3350" prefHeight="1800" prefWidth="3350">
+                  <children>
+                        <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" maxHeight="1631.8" maxWidth="3177.5" minHeight="1631.8" minWidth="3177.5" prefHeight="1631.8" prefWidth="3177.5" scaleX="0.2" scaleY="0.2">
+                  </GridPane>
                </children>
-            </AnchorPane>
-         </center>
-      </BorderPane>
+            </StackPane>
+         </content>
+      </ScrollPane>
+      <StackPane prefHeight="0.0" prefWidth="0.0" scaleX="0.5" scaleY="0.5" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <HBox fx:id="playerHand" alignment="CENTER" prefHeight="500.0" prefWidth="1684.0" scaleX="0.5" scaleY="0.5" spacing="10.0" AnchorPane.bottomAnchor="-100.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+               <children>
+                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Button>
+                  <StackPane fx:id="firstHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+                     <children>
+                        <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../images/cards/fronts/0.png" />
+                        </ImageView>
+                     </children>
+                  </StackPane>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+               <children>
+                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Button>
+                <StackPane fx:id="secondHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+                 <children>
+                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                   <Image url="@../../images/cards/fronts/10.png" />
+                  </ImageView>
+                 </children>
+                </StackPane>
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+               <children>
+                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Button>
+                <StackPane fx:id="thirdHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+                 <children>
+                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
+                   <Image url="@../../images/cards/fronts/20.png" />
+                  </ImageView>
+                 </children>
+                </StackPane>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <VBox fx:id="secObjPane" alignment="CENTER" fillWidth="false" prefHeight="100.0" prefWidth="100.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Text>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/96.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox fx:id="decksPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" scaleX="0.75" scaleY="0.75" spacing="15.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="-20.0" AnchorPane.topAnchor="200.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Decks">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Text>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/backs/40.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/backs/65.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/18.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/64.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/5.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/55.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox fx:id="itemsPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="83.0" prefWidth="978.0" AnchorPane.leftAnchor="600.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="25.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/animal.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" HBox.hgrow="NEVER">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="859.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="NEVER">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/fungi.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="970.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/insect.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="1081.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/plant.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="748.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/quill.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="1303.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/inkwell.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="1414.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/icons/manuscript.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                     <font>
+                        <Font size="38.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <VBox fx:id="playerListPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" AnchorPane.bottomAnchor="200.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="200.0" />
+      <VBox fx:id="commObjPane" alignment="CENTER" fillWidth="false" layoutX="110.0" layoutY="806.0" prefHeight="100.0" prefWidth="100.0" scaleX="0.8" scaleY="0.8" spacing="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" Common Objectives">
+               <font>
+                  <Font size="32.0" />
+               </font>
+            </Text>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/96.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../images/cards/fronts/98.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+            <Button fx:id="startButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#openPopupButton" text="Start" />
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

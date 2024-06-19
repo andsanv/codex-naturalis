@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -89,6 +90,8 @@ public class Gui extends Application {
                 mainMenu.Setup(nickname);
                 Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
                 Scene scene = new Scene(root);
+                String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
+                scene.getStylesheets().add(url);
                 stage.setScene(scene);
                 stage.show();
             }
@@ -109,6 +112,8 @@ public class Gui extends Application {
                     mainMenu.Setup(nickname);
                     Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
                     Scene scene = new Scene(root);
+                    String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
+                    scene.getStylesheets().add(url);
                     stage.setScene(scene);
                     stage.show();
                 }

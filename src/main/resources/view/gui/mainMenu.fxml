@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../../css/mainMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MainMenu">
@@ -22,15 +24,20 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <VBox fx:id="menuPane" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <Text fx:id="helloText" strokeType="OUTSIDE" strokeWidth="0.0" text="Ciao" />
+                  <Text fx:id="helloText" stroke="WHITE" strokeType="OUTSIDE" text="Benvenuto ">
+                     <font>
+                        <Font size="15.0" />
+                     </font></Text>
                   <Button fx:id="createGame" mnemonicParsing="false" onMouseClicked="#handleCreateGameButtonClick" text="Create Game" />
-                  <Button fx:id="joinGame" mnemonicParsing="false" text="Join Game" />
-                  <Button fx:id="options" mnemonicParsing="false" text="Options" />
+                  <Button fx:id="joinGame" mnemonicParsing="false" onMouseClicked="#handleJoinGameButtonClick" text="Join Game" />
                </children>
             </VBox>
-            <Button fx:id="back" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleBackButtonClick" text="Back" GridPane.rowIndex="2" />
+            <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleBackButtonClick" text="Back" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets bottom="20.0" left="20.0" />
+               </GridPane.margin></Button>
          </children>
       </GridPane>
    </children>

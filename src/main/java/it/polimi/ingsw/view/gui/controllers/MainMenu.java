@@ -5,12 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainMenu {
 
@@ -21,7 +22,10 @@ public class MainMenu {
     private Button joinGame;
 
     @FXML
-    private Button options;
+    private Button back;
+
+    @FXML
+    private VBox menuPane;
 
     @FXML
     private Text helloText;
@@ -29,11 +33,10 @@ public class MainMenu {
 
     public void Setup(String text) {
         String nickname = text;
-        helloText.setText("Ciao " + nickname + "!");
-    }
+        helloText.setText("Benvenuto " + nickname + "!");
 
-    @FXML
-    private Button back;
+        menuPane.getStyleClass().add("menuPane");
+    }
 
 
     @FXML
@@ -53,10 +56,25 @@ public class MainMenu {
     @FXML
     void handleCreateGameButtonClick(MouseEvent event) throws IOException {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/gameView2.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/createGameMenu.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void handleJoinGameButtonClick(MouseEvent event) throws IOException {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/joinGameMenu.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setTitle("Available Games");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {

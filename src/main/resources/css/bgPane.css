@@ -1,0 +1,58 @@
+/* CSS Styles */
+.itemsPane {
+    -fx-background-color: #ede4bc;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: white; /* Border color */
+    -fx-border-width: 2; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}
+
+.playerListPane {
+    -fx-background-color: #ede4bc;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: white; /* Border color */
+    -fx-border-width: 2; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}
+
+.playerHand {
+    -fx-background-color: #ede4bc;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: white; /* Border color */
+    -fx-border-width: 2; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}
+
+.decksPane {
+    -fx-background-color: #ede4bc;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: white; /* Border color */
+    -fx-border-width: 2; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}
+
+.secObjPane {
+    -fx-background-color: #ede4bc;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: white; /* Border color */
+    -fx-border-width: 2; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}
+
+.commObjPane {
+    -fx-background-color: #ede4bc;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-background-radius: 15; /* Rounded corners for the background */
+    -fx-border-color: white; /* Border color */
+    -fx-border-width: 2; /* Border width */
+    -fx-border-radius: 15; /* Rounded corners for the border */
+}
