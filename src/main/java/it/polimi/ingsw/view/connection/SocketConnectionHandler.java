@@ -74,7 +74,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
           while (true) {
             try {
               Event event = (Event) inputStream.readObject();
-              System.out.println("Received event: " + event);
+              // System.out.println("Received event: " + event);
 
               if (event instanceof KeepAliveEvent) {
                 ;
@@ -115,7 +115,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
     // System.out.println("Sending command to main server");
     if (userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand)
         && !(command instanceof ConnectionCommand)) {
-      System.err.println("User info is null");
+      // System.err.println("User info is null");
       return false;
     }
     try {
@@ -139,7 +139,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
   @Override
   public boolean sendToGameServer(GameCommand command) {
     if (userInterface.getUserInfo() == null) {
-      System.err.println("User info is null");
+      // System.err.println("User info is null");
       return false;
     }
     try {
