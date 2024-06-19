@@ -316,7 +316,7 @@ public enum Server {
               .filter(lobby -> lobby.getUsers().contains(userInfoToUser(userInfo)))
               .findFirst()
               .orElse(null));
-          clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.gameModel.slimGameModel));
+          clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
           
           gameFlowManager.observers.remove(oldMainViewActions);
           gameFlowManager.observers.add(clientMainView);

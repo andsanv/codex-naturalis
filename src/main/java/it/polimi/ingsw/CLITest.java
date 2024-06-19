@@ -70,16 +70,6 @@ public class CLITest implements UI {
   }
 
   @Override
-  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
-
-  }
-
-  @Override
-  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
-
-  }
-
-  @Override
   public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
 
   }
@@ -248,5 +238,17 @@ public class CLITest implements UI {
   public void handleAlreadyInLobbyErrorEvent() {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleAlreadyInLobbyErrorEvent'");
+  }
+
+  @Override
+  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
+  }
+
+  @Override
+  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
   }
 }

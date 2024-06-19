@@ -18,7 +18,7 @@ public class PostGameState extends GameState {
   }
 
   /**
-   * Manages post-game operations.
+   * Manages post-game operations, sending to all clients the results of the game.
    *
    * @return boolean that depends on whether the game ended successfully or not
    */
@@ -31,7 +31,6 @@ public class PostGameState extends GameState {
             .collect(Collectors.toList());
 
     gameFlowManager.notify(new GameResultsEvent(results));
-
     return true;
   }
 }

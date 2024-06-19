@@ -32,9 +32,8 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-// CHANGE FROM USER TO USERINFO
-//
 
 /**
  * This class allows to manage a single game.
@@ -108,7 +107,7 @@ public class GameFlowManager implements Runnable {
   public Boolean isLastRound = false;
 
   /** Time limit for a player to make his move (in seconds) */
-  private final long timeLimit = 60;
+  private final long timeLimit;
 
   /** Boolean used by the timer to tell whether time limit has been reached or not */
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
@@ -125,14 +124,17 @@ public class GameFlowManager implements Runnable {
   public GameState postGameState;
   public GameState currentState;
 
-
   /**
+   * Main constructor for the class.
+   * 
    * @param lobby lobby from which the game was started
    * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
    * @param observers list of observers
    */
-  public GameFlowManager(Lobby lobby, Map<UserInfo, AtomicBoolean> isConnected, List<Observer> observers) {
+  public GameFlowManager(Lobby lobby, Map<UserInfo, AtomicBoolean> isConnected, List<Observer> observers, int timeLimit) {
     this.lobby = lobby;
+    this.users = lobby.getUsers().stream().map(u -> new UserInfo(u)).collect(Collectors.toList());
+
     this.isConnected = isConnected;
 
     this.userInfoToToken = new HashMap<>();
@@ -140,6 +142,7 @@ public class GameFlowManager implements Runnable {
 
     this.observers = observers;
     AtomicInteger lastEventId = new AtomicInteger(0);
+    this.timeLimit = timeLimit;
 
     this.commands = new LinkedBlockingQueue<>();
 
@@ -150,6 +153,17 @@ public class GameFlowManager implements Runnable {
     this.initializationState = new InitializationState(this, decks, observers, lastEventId);
 
     this.currentState = this.tokenSelectionState;
+  }
+
+  /**
+   * Constructor of the class without specifying the time limit. Default time limit set to 60 seconds.
+   * 
+   * @param lobby lobby from which the game was started
+   * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
+   * @param observers list of observers
+   */
+  public GameFlowManager(Lobby lobby, Map<UserInfo, AtomicBoolean> isConnected, List<Observer> observers) {
+    this(lobby, isConnected, observers, 60);
   }
 
   /**
@@ -199,31 +213,48 @@ public class GameFlowManager implements Runnable {
         new TimerTask() {
           @Override
           public void run() {
-            synchronized (timeLimitReached) {
-              timeLimitReached.set(true);
+            timeLimitReached.set(true);
+              
+            synchronized(commands) {
+              commands.notifyAll();
             }
           }
         };
 
     timer.schedule(timeElapsedTask, timeLimit * 1000);
-
+    
     while (true) {
-      if (timeLimitReached.get()) {
-        // time limit reached event
-        break;
-      }
-      if (!isConnected.get(userInfoToToken.keySet().stream().filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow()).get()) {
-          // user not connected event
-          break;
-      }
       synchronized (commands) {
-        if (!commands.isEmpty() && commands.poll().execute(this)) {
+        if(commands.isEmpty()) {
+          try {
+            commands.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+
+        if (timeLimitReached.get()) {
+          // TODO time limit reached event
+          break;
+        }
+        
+        if (!isConnected.get(userInfoToToken.keySet().stream().filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow()).get()) {
+          // TODO user not connected event
+          break;
+        }
+
+        if(commands.isEmpty()) continue;
+
+        if (commands.poll().execute(this)) {
           timer.cancel();
 
           if (currentState.equals(playCardState)) currentState = drawCardState;
           else switchTurn();
 
           return;
+        }
+        else {
+          // TODO cannot execute command event
         }
       }
     }
@@ -279,10 +310,20 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * @return token of the player whose turn it is.
+   * @return token of the player whose turn it is, null if in a state where turns don't exist
    */
   public PlayerToken getTurn() {
-    return userInfoToToken.get(users.get(turn % users.size()));
+    if(currentState.equals(playCardState) || currentState.equals(drawCardState))
+      return userInfoToToken.get(users.get(turn % users.size()));
+
+    return null; 
+  }
+
+  /**
+   * @return the round
+   */
+  public int getRound() {
+    return round;
   }
 
   /**
@@ -299,7 +340,7 @@ public class GameFlowManager implements Runnable {
         round += 1;
       }
     }
-
+    
     turn += 1;
     setState(playCardState);
   }

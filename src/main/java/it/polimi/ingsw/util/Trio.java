@@ -1,5 +1,7 @@
 package it.polimi.ingsw.util;
 
+import java.util.Objects;
+
 /**
  * Utility class, where each object is a pair of three objects.
  *
@@ -35,5 +37,28 @@ public final class Trio<T1, T2, T3> {
         this.first = first;
         this.second = second;
         this.third = third;
+    }
+
+    /**
+     * Override of the Objects::equals method.
+     * 
+     * @param other the object to compare this to
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || other.getClass() != this.getClass()) return false;
+
+
+        Trio<?, ?, ?> otherTrio = (Trio<?, ?, ?>) other;
+        return Objects.equals(this.first, otherTrio.first) && Objects.equals(this.second, otherTrio.second) && Objects.equals(this.third, otherTrio.third);
+    }
+
+    /**
+     * Override of the Objects::hash method.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second, third);
     }
 }

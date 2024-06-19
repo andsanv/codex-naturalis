@@ -2,13 +2,10 @@ package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
-import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
-import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.card.StarterCard;
-import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
@@ -51,10 +48,6 @@ public abstract class GameState {
 
   public boolean playCard(
       PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
-    return false;
-  }
-
-  public boolean getCardsPlayability(PlayerToken playerToken) {
     return false;
   }
 

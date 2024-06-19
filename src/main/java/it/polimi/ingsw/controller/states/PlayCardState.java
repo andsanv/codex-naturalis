@@ -2,7 +2,6 @@ package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.card.CardSide;
-import it.polimi.ingsw.model.card.PlayableCard;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 
@@ -28,15 +27,5 @@ public class PlayCardState extends GameState {
       PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
     return gameFlowManager.getTurn().equals(playerToken)
         && gameModelUpdater.playCard(playerToken, coords, cardId, cardSide);
-  }
-
-  /**
-   * Allows a user to discover at which coordinates he can play the cards in his hand
-   *
-   * @return a boolean that depends on whether the operation was successful or not
-   */
-  @Override
-  public boolean getCardsPlayability(PlayerToken playerToken) {
-    return gameModelUpdater.computeCardsPlayability(playerToken);
   }
 }

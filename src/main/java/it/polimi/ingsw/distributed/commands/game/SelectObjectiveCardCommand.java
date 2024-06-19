@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.player.PlayerToken;
 /**
  * Command to allow a player to choose his objective card during game setup phase.
  */
-public class SelectObjectiveCardCommand {
+public class SelectObjectiveCardCommand extends GameCommand {
   /**
    * Token of the player choosing the objective card.
    */
@@ -22,6 +22,7 @@ public class SelectObjectiveCardCommand {
     this.choice = choice;
   }
 
+  @Override
   public boolean execute(GameFlowManager gameFlowManager) {
     return gameFlowManager.currentState.selectObjectiveCard(playerToken, choice);
   }

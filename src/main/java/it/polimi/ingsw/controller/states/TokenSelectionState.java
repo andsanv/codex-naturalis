@@ -6,7 +6,6 @@ import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.EndedTokenPhaseEvent;
 import it.polimi.ingsw.distributed.events.game.TokenAssignmentEvent;
 import it.polimi.ingsw.model.player.PlayerToken;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * The state represents the game phase where players decide their game tokens
@@ -43,7 +43,6 @@ public class TokenSelectionState extends GameState {
     this.users = users;
 
     this.timeLimit = timeLimit;
-    this.timeLimitReached.set(true);
 
     this.userInfoToToken = new HashMap<>();
   }
@@ -59,7 +58,7 @@ public class TokenSelectionState extends GameState {
   @Override
   public Map<UserInfo, PlayerToken> handleTokenSelection(List<PlayerToken> playerTokens) {
     Timer timer = new Timer();
-
+    
     Queue<GameCommand> commands = gameFlowManager.commands;
 
     TimerTask timeElapsedTask =
@@ -68,38 +67,54 @@ public class TokenSelectionState extends GameState {
           public void run() {
             synchronized (timeLimitReached) {
               timeLimitReached.set(true);
+
+              synchronized(commands) {
+                commands.notifyAll();
+              }
             }
           }
         };
     timer.schedule(timeElapsedTask, timeLimit * 1000);
 
     while (true) {
-      if (!timeLimitReached.get())
-        synchronized (commands) {
-          if (!commands.isEmpty() && commands.poll().execute(gameFlowManager)) {
-            if (userInfoToToken.keySet().size() == users.size()) {
-              timer.cancel();
-              break;
-            }
+      synchronized (commands) {
+        if(commands.isEmpty()) {
+          try {
+            commands.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
         }
-      else {
-        Random random = new Random();
 
-        List<PlayerToken> availableTokens =
-            new ArrayList<>(
-                Arrays.asList(
-                    PlayerToken.RED, PlayerToken.GREEN, PlayerToken.BLUE, PlayerToken.YELLOW));
-        availableTokens.stream().filter(userInfoToToken::containsValue).forEach(availableTokens::remove);
+        if (timeLimitReached.get()) {
+          // TODO time limit reached event
+          Random random = new Random();
 
-        users.stream()
+          List<PlayerToken> availableTokens = Arrays.asList(PlayerToken.RED, PlayerToken.GREEN, PlayerToken.BLUE, PlayerToken.YELLOW)
+            .stream()
+            .filter(x -> !userInfoToToken.containsValue(x))
+            .collect(Collectors.toList());
+
+          users.stream()
             .filter(u -> !userInfoToToken.containsKey(u))
             .forEach(
-                u ->
-                    userInfoToToken.put(
-                        u, availableTokens.get(random.nextInt(availableTokens.size()))));
+                u -> userInfoToToken.put(u, availableTokens.get(random.nextInt(availableTokens.size())))
+            );
 
-        break;
+          break;
+        }
+        
+        if(commands.isEmpty()) continue;
+
+        if (commands.poll().execute(gameFlowManager)) {
+          if (userInfoToToken.keySet().size() == users.size()) {
+            timer.cancel();
+            break;
+          }
+        }
+        else {
+          // cannot execute command event
+        }
       }
     }
 
@@ -122,7 +137,7 @@ public class TokenSelectionState extends GameState {
   public boolean selectToken(UserInfo player, PlayerToken playerToken) {
     synchronized (userInfoToToken) {
       if (userInfoToToken.containsKey(player) || userInfoToToken.containsValue(playerToken)) return false;
-
+      
       userInfoToToken.put(player, playerToken);
       gameFlowManager.notify(new TokenAssignmentEvent(player, playerToken));
       return true;

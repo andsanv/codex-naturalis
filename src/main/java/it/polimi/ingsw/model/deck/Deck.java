@@ -127,4 +127,16 @@ public class Deck<CardType extends Card> extends Observable {
 
     return new Trio<>(Optional.of(card), deck.isEmpty(), nextCardSeed);
   }
+
+  /**
+   * Allows to retrieve the seed of the card at the top of the deck.
+   * 
+   * @return Optional.empty() if deck is empty or CardType does not have a seed, the seed of the top card otherwise
+   */
+  public Optional<Resources> getNextCardSeed() {
+    if (isEmpty()) return Optional.empty();
+    if(deck.peek().getClass() != ResourceCard.class && deck.peek().getClass() != GoldCard.class) return Optional.empty();
+
+    return ((PlayableCard) deck.peek()).type;
+  }
 }

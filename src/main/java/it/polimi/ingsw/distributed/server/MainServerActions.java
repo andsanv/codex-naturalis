@@ -6,8 +6,16 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * This class represents the action that can be performed on the main server.
+ */
 public interface MainServerActions extends Remote {
 
+  /**
+   * This method is used to transmit a main command to the server.
+   * @param command the command to be sent
+   * @throws RemoteException
+   */
   public void send(MainCommand command) throws RemoteException;
 
   /**
@@ -24,7 +32,7 @@ public interface MainServerActions extends Remote {
   /**
    * This method must be called when connecting to the server for the first time.
    *
-   * @param userInfo the client's info
+   * @param username the client's username
    * @param clientMainView the client's main view
    * @throws RemoteException
    */

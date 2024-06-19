@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.ScoreTrack;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.Corner;
@@ -312,5 +313,42 @@ class GameModelUpdaterTest {
     }
 
     assertTrue(gameModelUpdater.anyDeckEmpty());
+  }
+
+  @Test
+  void getSlimGameModel() {
+    Player redPlayer = gameModel.tokenToPlayer.get(PlayerToken.RED);
+    PlayerHand redPlayerHand = redPlayer.playerHand;
+
+    PlayableCard firstResourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
+    gameModelUpdater.playCard(PlayerToken.RED, new Coords(1,1), firstResourceCard.id, CardSide.FRONT);
+    
+    PlayableCard secondResourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
+    gameModelUpdater.playCard(PlayerToken.RED, new Coords(1,-1), secondResourceCard.id, CardSide.FRONT);
+
+    SlimGameModel slimGameModel = gameModelUpdater.getSlimGameModel();
+    
+    slimGameModel.tokenToPlayedCards.containsKey(PlayerToken.RED);
+    assertEquals(3, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).size());
+
+    slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).containsKey(0);
+    assertEquals(gameModel.tokenToPlayer.get(PlayerToken.RED).playerBoard.board.get(new Coords(0,0)).id, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).first);
+    assertEquals(gameModel.tokenToPlayer.get(PlayerToken.RED).playerBoard.board.get(new Coords(0,0)).getPlayedSide(), slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).second);
+    assertEquals(new Coords(0,0), slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).third);
+    
+    slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).containsKey(1);
+    assertEquals(firstResourceCard.id, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).first);
+    assertEquals(CardSide.FRONT, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).second);
+    assertEquals(new Coords(1,1), slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).third);
+
+    slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).containsKey(2);
+    assertEquals(secondResourceCard.id, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(2).first);
+    assertEquals(CardSide.FRONT, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(2).second);
+    assertEquals(new Coords(1,-1), slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(2).third);
+
+    slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).containsKey(0);
+    assertEquals(gameModel.tokenToPlayer.get(PlayerToken.BLUE).playerBoard.board.get(new Coords(0,0)).id, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).first);
+    assertEquals(gameModel.tokenToPlayer.get(PlayerToken.BLUE).playerBoard.board.get(new Coords(0,0)).getPlayedSide(), slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).second);
+    assertEquals(new Coords(0,0), slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).third);
   }
 }

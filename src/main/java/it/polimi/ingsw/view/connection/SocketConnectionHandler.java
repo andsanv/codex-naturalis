@@ -22,12 +22,29 @@ import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * This class is the socket implementation of the ConnectionHandler interface.
+ */
 public class SocketConnectionHandler extends ConnectionHandler {
+  /** 
+   * This is the socket instance used for the communication.
+   */
   private Socket socket;
 
+  /**
+   * These are the input and output streams used to communicate.
+   */
   private ObjectOutputStream outputStream;
   private ObjectInputStream inputStream;
 
+  /**
+   * this constructor creates a new SocketConnectionHandler.
+   * It tries to connect to the server and set the streams.
+   * Then calls the createListenerThread function.
+   * @param userInterface the user interface of the client
+   * @throws UnknownHostException
+   * @throws IOException
+   */
   public SocketConnectionHandler(UI userInterface) throws UnknownHostException, IOException {
     super(userInterface);
 
@@ -44,6 +61,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
     System.out.println("Started listening for events");
   }
 
+  /**
+   * This method keeps listening for events from the server.
+   * Based on the type of the event, it executes the event, except for KeepAliveEvent.
+   * If a problem occurs, the method quits the loop.
+   */
   private void createListenerThread() {
     new Thread(
             () -> {
@@ -78,6 +100,12 @@ public class SocketConnectionHandler extends ConnectionHandler {
         .start();
   }
 
+  /**
+   * This method sends a main command to the main server.
+   * The command can be sent only if the client has a UserInfo assigned to it.polimi.ingsw.view.connection
+   * @param command the command to be sent
+   * @return true if the command was sent successfully, false otherwise
+   */
   @Override
   public boolean sendToMainServer(MainCommand command) {
     if(userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand) && !(command instanceof ConnectionCommand)) {
@@ -95,6 +123,12 @@ public class SocketConnectionHandler extends ConnectionHandler {
     return true;
   }
 
+  /**
+   * This method sends a game command to the server.
+   * The command can be sent only if the client has a UserInfo assigned to it
+   * @param command the command to be sent
+   * @return true if the command was sent successfully, false otherwise
+   */
   @Override
   public boolean sendToGameServer(GameCommand command) {
     if(userInterface.getUserInfo() == null) {
@@ -112,6 +146,14 @@ public class SocketConnectionHandler extends ConnectionHandler {
     return true;
   }
 
+  /**
+   * This method is called when the client wants to try to reconnect to the server.
+   * It sends a ReconnectionCommand to the server and waits for the response.
+   * While waiting, it keeps listening for events and puts them in a queue.
+   * Once received a response event (ReconnectToGameEvent, LobbiesEvent, RefusedConnectionEvent), it executes it.
+   * After that, it executes all the events in the queue and finally calls the createListenerThread function.
+   * @return true if the reconnection was successful, false otherwise
+   */
   @Override
   public boolean reconnect() {
     ReconnectionCommand reconnectionCommand = new ReconnectionCommand(userInterface.getUserInfo());
@@ -189,9 +231,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
         createListenerThread();
         
       }).start();      
-
-      
-
       
     } catch (IOException e) {
       e.printStackTrace();
@@ -202,6 +241,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
     return true;
   }
 
+  /**
+   * This method is used to close the socket and the streams.
+   * @return true if the socket was closed successfully, false otherwise
+   */
   public boolean close() {
     try {
       outputStream.close();

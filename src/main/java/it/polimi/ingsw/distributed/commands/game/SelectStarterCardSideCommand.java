@@ -18,12 +18,12 @@ public class SelectStarterCardSideCommand extends GameCommand {
    */
   private final CardSide cardSide;
 
-  public SelectStarterCardSideCommand(
-      GameFlowManager gameFlowManager, PlayerToken playerToken, CardSide cardSide) {
+  public SelectStarterCardSideCommand(PlayerToken playerToken, CardSide cardSide) {
     this.playerToken = playerToken;
     this.cardSide = cardSide;
   }
 
+  @Override
   public boolean execute(GameFlowManager gameFlowManager) {
     return gameFlowManager.currentState.selectStarterCardSide(playerToken, cardSide);
   }

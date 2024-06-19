@@ -18,9 +18,11 @@ public class DrawResourceDeckCardCommand extends GameCommand {
 
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
-    boolean result = gameFlowManager.currentState.drawResourceDeckCard(playerToken);
-    gameFlowManager.addCommand(new CardsPlayabilityCommand(playerToken));
-
-    return result;
+    if(gameFlowManager.currentState.drawResourceDeckCard(playerToken)) {
+      gameFlowManager.gameModelUpdater.computeCardsPlayability(playerToken);
+      return true;
+    }
+    
+    return false;
   }
 }
