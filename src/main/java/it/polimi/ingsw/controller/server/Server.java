@@ -44,10 +44,9 @@ public enum Server {
   private final Set<User> users;
 
   /**
-   * Links the Virtual Views to their status. The value is true if the client is
-   * in the menu, false
-   * if it's in-game. When the client is in the menu, he receives updates on the
-   * list of lobbies.
+   * Links the Virtual Views to their status.
+   * The value is true if the client is in the menu, false if it's in-game.
+   * When the client is in the menu, he receives updates on the list of lobbies.
    */
   private ConcurrentHashMap<UserInfo, Pair<MainViewActions, AtomicBoolean>> connectedPlayers;
   private ConcurrentHashMap<UserInfo, Boolean> playersInMenu;
@@ -227,8 +226,36 @@ public enum Server {
     synchronized (lobbies) {
       Lobby lobby = lobbies.get(lobbyId);
 
-      if (lobby == null || user != lobby.getManager() || !lobby.startGame())
+      // Try to start the game and save the eventual error message
+      String error = null;
+      if (lobby == null)
+        error = "Could't start game: invalid lobby id";
+      else if (user != lobby.getManager())
+        error = "Could't start game: you are not the leader of the lobby";
+      else if (!lobby.startGame()) {
+        if (lobby.gameStarted)
+          error = "The match has already been started";
+        else
+          error = "Could't start game: not enough players";
+      }
+
+      // If there was an error, send an error event to the client
+      if (error != null) {
+        final String finalError = error;
+        executorService.submit(() -> {
+          System.out.println("Sending error to " + userInfo + ": " + finalError);
+
+          Pair<MainViewActions, AtomicBoolean> client = connectedPlayers.get(userInfo);
+          if (client.second.get()) {
+            try {
+              client.first.receiveEvent(new MainErrorEvent(finalError));
+            } catch (IOException e) {
+              System.err.println("Could not send error message to " + userInfo);
+            }
+          }
+        });
         return false;
+      }
 
       // Aggiungi le view dei giocatori nel costruttore
       List<Observer> observers = connectedPlayers.entrySet().stream()
@@ -379,6 +406,8 @@ public enum Server {
 
     UserInfo userInfo = new UserInfo(user);
 
+    // TODO da mettere in una lambda da passare all'executor service perché
+    // bloccanti
     try {
       clientMainView.receiveEvent(new UserInfoEvent(userInfo));
       clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));

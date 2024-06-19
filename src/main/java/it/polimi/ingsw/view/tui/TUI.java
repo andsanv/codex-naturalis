@@ -27,7 +27,6 @@ import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
-import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.StartGameCommand;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
@@ -235,7 +234,6 @@ public class TUI implements UI {
             String connectionType = prompt();
 
             if (connectionType.equalsIgnoreCase("socket")) {
-                // TODO remove try catch after connection handler is updated
                 try {
                     connectionHandler = new SocketConnectionHandler(this);
                 } catch (Exception e) {
