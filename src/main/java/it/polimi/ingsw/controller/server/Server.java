@@ -22,6 +22,7 @@ import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.AlreadyInLobbyErrorEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.MainErrorEvent;
+import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
@@ -67,7 +68,7 @@ public enum Server {
   }
 
   public void checkConnections() {
-    new Thread(
+    executorService.submit(
         () -> {
           while (true) {
             connectedPlayers.entrySet().stream()
@@ -91,8 +92,7 @@ public enum Server {
               e.printStackTrace();
             }
           }
-        })
-        .start();
+        });
   }
 
   /**
@@ -106,35 +106,30 @@ public enum Server {
    */
   public boolean joinLobby(UserInfo userInfo, int lobbyId) {
     synchronized (lobbies) {
-      if (getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo))) {
-        System.err.println("Error: User already in a lobby");
-
-        try {
-          connectedPlayers.get(userInfo).first.receiveEvent(new AlreadyInLobbyErrorEvent());
-        } catch (IOException e) {
-          e.printStackTrace();
-          return false;
-        }
-      }
-
       Lobby lobby = lobbies.get(lobbyId);
-      System.out.println("joining lobby = " + lobby);
-      System.out.println("joining user = " + userInfo);
 
-      boolean result = lobby != null && lobby.addUser(userInfoToUser(userInfo));
-
-      if (result)
-        broadcastLobbies(getLobbies());
-      else {
-        try {
-          connectedPlayers.get(userInfo).first.receiveEvent(new MainErrorEvent("Error: Couldn't join lobby"));
-        } catch (IOException e) {
-          return result;
+      // Try to add the user to the lobby
+      String error = null;
+      if (getLobbies().stream().anyMatch(l -> l.users.contains(userInfo)))
+        error = "Couldn't join the lobby: you are already in another one";
+      else if (lobby == null)
+        error = "Couldn't join the lobby: the lobby doesn't exist";
+      else if (!lobby.addUser(userInfoToUser(userInfo))) {
+        if (lobby.isFull()) {
+          error = "Couldn't join the lobby: the lobby is full";
+        } else {
+          error = "Couldn't join the lobby: you are already in the lobby";
         }
       }
 
-      return result;
+      // If there was an error, send an error event to the client
+      if (error != null) {
+        sendMainError(userInfo, error);
+        return false;
+      }
 
+      broadcastLobbies(getLobbies());
+      return true;
     }
   }
 
@@ -241,19 +236,7 @@ public enum Server {
 
       // If there was an error, send an error event to the client
       if (error != null) {
-        final String finalError = error;
-        executorService.submit(() -> {
-          System.out.println("Sending error to " + userInfo + ": " + finalError);
-
-          Pair<MainViewActions, AtomicBoolean> client = connectedPlayers.get(userInfo);
-          if (client.second.get()) {
-            try {
-              client.first.receiveEvent(new MainErrorEvent(finalError));
-            } catch (IOException e) {
-              System.err.println("Could not send error message to " + userInfo);
-            }
-          }
-        });
+        sendMainError(userInfo, error);
         return false;
       }
 
@@ -473,5 +456,47 @@ public enum Server {
                     }
                   });
         });
+  }
+
+  /**
+   * Sends an error to the given user if they are in the main menu.
+   * 
+   * @param userInfo the user who will receive the error
+   * @param error    the error message
+   */
+  private void sendMainError(UserInfo userInfo, String error) {
+    executorService.submit(() -> {
+      System.out.println("Sending error to " + userInfo + ": " + error);
+
+      Pair<MainViewActions, AtomicBoolean> client = connectedPlayers.get(userInfo);
+      if (client.second.get()) {
+        try {
+          client.first.receiveEvent(new MainErrorEvent(error));
+        } catch (IOException e) {
+          System.err.println("Could not send error message to " + userInfo);
+        }
+      }
+    });
+  }
+
+  /**
+   * Sends an event to the given user if they are in the main menu.
+   * 
+   * @param userInfo the user who will receive the event
+   * @param event    the event to send
+   */
+  private void sendMainEvent(UserInfo userInfo, MainEvent event) {
+    executorService.submit(() -> {
+      System.out.println("Sending a " + event.getClass().getName() + " to " + userInfo);
+
+      Pair<MainViewActions, AtomicBoolean> client = connectedPlayers.get(userInfo);
+      if (client.second.get()) {
+        try {
+          client.first.receiveEvent(event);
+        } catch (IOException e) {
+          System.err.println("Could not send " + event.getClass().getName() + " to " + userInfo);
+        }
+      }
+    });
   }
 }
