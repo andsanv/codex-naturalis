@@ -1,14 +1,8 @@
-package it.polimi.ingsw.view.tui;
+package it.polimi.ingsw.view.cli;
 
 import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.*;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,11 +11,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import it.polimi.ingsw.model.common.Resources;
 
-import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
@@ -94,15 +86,15 @@ public class TUI implements UI {
         while (running) {
             switch (state) {
                 case HOME:
-                    displayScreenTitle("HOME", CYAN);
+                    CLIPrinter.displayScreenTitle("HOME", CYAN);
                     homeScreen();
                     break;
                 case LOBBY:
-                    displayScreenTitle("LOBBIES", CYAN);
+                    CLIPrinter.displayScreenTitle("LOBBIES", CYAN);
                     lobbyScreen();
                     break;
                 case RECONNECTION:
-                    displayScreenTitle("OFFLINE", RED);
+                    CLIPrinter.displayScreenTitle("OFFLINE", RED);
                 case END:
                 default:
                     running = false;
@@ -113,7 +105,6 @@ public class TUI implements UI {
         // TODO end here or in prompt() (decide between moving to END state or exit(0))
         AnsiConsole.systemUninstall();
     }
-
 
     /**
      * Prints the prompt and reads user input.
@@ -143,27 +134,6 @@ public class TUI implements UI {
         System.exit(0);
     }
 
-    /**
-     * Prints an error message with formatting.
-     * 
-     * @param msg error message
-     */
-    private void displayError(String msg) {
-        System.out.println(ansi().fg(RED).a("ERROR: ").reset().a(msg));
-    }
-
-    /**
-     * Prints a screen title with formatting.
-     * The title can be at most 50 chars long.
-     * 
-     * @param title title to print
-     */
-    private void displayScreenTitle(String title, Ansi.Color color) {
-        int padding = 71 - title.length();
-        System.out.println(ansi().bg(color)
-                .a(" ".repeat(Math.floorDiv(padding, 2)) + title + " ".repeat(Math.ceilDiv(padding, 2))).reset()
-                .a("\n"));
-    }
 
     /**
      * This function is called while waiting for a server event.
@@ -209,7 +179,7 @@ public class TUI implements UI {
                 try {
                     connectionHandler = new SocketConnectionHandler(this);
                 } catch (Exception e) {
-                    displayError(
+                    CLIPrinter.displayError(
                             "The server is currently unavailable, couldn't connect through sockets, please try later.\n");
                     quit();
                 }
@@ -219,13 +189,13 @@ public class TUI implements UI {
                 try {
                     connectionHandler = new RMIConnectionHandler(this);
                 } catch (Exception e) {
-                    displayError(
+                    CLIPrinter.displayError(
                             "The server is currently unavailable, couldn't connect through RMI, please try later.\n");
                     quit();
                 }
                 break;
             } else {
-                displayError("Invalid connection type, choose another one. ");
+                CLIPrinter.displayError("Invalid connection type, choose another one.");
             }
         }
 
@@ -258,7 +228,7 @@ public class TUI implements UI {
                 } else if (command.equalsIgnoreCase("no")) {
                     break;
                 } else {
-                    displayError("Invalid choice, please try again.");
+                    CLIPrinter.displayError("Invalid choice, please try again.");
                 }
             }
         }
@@ -271,7 +241,7 @@ public class TUI implements UI {
                 String username = prompt();
 
                 if (username.length() < 3) {
-                    displayError("The username lenght must be at least three characters long");
+                    CLIPrinter.displayError("The username lenght must be at least three characters long");
                     continue;
                 }
 
@@ -341,7 +311,7 @@ public class TUI implements UI {
                 try {
                     lobbyId = Integer.valueOf(command[1]);
                 } catch (Exception e) {
-                    displayError("Invalid lobby number");
+                    CLIPrinter.displayError("Invalid lobby number");
                     continue;
                 }
 
@@ -366,10 +336,10 @@ public class TUI implements UI {
                     connectionHandler.sendToMainServer(new StartGameCommand(userInfo, currentLobbyid.get()));
                     displayLoadingMessage("Starting the game", waitingForLobbyJoining);
                 } else {
-                    displayError("You are not in a lobby");
+                    CLIPrinter.displayError("You are not in a lobby");
                 }
             } else {
-                displayError("Invalid option");
+                CLIPrinter.displayError("Invalid option");
             }
         }
 
@@ -646,102 +616,4 @@ enum State {
     LOBBY,
     RECONNECTION,
     END,
-}
-
-class Command {
-    public final String name;
-    public final Optional<List<String>> parameters;
-    public final String description;
-
-    /**
-     * Constructor of a command with no parameters.
-     * 
-     * @param name        name of the command
-     * @param description description of the command
-     */
-    public Command(String name, String description) {
-        this.name = name;
-        this.parameters = Optional.empty();
-        this.description = description;
-    }
-
-    /**
-     * Constructor of a command with parameters.
-     * 
-     * @param name        name of the command
-     * @param description description of the command
-     * @param parameters  parameters of the command as a list
-     */
-    public Command(String name, List<String> parameters, String description) {
-        this.name = name;
-        this.parameters = Optional.of(parameters);
-        this.description = description;
-    }
-
-    /**
-     * Creates the ansi sequence to print the command.
-     * 
-     * @return the command as an Ansi object
-     */
-    public Ansi toAnsi() {
-        return parameters.isPresent() ? ansi()
-                .reset().fg(YELLOW)
-                .a(name + parameters.stream()
-                        .map(p -> " " + p)
-                        .collect(Collectors.joining()))
-                .reset().a(" " + description)
-                : ansi().reset().fg(YELLOW).a(name).reset().a(" " + description);
-    }
-}
-
-/**
- * Scenes of the TUI can be defined using this class
- */
-abstract class Scene {
-    /**
-     * Static variable that is true if the client is connected to the server, false
-     * otherwise
-     */
-    static AtomicBoolean isConnectedToServer = new AtomicBoolean(false);
-
-    /**
-     * Method called when entering the scene
-     */
-    abstract void onEntry();
-
-    /**
-     * Method called when exiting the scene
-     */
-    abstract void onExit();
-
-    /**
-     * Lists the available commands for this scene
-     */
-    abstract void availableCommands();
-
-    /**
-     * Perfoms an action depending on the given input
-     * 
-     * @param args the user input parsed as a list of strings
-     */
-    abstract void handleCommand(String[] args);
-}
-
-/**
- * The SceneManager is used for handling transitions between scenes.
- */
-class SceneManager {
-    private Optional<Scene> currentScene;
-
-    public void transition(Scene scene) {
-        currentScene.ifPresent(Scene::onExit);
-
-        currentScene = Optional.ofNullable(scene);
-
-        currentScene.ifPresentOrElse(Scene::onEntry,
-                () -> {
-                    System.err.println("Closing the game.");
-                    System.exit(0);
-                });
-    }
 }
