@@ -354,7 +354,7 @@ public enum Server {
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
     System.out.println(clientMainView);
-    if (playersInMenu.containsKey(userInfo)) {
+    if (playersInMenu.containsKey(userInfo) && !connectedPlayers.get(userInfo).second.get()) {
       MainViewActions oldMainViewActions = connectedPlayers.get(userInfo).first;
       AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
 
@@ -379,7 +379,7 @@ public enum Server {
         e.printStackTrace();
       }
     } else {
-      System.out.println("Error: User not found in recent sessions, assigning new user");
+      System.out.println("Error: User not found in recent sessions or another user has the same username, assigning new userinfo...");
       addConnectedClient(userInfo.name, clientMainView);
     }
   }
