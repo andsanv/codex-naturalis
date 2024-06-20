@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
+   <children>
+      <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0">
+         <children>
+            <ScrollPane fx:id="mainScrollPane" hbarPolicy="NEVER" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER">
+               <content>
+                  <GridPane fx:id="playerBoardGridPane" gridLinesVisible="true" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
+                  </GridPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

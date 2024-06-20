@@ -1,11 +1,81 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.view.gui.GUI;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class ConfigController extends Controller {
     public ConfigController(GUI gui) {
         super(gui);
     }
 
+    @FXML
+    private VBox VboxCentral;
+
+    @FXML
+    private GridPane gridPane;
+
+    @FXML
+    private Text nicknameText;
+
+    @FXML
+    private TextField nicknameTextField;
+
+    @FXML
+    private Button submitNickname;
+
+    @FXML
+    private void handleSubmitClick(MouseEvent event) {
+        try {
+            String nickname = nicknameTextField.getText();
+            if (!nickname.isEmpty()) {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
+                Parent root = fxmlLoader.load();
+                GameController gameController = (GameController) fxmlLoader.getController();
+                gameController.initialize();
+                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                // String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
+                // scene.getStylesheets().add(url);
+                stage.setScene(scene);
+                stage.show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleEnterKeyPressed(KeyEvent event) throws IOException {
+        if (event.getCode() == KeyCode.ENTER) {
+            String nickname = nicknameTextField.getText();
+            if (!nickname.isEmpty()) {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
+                Parent root = fxmlLoader.load();
+                GameController mainMenu = fxmlLoader.getController();
+                //mainMenu.Setup(nickname);
+                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                //String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
+                //scene.getStylesheets().add(url);
+                stage.setScene(scene);
+                stage.show();
+            }
+            nicknameTextField.clear();
+        }
+    }
 
 }

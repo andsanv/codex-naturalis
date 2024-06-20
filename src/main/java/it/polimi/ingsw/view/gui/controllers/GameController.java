@@ -29,7 +29,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class GameView {
+public class GameController {
 
     public String sideSelected = "fronts";
     public String cardSelectedPath;
