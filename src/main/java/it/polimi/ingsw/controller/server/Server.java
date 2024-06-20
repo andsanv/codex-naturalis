@@ -53,7 +53,7 @@ public enum Server {
   private ConcurrentHashMap<UserInfo, Pair<MainViewActions, AtomicBoolean>> connectedPlayers;
   private ConcurrentHashMap<UserInfo, Boolean> playersInMenu;
 
-  private ConcurrentHashMap<UserInfo, GameViewActions> RMIGameViewActions; // rmi clients
+  private ConcurrentHashMap<UserInfo, GameViewActions> gameViewList; // rmi clients
 
   private final ExecutorService executorService;
 
@@ -244,18 +244,11 @@ public enum Server {
       }
 
       // Aggiungi le view dei giocatori nel costruttore
-      List<Observer> observers = connectedPlayers.entrySet().stream()
-          .filter(entry -> entry.getValue().second.get())
+      List<Observer> observers = gameViewList.entrySet().stream()
+          .filter(entry ->  connectedPlayers.get(entry.getKey()).second.get())
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
-          .filter(entry -> entry.getValue().first instanceof ClientHandler)
-          .map(entry -> (ClientHandler) entry.getValue().first)
+          .map(entry -> entry.getValue())
           .collect(Collectors.toList());
-
-      observers.addAll(RMIGameViewActions.entrySet().stream()
-          .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
-          .filter(entry -> connectedPlayers.get(entry.getKey()).second.get())
-          .map(entry -> (GameViewActions) entry.getValue())
-          .collect(Collectors.toList()));
 
       ConcurrentHashMap<UserInfo, AtomicBoolean> isConnected = new ConcurrentHashMap<>();
       connectedPlayers
@@ -365,18 +358,11 @@ public enum Server {
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions) {
     System.out.println(clientMainView);
     if (playersInMenu.containsKey(userInfo) && !connectedPlayers.get(userInfo).second.get()) {
-      GameViewActions oldGameViewActions = null;
-      if(connectedPlayers.get(userInfo).first instanceof ClientHandler){
-        oldGameViewActions = (GameViewActions) connectedPlayers.get(userInfo).first;
-      } else {
-        oldGameViewActions = RMIGameViewActions.get(userInfo);
-      }
-      
-      AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
+      GameViewActions oldGameViewActions = gameViewList.get(userInfo);
 
-      if(gameViewActions != null) {
-        RMIGameViewActions.put(userInfo, gameViewActions);
-      }
+      AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
+      
+      gameViewList.put(userInfo, gameViewActions);
 
       connectedPlayers.put(userInfo, new Pair<MainViewActions, AtomicBoolean>(clientMainView, atomicBoolean));
       atomicBoolean.set(true);
@@ -392,12 +378,7 @@ public enum Server {
           clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
 
           gameFlowManager.observers.remove(oldGameViewActions);
-
-          if(gameViewActions != null) {
-            gameFlowManager.observers.add(gameViewActions);
-          } else {
-            gameFlowManager.observers.add((ClientHandler) clientMainView);
-          }
+          gameFlowManager.observers.add(gameViewActions);
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
@@ -428,9 +409,9 @@ public enum Server {
       e.printStackTrace();
     }
 
-    if(gameViewActions != null) {
-      RMIGameViewActions.put(userInfo, gameViewActions);
-    }
+   
+    gameViewList.put(userInfo, gameViewActions);
+    
 
     connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
 

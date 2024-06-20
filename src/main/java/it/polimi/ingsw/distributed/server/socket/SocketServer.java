@@ -84,7 +84,7 @@ public class SocketServer {
 
           System.out.println("New connection from " + username);
 
-          UserInfo userInfo = Server.INSTANCE.addConnectedClient(username, connection, null);
+          UserInfo userInfo = Server.INSTANCE.addConnectedClient(username, connection, connection);
           connections.put(userInfo, connection);
         } else if (command instanceof ReconnectionCommand) {
           ReconnectionCommand reconnectionCommand = (ReconnectionCommand) command;
@@ -92,7 +92,7 @@ public class SocketServer {
 
           System.out.println("Reconnection from " + userInfo);
 
-          Server.INSTANCE.addReconnectedClient(userInfo, connection, null);
+          Server.INSTANCE.addReconnectedClient(userInfo, connection, connection);
           connections.put(userInfo, connection);
         } else {
           System.err.println("Unrecognized request on socket server");

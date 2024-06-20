@@ -125,7 +125,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
         this.clientMainView = new RMIMainView(userInterface);
         
         System.out.println(this.clientMainView);
-        mainServerActions.reconnect(((ReconnectionCommand) mainCommand).userInfo, this.clientMainView);
+        mainServerActions.reconnect(((ReconnectionCommand) mainCommand).userInfo, this.clientMainView, this.clientGameView);
 
         try {
           Thread.sleep(500);
