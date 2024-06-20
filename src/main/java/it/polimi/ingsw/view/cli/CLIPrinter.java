@@ -12,14 +12,14 @@ import org.fusesource.jansi.Ansi;
  */
 public class CLIPrinter {
     /**
-     * Prints a screen title with formatting.
+     * Prints the scene title with formatting.
      * The title can be at most 50 chars long.
      * 
      * @param title title to print
      */
-    public static void displayScreenTitle(String title, Ansi.Color color) {
+    public static void displaySceneTitle(String title, Ansi.Color color) {
         int padding = 80 - title.length();
-        System.out.println(ansi().bg(color)
+        System.out.println(ansi().reset().bg(color)
                 .a(" ".repeat(Math.floorDiv(padding, 2)) + title + " ".repeat(Math.ceilDiv(padding, 2))).reset()
                 .a("\n"));
     }

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.cli.scene;
+package it.polimi.ingsw.view.cli.scene.scenes;
 
 import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.BLUE;
@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
+import it.polimi.ingsw.view.cli.scene.Scene;
+import it.polimi.ingsw.view.cli.scene.SceneManager;
 
 public class HomeScene extends Scene {
     /**
@@ -28,8 +30,8 @@ public class HomeScene extends Scene {
 
         this.commandsDescription = "This is the main menu, press enter to contine or:";
         this.commands = Arrays.asList(
-                new CLICommand("help", "to get the list of available commands"),
-                new CLICommand("quit", "to exit the game"));
+                new CLICommand("help", "to get the list of available commands", null),
+                new CLICommand("quit", "to exit the game", null));
     }
 
     @Override
@@ -38,7 +40,7 @@ public class HomeScene extends Scene {
 
         System.out.println(CODEX_NATURALIS + "\n");
 
-        CLIPrinter.displayScreenTitle("Main Menu", BLUE);
+        CLIPrinter.displaySceneTitle("Main Menu", BLUE);
 
         System.out.println(
                 ansi()
@@ -49,9 +51,7 @@ public class HomeScene extends Scene {
                         .a(" to exit.\n\nEnter anything (except the two commands listed above) to continue to the game.\n\nHave fun!\n"));
     }
 
-    public void onExit() {
-    }
-
+    @Override
     public void handleCommand(String[] args) {
         sceneManager.transition(ConnectionScene.class);
     }

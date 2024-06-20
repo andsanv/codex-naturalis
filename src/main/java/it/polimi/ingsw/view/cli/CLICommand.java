@@ -17,17 +17,20 @@ public class CLICommand {
     public final String name;
     public final Optional<List<String>> parameters;
     public final String description;
+    private final Runnable action;
 
     /**
      * Constructor of a command with no parameters.
      * 
      * @param name        name of the command
      * @param description description of the command
+     * @param action      the action to perform when execute is called
      */
-    public CLICommand(String name, String description) {
+    public CLICommand(String name, String description, Runnable action) {
         this.name = name;
-        this.parameters = Optional.empty();
         this.description = description;
+        this.action = action;
+        this.parameters = Optional.empty();
     }
 
     /**
@@ -36,11 +39,13 @@ public class CLICommand {
      * @param name        name of the command
      * @param description description of the command
      * @param parameters  parameters of the command as a list
+     * @param action      the action to perform when execute is called
      */
-    public CLICommand(String name, List<String> parameters, String description) {
+    public CLICommand(String name, List<String> parameters, String description, Runnable action) {
         this.name = name;
         this.parameters = Optional.of(parameters);
         this.description = description;
+        this.action = action;
     }
 
     /**
@@ -56,5 +61,14 @@ public class CLICommand {
                         .collect(Collectors.joining()))
                 .reset().a(" " + description)
                 : ansi().reset().a(" - ").fg(YELLOW).a(name).reset().a(" " + description);
+    }
+
+    /**
+     * If there is an action, calling this method runs the action.
+     */
+    public void execute() {
+        if (action != null) {
+            action.run();
+        }
     }
 }

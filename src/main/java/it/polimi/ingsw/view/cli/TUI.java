@@ -86,15 +86,15 @@ public class TUI implements UI {
         while (running) {
             switch (state) {
                 case HOME:
-                    CLIPrinter.displayScreenTitle("HOME", CYAN);
+                    CLIPrinter.displaySceneTitle("HOME", CYAN);
                     homeScreen();
                     break;
                 case LOBBY:
-                    CLIPrinter.displayScreenTitle("LOBBIES", CYAN);
+                    CLIPrinter.displaySceneTitle("LOBBIES", CYAN);
                     lobbyScreen();
                     break;
                 case RECONNECTION:
-                    CLIPrinter.displayScreenTitle("OFFLINE", RED);
+                    CLIPrinter.displaySceneTitle("OFFLINE", RED);
                 case END:
                 default:
                     running = false;

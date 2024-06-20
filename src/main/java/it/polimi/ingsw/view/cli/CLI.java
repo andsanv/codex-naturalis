@@ -14,9 +14,11 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.UI;
-import it.polimi.ingsw.view.cli.scene.ConnectionScene;
-import it.polimi.ingsw.view.cli.scene.HomeScene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
+import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
+import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
+import it.polimi.ingsw.view.cli.scene.scenes.LoginMethodScene;
+import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 public class CLI implements UI {
@@ -27,31 +29,26 @@ public class CLI implements UI {
     /**
      * The connection handler used to communicate with the server
      */
-    private ConnectionHandler connectionHandler;
+    private ConnectionHandler connectionHandler = null;
 
     /**
      * The manager of the CLI scenes
      */
-    private SceneManager sceneManager;
+    private final SceneManager sceneManager = new SceneManager(this);
 
     /**
      * The only input scanner used by the CLI
      */
-    private Scanner scanner;
+    private final Scanner scanner = new Scanner(System.in);
 
     private CLI() {
-        /*
-         * Attributes initialization
-         */
-        this.sceneManager = new SceneManager(this);
-        this.scanner = new Scanner(System.in);
-        this.connectionHandler = null;
-
         /*
          * Register scenes in the SceneManager 
          */
         sceneManager.registerScene(new HomeScene(sceneManager));
         sceneManager.registerScene(new ConnectionScene(sceneManager));
+        sceneManager.registerScene(new UserInfoLoginScene(sceneManager));
+        sceneManager.registerScene(new LoginMethodScene(sceneManager));
 
         /*
          * Init and start the SceneManager

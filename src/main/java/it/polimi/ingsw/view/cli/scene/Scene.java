@@ -40,8 +40,9 @@ public abstract class Scene {
 
     /**
      * Method called when exiting the scene
+     * Unless overriden, calling it does nothing.
      */
-    abstract public void onExit();
+    public void onExit() {}
 
     /**
      * Lists the available commands for this scene
