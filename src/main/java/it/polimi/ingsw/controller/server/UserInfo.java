@@ -3,13 +3,17 @@ package it.polimi.ingsw.controller.server;
 import java.io.Serializable;
 
 /**
- * UserInfo contains the information about an user at the time it was generated. The class can be
- * safely shared since it is final and doesn't hold any references.
+ * UserInfo contains the information about an user at the time it was generated.
+ * The class can be safely shared since it is final and doesn't hold any
+ * references.
  */
 public final class UserInfo implements Serializable {
   public final String name;
   public final int id;
 
+  /**
+   * @param user an User instance
+   */
   public UserInfo(User user) {
     this.name = user.name;
     this.id = user.id;
@@ -29,7 +33,7 @@ public final class UserInfo implements Serializable {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    
+
     UserInfo other = (UserInfo) obj;
     return this.name.equals(other.name) && this.id == other.id;
   }
