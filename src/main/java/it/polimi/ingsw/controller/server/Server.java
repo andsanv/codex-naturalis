@@ -62,7 +62,7 @@ public enum Server {
    * Links the UserInfo to its GameViewActions.
    * This is used to hold the GameViewActions references to construct the GameFlowManager listeners when a game is starting.
    */
-  private ConcurrentHashMap<UserInfo, GameViewActions> gameViewList; 
+  private ConcurrentHashMap<UserInfo, GameViewActions> gameViews; 
 
   private final ExecutorService executorService;
 
@@ -75,6 +75,7 @@ public enum Server {
     this.connectedPlayers = new ConcurrentHashMap<>();
     this.playersInMenu = new ConcurrentHashMap<>();
     this.lobbyToGameFlowManager = new HashMap<>();
+    this.gameViews = new ConcurrentHashMap<>();
     this.executorService = Executors.newCachedThreadPool();
     checkConnections();
   }
@@ -253,7 +254,7 @@ public enum Server {
       }
 
       // Aggiungi le view dei giocatori nel costruttore
-      List<Observer> observers = gameViewList.entrySet().stream()
+      List<Observer> observers = gameViews.entrySet().stream()
           .filter(entry ->  connectedPlayers.get(entry.getKey()).second.get())
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
           .map(entry -> entry.getValue())
@@ -367,11 +368,11 @@ public enum Server {
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions) {
     System.out.println(clientMainView);
     if (playersInMenu.containsKey(userInfo) && !connectedPlayers.get(userInfo).second.get()) {
-      GameViewActions oldGameViewActions = gameViewList.get(userInfo);
+      GameViewActions oldGameViewActions = gameViews.get(userInfo);
 
       AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
       
-      gameViewList.put(userInfo, gameViewActions);
+      gameViews.put(userInfo, gameViewActions);
 
       connectedPlayers.put(userInfo, new Pair<MainViewActions, AtomicBoolean>(clientMainView, atomicBoolean));
       atomicBoolean.set(true);
@@ -418,10 +419,8 @@ public enum Server {
       e.printStackTrace();
     }
 
-   
-    gameViewList.put(userInfo, gameViewActions);
+    gameViews.put(userInfo, gameViewActions);
     
-
     connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
 
     playersInMenu.put(userInfo, true);

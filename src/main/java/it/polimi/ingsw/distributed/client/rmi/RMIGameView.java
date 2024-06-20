@@ -4,12 +4,13 @@ import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * This class is the RMI implementation of the GameViewActions interface.
  * So it used from the server to perform actions on the client game view.
  */
-public class RMIGameView implements GameViewActions {
+public class RMIGameView extends UnicastRemoteObject implements GameViewActions {
 
   /**
    * This is the game event handler
