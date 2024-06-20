@@ -46,14 +46,23 @@ public enum Server {
   private final Set<User> users;
 
   /**
-   * Links the Virtual Views to their status.
-   * The value is true if the client is in the menu, false if it's in-game.
+   * Links the UserInfo to its MainViewActions and connection status.
+   * The value is true if the client is connected, false otherwise.
    * When the client is in the menu, he receives updates on the list of lobbies.
    */
   private ConcurrentHashMap<UserInfo, Pair<MainViewActions, AtomicBoolean>> connectedPlayers;
+
+  /** 
+   * Links the UserInfo to a boolean.
+   * The value is true if the client is in the menu, false otherwise.
+  */
   private ConcurrentHashMap<UserInfo, Boolean> playersInMenu;
 
-  private ConcurrentHashMap<UserInfo, GameViewActions> gameViewList; // rmi clients
+  /**
+   * Links the UserInfo to its GameViewActions.
+   * This is used to hold the GameViewActions references to construct the GameFlowManager listeners when a game is starting.
+   */
+  private ConcurrentHashMap<UserInfo, GameViewActions> gameViewList; 
 
   private final ExecutorService executorService;
 
