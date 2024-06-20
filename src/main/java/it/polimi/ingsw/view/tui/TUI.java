@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import it.polimi.ingsw.model.common.Resources;
 
@@ -37,6 +39,8 @@ import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 import it.polimi.ingsw.view.connection.SocketConnectionHandler;
+
+import it.polimi.ingsw.view.UserInfoManager;
 
 public class TUI implements UI {
     private static String CODEX_NATURALIS = " _____           _             _   _       _                   _ _     \n"
@@ -110,36 +114,6 @@ public class TUI implements UI {
         AnsiConsole.systemUninstall();
     }
 
-    /**
-     * Attempts to read UserInfo from file.
-     * The saved UserInfo is the last one used on the same machine in the same
-     * location.
-     * 
-     * @return true if found, false if not found or if an error occurred
-     */
-    private boolean retrieveUserInfo() {
-        // Check if a backup exists, open the stream and try to deserialize it
-        try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream("userInfo.ser"));
-            userInfo = (UserInfo) in.readObject();
-            in.close();
-            return true;
-        } catch (ClassCastException | ClassNotFoundException | IOException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Attempts to save UserInfo to file, to use it for future logins.
-     */
-    private void saveUserInfo() {
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("userInfo.ser"));
-            out.writeObject(userInfo);
-            out.close();
-        } catch (IOException e) {
-        }
-    }
 
     /**
      * Prints the prompt and reads user input.
@@ -151,8 +125,6 @@ public class TUI implements UI {
         System.out.flush();
 
         String in = input.nextLine();
-
-        // System.out.println();
 
         if (in.equalsIgnoreCase("exit")) {
             System.out.println();
@@ -262,9 +234,10 @@ public class TUI implements UI {
         boolean askForUsername = true;
 
         // Check if the user already has an account
-        if (retrieveUserInfo()) {
+        Optional<UserInfo> loadedUserInfo = UserInfoManager.retrieveUserInfo();
+        if (loadedUserInfo.isPresent()) {
             System.out.println(ansi()
-                    .a("\nThe user ").fg(CYAN).a(userInfo).reset()
+                    .a("\nThe user ").fg(CYAN).a(loadedUserInfo.get()).reset()
                     .a(" has been found, do you want to continue with this account?\n(enter ")
                     .fg(YELLOW).a("yes").reset().a(" to continue, ").fg(YELLOW).a("no").reset()
                     .a(" to create a new account)"));
@@ -273,6 +246,7 @@ public class TUI implements UI {
                 String command = prompt();
 
                 if (command.equalsIgnoreCase("yes")) {
+                    userInfo = loadedUserInfo.get();
                     waitingUserInfo.set(true);
 
                     // Attempt connection to the server
@@ -454,7 +428,7 @@ public class TUI implements UI {
         synchronized (userInfoLock) {
             this.userInfo = userInfo;
             waitingUserInfo.set(false);
-            saveUserInfo();
+            UserInfoManager.saveUserInfo(userInfo);
         }
     }
 
@@ -672,4 +646,102 @@ enum State {
     LOBBY,
     RECONNECTION,
     END,
+}
+
+class Command {
+    public final String name;
+    public final Optional<List<String>> parameters;
+    public final String description;
+
+    /**
+     * Constructor of a command with no parameters.
+     * 
+     * @param name        name of the command
+     * @param description description of the command
+     */
+    public Command(String name, String description) {
+        this.name = name;
+        this.parameters = Optional.empty();
+        this.description = description;
+    }
+
+    /**
+     * Constructor of a command with parameters.
+     * 
+     * @param name        name of the command
+     * @param description description of the command
+     * @param parameters  parameters of the command as a list
+     */
+    public Command(String name, List<String> parameters, String description) {
+        this.name = name;
+        this.parameters = Optional.of(parameters);
+        this.description = description;
+    }
+
+    /**
+     * Creates the ansi sequence to print the command.
+     * 
+     * @return the command as an Ansi object
+     */
+    public Ansi toAnsi() {
+        return parameters.isPresent() ? ansi()
+                .reset().fg(YELLOW)
+                .a(name + parameters.stream()
+                        .map(p -> " " + p)
+                        .collect(Collectors.joining()))
+                .reset().a(" " + description)
+                : ansi().reset().fg(YELLOW).a(name).reset().a(" " + description);
+    }
+}
+
+/**
+ * Scenes of the TUI can be defined using this class
+ */
+abstract class Scene {
+    /**
+     * Static variable that is true if the client is connected to the server, false
+     * otherwise
+     */
+    static AtomicBoolean isConnectedToServer = new AtomicBoolean(false);
+
+    /**
+     * Method called when entering the scene
+     */
+    abstract void onEntry();
+
+    /**
+     * Method called when exiting the scene
+     */
+    abstract void onExit();
+
+    /**
+     * Lists the available commands for this scene
+     */
+    abstract void availableCommands();
+
+    /**
+     * Perfoms an action depending on the given input
+     * 
+     * @param args the user input parsed as a list of strings
+     */
+    abstract void handleCommand(String[] args);
+}
+
+/**
+ * The SceneManager is used for handling transitions between scenes.
+ */
+class SceneManager {
+    private Optional<Scene> currentScene;
+
+    public void transition(Scene scene) {
+        currentScene.ifPresent(Scene::onExit);
+
+        currentScene = Optional.ofNullable(scene);
+
+        currentScene.ifPresentOrElse(Scene::onEntry,
+                () -> {
+                    System.err.println("Closing the game.");
+                    System.exit(0);
+                });
+    }
 }
