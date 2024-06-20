@@ -110,7 +110,7 @@ public enum Server {
 
       // Try to add the user to the lobby
       String error = null;
-      if (getLobbies().stream().anyMatch(l -> l.users.contains(userInfo)))
+      if (isInLobby(userInfo))
         error = "Couldn't join the lobby: you are already in another one";
       else if (lobby == null)
         error = "Couldn't join the lobby: the lobby doesn't exist";
@@ -319,7 +319,7 @@ public enum Server {
   public LobbyInfo createLobby(UserInfo userInfo) {
     synchronized (lobbies) {
       synchronized (users) {
-        if (getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo))) {
+        if (isInLobby(userInfo)) {
           System.err.println("Lobby creation request by " + userInfo + " failed: the user is already in another lobby");
           try {
             connectedPlayers.get(userInfo).first.receiveEvent(new AlreadyInLobbyErrorEvent());
@@ -346,6 +346,10 @@ public enum Server {
         return new LobbyInfo(newLobby);
       }
     }
+  }
+
+  private boolean isInLobby(UserInfo userInfo) {
+    return getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo));
   }
 
   public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
