@@ -10,7 +10,7 @@ public interface Observer {
    * This method handles received GameEvents
    *
    * @param event the received event
- * @throws RemoteException 
+   * @throws RemoteException 
    */
   void update(GameEvent event) throws RemoteException;
 }

@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 /**
  * This class represents the action that can be performed on the client main view.
  */
-public interface MainViewActions extends Remote, Serializable, Observer {
+public interface MainViewActions extends Remote, Serializable {
   /**
    * Sends a server event to the client
    *

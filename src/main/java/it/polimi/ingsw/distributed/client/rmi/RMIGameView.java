@@ -29,4 +29,10 @@ public class RMIGameView implements GameViewActions {
   public void receiveEvent(GameEvent event) throws RemoteException {
     event.execute(gameEventHandler);
   }
+
+  @Override
+  public void update(GameEvent event) throws RemoteException {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'update'");
+  }
 }

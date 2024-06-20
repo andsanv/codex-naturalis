@@ -53,12 +53,4 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
   public void setGameServer(GameServerActions gameServer) throws RemoteException {
     this.connectionHandler.setGameServerActions(gameServer);
   }
-
-  /**
-   * This method is used by the server to update the client with a game event.
-   */
-  @Override
-  public void update(GameEvent event) throws RemoteException {
-    // TODO: Review Observer implementation for rmi and socket
-  }
 }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.distributed.server.rmi;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.server.MainServerActions;
@@ -52,16 +53,17 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   }
 
   /**
+   * {@inheritDoc}
    * This method is used from the client (via RMI) to connect to the main server.
    * The addConnectedClient method will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
    */
   @Override
-  public void connectToMain(String username, MainViewActions clientMainView)
+  public void connectToMain(String username, MainViewActions clientMainView, GameViewActions gameViewActions)
       throws RemoteException {
         System.out.println("User " + username + "main view " + clientMainView);
     executorService.submit(
         () -> {
-          Server.INSTANCE.addConnectedClient(username, clientMainView);
+          Server.INSTANCE.addConnectedClient(username, clientMainView, gameViewActions);
         });
   }
 
@@ -70,10 +72,10 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
    * The addReconnectedClient will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
    */
   @Override
-  public void reconnect(UserInfo userInfo, MainViewActions clientMainView) throws RemoteException {
+  public void reconnect(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions) throws RemoteException {
     executorService.submit(
         () -> {
-          Server.INSTANCE.addReconnectedClient(userInfo, clientMainView);
+          Server.INSTANCE.addReconnectedClient(userInfo, clientMainView, gameViewActions);
         });
   }
 

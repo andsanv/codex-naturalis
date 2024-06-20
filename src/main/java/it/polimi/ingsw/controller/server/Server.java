@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
@@ -51,6 +52,8 @@ public enum Server {
    */
   private ConcurrentHashMap<UserInfo, Pair<MainViewActions, AtomicBoolean>> connectedPlayers;
   private ConcurrentHashMap<UserInfo, Boolean> playersInMenu;
+
+  private ConcurrentHashMap<UserInfo, GameViewActions> RMIGameViewActions; // rmi clients
 
   private final ExecutorService executorService;
 
@@ -244,8 +247,15 @@ public enum Server {
       List<Observer> observers = connectedPlayers.entrySet().stream()
           .filter(entry -> entry.getValue().second.get())
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
-          .map(entry -> entry.getValue().first)
+          .filter(entry -> entry.getValue().first instanceof ClientHandler)
+          .map(entry -> (ClientHandler) entry.getValue().first)
           .collect(Collectors.toList());
+
+      observers.addAll(RMIGameViewActions.entrySet().stream()
+          .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
+          .filter(entry -> connectedPlayers.get(entry.getKey()).second.get())
+          .map(entry -> (GameViewActions) entry.getValue())
+          .collect(Collectors.toList()));
 
       ConcurrentHashMap<UserInfo, AtomicBoolean> isConnected = new ConcurrentHashMap<>();
       connectedPlayers
@@ -352,11 +362,21 @@ public enum Server {
     return getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo));
   }
 
-  public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView) {
+  public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions) {
     System.out.println(clientMainView);
     if (playersInMenu.containsKey(userInfo) && !connectedPlayers.get(userInfo).second.get()) {
-      MainViewActions oldMainViewActions = connectedPlayers.get(userInfo).first;
+      GameViewActions oldGameViewActions = null;
+      if(connectedPlayers.get(userInfo).first instanceof ClientHandler){
+        oldGameViewActions = (GameViewActions) connectedPlayers.get(userInfo).first;
+      } else {
+        oldGameViewActions = RMIGameViewActions.get(userInfo);
+      }
+      
       AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
+
+      if(gameViewActions != null) {
+        RMIGameViewActions.put(userInfo, gameViewActions);
+      }
 
       connectedPlayers.put(userInfo, new Pair<MainViewActions, AtomicBoolean>(clientMainView, atomicBoolean));
       atomicBoolean.set(true);
@@ -371,8 +391,13 @@ public enum Server {
               .orElse(null));
           clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
 
-          gameFlowManager.observers.remove(oldMainViewActions);
-          gameFlowManager.observers.add(clientMainView);
+          gameFlowManager.observers.remove(oldGameViewActions);
+
+          if(gameViewActions != null) {
+            gameFlowManager.observers.add(gameViewActions);
+          } else {
+            gameFlowManager.observers.add((ClientHandler) clientMainView);
+          }
         }
       } catch (IOException e) {
         // TODO Auto-generated catch block
@@ -380,11 +405,11 @@ public enum Server {
       }
     } else {
       System.out.println("Error: User not found in recent sessions or another user has the same username, assigning new userinfo...");
-      addConnectedClient(userInfo.name, clientMainView);
+      addConnectedClient(userInfo.name, clientMainView, gameViewActions);
     }
   }
 
-  public UserInfo addConnectedClient(String username, MainViewActions clientMainView) {
+  public UserInfo addConnectedClient(String username, MainViewActions clientMainView, GameViewActions gameViewActions) {
     User user = new User(username);
 
     synchronized (users) {
@@ -401,6 +426,10 @@ public enum Server {
     } catch (IOException e) {
       System.err.println("Couldn't send userInfo event to " + userInfo);
       e.printStackTrace();
+    }
+
+    if(gameViewActions != null) {
+      RMIGameViewActions.put(userInfo, gameViewActions);
     }
 
     connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));

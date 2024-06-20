@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.connection;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.client.rmi.RMIGameView;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
@@ -40,6 +41,11 @@ public class RMIConnectionHandler extends ConnectionHandler {
   private RMIMainView clientMainView;
 
   /**
+   * This is a reference to the client's game view.
+   */
+  private RMIGameView clientGameView;
+
+  /**
    * This constructor creates a new RMIConnectionHandler.
    * Initializes the fields and set null the gameServerActions (game is not started).
    * After that, it tries to connect to the rmi main server and created 2 threads with a consumer fot the command queues.
@@ -58,7 +64,9 @@ public class RMIConnectionHandler extends ConnectionHandler {
     try {
       Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
+      
       this.clientMainView = new RMIMainView(userInterface);
+      this.clientGameView = new RMIGameView(userInterface);
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
@@ -95,7 +103,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
   public boolean sendToMainServer(MainCommand mainCommand) {
     if(mainCommand instanceof ConnectionCommand) {
       try {
-        mainServerActions.connectToMain(((ConnectionCommand) mainCommand).username, this.clientMainView);
+        mainServerActions.connectToMain(((ConnectionCommand) mainCommand).username, this.clientMainView, this.clientGameView);
       
         System.out.println("Waiting for user info");
         System.out.println(userInterface.getUserInfo());
