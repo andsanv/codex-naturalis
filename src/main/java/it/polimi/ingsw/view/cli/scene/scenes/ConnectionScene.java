@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
-import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.BLUE;
 
 import java.io.IOException;
@@ -15,6 +14,9 @@ import it.polimi.ingsw.view.connection.ConnectionHandler;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 import it.polimi.ingsw.view.connection.SocketConnectionHandler;
 
+/**
+ * Scene for selecting the connection type
+ */
 public class ConnectionScene extends Scene {
     public ConnectionScene(SceneManager sceneManager) {
         super(sceneManager);
@@ -48,10 +50,10 @@ public class ConnectionScene extends Scene {
 
     @Override
     public void onEntry() {
-        System.out.println(ansi().reset().eraseScreen().cursor(0, 0));
+        CLIPrinter.clear();
 
         CLIPrinter.displaySceneTitle("Connection Menu", BLUE);
-
+        
         System.out.println("Choose a connection type:");
     }
 

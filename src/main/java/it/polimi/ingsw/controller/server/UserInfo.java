@@ -12,11 +12,23 @@ public final class UserInfo implements Serializable {
   public final int id;
 
   /**
+   * Main constructor that creates a UserInfo from a User.
+   * 
    * @param user an User instance
    */
   public UserInfo(User user) {
     this.name = user.name;
     this.id = user.id;
+  }
+
+  /**
+   * Copy-constructor.
+   * 
+   * @param userInfo the UserInfo to copy
+   */
+  public UserInfo(UserInfo userInfo) {
+    this.name = userInfo.name;
+    this.id = userInfo.id;
   }
 
   @Override

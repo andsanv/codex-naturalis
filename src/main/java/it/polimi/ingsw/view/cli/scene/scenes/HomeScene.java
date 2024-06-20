@@ -11,6 +11,10 @@ import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Starting scene of the game.
+ * Welcomes the player and explains how to use the CLI.
+ */
 public class HomeScene extends Scene {
     /**
      * Codex CLI logo

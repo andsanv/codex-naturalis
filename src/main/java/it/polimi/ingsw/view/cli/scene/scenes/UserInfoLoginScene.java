@@ -7,38 +7,65 @@ import java.util.Optional;
 
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.view.UserInfoManager;
+import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Scene for logging in with the saved UserInfo.
+ * Transitions early to account login/creation if no UserInfo is found.
+ */
 public class UserInfoLoginScene extends Scene {
-    Optional<UserInfo> userInfo;
+    Optional<UserInfo> userInfo = UserInfoManager.retrieveUserInfo();
 
     public UserInfoLoginScene(SceneManager sceneManager) {
         super(sceneManager);
-        userInfo = UserInfoManager.retrieveUserInfo();
-        
+
+        this.commandsDescription = "Here you decide if you want the given account or not";
         this.commands = Arrays.asList(
-            new CLICommand("yes", "to continue with the saved account", null),
-            new CLICommand("no", "to create a new account or log in manually to an existing one", null)
-        );
+                new CLICommand("yes", "to continue with the saved account", () -> {
+                    CLI cli = sceneManager.cli;
+
+                    cli.setUserInfo(userInfo.get());
+                    cli.getConnectionHandler().reconnect();
+
+                    cli.waitingUserInfo.set(true);
+                    CLIPrinter.displayLoadingMessage("commandsDescription", cli.waitingUserInfo);
+                }),
+                new CLICommand("no", "to create a new account or log in to an existing one", () -> {
+                    sceneManager.transition(AccountScene.class);
+                }));
     }
 
     @Override
     public void onEntry() {
-        if(userInfo.isEmpty())
-            sceneManager.transition(LoginMethodScene.class);
+        CLIPrinter.clear();
+
+        if (userInfo.isEmpty()){
+            sceneManager.transition(AccountScene.class);
+            return;
+        }
 
         CLIPrinter.displaySceneTitle("Account found on this device", BLUE);
 
-        System.out.println("The account " + userInfo + " has been found on this device, do you want to use it?");
+        System.out.println("The account " + userInfo.get() + " has been found on this device, do you want to use it?");
     }
 
     @Override
     public void handleCommand(String[] args) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
+        Optional<CLICommand> command;
+
+        if (args.length != 1) {
+            command = Optional.empty();
+        } else {
+            command = commands.stream()
+                    .filter(c -> c.name.equalsIgnoreCase(args[0]))
+                    .findFirst();
+        }
+
+        command.ifPresentOrElse(CLICommand::execute,
+                () -> CLIPrinter.displayError("Invalid option"));
     }
-    
 }

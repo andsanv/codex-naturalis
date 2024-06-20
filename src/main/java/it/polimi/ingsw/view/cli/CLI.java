@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
@@ -14,10 +15,11 @@ import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.UI;
+import it.polimi.ingsw.view.UserInfoManager;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
-import it.polimi.ingsw.view.cli.scene.scenes.LoginMethodScene;
+import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
@@ -41,14 +43,30 @@ public class CLI implements UI {
      */
     private final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * The UserInfo of the user that is logged-in.
+     */
+    private UserInfo userInfo;
+
+    /**
+     * An Object for synchronizing userInfo
+     */
+    private final Object userInfoLock = new Object();
+
+    /**
+     * Thread-safe boolean that is true if the CLI is waiting for the server to send
+     * the userInfo.
+     */
+    public final AtomicBoolean waitingUserInfo = new AtomicBoolean(false);
+
     private CLI() {
         /*
-         * Register scenes in the SceneManager 
+         * Register scenes in the SceneManager
          */
         sceneManager.registerScene(new HomeScene(sceneManager));
         sceneManager.registerScene(new ConnectionScene(sceneManager));
         sceneManager.registerScene(new UserInfoLoginScene(sceneManager));
-        sceneManager.registerScene(new LoginMethodScene(sceneManager));
+        sceneManager.registerScene(new AccountScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -70,14 +88,40 @@ public class CLI implements UI {
         }).start();
     }
 
+    /**
+     * ConnectionHandler setter.
+     * 
+     * @param connectionHandler the ConnectionHandler that the CLI will use
+     */
     public void setConnectionHandler(ConnectionHandler connectionHandler) {
         this.connectionHandler = connectionHandler;
     }
 
+    /**
+     * ConnectionHandler getter.
+     * 
+     * @return the ConnectionHandler used by the CLI.
+     */
+    public ConnectionHandler getConnectionHandler() {
+        return connectionHandler;
+    }
+
+    /**
+     * UserInfo setter.
+     * 
+     * @param userInfo the new UserInfo
+     */
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
     @Override
     public void handleUserInfo(UserInfo userInfo) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleUserInfo'");
+        synchronized (userInfoLock) {
+            this.userInfo = userInfo;
+            waitingUserInfo.set(false);
+            UserInfoManager.saveUserInfo(userInfo);
+        }
     }
 
     @Override
@@ -262,8 +306,9 @@ public class CLI implements UI {
 
     @Override
     public UserInfo getUserInfo() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserInfo'");
+        synchronized (userInfoLock) {
+            return new UserInfo(userInfo);
+        }
     }
 
     @Override
