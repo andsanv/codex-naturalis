@@ -13,6 +13,9 @@ public class AccountScene extends Scene {
     public AccountScene(SceneManager sceneManager) {
         super(sceneManager);
 
+        // TODO 
+
+        this.commandsDescription = "You can create an account or log in into yours";
         this.commands = Arrays.asList(
                 new CLICommand("new", Arrays.asList("username"), "to create a new account", null),
                 new CLICommand("login", Arrays.asList("username", "id"), "to use a previously created account", null));

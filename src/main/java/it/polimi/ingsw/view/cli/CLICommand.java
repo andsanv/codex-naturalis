@@ -56,10 +56,10 @@ public class CLICommand {
     public Ansi toAnsi() {
         return parameters.isPresent() ? ansi()
                 .reset().a("+ ").fg(YELLOW)
-                .a(name + parameters.stream()
-                        .map(p -> " [" + p + "]")
+                .a(name + " " + parameters.get().stream()
+                        .map(p -> "<" + p + "> ")
                         .collect(Collectors.joining()))
-                .reset().a(" " + description)
+                .reset().a(description)
                 : ansi().reset().a(" - ").fg(YELLOW).a(name).reset().a(" " + description);
     }
 
