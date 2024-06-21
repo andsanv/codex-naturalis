@@ -116,6 +116,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
     if (userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand)
         && !(command instanceof ConnectionCommand)) {
       // System.err.println("User info is null");
+      this.isConnected.set(false);
       return false;
     }
     try {
@@ -123,9 +124,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
       outputStream.reset();
     } catch (IOException e) {
       e.printStackTrace();
+      this.isConnected.set(false);
       return false;
     }
 
+    this.isConnected.set(true);
     return true;
   }
 
@@ -140,6 +143,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
   public boolean sendToGameServer(GameCommand command) {
     if (userInterface.getUserInfo() == null) {
       // System.err.println("User info is null");
+      this.isConnected.set(false);
       return false;
     }
     try {
@@ -147,9 +151,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
       outputStream.reset();
     } catch (IOException e) {
       e.printStackTrace();
+      this.isConnected.set(false);
       return false;
     }
 
+    this.isConnected.set(true);
     return true;
   }
 
@@ -204,7 +210,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
             } else if (event instanceof RefusedConnectionEvent) {
               RefusedConnectionEvent refusedConnectionEvent = (RefusedConnectionEvent) event;
               refusedConnectionEvent.execute(userInterface);
-              break;
+              this.isConnected.set(false);
             } else {
               events.add(event);
             }
@@ -213,7 +219,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
             // System.err.println("Failed to receive event");
             // System.err.println("Server probably disconnected");
             e.printStackTrace();
-
+            
             break;
           } catch (ClassNotFoundException e) {
             // System.err.println("Failed to decode event");
@@ -249,6 +255,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
     } catch (IOException e) {
       e.printStackTrace();
       // System.err.println("Failed to reconnect to server");
+      this.isConnected.set(false);
       return false;
     }
 
