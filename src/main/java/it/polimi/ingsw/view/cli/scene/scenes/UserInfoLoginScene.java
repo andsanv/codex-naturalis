@@ -29,10 +29,10 @@ public class UserInfoLoginScene extends Scene {
                     CLI cli = sceneManager.cli;
 
                     cli.setUserInfo(userInfo.get());
-                    cli.getConnectionHandler().reconnect();
-
+                    
                     cli.waitingUserInfo.set(true);
-                    CLIPrinter.displayLoadingMessage("commandsDescription", cli.waitingUserInfo);
+                    cli.getConnectionHandler().reconnect();
+                    CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo);
                 }),
                 new CLICommand("no", "to create a new account or log in to an existing one", () -> {
                     sceneManager.transition(AccountScene.class);
@@ -48,24 +48,8 @@ public class UserInfoLoginScene extends Scene {
             return;
         }
 
-        CLIPrinter.displaySceneTitle("Account found on this device", BLUE);
+        CLIPrinter.displaySceneTitle("Existing account found", BLUE);
 
         System.out.println("The account " + userInfo.get() + " has been found on this device, do you want to use it?");
-    }
-
-    @Override
-    public void handleCommand(String[] args) {
-        Optional<CLICommand> command;
-
-        if (args.length != 1) {
-            command = Optional.empty();
-        } else {
-            command = commands.stream()
-                    .filter(c -> c.name.equalsIgnoreCase(args[0]))
-                    .findFirst();
-        }
-
-        command.ifPresentOrElse(CLICommand::execute,
-                () -> CLIPrinter.displayError("Invalid option"));
     }
 }

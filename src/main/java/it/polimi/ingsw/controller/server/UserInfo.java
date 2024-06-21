@@ -31,6 +31,17 @@ public final class UserInfo implements Serializable {
     this.id = userInfo.id;
   }
 
+  /**
+   * Constructor with name and id.
+   * 
+   * @param name the username
+   * @param id the id
+   */
+  public UserInfo(String name, int id) {
+    this.name = name;
+    this.id = id;
+  }
+
   @Override
   public String toString() {
     return name + "#" + id;

@@ -1,10 +1,12 @@
 package it.polimi.ingsw.view.cli;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
@@ -54,10 +56,41 @@ public class CLI implements UI {
     private final Object userInfoLock = new Object();
 
     /**
+     * A list of all active lobbies.
+     */
+    private List<LobbyInfo> lobbies;
+
+    /**
+     * An Object for synchronizing lobbies
+     */
+    private final Object lobbiesLock = new Object();
+
+    /**
+     * The id of the current lobby
+     */
+    public final AtomicInteger lobbyId = new AtomicInteger(-1);
+
+    /**
      * Thread-safe boolean that is true if the CLI is waiting for the server to send
      * the userInfo.
      */
     public final AtomicBoolean waitingUserInfo = new AtomicBoolean(false);
+
+    /**
+     * Thread-safe boolean that is true if the CLI is waiting for the server to send
+     * the list of available lobbies.
+     */
+    public final AtomicBoolean waitingLobbies = new AtomicBoolean(false);
+
+    /**
+     * Thread-safe boolean that is true while the user is joining a lobby.
+     */
+    public final AtomicBoolean joiningLobby = new AtomicBoolean(false);
+
+    /**
+     * Thread-safe boolean that is true while the user is creating a lobby.
+     */
+    public final AtomicBoolean creatingLobby = new AtomicBoolean(false);
 
     private CLI() {
         /*
@@ -112,15 +145,26 @@ public class CLI implements UI {
      * @param userInfo the new UserInfo
      */
     public void setUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
+        synchronized (userInfoLock) {
+            this.userInfo = userInfo;
+        }
+    }
+
+    /**
+     * Lobbies getter.
+     */
+    public List<LobbyInfo> getLobbies() {
+        synchronized (lobbiesLock) {
+            return new ArrayList<>(lobbies);
+        }
     }
 
     @Override
     public void handleUserInfo(UserInfo userInfo) {
         synchronized (userInfoLock) {
             this.userInfo = userInfo;
-            waitingUserInfo.set(false);
             UserInfoManager.saveUserInfo(userInfo);
+            waitingUserInfo.set(false);
         }
     }
 
@@ -132,8 +176,30 @@ public class CLI implements UI {
 
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLobbiesEvent'");
+        synchronized (lobbiesLock) {
+            this.lobbies = lobbies;
+
+            UserInfo userInfo = this.getUserInfo();
+
+            lobbies.stream()
+                    .filter(lobby -> lobby.users.contains(userInfo))
+                    .findAny()
+                    .ifPresentOrElse(
+                            lobby -> {
+                                lobbyId.set(lobby.id);
+
+                                if (joiningLobby.get()) {
+                                    joiningLobby.set(false);
+                                }
+
+                                if (creatingLobby.get() && lobby.manager.equals(userInfo)) {
+                                    creatingLobby.set(false);
+                                }
+                            },
+                            () -> {
+                                lobbyId.set(-1);
+                            });
+        }
     }
 
     @Override

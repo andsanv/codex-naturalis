@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.cli.scene;
 
 import java.util.List;
+import java.util.Optional;
 
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
@@ -25,6 +26,13 @@ public abstract class Scene {
     protected List<CLICommand> commands;
 
     /**
+     * CLI input trimmed and split.
+     * It's needed so the CLICommands' lambdas can read it when handleCommand is
+     * called.
+     */
+    protected String[] args;
+
+    /**
      * When being constructed, the scene saves a reference to the SceneManager
      * 
      * @param sceneManager the SceneManager that will use the scene
@@ -35,14 +43,17 @@ public abstract class Scene {
 
     /**
      * Method called when entering the scene
+     * Unless overriden, calling it does nothing.
      */
-    abstract public void onEntry();
+    public void onEntry() {
+    }
 
     /**
      * Method called when exiting the scene
      * Unless overriden, calling it does nothing.
      */
-    public void onExit() {}
+    public void onExit() {
+    }
 
     /**
      * Lists the available commands for this scene
@@ -57,5 +68,13 @@ public abstract class Scene {
      * @param args         the user input parsed as a list of strings
      * @param sceneManager the sceneManager that is calling this method
      */
-    abstract public void handleCommand(String[] args);
+    public void handleCommand(String[] args) {
+        this.args = args;
+
+        commands.stream()
+                .filter(c -> c.name.equalsIgnoreCase(args[0]))
+                .findFirst()
+                .ifPresentOrElse(CLICommand::execute,
+                        () -> CLIPrinter.displayError("Invalid option"));
+    }
 }

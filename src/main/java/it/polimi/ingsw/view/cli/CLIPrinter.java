@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.fusesource.jansi.Ansi;
 
+import it.polimi.ingsw.controller.server.LobbyInfo;
+import it.polimi.ingsw.controller.server.UserInfo;
+
 /**
  * This class provides static methods for writing formatted text
  */
@@ -40,7 +43,9 @@ public class CLIPrinter {
      * @param msg the available commands
      */
     public static void displayCommands(String description, List<CLICommand> commands) {
-        System.out.println(ansi().reset().a(description));
+        if (description != null)
+            System.out.println(ansi().reset().a(description));
+
         commands.stream().map(CLICommand::toAnsi).forEach(System.out::println);
     }
 
@@ -56,13 +61,13 @@ public class CLIPrinter {
      * It shows a loading message until the given condition becomes false.
      * 
      * @param msg       message of loading animation
-     * @param condition an AtomicBoolean that, upon becoming false, stops the
+     * @param isLoading an AtomicBoolean that, upon becoming false, stops the
      *                  loading animation
      */
-    public static void displayLoadingMessage(String msg, AtomicBoolean waiting) {
+    public static void displayLoadingMessage(String msg, AtomicBoolean isLoading) {
         String[] sequence = { "", ".", "..", "..." };
         int curr = 0;
-        while (waiting.get()) {
+        while (isLoading.get()) {
             System.out.print(ansi().reset().eraseLine().cursorToColumn(0).bg(GREEN).a("LOADING").reset()
                     .a(" " + msg + sequence[curr++ % sequence.length]));
             System.out.flush();
@@ -74,5 +79,57 @@ public class CLIPrinter {
         }
         System.out.println(ansi().reset().eraseLine().cursorToColumn(0));
         System.out.flush();
+    }
+
+    /**
+     * Prints available lobbies.
+     * If a UserInfo is given, the player will be highlighted.
+     * 
+     * @param lobbies  the list of lobbies to print
+     * @param userInfo the UserInfo of the player to highlight
+     */
+    public static void printLobbies(List<LobbyInfo> lobbies, UserInfo userInfo) {
+        if (lobbies == null || lobbies.isEmpty())
+            System.out.println("There aren't any active lobbies");
+        else
+            /*
+             * Lobbies will be printed with the following format
+             * ╒═══════════════╕
+             * │ Lobby 13      │
+             * ├───────────────┤
+             * │ user#21       │
+             * │ anotherUser#3 │
+             * │ lastUser#1    │
+             * ├───────────────┤
+             * │ In-Game? X    │
+             * ╘═══════════════╛
+             */
+            for (LobbyInfo lobby : lobbies) {
+                final int length = Math.max(12,
+                        lobby.users.stream().mapToInt(user -> user.toString().length() + 2).max().orElse(0));
+
+                System.out.println("╒" + "═".repeat(length) + "╕");
+                System.out.println(
+                        "│ Lobby " + lobby.id + " ".repeat(length - 7 - Integer.toString(lobby.id).length()) + "│");
+                System.out.println("├" + "─".repeat(length) + "┤");
+
+                lobby.users.stream().forEach(user -> {
+                    boolean inLobby = user.equals(userInfo);
+                    if (user.equals(lobby.manager)) {
+                        System.out.println(ansi().a("│ ").bg(WHITE).fg(inLobby ? CYAN : DEFAULT).a(user).reset()
+                                .a(" ".repeat(length - 1 - user.toString().length()) + "│"));
+                    } else {
+                        System.out.println(ansi().a("│ ").fg(inLobby ? CYAN : DEFAULT).a(user).reset()
+                                .a(" ".repeat(length - 1 - user.toString().length()) + "│"));
+                    }
+                });
+
+                System.out.println("├" + "─".repeat(length) + "┤");
+                System.out.println(
+                        ansi().a("│ In-Game? ").fg(lobby.gameStarted ? GREEN : RED).a(lobby.gameStarted ? "V" : "X")
+                                .reset()
+                                .a(" ".repeat(length - 11) + "│"));
+                System.out.println("╘" + "═".repeat(length) + "╛");
+            }
     }
 }
