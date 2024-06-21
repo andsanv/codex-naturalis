@@ -26,9 +26,9 @@ public class TempGameController {
 
     public Pair<Double, Double> rawCellDimension;
     public Pair<Double, Double> rawCardDimension;
-    public double cardsRatio;
-    public double targetCardWidth;
-    public Pair<Double, Double> adjustedCardsDimension;
+    public double targetCellWidth;
+    public Pair<Double, Double> adjustedCellDimensions;
+    public Pair<Double, Double> adjustedCardDimensions;
     public double cardCompressionFactor;
 
     public Map<PlayerToken, GridPane> tokenToGridBoard;
@@ -58,10 +58,12 @@ public class TempGameController {
 
         rawCellDimension = new Pair<>(774.0, 397.0);
         rawCardDimension = new Pair<>(993.0, 662.0);
-        targetCardWidth = 200;
-        cardsRatio = rawCellDimension.first / rawCellDimension.second;
-        cardCompressionFactor = targetCardWidth / rawCellDimension.first;
-        adjustedCardsDimension = new Pair<>(targetCardWidth, targetCardWidth / cardsRatio);
+
+        targetCellWidth = 100;
+        cardCompressionFactor = targetCellWidth / rawCellDimension.first;   // target = 100 --> 0.1292, target = 200 -> 0.2584
+
+        adjustedCellDimensions = new Pair<>(rawCellDimension.first * cardCompressionFactor, rawCellDimension.second * cardCompressionFactor);
+        adjustedCardDimensions = new Pair<>(rawCardDimension.first * cardCompressionFactor, rawCardDimension.second * cardCompressionFactor);
 
         gridCellsCount = new Pair<>(81, 81);
 
@@ -71,29 +73,25 @@ public class TempGameController {
         initializePlayerBoardGrid();
         initializeScrollPane();
 
-        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-40, -40));
-        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-35, -39));
-        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(0, 0));
+        handlePlayedCardEvent(PlayerToken.RED, 85, CardSide.BACK, new Coords(0, 0));
         handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-1, -1));
     }
 
     public void initializePlayerBoardGrid() {
-        playerBoardGridPane.setPadding(new Insets(adjustedCardsDimension.second, adjustedCardsDimension.second, adjustedCardsDimension.second, adjustedCardsDimension.second));
+        playerBoardGridPane.setPadding(new Insets(adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second));
 
         for(int i = 0; i < gridCellsCount.first; i++) {
             RowConstraints row = new RowConstraints();
-            row.setPrefHeight((double) adjustedCardsDimension.second);
-            row.setMinHeight((double) adjustedCardsDimension.second);
+            row.setPrefHeight((double) adjustedCellDimensions.second);
+            row.setMinHeight((double) adjustedCellDimensions.second);
             row.setVgrow(javafx.scene.layout.Priority.NEVER);
             playerBoardGridPane.getRowConstraints().add(row);
-            System.out.println(playerBoardGridPane.getRowConstraints());
 
             ColumnConstraints column = new ColumnConstraints();
-            column.setPrefWidth((double) adjustedCardsDimension.first);
-            column.setMinWidth((double) adjustedCardsDimension.first);
+            column.setPrefWidth((double) adjustedCellDimensions.first);
+            column.setMinWidth((double) adjustedCellDimensions.first);
             column.setHgrow(javafx.scene.layout.Priority.NEVER);
             playerBoardGridPane.getColumnConstraints().add(column);
-            System.out.println(playerBoardGridPane.getColumnConstraints());
         }
     }
 
