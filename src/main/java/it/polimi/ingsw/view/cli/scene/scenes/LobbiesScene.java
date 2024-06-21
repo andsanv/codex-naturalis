@@ -61,7 +61,7 @@ public class LobbiesScene extends Scene {
                     CLIPrinter.displayLoadingMessage("Waiting for lobby creation", cli.creatingLobby);
                 }),
                 new CLICommand("leave", "to list active lobbies", () -> {
-                    
+
                 }));
     }
 

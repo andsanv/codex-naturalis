@@ -59,6 +59,7 @@ public class AccountScene extends Scene {
 
     @Override
     public void onEntry() {
+        CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Account Menu", BLUE);
 
         System.out.println("Do you want to create a new account or log in with a previously created one?");

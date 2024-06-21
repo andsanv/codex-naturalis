@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
+import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.BLUE;
 
 import java.util.Arrays;
@@ -18,21 +19,23 @@ import it.polimi.ingsw.view.cli.scene.SceneManager;
  * Transitions early to account login/creation if no UserInfo is found.
  */
 public class UserInfoLoginScene extends Scene {
-    Optional<UserInfo> userInfo = UserInfoManager.retrieveUserInfo();
+    Optional<UserInfo> userInfo;
 
     public UserInfoLoginScene(SceneManager sceneManager) {
         super(sceneManager);
 
-        this.commandsDescription = "Here you decide if you want the given account or not";
+        this.commandsDescription = "Here you decide if you want to use a saved account or not";
         this.commands = Arrays.asList(
                 new CLICommand("yes", "to continue with the saved account", () -> {
                     CLI cli = sceneManager.cli;
 
                     cli.setUserInfo(userInfo.get());
-                    
+
                     cli.waitingUserInfo.set(true);
                     cli.getConnectionHandler().reconnect();
                     CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo);
+
+                    sceneManager.transition(LobbiesScene.class);
                 }),
                 new CLICommand("no", "to create a new account or log in to an existing one", () -> {
                     sceneManager.transition(AccountScene.class);
@@ -43,13 +46,18 @@ public class UserInfoLoginScene extends Scene {
     public void onEntry() {
         CLIPrinter.clear();
 
-        if (userInfo.isEmpty()){
+        userInfo = UserInfoManager.retrieveUserInfo();
+
+        if (userInfo.isEmpty()) {
             sceneManager.transition(AccountScene.class);
             return;
         }
 
         CLIPrinter.displaySceneTitle("Existing account found", BLUE);
 
-        System.out.println("The account " + userInfo.get() + " has been found on this device, do you want to use it?");
+        System.out.println(ansi()
+                .a("The account ")
+                .fg(BLUE).a(userInfo.get()).reset()
+                .a(" has been found on this device, do you want to use it?"));
     }
 }
