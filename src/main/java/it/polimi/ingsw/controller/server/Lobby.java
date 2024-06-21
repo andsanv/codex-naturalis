@@ -8,12 +8,31 @@ import java.util.List;
  * id (incremental from 0). The class is synchronized.
  */
 public class Lobby {
+  /**
+   * Id of the next lobby
+   */
   private static int nextId = 0;
 
+  /**
+   * Unique id of the lobby
+   */
   public final int id;
+
+  /**
+   * The player that can start the game
+   */
   private User manager;
+
+  /**
+   * The list of users in the lobby
+   */
   private final List<User> users;
-  boolean gameStarted;
+
+  /**
+   * A boolean that is true if the game was started
+   * TODO synchronize
+   */
+  public boolean gameStarted;
 
   /**
    * Checks if the lobby is full.

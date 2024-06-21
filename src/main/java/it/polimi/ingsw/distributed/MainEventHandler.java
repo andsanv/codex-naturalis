@@ -3,7 +3,6 @@ package it.polimi.ingsw.distributed;
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This interface represents the main event handler, which is used to handle the

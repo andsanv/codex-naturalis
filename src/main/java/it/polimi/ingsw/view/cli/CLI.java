@@ -21,6 +21,7 @@ import it.polimi.ingsw.view.UserInfoManager;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
+import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
 import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
@@ -100,6 +101,7 @@ public class CLI implements UI {
         sceneManager.registerScene(new ConnectionScene(sceneManager));
         sceneManager.registerScene(new UserInfoLoginScene(sceneManager));
         sceneManager.registerScene(new AccountScene(sceneManager));
+        sceneManager.registerScene(new LobbiesScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -167,7 +169,7 @@ public class CLI implements UI {
         }
         
         waitingUserInfo.set(false);
-        
+
         if(error!=null)
             CLIPrinter.displayError(error);
     }
