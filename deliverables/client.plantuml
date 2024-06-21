@@ -1,0 +1,33 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+package "client" {
+    interface GameViewActions << interface >> {
+      + receiveEvent(GameEvent): void
+    }
+
+    interface MainViewActions << interface >> {
+      + receiveEvent(MainEvent): void
+      + setGameServer(GameServerActions): void
+    }
+
+    package "rmi" {
+        class RMIGameView {
+          - gameEventHandler: GameEventHandler
+          + receiveEvent(GameEvent): void
+          + update(GameEvent): void
+        }
+
+        class RMIMainView {
+          - connectionHandler: RMIConnectionHandler
+          - mainEventHandler: MainEventHandler
+          + setGameServer(GameServerActions): void
+          + receiveEvent(MainEvent): void
+        }
+    }
+}
+
+@enduml

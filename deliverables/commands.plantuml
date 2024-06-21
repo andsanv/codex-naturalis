@@ -1,0 +1,129 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+package "commands" {
+    class Command
+
+    package "main" {
+        class ConnectionCommand {
+          + username: String
+          + execute(): void
+        }
+
+        class CreateLobbyCommand {
+          - userInfo: UserInfo
+          + getUserInfo(): UserInfo
+          + execute(): void
+        }
+
+        class JoinLobbyCommand {
+          - userInfo: UserInfo
+          - lobbyId: int
+          + execute(): void
+          + getLobbyId(): int
+          + getUserInfo(): UserInfo
+        }
+
+        class LeaveLobbyCommand {
+          - lobbyId: int
+          - userInfo: UserInfo
+          + execute(): void
+          + getLobbyId(): int
+          + getUserInfo(): UserInfo
+        }
+
+        class MainCommand {
+          + execute(): void
+        }
+
+        class ReconnectionCommand {
+          + userInfo: UserInfo
+          + lastEventId: int
+          + execute(): void
+        }
+
+        class SignUpCommand {
+          - name: String
+          + execute(): void
+          + getName(): String
+        }
+
+        class StartGameCommand {
+          - userInfo: UserInfo
+          - lobbyId: int
+          + execute(): void
+          + getUserInfo(): UserInfo
+          + getLobbyId(): int
+        }
+    }
+
+    package "game" {
+        class DrawGoldDeckCardCommand {
+          - playerToken: PlayerToken
+          + execute(GameFlowManager): boolean
+        }
+
+        class DrawObjectiveCardsCommand {
+          - playerToken: PlayerToken
+          + execute(GameFlowManager): boolean
+        }
+
+        class DrawResourceDeckCardCommand {
+          - playerToken: PlayerToken
+          + execute(GameFlowManager): boolean
+        }
+
+        class DrawStarterCardCommand {
+          - playerToken: PlayerToken
+          + execute(GameFlowManager): boolean
+        }
+
+        class DrawVisibleGoldCardCommand {
+          - playerToken: PlayerToken
+          - choice: int
+          + execute(GameFlowManager): boolean
+        }
+
+        class DrawVisibleResourceCardCommand {
+          - playerToken: PlayerToken
+          - choice: int
+          + execute(GameFlowManager): boolean
+        }
+
+        class GameCommand {
+          + execute(GameFlowManager): boolean
+        }
+
+        class PlayCardCommand {
+          + cardSide: CardSide
+          + playerToken: PlayerToken
+          + coords: Coords
+          + cardId: int
+          + execute(GameFlowManager): boolean
+        }
+
+        class SelectObjectiveCardCommand {
+          - playerToken: PlayerToken
+          - choice: int
+          + execute(GameFlowManager): boolean
+        }
+
+        class SelectStarterCardSideCommand {
+          - playerToken: PlayerToken
+          - cardSide: CardSide
+          + execute(GameFlowManager): boolean
+        }
+
+        class SelectTokenCommand {
+          + player: UserInfo
+          + playerToken: PlayerToken
+          + execute(GameFlowManager): boolean
+        }
+    }
+
+}
+
+@enduml
