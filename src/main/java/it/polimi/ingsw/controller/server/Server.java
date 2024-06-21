@@ -415,7 +415,7 @@ public enum Server {
 
     executorService.submit(() -> {
       try {
-        client.receiveEvent(new LoginEvent(userInfo, Optional.empty()));
+        client.receiveEvent(new LoginEvent(userInfo, null));
         client.receiveEvent(new LobbiesEvent(getLobbies()));
       } catch (IOException e) {      
         client.setStatus(Status.OFFLINE);

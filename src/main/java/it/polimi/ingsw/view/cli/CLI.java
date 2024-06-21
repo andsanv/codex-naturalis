@@ -160,14 +160,16 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleLoginEvent(UserInfo userInfo, Optional<String> error) {
+    public void handleLoginEvent(UserInfo userInfo, String error) {
         synchronized (userInfoLock) {
             this.userInfo = userInfo;
             UserInfoManager.saveUserInfo(userInfo);
         }
         
         waitingUserInfo.set(false);
-        error.ifPresent(CLIPrinter::displayError);
+        
+        if(error!=null)
+            CLIPrinter.displayError(error);
     }
 
     @Override

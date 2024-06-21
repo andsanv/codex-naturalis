@@ -19,7 +19,7 @@ public interface MainEventHandler {
    * 
    * @param userInfo
    */
-  public void handleLoginEvent(UserInfo userInfo, Optional<String> error);
+  public void handleLoginEvent(UserInfo userInfo, String error);
 
   /**
    * This method handles the reception of generic server error

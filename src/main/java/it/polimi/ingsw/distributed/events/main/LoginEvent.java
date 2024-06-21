@@ -1,7 +1,5 @@
 package it.polimi.ingsw.distributed.events.main;
 
-import java.util.Optional;
-
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.MainEventHandler;
 
@@ -14,9 +12,9 @@ import it.polimi.ingsw.distributed.MainEventHandler;
  */
 public class LoginEvent extends MainEvent {
   private final UserInfo userInfo;
-  private final Optional<String> error;
+  private final String error;
 
-  public LoginEvent(UserInfo userInfo, Optional<String> error) {
+  public LoginEvent(UserInfo userInfo, String error) {
     this.userInfo = userInfo;
     this.error = error;
   }
