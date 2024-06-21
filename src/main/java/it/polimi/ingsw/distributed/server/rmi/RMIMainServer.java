@@ -3,9 +3,13 @@ package it.polimi.ingsw.distributed.server.rmi;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.client.rmi.RMIGameView;
+import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 
 import java.rmi.AlreadyBoundException;
@@ -25,7 +29,8 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
 
   /**
    * This executor service is used to make rmi function calls async.
-   * The execution of the functions on the server.java instace are done in separate threads.
+   * The execution of the functions on the server.java instace are done in
+   * separate threads.
    */
   private final ExecutorService executorService;
 
@@ -55,27 +60,37 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   /**
    * {@inheritDoc}
    * This method is used from the client (via RMI) to connect to the main server.
-   * The addConnectedClient method will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
+   * The addConnectedClient method will verify the username and reply to the
+   * client with a UserInfoEvent giving him an adequate id.
    */
   @Override
   public void connectToMain(String username, MainViewActions clientMainView, GameViewActions gameViewActions)
       throws RemoteException {
-        System.out.println("User " + username + "main view " + clientMainView);
+        System.out.println(clientMainView);
+    System.out.println(gameViewActions);
+
+    RMIHandler rmiHandler = new RMIHandler(clientMainView, gameViewActions);
+    
+    System.out.println("User " + username + "main view " + clientMainView);
     executorService.submit(
         () -> {
-          Server.INSTANCE.addConnectedClient(username, clientMainView, gameViewActions);
+          Server.INSTANCE.clientSignUp(username, rmiHandler);
         });
   }
 
   /**
    * This method is used from the client when it wants to reconnect to the server.
-   * The addReconnectedClient will verify the username and reply to the client with a UserInfoEvent giving him an adequate id.
+   * The addReconnectedClient will verify the username and reply to the client
+   * with a UserInfoEvent giving him an adequate id.
    */
   @Override
-  public void reconnect(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions) throws RemoteException {
+  public void reconnect(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions)
+      throws RemoteException {
+
+    RMIHandler rmiHandler = new RMIHandler(clientMainView, gameViewActions);
     executorService.submit(
         () -> {
-          Server.INSTANCE.addReconnectedClient(userInfo, clientMainView, gameViewActions);
+          Server.INSTANCE.clientLogin(userInfo, rmiHandler);
         });
   }
 

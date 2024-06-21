@@ -9,15 +9,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.client.Status;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.AlreadyInLobbyErrorEvent;
@@ -27,7 +31,8 @@ import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
-import it.polimi.ingsw.distributed.server.socket.ClientHandler;
+import it.polimi.ingsw.distributed.server.rmi.RMIHandler;
+import it.polimi.ingsw.distributed.server.socket.SocketClientHandler;
 import it.polimi.ingsw.util.Pair;
 
 /**
@@ -46,23 +51,10 @@ public enum Server {
   private final Set<User> users;
 
   /**
-   * Links the UserInfo to its MainViewActions and connection status.
-   * The value is true if the client is connected, false otherwise.
-   * When the client is in the menu, he receives updates on the list of lobbies.
+   * Links the UserInfo to their respective client.
+   * From the Client instance, the server can get their status.
    */
-  private ConcurrentHashMap<UserInfo, Pair<MainViewActions, AtomicBoolean>> connectedPlayers;
-
-  /** 
-   * Links the UserInfo to a boolean.
-   * The value is true if the client is in the menu, false otherwise.
-  */
-  private ConcurrentHashMap<UserInfo, Boolean> playersInMenu;
-
-  /**
-   * Links the UserInfo to its GameViewActions.
-   * This is used to hold the GameViewActions references to construct the GameFlowManager listeners when a game is starting.
-   */
-  private ConcurrentHashMap<UserInfo, GameViewActions> gameViews; 
+  private final ConcurrentHashMap<UserInfo, Client> connectedPlayers;
 
   private final ExecutorService executorService;
 
@@ -73,36 +65,41 @@ public enum Server {
     this.lobbies = new HashMap<>();
     this.users = new HashSet<>();
     this.connectedPlayers = new ConcurrentHashMap<>();
-    this.playersInMenu = new ConcurrentHashMap<>();
     this.lobbyToGameFlowManager = new HashMap<>();
-    this.gameViews = new ConcurrentHashMap<>();
     this.executorService = Executors.newCachedThreadPool();
     checkConnections();
   }
+
+  
 
   public void checkConnections() {
     executorService.submit(
         () -> {
           while (true) {
             connectedPlayers.entrySet().stream()
-                .filter(entry -> entry.getValue().second.get())
+                .filter(entry -> {
+                  return entry.getValue().getStatus() == Status.IN_GAME ||
+                      entry.getValue().getStatus() == Status.IN_MENU;
+                })
                 .forEach(
                     entry -> {
                       try {
-                        entry.getValue().first.receiveEvent(new KeepAliveEvent());
+                        entry.getValue().receiveEvent(new KeepAliveEvent());
                         System.out.println("Sent keep alive to " + entry.getKey());
                       } catch (IOException e) {
-                        AtomicBoolean atomicBoolean = connectedPlayers.get(entry.getKey()).second;
-                        atomicBoolean.set(false);
+                        if (entry.getValue().getStatus() == Status.IN_GAME) {
+                          entry.getValue().setStatus(Status.DISCONNETED_FROM_GAME);
+                        } else if (entry.getValue().getStatus() == Status.IN_MENU)
+                          entry.getValue().setStatus(Status.OFFLINE);
 
-                        System.err.println("Error: Couldn't send message to " + entry.getValue().first);
+                        System.err.println("Error: Couldn't send message to " + entry.getValue());
                         System.err.println("Client " + entry.getKey() + " is disconnected");
                       }
                     });
             try {
               Thread.sleep(1500);
             } catch (InterruptedException e) {
-              e.printStackTrace();
+              System.err.println("Check connection crashed");
             }
           }
         });
@@ -253,19 +250,22 @@ public enum Server {
         return false;
       }
 
-      // Aggiungi le view dei giocatori nel costruttore
-      List<Observer> observers = gameViews.entrySet().stream()
-          .filter(entry ->  connectedPlayers.get(entry.getKey()).second.get())
+      connectedPlayers.get(userInfo).setStatus(Status.IN_GAME);
+
+      List<Observer> observers = connectedPlayers.entrySet().stream()
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
+          .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
           .map(entry -> entry.getValue())
           .collect(Collectors.toList());
 
-      ConcurrentHashMap<UserInfo, AtomicBoolean> isConnected = new ConcurrentHashMap<>();
+      observers = new CopyOnWriteArrayList<>(observers);
+
+      ConcurrentHashMap<UserInfo, Supplier<Boolean>> isConnected = new ConcurrentHashMap<>();
       connectedPlayers
           .entrySet()
           .stream()
           .filter(e -> lobby.getUsers().contains(userInfoToUser(e.getKey())))
-          .forEach(e -> isConnected.put(e.getKey(), e.getValue().second));
+          .forEach(e -> isConnected.put(e.getKey(), ()-> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
 
       GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
       lobbyToGameFlowManager.put(lobby, gameFlowManager);
@@ -274,22 +274,21 @@ public enum Server {
       // the starting game
       // update playersInGame map
       connectedPlayers.entrySet().stream()
-          .filter(entry -> entry.getValue().second.get())
           .filter(entry -> lobby.getUsers().contains(userInfoToUser(entry.getKey())))
+          .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
           .forEach(
               entry -> {
-                playersInMenu.put(entry.getKey(), false);
+                entry.getValue().setStatus(Status.IN_GAME);
                 try {
-                  if (entry.getValue().first instanceof ClientHandler) {
-                    ClientHandler client = (ClientHandler) entry.getValue().first;
+                  if (entry.getValue() instanceof SocketClientHandler) {
+                    SocketClientHandler client = (SocketClientHandler) entry.getValue();
                     client.setGameFlowManager(gameFlowManager);
-                  } else if (entry.getValue().first instanceof RMIMainView) {
+                  } else if (entry.getValue() instanceof RMIHandler) {
                     RMIGameServer gameServer = new RMIGameServer(gameFlowManager, "gameServer" + lobbyId);
-                    RMIMainView client = (RMIMainView) entry.getValue().first;
+                    RMIHandler client = (RMIHandler) entry.getValue();
                     client.setGameServer(gameServer);
                   }
                 } catch (RemoteException e) {
-                  // TODO
                   System.err.println("Couldn't send connection event to");
                   e.printStackTrace();
                 }
@@ -335,7 +334,7 @@ public enum Server {
         if (isInLobby(userInfo)) {
           System.err.println("Lobby creation request by " + userInfo + " failed: the user is already in another lobby");
           try {
-            connectedPlayers.get(userInfo).first.receiveEvent(new AlreadyInLobbyErrorEvent());
+            connectedPlayers.get(userInfo).receiveEvent(new AlreadyInLobbyErrorEvent());
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -365,42 +364,51 @@ public enum Server {
     return getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo));
   }
 
-  public void addReconnectedClient(UserInfo userInfo, MainViewActions clientMainView, GameViewActions gameViewActions) {
-    System.out.println(clientMainView);
-    if (playersInMenu.containsKey(userInfo) && !connectedPlayers.get(userInfo).second.get()) {
-      GameViewActions oldGameViewActions = gameViews.get(userInfo);
+  public void clientLogin(UserInfo userInfo, Client client) {
+    if (connectedPlayers.containsKey(userInfo)) {
+      System.out.println("Reconnecting user " + userInfo);
+      Client oldClient = connectedPlayers.get(userInfo);
 
-      AtomicBoolean atomicBoolean = connectedPlayers.get(userInfo).second;
+      System.out.println("Old client: " + connectedPlayers.get(userInfo));
+      System.out.println("State: " + oldClient.getStatus());
       
-      gameViews.put(userInfo, gameViewActions);
+      connectedPlayers.put(userInfo, client);
 
-      connectedPlayers.put(userInfo, new Pair<MainViewActions, AtomicBoolean>(clientMainView, atomicBoolean));
-      atomicBoolean.set(true);
+      client.setStatus(Status.IN_MENU);
 
       try {
-        if (playersInMenu.get(userInfo))
-          clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
-        else {
+        if (oldClient.getStatus() == Status.OFFLINE){
+          System.out.println("Reconnecting to main menu");
+          client.receiveEvent(new LobbiesEvent(getLobbies()));
+        }
+        else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
+          System.out.println("Reconnecting to game");
           GameFlowManager gameFlowManager = lobbyToGameFlowManager.get(lobbies.values().stream()
               .filter(lobby -> lobby.getUsers().contains(userInfoToUser(userInfo)))
               .findFirst()
               .orElse(null));
-          clientMainView.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
+          client.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
 
-          gameFlowManager.observers.remove(oldGameViewActions);
-          gameFlowManager.observers.add(gameViewActions);
+          // TODO: add as properties of reconnectToGameEvent the mapping <UserInfo, Token>
+
+          gameFlowManager.observers.remove(oldClient);
+          gameFlowManager.observers.add(client);
         }
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     } else {
-      System.out.println("Error: User not found in recent sessions or another user has the same username, assigning new userinfo...");
-      addConnectedClient(userInfo.name, clientMainView, gameViewActions);
+      System.err.println("Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
+      try {
+        client.receiveEvent(new MainErrorEvent("Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id."));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      this.clientSignUp(userInfo.name, client);
     }
   }
 
-  public UserInfo addConnectedClient(String username, MainViewActions clientMainView, GameViewActions gameViewActions) {
+  public UserInfo clientSignUp(String username, Client client) {
     User user = new User(username);
 
     synchronized (users) {
@@ -409,21 +417,19 @@ public enum Server {
 
     UserInfo userInfo = new UserInfo(user);
 
-    // TODO da mettere in una lambda da passare all'executor service perché
-    // bloccanti
-    try {
-      clientMainView.receiveEvent(new UserInfoEvent(userInfo));
-      clientMainView.receiveEvent(new LobbiesEvent(getLobbies()));
-    } catch (IOException e) {
-      System.err.println("Couldn't send userInfo event to " + userInfo);
-      e.printStackTrace();
-    }
+    executorService.submit(() -> {
+      try {
+        client.receiveEvent(new UserInfoEvent(userInfo));
+        client.receiveEvent(new LobbiesEvent(getLobbies()));
+      } catch (IOException e) {      
+        client.setStatus(Status.OFFLINE);
+        System.err.println("Couldn't send userInfo event to " + userInfo);
+        e.printStackTrace();
+      }
+    });
 
-    gameViews.put(userInfo, gameViewActions);
-    
-    connectedPlayers.put(userInfo, new Pair<>(clientMainView, new AtomicBoolean(true)));
-
-    playersInMenu.put(userInfo, true);
+    connectedPlayers.put(userInfo, client);
+    client.setStatus(Status.IN_MENU);
 
     return userInfo;
   }
@@ -463,17 +469,14 @@ public enum Server {
     executorService.submit(
         () -> {
           connectedPlayers.entrySet().stream()
-              .filter(entry -> playersInMenu.get(entry.getKey()) != null)
-              .filter(entry -> playersInMenu.get(entry.getKey()))
-              .filter(entry -> entry.getValue().second.get())
+              .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
               .forEach(
                   entry -> {
                     try {
                       System.out.println("Sending lobbies to " + entry.getKey());
-                      System.out.println(entry.getValue().first);
-                      System.out.println(entry.getValue().second);
-                      entry.getValue().first.receiveEvent(new LobbiesEvent(lobbies));
+                      entry.getValue().receiveEvent(new LobbiesEvent(lobbies));
                     } catch (IOException e) {
+                      entry.getValue().setStatus(Status.OFFLINE);
                       System.err.println("Error: Couldn't send message to " + entry.getKey());
                     }
                   });
@@ -490,10 +493,10 @@ public enum Server {
     executorService.submit(() -> {
       System.out.println("Sending error to " + userInfo + ": " + error);
 
-      Pair<MainViewActions, AtomicBoolean> client = connectedPlayers.get(userInfo);
-      if (client.second.get()) {
+      Client client = connectedPlayers.get(userInfo);
+      if (client.getStatus() == Status.IN_MENU){
         try {
-          client.first.receiveEvent(new MainErrorEvent(error));
+          client.receiveEvent(new MainErrorEvent(error));
         } catch (IOException e) {
           System.err.println("Could not send error message to " + userInfo);
         }
@@ -511,10 +514,10 @@ public enum Server {
     executorService.submit(() -> {
       System.out.println("Sending a " + event.getClass().getName() + " to " + userInfo);
 
-      Pair<MainViewActions, AtomicBoolean> client = connectedPlayers.get(userInfo);
-      if (client.second.get()) {
+      Client client = connectedPlayers.get(userInfo);
+      if (client.getStatus() == Status.IN_MENU) {
         try {
-          client.first.receiveEvent(event);
+          client.receiveEvent(event);
         } catch (IOException e) {
           System.err.println("Could not send " + event.getClass().getName() + " to " + userInfo);
         }

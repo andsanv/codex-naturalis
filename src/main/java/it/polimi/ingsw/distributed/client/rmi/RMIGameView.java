@@ -31,9 +31,4 @@ public class RMIGameView extends UnicastRemoteObject implements GameViewActions 
     event.execute(gameEventHandler);
   }
 
-  @Override
-  public void update(GameEvent event) throws RemoteException {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'update'");
-  }
 }

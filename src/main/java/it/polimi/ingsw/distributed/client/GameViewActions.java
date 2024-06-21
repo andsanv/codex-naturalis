@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 /**
  * This class represents the action that can be performed on the client game view.
  */
-public interface GameViewActions extends Remote, Observer {
+public interface GameViewActions extends Remote {
   /**
    * Receives a game event.
    * @param event the sent event

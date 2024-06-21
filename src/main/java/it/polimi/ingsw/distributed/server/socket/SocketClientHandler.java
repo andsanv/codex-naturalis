@@ -1,9 +1,7 @@
 package it.polimi.ingsw.distributed.server.socket;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.observer.Observable;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
@@ -22,7 +20,7 @@ import java.rmi.RemoteException;
  * This class will handle the communication with the client.
  * Receiving command from the client and  sending events to it.
  */
-public class ClientHandler implements Runnable, MainViewActions, GameViewActions {
+public class SocketClientHandler extends Client implements Runnable {
 
   /**
    * The input stream for the client Command requests
@@ -44,7 +42,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
    * @param out the output stream
    * @param in the input stream
    */
-  public ClientHandler(ObjectOutputStream out, ObjectInputStream in) {
+  public SocketClientHandler(ObjectOutputStream out, ObjectInputStream in) {
     this.out = out;
     this.in = in;
   }
@@ -118,8 +116,7 @@ public class ClientHandler implements Runnable, MainViewActions, GameViewActions
     try {
       receiveEvent(event);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      System.err.println("Error while sending event");
     }
   }
 

@@ -27,14 +27,7 @@ public abstract class Observable {
   public void notify(GameEvent event) {
     event.setId(lastEventId.getAndIncrement());
     synchronized (observers) {
-      observers.forEach(observer -> {
-        try {
-          observer.update(event);
-        } catch (RemoteException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-      });
+      observers.forEach(observer -> observer.update(event));
     }
   }
 }

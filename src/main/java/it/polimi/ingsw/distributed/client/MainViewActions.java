@@ -1,6 +1,5 @@
 package it.polimi.ingsw.distributed.client;
 
-import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 

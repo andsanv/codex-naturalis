@@ -29,7 +29,7 @@ public class SocketServer {
   private final ExecutorService executorService;
 
   /** Map from user info to corresponding client handler */
-  private final ConcurrentHashMap<UserInfo, ClientHandler> connections;
+  private final ConcurrentHashMap<UserInfo, SocketClientHandler> connections;
 
   /**
    * This constructor is the starting point for the server.
@@ -72,7 +72,7 @@ public class SocketServer {
         out.flush();
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-        ClientHandler connection = new ClientHandler(out, in);
+        SocketClientHandler connection = new SocketClientHandler(out, in);
 
         Command command = (Command) in.readObject();
 
@@ -84,7 +84,7 @@ public class SocketServer {
 
           System.out.println("New connection from " + username);
 
-          UserInfo userInfo = Server.INSTANCE.addConnectedClient(username, connection, connection);
+          UserInfo userInfo = Server.INSTANCE.clientSignUp(username, connection);
           connections.put(userInfo, connection);
         } else if (command instanceof ReconnectionCommand) {
           ReconnectionCommand reconnectionCommand = (ReconnectionCommand) command;
@@ -92,7 +92,7 @@ public class SocketServer {
 
           System.out.println("Reconnection from " + userInfo);
 
-          Server.INSTANCE.addReconnectedClient(userInfo, connection, connection);
+          Server.INSTANCE.clientLogin(userInfo, connection);
           connections.put(userInfo, connection);
         } else {
           System.err.println("Unrecognized request on socket server");
@@ -111,7 +111,7 @@ public class SocketServer {
    * 
    * @return the connections map
    */
-  public ConcurrentHashMap<UserInfo, ClientHandler> getConnections() {
+  public ConcurrentHashMap<UserInfo, SocketClientHandler> getConnections() {
     return connections;
   }
 }

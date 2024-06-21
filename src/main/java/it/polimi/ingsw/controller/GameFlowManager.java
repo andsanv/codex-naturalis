@@ -32,6 +32,7 @@ import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -62,7 +63,7 @@ public class GameFlowManager implements Runnable {
   /**
    * Map that keeps track of active connections (non AFK players)
    */
-  private final Map<UserInfo, AtomicBoolean> isConnected;
+  private final Map<UserInfo, Supplier<Boolean>> isConnected;
 
   /**
    * List containing all in game users.
@@ -131,7 +132,7 @@ public class GameFlowManager implements Runnable {
    * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
    * @param observers list of observers
    */
-  public GameFlowManager(Lobby lobby, Map<UserInfo, AtomicBoolean> isConnected, List<Observer> observers, int timeLimit) {
+  public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers, int timeLimit) {
     this.lobby = lobby;
     this.users = lobby.getUsers().stream().map(u -> new UserInfo(u)).collect(Collectors.toList());
 
@@ -162,7 +163,7 @@ public class GameFlowManager implements Runnable {
    * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
    * @param observers list of observers
    */
-  public GameFlowManager(Lobby lobby, Map<UserInfo, AtomicBoolean> isConnected, List<Observer> observers) {
+  public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers) {
     this(lobby, isConnected, observers, 60);
   }
 
@@ -352,11 +353,7 @@ public class GameFlowManager implements Runnable {
    */
   public void notify(GameEvent gameEvent) {
     observers.forEach(observer -> {
-      try {
-        observer.update(gameEvent);
-      } catch (RemoteException e) {
-        e.printStackTrace();
-      }
+      observer.update(gameEvent);
     });
   }
 

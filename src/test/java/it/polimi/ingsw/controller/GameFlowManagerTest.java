@@ -19,6 +19,7 @@ import it.polimi.ingsw.model.player.PlayerToken;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class GameFlowManagerTest {
   private Lobby lobby;
 
   private List<it.polimi.ingsw.controller.observer.Observer> observers;
-  private Map<UserInfo, AtomicBoolean> isConnected;
+  private Map<UserInfo, Supplier<Boolean>> isConnected;
 
   @BeforeEach
   void setUp() {
@@ -44,9 +45,9 @@ class GameFlowManagerTest {
     lobby = new Lobby(creatorUser);
     lobby.addUser(playerUser);
 
-    isConnected = new HashMap<UserInfo, AtomicBoolean>() {{
-      put(creator, new AtomicBoolean(true));
-      put(player, new AtomicBoolean(true));
+    isConnected = new HashMap<UserInfo, Supplier<Boolean>>() {{
+      put(creator, ()-> true);
+      put(player, ()-> true);
     }};
   }
 
