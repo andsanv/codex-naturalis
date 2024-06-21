@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
@@ -9,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.control.ScrollPane;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,6 +37,7 @@ public class TempGameController {
 
     public Map<PlayerToken, GridPane> tokenToGridBoard;
     public PlayerToken selfPlayerToken;
+    public List<UserInfo> players;
 
     private double zoomScale;
     private double zoomIncrement;
@@ -48,7 +53,19 @@ public class TempGameController {
     public ScrollPane mainScrollPane;
 
     @FXML
-    private GridPane playerBoardGridPane;
+    public GridPane playerBoardGridPane;
+
+    @FXML
+    public TabPane leftTabPane;
+
+    @FXML
+    public TabPane rightTabPane;
+
+    @FXML
+    public Button leftPanelButton;
+
+    @FXML
+    public Button rightPanelButton;
 
     private Pair<Integer, Integer> gridCellsCount;
 
@@ -72,6 +89,7 @@ public class TempGameController {
 
         initializePlayerBoardGrid();
         initializeScrollPane();
+        initializeSidePanels();
 
         handlePlayedCardEvent(PlayerToken.RED, 85, CardSide.BACK, new Coords(0, 0));
         handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-1, -1));
@@ -98,6 +116,10 @@ public class TempGameController {
     public void initializeScrollPane() {
         mainScrollPane.setHvalue(0.5);
         mainScrollPane.setVvalue(0.5);
+    }
+
+    public void initializeSidePanels() {
+
     }
 
     /**
@@ -187,5 +209,17 @@ public class TempGameController {
 
         GridPane newGridPane = tokenToGridBoard.get(playerToken);
         mainStackPane.getChildren().set(mainStackPane.getChildren().size() - 2, tokenToGridBoard.get(playerToken));
+    }
+
+    public void handleOnMouseClickedLeftPanelButton(MouseEvent event) {
+        leftTabPane.setVisible(!leftTabPane.isVisible());
+        leftTabPane.setMouseTransparent(!leftTabPane.isMouseTransparent());
+        event.consume();
+    }
+
+    public void handleOnMouseClickedRightPanelButton(MouseEvent event) {
+        rightTabPane.setVisible(!rightTabPane.isVisible());
+        rightTabPane.setMouseTransparent(!rightTabPane.isMouseTransparent());
+        event.consume();
     }
 }
