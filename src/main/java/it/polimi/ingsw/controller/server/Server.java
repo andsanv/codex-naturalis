@@ -12,28 +12,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
-import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.AlreadyInLobbyErrorEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.MainErrorEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
-import it.polimi.ingsw.distributed.events.main.UserInfoEvent;
+import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
 import it.polimi.ingsw.distributed.server.rmi.RMIHandler;
 import it.polimi.ingsw.distributed.server.socket.SocketClientHandler;
-import it.polimi.ingsw.util.Pair;
 
 /**
  * The server is implemented using the Singleton pattern. It handles users,
@@ -419,7 +415,7 @@ public enum Server {
 
     executorService.submit(() -> {
       try {
-        client.receiveEvent(new UserInfoEvent(userInfo));
+        client.receiveEvent(new LoginEvent(userInfo, Optional.empty()));
         client.receiveEvent(new LobbiesEvent(getLobbies()));
       } catch (IOException e) {      
         client.setStatus(Status.OFFLINE);

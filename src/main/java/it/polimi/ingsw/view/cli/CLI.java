@@ -160,18 +160,19 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleUserInfo(UserInfo userInfo) {
+    public void handleLoginEvent(UserInfo userInfo, Optional<String> error) {
         synchronized (userInfoLock) {
             this.userInfo = userInfo;
             UserInfoManager.saveUserInfo(userInfo);
-            waitingUserInfo.set(false);
         }
+        
+        waitingUserInfo.set(false);
+        error.ifPresent(CLIPrinter::displayError);
     }
 
     @Override
     public void handleServerError(String error) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleServerError'");
+        CLIPrinter.displayError(error);
     }
 
     @Override

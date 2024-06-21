@@ -151,7 +151,7 @@ public class CLITest implements UI {
   }
 
   @Override
-  public void handleUserInfo(UserInfo userInfo) {
+  public void handleLoginEvent(UserInfo userInfo, Optional<String> error) {
     this.userInfo = userInfo;
     System.out.println("UserInfo: " + userInfo);
   }

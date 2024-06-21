@@ -149,7 +149,7 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleUserInfo(UserInfo userInfo) {
+    public void handleLoginEvent(UserInfo userInfo, Optional<String> error) {
         return;
     }
 

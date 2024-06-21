@@ -394,7 +394,7 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleUserInfo(UserInfo userInfo) {
+    public void handleLoginEvent(UserInfo userInfo, Optional<String> error) {
         synchronized (userInfoLock) {
             this.userInfo = userInfo;
             waitingUserInfo.set(false);
