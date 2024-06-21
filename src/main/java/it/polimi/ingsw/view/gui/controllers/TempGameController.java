@@ -6,27 +6,33 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.control.ScrollPane;
+
+import java.util.Map;
 
 
 public class TempGameController {
     public Pair<Integer, Integer> screenResolution;
     public double screenRatio;
 
-    public Pair<Double, Double> rawCardsDimension;
+    public Pair<Double, Double> rawCellDimension;
+    public Pair<Double, Double> rawCardDimension;
     public double cardsRatio;
     public double targetCardWidth;
     public Pair<Double, Double> adjustedCardsDimension;
     public double cardCompressionFactor;
+
+    public Map<PlayerToken, GridPane> tokenToGridBoard;
+    public PlayerToken selfPlayerToken;
 
     private double zoomScale;
     private double zoomIncrement;
@@ -43,23 +49,21 @@ public class TempGameController {
 
     @FXML
     private GridPane playerBoardGridPane;
-    private double initialGridPaneWidth;
-    private double initialGridPaneHeight;
-    private double currentGridPaneWidth;
-    private double currentGridPaneHeight;
+
     private Pair<Integer, Integer> gridCellsCount;
 
     public void initialize(GUI gui) {
         screenResolution = new Pair<>(1440, 900);
         screenRatio =  0.01 * ((double) (100 * screenResolution.first) / screenResolution.second);
 
-        rawCardsDimension = new Pair<>(774.0, 397.0);
+        rawCellDimension = new Pair<>(774.0, 397.0);
+        rawCardDimension = new Pair<>(993.0, 662.0);
         targetCardWidth = 200;
-        cardsRatio = rawCardsDimension.first / rawCardsDimension.second;
-        cardCompressionFactor = targetCardWidth / rawCardsDimension.first;
+        cardsRatio = rawCellDimension.first / rawCellDimension.second;
+        cardCompressionFactor = targetCardWidth / rawCellDimension.first;
         adjustedCardsDimension = new Pair<>(targetCardWidth, targetCardWidth / cardsRatio);
 
-        gridCellsCount = new Pair<>(2, 2);
+        gridCellsCount = new Pair<>(81, 81);
 
         zoomScale = 1;
         zoomIncrement = 0.1;
@@ -67,7 +71,10 @@ public class TempGameController {
         initializePlayerBoardGrid();
         initializeScrollPane();
 
+        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-40, -40));
+        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-35, -39));
         handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(0, 0));
+        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-1, -1));
     }
 
     public void initializePlayerBoardGrid() {
@@ -77,16 +84,17 @@ public class TempGameController {
             RowConstraints row = new RowConstraints();
             row.setPrefHeight((double) adjustedCardsDimension.second);
             row.setMinHeight((double) adjustedCardsDimension.second);
+            row.setVgrow(javafx.scene.layout.Priority.NEVER);
             playerBoardGridPane.getRowConstraints().add(row);
+            System.out.println(playerBoardGridPane.getRowConstraints());
 
             ColumnConstraints column = new ColumnConstraints();
             column.setPrefWidth((double) adjustedCardsDimension.first);
             column.setMinWidth((double) adjustedCardsDimension.first);
+            column.setHgrow(javafx.scene.layout.Priority.NEVER);
             playerBoardGridPane.getColumnConstraints().add(column);
+            System.out.println(playerBoardGridPane.getColumnConstraints());
         }
-
-        initialGridPaneWidth = currentGridPaneWidth = gridCellsCount.first * adjustedCardsDimension.first;
-        initialGridPaneHeight = currentGridPaneHeight = gridCellsCount.second * adjustedCardsDimension.second;
     }
 
     public void initializeScrollPane() {
@@ -132,14 +140,10 @@ public class TempGameController {
     private void handleKeyPressedEvent(KeyEvent event) {
         if(!event.isControlDown()) return;
 
-        double zoomFactor = 0;
-
         switch(event.getCode()) {
             case PLUS, EQUALS -> zoom(zoomIncrement);
             case MINUS -> zoom(-zoomIncrement);
         }
-
-        // applyZoom(zoomFactor, mainScrollPane.getViewportBounds().getWidth() / 2, mainScrollPane.getViewportBounds().getHeight() / 2);
     }
 
     /**
@@ -148,33 +152,42 @@ public class TempGameController {
      * @param zoomIncrement zoom factor
      */
     private void zoom(double zoomIncrement) {
-        // TODO fix zoom
+        // TODO
         if(zoomScale + zoomIncrement < 0 || zoomScale + zoomIncrement > 2) return;
 
         zoomScale += zoomIncrement;
 
-        double previousX = mainScrollPane.getHvalue();
-        double previousY = mainScrollPane.getVvalue();
-
         playerBoardGridPane.setScaleX(zoomScale);
         playerBoardGridPane.setScaleY(zoomScale);
-
-        double previousGridPaneWidth = currentGridPaneWidth;
-        double previousGridPaneHeight = currentGridPaneHeight;
-
-
     }
 
     public void handlePlayedCardEvent(PlayerToken playerToken, Integer cardId, CardSide cardSide, Coords coords) {
         String path = "images/cards/" + (cardSide == CardSide.FRONT ? "fronts" : "backs")  + "/" + cardId + ".png";
 
-        ImageView card1 = new ImageView();
-        card1.setImage(new Image(path));
-        card1.setScaleX(cardCompressionFactor);
-        card1.setScaleY(cardCompressionFactor);
+        ImageView cardImage = new ImageView(new Image(path));
+        cardImage.setEffect(new DropShadow());
 
-        playerBoardGridPane.add(card1, 0, 0);
+        cardImage.setFitWidth(rawCardDimension.first * cardCompressionFactor);
+        cardImage.setFitHeight(rawCardDimension.second * cardCompressionFactor);
 
-        playerBoardGridPane.getChildren().forEach(x -> System.out.println(x.getClass()));
+        StackPane stackPane = new StackPane(cardImage);
+        GridPane.setHalignment(stackPane, HPos.CENTER);
+        GridPane.setValignment(stackPane, VPos.CENTER);
+        GridPane.setHgrow(stackPane, Priority.NEVER);
+        GridPane.setVgrow(stackPane, Priority.NEVER);
+
+        playerBoardGridPane.add(stackPane, coords.x + (gridCellsCount.first - 1)/ 2, coords.y + (gridCellsCount.second - 1)/ 2);
+    }
+
+    /**
+     * Allows to see other player's board, by switching second to last element of the mainStackPane.
+     *
+     * @param playerToken token of the player whose board the user is interested to see
+     */
+    public void switchGrid(PlayerToken playerToken) {
+        if(!tokenToGridBoard.containsKey(playerToken)) throw new RuntimeException("player not found");
+
+        GridPane newGridPane = tokenToGridBoard.get(playerToken);
+        mainStackPane.getChildren().set(mainStackPane.getChildren().size() - 2, tokenToGridBoard.get(playerToken));
     }
 }
