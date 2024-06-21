@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.connection;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.view.UI;
@@ -9,6 +11,8 @@ import it.polimi.ingsw.view.UI;
  * The connection handler helps the client to communicate with the server.
  */
 public abstract class ConnectionHandler {
+
+  public final AtomicBoolean isConnected;
   
   /**
    * This represents the user interface of the client.
@@ -17,6 +21,7 @@ public abstract class ConnectionHandler {
 
   public ConnectionHandler(UI userInterface) {
     this.userInterface = userInterface;
+    this.isConnected = new AtomicBoolean(false);
   }
 
   /**
