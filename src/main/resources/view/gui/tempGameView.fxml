@@ -17,13 +17,13 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ScrollPane fx:id="mainScrollPane" hbarPolicy="NEVER" onKeyPressed="#handleKeyPressedEvent" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER">
+            <ScrollPane fx:id="currentScrollPane" hbarPolicy="NEVER" onKeyPressed="#handleKeyPressedEvent" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
                <content>
-                  <GridPane fx:id="playerBoardGridPane" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
+                  <GridPane fx:id="currentGridPane" alignment="CENTER" gridLinesVisible="true" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
                   </GridPane>
                </content>
             </ScrollPane>
@@ -32,7 +32,7 @@
                   <Insets left="20.0" right="20.0" top="20.0" />
                </StackPane.margin>
             </Rectangle>
-            <HBox prefHeight="70.0" prefWidth="1400.0">
+            <HBox fx:id="currentTopPanel" prefHeight="70.0" prefWidth="1400.0">
                <children>
                   <AnchorPane prefHeight="70.0" prefWidth="300.0">
                      <children>
@@ -69,7 +69,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/gameView.css">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="animal-points" text="0" textAlignment="CENTER" />
+                                                <Text fx:id="animalResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets left="-5.0" />
@@ -95,7 +95,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                                <Text fx:id="plantResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets left="-5.0" />
@@ -112,7 +112,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                                <Text fx:id="fungiResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets left="-5.0" />
@@ -129,7 +129,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                                <Text fx:id="insectResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets left="-5.0" />
@@ -158,7 +158,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                                                <Text fx:id="manuscriptItemsCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
                                                    <StackPane.margin>
                                                       <Insets left="-5.0" />
                                                    </StackPane.margin>
@@ -179,7 +179,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                                <Text fx:id="inkwellItemsCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets left="-5.0" />
@@ -196,7 +196,7 @@
                                           </ImageView>
                                           <StackPane prefHeight="150.0" prefWidth="10.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                                                <Text fx:id="quillItemsCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
                                                    <StackPane.margin>
                                                       <Insets />
                                                    </StackPane.margin>
@@ -257,7 +257,8 @@
                                                 <Insets bottom="79.5" left="20.0" right="20.0" top="79.5" />
                                              </VBox.margin>
                                           </ImageView>
-                                       </children></VBox>
+                                       </children>
+                                    </VBox>
                                  </children>
                               </VBox>
                            </children>
@@ -453,7 +454,7 @@
          </children>
       </StackPane>
       <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="150.0" stroke="#c9c18f" strokeType="INSIDE" width="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5" />
-      <HBox layoutX="446.0" layoutY="659.0" prefHeight="136.0" prefWidth="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5">
+      <HBox fx:id="currentHandPanel" layoutX="446.0" layoutY="659.0" prefHeight="136.0" prefWidth="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5">
          <children>
             <ImageView fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>

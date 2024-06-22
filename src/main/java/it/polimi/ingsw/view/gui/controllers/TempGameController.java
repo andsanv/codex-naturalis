@@ -24,6 +24,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.text.Text;
 
 import java.util.*;
 
@@ -39,7 +40,8 @@ public class TempGameController {
     public Pair<Double, Double> adjustedCardDimensions;
     public double cardCompressionFactor;    // target = 100 --> 0.1292, target = 200 -> 0.2584
 
-    public Integer DEFAULT_OBJECTIVE_CARD_BACK = 86;
+    public Integer DEFAULT_OBJECTIVE_CARD_ID = 86;
+    public Integer DEFAULT_STARTER_CARD_ID = 86; // TODO image of empty starter card back
 
     public List<UserInfo> players;
     public Map<UserInfo, PlayerToken> userInfoToToken;
@@ -60,12 +62,6 @@ public class TempGameController {
 
     @FXML
     public StackPane mainStackPane;
-
-    @FXML
-    public ScrollPane mainScrollPane;
-
-    @FXML
-    public GridPane playerBoardGridPane;
 
     @FXML
     public TabPane leftTabPane;
@@ -100,24 +96,35 @@ public class TempGameController {
     @FXML
     public VBox playersList;
 
+    @FXML
+    public AnchorPane mainAnchorPane;
+
     public PlayerToken currentToken;
-
-    @FXML
-    public HBox currentHandPanel;
-
-    @FXML
-    public HBox currentTopPanel;
 
     @FXML
     public ScrollPane currentScrollPane;
 
-    public Map<PlayerToken, ScrollPane> tokenToScrollPane;
-    public Map<PlayerToken, ScrollPane> tokenToHandPanel;
-    public Map<PlayerToken, ScrollPane> tokenToTopPanel;
+    @FXML
+    public GridPane currentGridPane;
+
+    @FXML
+    public HBox currentHandHBox;
+
+    public Text animalResourcesCounter;
+    public Text plantResourcesCounter;
+    public Text fungiResourcesCounter;
+    public Text insectResourcesCounter;
+
+    public Text manuscriptItemsCounter;
+    public Text inkwellItemsCounter;
+    public Text quillItemsCounter;
+
+    public Map<PlayerToken, ScrollPane> tokenToScrollPane = new HashMap<>();
+    public Map<PlayerToken, HBox> tokenToHandHBox = new HashMap<>();
 
     private Pair<Integer, Integer> gridCellsCount;
 
-    public void initialize(GUI gui) {
+    public void initialize(GUI gui) throws InterruptedException {
         screenResolution = new Pair<>(1440, 900);
         screenRatio =  0.01 * ((double) (100 * screenResolution.first) / screenResolution.second);
 
@@ -194,8 +201,6 @@ public class TempGameController {
                 }}
         );
 
-        currentToken = PlayerToken.RED;
-
         rawCellDimension = new Pair<>(774.0, 397.0);
         rawCardDimension = new Pair<>(993.0, 662.0);
 
@@ -210,43 +215,67 @@ public class TempGameController {
         zoomScale = 1;
         zoomIncrement = 0.1;
 
-        commonObjectives = Arrays.asList(DEFAULT_OBJECTIVE_CARD_BACK, DEFAULT_OBJECTIVE_CARD_BACK);
+        commonObjectives = Arrays.asList(DEFAULT_OBJECTIVE_CARD_ID, DEFAULT_OBJECTIVE_CARD_ID);
 
         firstObjectiveSlot.setImage(new Image("images/cards/backs/" + commonObjectives.getFirst() + ".png"));
         secondObjectiveSlot.setImage(new Image("images/cards/backs/" + commonObjectives.get(1) + ".png"));
 
-        secretObjectiveSlot.setImage(new Image("images/cards/backs/" + DEFAULT_OBJECTIVE_CARD_BACK + ".png"));
+        secretObjectiveSlot.setImage(new Image("images/cards/backs/" + DEFAULT_OBJECTIVE_CARD_ID + ".png"));
 
-        initializePlayerBoardGrid();
-        initializeScrollPane();
+        initializeGridPane(currentGridPane);
+        initializeScrollPane(currentScrollPane);
         initializeSidePanels();
         initializePlayersList(players);
 
-        handlePlayedCardEvent(PlayerToken.RED, 85, CardSide.BACK, new Coords(0, 0));
-        handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-1, -1));
+        String path = "images/cards/backs/" + DEFAULT_STARTER_CARD_ID + ".png";
+
+        ImageView defaultStarterCardView = new ImageView(new Image(path));
+        defaultStarterCardView.setEffect(new DropShadow());
+
+        StackPane stackPane = new StackPane(defaultStarterCardView);
+        GridPane.setHgrow(stackPane, Priority.NEVER);
+        GridPane.setVgrow(stackPane, Priority.NEVER);
+        GridPane.setHalignment(stackPane, HPos.CENTER);
+        GridPane.setValignment(stackPane, VPos.CENTER);
+
+        defaultStarterCardView.setFitWidth(rawCardDimension.first * cardCompressionFactor);
+        defaultStarterCardView.setFitHeight(rawCardDimension.second * cardCompressionFactor);
+
+        currentGridPane.add(stackPane, 40, 40);
+
+        initializeAllPlayers();
+
+        currentToken = PlayerToken.RED;
+
+        handlePlayedCardEvent(PlayerToken.RED, DEFAULT_STARTER_CARD_ID, CardSide.FRONT, new Coords(0,0));
+        handlePlayedCardEvent(PlayerToken.RED, 45, CardSide.FRONT, new Coords(1,1));
+        handlePlayedCardEvent(PlayerToken.BLUE, 45, CardSide.FRONT, new Coords(-1,1));
+
+        switchPlayerView(PlayerToken.BLUE);
     }
 
-    public void initializePlayerBoardGrid() {
-        playerBoardGridPane.setPadding(new Insets(adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second));
+    public void initializeGridPane(GridPane gridPane) {
+        gridPane.setPadding(new Insets(adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second));
 
         for(int i = 0; i < gridCellsCount.first; i++) {
             RowConstraints row = new RowConstraints();
             row.setPrefHeight((double) adjustedCellDimensions.second);
             row.setMinHeight((double) adjustedCellDimensions.second);
             row.setVgrow(javafx.scene.layout.Priority.NEVER);
-            playerBoardGridPane.getRowConstraints().add(row);
+            gridPane.getRowConstraints().add(row);
 
             ColumnConstraints column = new ColumnConstraints();
             column.setPrefWidth((double) adjustedCellDimensions.first);
             column.setMinWidth((double) adjustedCellDimensions.first);
             column.setHgrow(javafx.scene.layout.Priority.NEVER);
-            playerBoardGridPane.getColumnConstraints().add(column);
+            gridPane.getColumnConstraints().add(column);
+
         }
     }
 
-    public void initializeScrollPane() {
-        mainScrollPane.setHvalue(0.5);
-        mainScrollPane.setVvalue(0.5);
+    public void initializeScrollPane(ScrollPane scrollPane) {
+        scrollPane.setHvalue(0.5);
+        scrollPane.setVvalue(0.5);
     }
 
     public void initializeSidePanels() {
@@ -268,7 +297,7 @@ public class TempGameController {
 
         boolean first = true;
         for(int i = 0; i < playersCount; i++) {
-            ImageView playerEntry = new ImageView(new Image("images/cards/backs/" + DEFAULT_OBJECTIVE_CARD_BACK + ".png"));
+            ImageView playerEntry = new ImageView(new Image("images/cards/backs/" + DEFAULT_STARTER_CARD_ID + ".png"));
             playerEntry.setPreserveRatio(false);
 
             playerEntry.setFitWidth(playerImageViewDimensions.first);
@@ -281,7 +310,70 @@ public class TempGameController {
     }
 
     public void firstGuiUpdate() {
+        // update hand
+        List<Integer> cards = new ArrayList<>(Arrays.asList(
+                slimGameModel.tokenToHand.get(currentToken).first,
+                slimGameModel.tokenToHand.get(currentToken).second,
+                slimGameModel.tokenToHand.get(currentToken).third
+        ));
 
+        for(int i = 0; i < currentHandHBox.getChildren().size(); i++) {
+            ((ImageView) (currentHandHBox.getChildren().get(i))).setImage(
+                    new Image("images/cards/fronts/" + cards.get(i) + ".png")
+            );
+        }
+
+        // update grid
+
+    }
+
+    public void initializeAllPlayers() {
+        userInfoToToken.values().forEach(token -> {
+            // set up scroll pane and grid pane
+            ScrollPane scrollPane = new ScrollPane();
+            scrollPane.setOnKeyPressed(this::handleKeyPressedEvent);
+            initializeScrollPane(scrollPane);
+
+            GridPane gridPane = new GridPane();
+            gridPane.setOnMouseDragged(this::handleMouseDragged);
+            gridPane.setOnMousePressed(this::handleOnMousePressed);
+            initializeGridPane(gridPane);
+
+            scrollPane.setContent(gridPane);
+
+            tokenToScrollPane.put(token, scrollPane);
+
+            handlePlayedCardEvent(token, slimGameModel.tokenToPlayedCards.get(token).get(0).first, slimGameModel.tokenToPlayedCards.get(token).get(0).second, slimGameModel.tokenToPlayedCards.get(token).get(0).third);
+
+            // set up hand hbox
+            HBox hbox = new HBox();
+
+            Integer firstCardId = slimGameModel.tokenToHand.get(token).first;
+            Integer secondCardId = slimGameModel.tokenToHand.get(token).second;
+            Integer thirdCardId = slimGameModel.tokenToHand.get(token).third;
+
+            ImageView firstCardImageView = new ImageView(new Image("images/cards/backs/" + firstCardId + ".png"));
+            firstCardImageView.setPreserveRatio(true);
+            firstCardImageView.setFitWidth(195);
+            firstCardImageView.setFitHeight(130);
+
+            ImageView secondCardImageView = new ImageView(new Image("images/cards/backs/" + secondCardId + ".png"));
+            secondCardImageView.setPreserveRatio(true);
+            secondCardImageView.setFitWidth(195);
+            secondCardImageView.setFitHeight(130);
+
+            ImageView thirdCardImageView = new ImageView(new Image("images/cards/backs/" + thirdCardId + ".png"));
+            thirdCardImageView.setPreserveRatio(true);
+            thirdCardImageView.setFitWidth(195);
+            thirdCardImageView.setFitHeight(130);
+
+            hbox.getChildren().addAll(firstCardImageView, secondCardImageView, thirdCardImageView);
+            HBox.setMargin(firstCardImageView, new Insets(10.0, 0.0, 10.0, 10.0));
+            HBox.setMargin(secondCardImageView, new Insets(10.0, 0.0, 10.0, 10.0));
+            HBox.setMargin(thirdCardImageView, new Insets(10.0, 10.0, 10.0, 10.0));
+
+            tokenToHandHBox.put(token, hbox);
+        });
     }
 
     /**
@@ -303,11 +395,11 @@ public class TempGameController {
      */
     @FXML
     private void handleMouseDragged(MouseEvent event) {
-        double newViewportX = mainScrollPane.getHvalue() - (event.getSceneX() - dragStartX) / playerBoardGridPane.getWidth();
-        double newViewportY = mainScrollPane.getVvalue() - (event.getSceneY() - dragStartY) / playerBoardGridPane.getHeight();
+        double newViewportX = currentScrollPane.getHvalue() - (event.getSceneX() - dragStartX) / currentGridPane.getWidth();
+        double newViewportY = currentScrollPane.getVvalue() - (event.getSceneY() - dragStartY) / currentGridPane.getHeight();
 
-        mainScrollPane.setHvalue(newViewportX);
-        mainScrollPane.setVvalue(newViewportY);
+        currentScrollPane.setHvalue(newViewportX);
+        currentScrollPane.setVvalue(newViewportY);
 
         dragStartX = event.getSceneX();
         dragStartY = event.getSceneY();
@@ -339,8 +431,8 @@ public class TempGameController {
 
         zoomScale += zoomIncrement;
 
-        playerBoardGridPane.setScaleX(zoomScale);
-        playerBoardGridPane.setScaleY(zoomScale);
+        currentGridPane.setScaleX(zoomScale);
+        currentGridPane.setScaleY(zoomScale);
     }
 
     public void handlePlayedCardEvent(PlayerToken playerToken, Integer cardId, CardSide cardSide, Coords coords) {
@@ -349,28 +441,42 @@ public class TempGameController {
         ImageView cardImage = new ImageView(new Image(path));
         cardImage.setEffect(new DropShadow());
 
-        cardImage.setFitWidth(rawCardDimension.first * cardCompressionFactor);
-        cardImage.setFitHeight(rawCardDimension.second * cardCompressionFactor);
-
         StackPane stackPane = new StackPane(cardImage);
         GridPane.setHalignment(stackPane, HPos.CENTER);
         GridPane.setValignment(stackPane, VPos.CENTER);
         GridPane.setHgrow(stackPane, Priority.NEVER);
         GridPane.setVgrow(stackPane, Priority.NEVER);
 
-        playerBoardGridPane.add(stackPane, coords.x + (gridCellsCount.first - 1)/ 2, coords.y + (gridCellsCount.second - 1)/ 2);
+        cardImage.setFitWidth(rawCardDimension.first * cardCompressionFactor);
+        cardImage.setFitHeight(rawCardDimension.second * cardCompressionFactor);
+
+        ((GridPane) tokenToScrollPane.get(playerToken).getContent()).add(stackPane, coords.x + (gridCellsCount.first - 1)/ 2, - coords.y + (gridCellsCount.second - 1)/ 2);
+
+        System.out.println("Played card in (" + coords.x + "," + coords.y + "), for playertoken: " + playerToken);
     }
 
+
     /**
-     * Allows to see other player's board, by switching second to last element of the mainStackPane.
+     * Allows to see other player's board, by switching the second to last element of the mainStackPane.
      *
      * @param playerToken token of the player whose board the user is interested to see
      */
-    public void switchGrid(PlayerToken playerToken) {
+    public void switchPlayerView(PlayerToken playerToken) {
+        // switch grid pane
         if(!tokenToScrollPane.containsKey(playerToken)) throw new RuntimeException("player not found");
 
-        ScrollPane newScrollPane = tokenToScrollPane.get(playerToken);
-        mainStackPane.getChildren().set(mainStackPane.getChildren().size() - 2, tokenToScrollPane.get(playerToken));
+        System.out.println("before: " + mainStackPane.getChildren());
+
+        mainStackPane.getChildren().set(0, tokenToScrollPane.get(playerToken));
+
+
+        System.out.println("after: " + mainStackPane.getChildren());
+
+        // switch hand
+        currentHandHBox = tokenToHandHBox.get(playerToken);
+
+        // switch token
+        currentToken = playerToken;
     }
 
     public void handleOnMouseClickedLeftPanelButton(MouseEvent event) {
