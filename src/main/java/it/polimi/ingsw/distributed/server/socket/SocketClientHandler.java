@@ -84,7 +84,7 @@ public class SocketClientHandler extends Client implements Runnable {
    * {@inheritDoc}
    */
   @Override
-  public void receiveEvent(MainEvent event) throws IOException {
+  public void trasmitEvent(MainEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
   }
@@ -93,7 +93,7 @@ public class SocketClientHandler extends Client implements Runnable {
    * {@inheritDoc}
    */
   @Override
-  public void receiveEvent(GameEvent event) throws IOException {
+  public void transmitEvent(GameEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
   }
@@ -114,7 +114,7 @@ public class SocketClientHandler extends Client implements Runnable {
   @Override
   public void update(GameEvent event) {
     try {
-      receiveEvent(event);
+      transmitEvent(event);
     } catch (IOException e) {
       System.err.println("Error while sending event");
     }

@@ -80,7 +80,7 @@ public enum Server {
                 .forEach(
                         entry -> {
                             try {
-                                entry.getValue().receiveEvent(new KeepAliveEvent());
+                                entry.getValue().trasmitEvent(new KeepAliveEvent());
                                 System.out.println("Sent keep alive to " + entry.getKey());
                             } catch (IOException e) {
                                 if (entry.getValue().getStatus() == Status.IN_GAME) {
@@ -309,7 +309,7 @@ public enum Server {
                 System.err.println(
                         "Lobby creation request by " + userInfo + " failed: the user is already in another lobby");
                 try {
-                    connectedPlayers.get(userInfo).receiveEvent(new AlreadyInLobbyErrorEvent());
+                    connectedPlayers.get(userInfo).trasmitEvent(new AlreadyInLobbyErrorEvent());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -356,16 +356,16 @@ public enum Server {
 
                     // TODO rave, ho aggiunto il login event che sostituisce lo userinfo event, va
                     // inviato ogni volta che il client si connette/riconnette
-                    client.receiveEvent(new LoginEvent(userInfo, null));
+                    client.trasmitEvent(new LoginEvent(userInfo, null));
 
-                    client.receiveEvent(new LobbiesEvent(getLobbies()));
+                    client.trasmitEvent(new LobbiesEvent(getLobbies()));
                 } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
                     System.out.println("Reconnecting to game");
                     GameFlowManager gameFlowManager = lobbyToGameFlowManager.get(lobbies.values().stream()
                             .filter(lobby -> lobby.getUsers().contains(User.userInfoToUser(userInfo)))
                             .findFirst()
                             .orElse(null));
-                    client.receiveEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
+                    client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
 
                     // TODO: add as properties of reconnectToGameEvent the mapping <UserInfo, Token>
 
@@ -395,8 +395,8 @@ public enum Server {
 
         executorService.submit(() -> {
             try {
-                client.receiveEvent(new LoginEvent(userInfo, null));
-                client.receiveEvent(new LobbiesEvent(getLobbies()));
+                client.trasmitEvent(new LoginEvent(userInfo, null));
+                client.trasmitEvent(new LobbiesEvent(getLobbies()));
             } catch (IOException e) {
                 client.setStatus(Status.OFFLINE);
                 System.err.println("Couldn't send userInfo event to " + userInfo);
@@ -431,7 +431,7 @@ public enum Server {
                                     entry -> {
                                         try {
                                             System.out.println("Sending lobbies to " + entry.getKey());
-                                            entry.getValue().receiveEvent(new LobbiesEvent(lobbies));
+                                            entry.getValue().trasmitEvent(new LobbiesEvent(lobbies));
                                         } catch (IOException e) {
                                             entry.getValue().setStatus(Status.OFFLINE);
                                             System.err.println("Error: Couldn't send message to " + entry.getKey());
@@ -453,7 +453,7 @@ public enum Server {
             Client client = connectedPlayers.get(userInfo);
             if (client.getStatus() == Status.IN_MENU) {
                 try {
-                    client.receiveEvent(new MainErrorEvent(error));
+                    client.trasmitEvent(new MainErrorEvent(error));
                 } catch (IOException e) {
                     System.err.println("Could not send error message to " + userInfo);
                 }
@@ -474,7 +474,7 @@ public enum Server {
             Client client = connectedPlayers.get(userInfo);
             if (client.getStatus() == Status.IN_MENU) {
                 try {
-                    client.receiveEvent(event);
+                    client.trasmitEvent(event);
                 } catch (IOException e) {
                     System.err.println("Could not send " + event.getClass().getName() + " to " + userInfo);
                 }

@@ -147,7 +147,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       }
     } else {
       try {
-        mainServerActions.send(mainCommand);
+        mainServerActions.transmitCommand(mainCommand);
         return true;
       } catch (Exception e) {
         e.printStackTrace();
@@ -167,7 +167,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
   public boolean sendToGameServer(GameCommand gameCommand) {
     try {
       if (gameServerActions != null) {
-        gameServerActions.send(gameCommand);
+        gameServerActions.transmitCommand(gameCommand);
         return true;
       }
     } catch (Exception e) {

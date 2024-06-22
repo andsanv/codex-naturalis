@@ -1,17 +1,5 @@
 package it.polimi.ingsw.distributed.server.rmi;
 
-import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.server.Server;
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.MainEventHandler;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.client.rmi.RMIGameView;
-import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
-import it.polimi.ingsw.distributed.commands.main.MainCommand;
-import it.polimi.ingsw.distributed.events.game.GameEvent;
-import it.polimi.ingsw.distributed.server.MainServerActions;
-
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -19,6 +7,14 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import it.polimi.ingsw.Config;
+import it.polimi.ingsw.controller.server.Server;
+import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.client.GameViewActions;
+import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.commands.main.MainCommand;
+import it.polimi.ingsw.distributed.server.MainServerActions;
 
 /**
  * This class represents the RMI Main server to connect to.
@@ -34,6 +30,11 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
    */
   private final ExecutorService executorService;
 
+  /**
+   * This constructor creates a new RMIMainServer.
+   * 
+   * @throws RemoteException thrown when a communication error occurs.
+   */
   public RMIMainServer() throws RemoteException {
     executorService = Executors.newCachedThreadPool();
   }
@@ -66,11 +67,11 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   @Override
   public void connectToMain(String username, MainViewActions clientMainView, GameViewActions gameViewActions)
       throws RemoteException {
-        System.out.println(clientMainView);
+    System.out.println(clientMainView);
     System.out.println(gameViewActions);
 
     RMIHandler rmiHandler = new RMIHandler(clientMainView, gameViewActions);
-    
+
     System.out.println("User " + username + "main view " + clientMainView);
     executorService.submit(
         () -> {
@@ -79,6 +80,7 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   }
 
   /**
+   * {@inheritDoc}
    * This method is used from the client when it wants to reconnect to the server.
    * The addReconnectedClient will verify the username and reply to the client
    * with a UserInfoEvent giving him an adequate id.
@@ -95,11 +97,12 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   }
 
   /**
+   * {@inheritDoc}
    * This method is used from the client to send a command to the server.
    * Commands received are executed calling the execute method.
    */
   @Override
-  public void send(MainCommand command) throws RemoteException {
+  public void transmitCommand(MainCommand command) throws RemoteException {
     System.out.println(command);
     executorService.submit(command::execute);
   }

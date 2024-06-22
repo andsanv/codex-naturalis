@@ -9,21 +9,26 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This class represents the action that can be performed on the client main view.
+ * This class represents the action that can be performed on the client main
+ * view.
  */
 public interface MainViewActions extends Remote, Serializable {
   /**
-   * Sends a server event to the client
+   * This method will send a main event to the client
    *
-   * @param serverEvent the event that the client will receive
-   * @throws RemoteException
+   * @param serverEvent the event to be sent
+   * @throws RemoteException thrown when a communication error occurs
+   * @throws IOException     thrown when an I/O error occurs
    */
-  public void receiveEvent(MainEvent serverEvent) throws IOException;
+  public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException;
 
   /**
-   * This method is used to set the created game server once a game is started. (rmi)
+   * This method is used to set the created game server once a game is started.
+   * (rmi)
+   * 
    * @param gameServer the game server instance
-   * @throws IOException
+   * @throws RemoteException thrown when a communication error occurs
+   * @throws IOException     thrown when an I/O error occurs
    */
-  public void setGameServer(GameServerActions gameServer) throws IOException;
+  public void setGameServer(GameServerActions gameServer) throws RemoteException, IOException;
 }

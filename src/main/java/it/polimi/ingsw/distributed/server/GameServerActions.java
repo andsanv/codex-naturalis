@@ -3,6 +3,8 @@ package it.polimi.ingsw.distributed.server;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -12,18 +14,20 @@ import java.rmi.RemoteException;
 public interface GameServerActions extends Remote {
   /**
    * This method is used to transmit a game command to the server.
+   * 
    * @param command the command to be sent
-   * @throws RemoteException
+   * @throws RemoteException thrown when a communication error occurs
+   * @throws IOException     thrown when an I/O error occurs
    */
-  public void send(GameCommand command) throws RemoteException;
+  public void transmitCommand(GameCommand command) throws RemoteException, IOException;
 
   /**
    * This method must be called when connecting to the game server.
    *
-   * @param userInfo the user's information
+   * @param userInfo       the user's information
    * @param clientMainView the client's game view
-   * @throws RemoteException
+   * @throws RemoteException thrown when a communication error occurs
+   * @throws IOException     thrown when an I/O error occurs
    */
-  public void connectToGame(UserInfo userInfo, GameViewActions clientGameView)
-      throws RemoteException;
+  public void connectToGame(UserInfo userInfo, GameViewActions clientGameView) throws RemoteException, IOException;
 }

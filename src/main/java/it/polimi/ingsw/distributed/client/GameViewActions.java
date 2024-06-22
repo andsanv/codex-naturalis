@@ -1,6 +1,5 @@
 package it.polimi.ingsw.distributed.client;
 
-import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 
 import java.io.IOException;
@@ -8,14 +7,15 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This class represents the action that can be performed on the client game view.
+ * This class represents the action that can be performed on the client's game view.
  */
 public interface GameViewActions extends Remote {
   /**
-   * Receives a game event.
-   * @param event the sent event
-   * @throws RemoteException
-   * @throws IOException 
+   * This method will send a GameEvent to the client.
+   * 
+   * @param event the event to be sent
+   * @throws RemoteException thrown when a communication error occurs
+   * @throws IOException thrown when an I/O error occurs
    */
-  void receiveEvent(GameEvent event) throws RemoteException, IOException;
+  void transmitEvent(GameEvent event) throws RemoteException, IOException;
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.distributed.client.rmi;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -28,8 +29,9 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
 
   /**
    * This constructor creates a new RMIMainView.
+   * 
    * @param mainEventHandler the main event handler to propagate the updates (events) to.
-   * @throws RemoteException
+   * @throws RemoteException thrown when a communication error occurs
    */
   public RMIMainView(MainEventHandler mainEventHandler) throws RemoteException {
     this.mainEventHandler = mainEventHandler;
@@ -40,7 +42,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    * This method is used by the server to send an event to the client.
    */
   @Override
-  public void receiveEvent(MainEvent serverEvent) throws RemoteException {
+  public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException {
     serverEvent.execute(mainEventHandler);
   }
 
@@ -49,7 +51,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    * This method is used by the server to set the game server actions on the client.
    */
   @Override
-  public void setGameServer(GameServerActions gameServer) throws RemoteException {
+  public void setGameServer(GameServerActions gameServer) throws RemoteException, IOException {
     this.connectionHandler.setGameServerActions(gameServer);
   }
 }

@@ -13,10 +13,16 @@ import java.rmi.server.UnicastRemoteObject;
 public class RMIGameView extends UnicastRemoteObject implements GameViewActions {
 
   /**
-   * This is the game event handler
+   * This is the game event handler associated.
    */
   private final GameEventHandler gameEventHandler;
 
+  /**
+   * This constructor creates a new RMIGameView.
+   * 
+   * @param gameEventHandler the event handler for the game events.
+   * @throws RemoteException thrown when a communication error occurs.
+   */
   public RMIGameView(GameEventHandler gameEventHandler) throws RemoteException {
     this.gameEventHandler = gameEventHandler;
   }
@@ -27,7 +33,7 @@ public class RMIGameView extends UnicastRemoteObject implements GameViewActions 
    * Once received, the event is executed.
    */
   @Override
-  public void receiveEvent(GameEvent event) throws RemoteException {
+  public void transmitEvent(GameEvent event) throws RemoteException {
     event.execute(gameEventHandler);
   }
 

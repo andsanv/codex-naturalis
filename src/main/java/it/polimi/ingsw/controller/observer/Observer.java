@@ -2,7 +2,10 @@ package it.polimi.ingsw.controller.observer;
 
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 
-/** An observer of GameEvents */
+/**
+ * This class represents the observers in the Observer pattern.
+ * Example of observers are the connected players.
+ */
 public interface Observer {
   /**
    * This method handles received GameEvents
