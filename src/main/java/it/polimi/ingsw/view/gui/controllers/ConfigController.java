@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -78,4 +79,9 @@ public class ConfigController extends Controller {
         }
     }
 
+    @Override
+    public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
+    }
 }

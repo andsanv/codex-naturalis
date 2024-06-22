@@ -22,6 +22,7 @@ import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.StartGameCommand;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
@@ -608,6 +609,12 @@ public class TUI implements UI {
             Optional<Resources> nextCardSeed, int handIndex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
+    }
+
+    @Override
+    public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
     }
 }
 

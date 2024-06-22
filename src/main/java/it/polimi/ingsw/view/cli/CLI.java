@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Resources;
@@ -386,5 +387,11 @@ public class CLI implements UI {
     public void connectionToGameResult(boolean connectedToGame) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
+    }
+
+    @Override
+    public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
     }
 }
