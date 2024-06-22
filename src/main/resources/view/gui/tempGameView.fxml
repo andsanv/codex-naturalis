@@ -67,9 +67,9 @@
                                                 <Image url="@../../images/icons/animal.png" />
                                              </image>
                                           </ImageView>
-                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                          <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/gameView.css">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="animal-points" text="0" textAlignment="CENTER" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets left="-5.0" />
@@ -229,7 +229,7 @@
             </HBox>
             <TabPane fx:id="leftTabPane" prefHeight="468.0" prefWidth="320.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Objectives">
+                <Tab>
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -263,8 +263,15 @@
                            </children>
                         </AnchorPane>
                   </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/bullseye-arrow.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                 </Tab>
-                <Tab text="Decks">
+                <Tab>
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="169.0">
                            <children>
@@ -340,6 +347,13 @@
                            </children>
                         </AnchorPane>
                   </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/playing-cards.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                 </Tab>
               </tabs>
                <StackPane.margin>
@@ -348,7 +362,14 @@
             </TabPane>
             <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="leftPanelButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton" text="&lt;" />
+                  <Button fx:id="leftPanelButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/angle-left.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                </children>
                <StackPane.margin>
                   <Insets bottom="765.0" left="20.0" right="1390.0" top="105.0" />
@@ -356,7 +377,7 @@
             </StackPane>
             <TabPane fx:id="rightTabPane" prefHeight="608.0" prefWidth="232.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                <tabs>
-                  <Tab text="Scoretrack">
+                  <Tab>
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -381,8 +402,15 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/trophy.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                   </Tab>
-                  <Tab text="Chat">
+                  <Tab>
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -390,6 +418,13 @@
                            </children>
                         </AnchorPane>
                      </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/messages.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                   </Tab>
                </tabs>
                <StackPane.margin>
@@ -398,10 +433,17 @@
             </TabPane>
             <StackPane fx:id="rightStackPane" prefHeight="150.0" prefWidth="400.0">
                <children>
-                  <Button fx:id="rightPanelButton" alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton" text="&gt;" StackPane.alignment="CENTER">
+                  <Button fx:id="rightPanelButton" alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton" StackPane.alignment="CENTER">
                      <StackPane.margin>
                         <Insets />
                      </StackPane.margin>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/angle-left.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                   </Button>
                </children>
                <StackPane.margin>

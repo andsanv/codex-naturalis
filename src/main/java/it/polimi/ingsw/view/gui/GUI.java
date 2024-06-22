@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -61,7 +62,10 @@ public class GUI extends Application {
             TempGameController controller = fxmlLoader.getController();
             controller.initialize(this);
             Scene scene = new Scene(root);
+            String url = Objects.requireNonNull(getClass().getResource("/css/gameView.css")).toExternalForm();
+            scene.getStylesheets().add(url);
 
+            primaryStage.setResizable(false);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Codex Naturalis");
             primaryStage.show();

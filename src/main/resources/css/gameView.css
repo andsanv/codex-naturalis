@@ -1,0 +1,68 @@
+@font-face {
+    src: url('../fonts/FrakturNo2.ttf');
+}
+
+.root {
+    -fx-font-family: 'Fraktur No2';
+    -fx-font-size: 18;
+}
+
+.tab .tab-label {
+    -fx-background-color: transparent;
+    -fx-alignment: CENTER;
+    -fx-text-fill: black;
+}
+
+.tab {
+    -fx-background-color: #e7e1a8;
+    -fx-background-insets: 0.0;
+    -fx-background-radius: 0.0;
+    -fx-padding: 0 30 0 30;
+}
+
+.tab:selected {
+    -fx-background-color: #e7e1a8;
+    -fx-background-radius: 0.0;
+    -fx-background-insets: 0.0;
+    -fx-border-width: 5 0 0 0;
+    -fx-border-color: #c5a641;
+}
+
+.tab:focused {
+    -fx-focus-color: transparent;
+}
+
+.tab-pane *.tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.tab-pane:right *.tab-header-area {
+    -fx-background-insets: 0 0 0 10;
+    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
+}
+
+.tab-pane:left *.tab-header-area {
+    -fx-background-insets: 0 0 0 10;
+    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
+}
+
+.tab:selected .focus-indicator {
+    -fx-focus-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.button {
+    -fx-padding: 8 15 15 15;
+    -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;
+    -fx-background-radius: 8;
+    -fx-background-color: #e7e1a8;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 );
+}
+
+.button:hover {
+    -fx-background-color: #e7e1a8;
+}
+.button:pressed {
+    -fx-padding: 10 15 13 15;
+    -fx-background-insets: 2 0 0 0,2 0 3 0, 2 0 4 0, 2 0 5 0;
+}
