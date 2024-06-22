@@ -57,41 +57,42 @@ public enum Server {
         this.connectedPlayers = new ConcurrentHashMap<>();
         this.lobbyToGameFlowManager = new HashMap<>();
         this.executorService = Executors.newCachedThreadPool();
-        checkConnections();
+
+        executorService.submit(() -> {
+            while (true) {
+                checkConnections();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    System.err.println("Check connection thread was interrupted.");
+                }
+            }
+        });
     }
 
     public void checkConnections() {
-        executorService.submit(
-                () -> {
-                    while (true) {
-                        connectedPlayers.entrySet().stream()
-                                .filter(entry -> {
-                                    return entry.getValue().getStatus() == Status.IN_GAME ||
-                                            entry.getValue().getStatus() == Status.IN_MENU;
-                                })
-                                .forEach(
-                                        entry -> {
-                                            try {
-                                                entry.getValue().receiveEvent(new KeepAliveEvent());
-                                                System.out.println("Sent keep alive to " + entry.getKey());
-                                            } catch (IOException e) {
-                                                if (entry.getValue().getStatus() == Status.IN_GAME) {
-                                                    entry.getValue().setStatus(Status.DISCONNETED_FROM_GAME);
-                                                } else if (entry.getValue().getStatus() == Status.IN_MENU)
-                                                    entry.getValue().setStatus(Status.OFFLINE);
+        connectedPlayers.entrySet().stream()
+                .filter(entry -> {
+                    return entry.getValue().getStatus() == Status.IN_GAME ||
+                            entry.getValue().getStatus() == Status.IN_MENU;
+                })
+                .forEach(
+                        entry -> {
+                            try {
+                                entry.getValue().receiveEvent(new KeepAliveEvent());
+                                System.out.println("Sent keep alive to " + entry.getKey());
+                            } catch (IOException e) {
+                                if (entry.getValue().getStatus() == Status.IN_GAME) {
+                                    entry.getValue().setStatus(Status.DISCONNETED_FROM_GAME);
+                                } else if (entry.getValue().getStatus() == Status.IN_MENU)
+                                    entry.getValue().setStatus(Status.OFFLINE);
 
-                                                System.err
-                                                        .println("Error: Couldn't send message to " + entry.getValue());
-                                                System.err.println("Client " + entry.getKey() + " is disconnected");
-                                            }
-                                        });
-                        try {
-                            Thread.sleep(1500);
-                        } catch (InterruptedException e) {
-                            System.err.println("Check connection crashed");
-                        }
-                    }
-                });
+                                System.err
+                                        .println("Error: Couldn't send message to " + entry.getValue());
+                                System.err.println("Client " + entry.getKey() + " is disconnected");
+                            }
+                        });
     }
 
     /**
