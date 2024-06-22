@@ -4,7 +4,9 @@ import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.distributed.events.game.EndedInitializationPhaseEvent;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
@@ -63,6 +65,7 @@ public class InitializationState extends GameState {
 
     // start the game
     gameFlowManager.setState(gameFlowManager.playCardState);
+    gameFlowManager.notify(new EndedInitializationPhaseEvent(gameModelUpdater.getSlimGameModel()));
     return true;
   }
 }

@@ -14,8 +14,8 @@ import it.polimi.ingsw.util.Trio;
 
 /**
  * Represents the model in a "slimmer" way.
- * Used when a client reconnects, after quitting the game, and asks to be updated on the game status.
- * A SlimGameModel object is built every time a clients asks for a reconnection.
+ * Used when after the initialization phase of the game and when a client reconnects, after quitting the game, and asks to be updated on the game status.
+ * A new SlimGameModel object is built every time a clients asks for a reconnection.
  *
  * @see GameModel
  */

@@ -1,10 +1,15 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
+import it.polimi.ingsw.model.common.Items;
+import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -20,8 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.control.ScrollPane;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class TempGameController {
@@ -33,11 +37,19 @@ public class TempGameController {
     public double targetCellWidth;
     public Pair<Double, Double> adjustedCellDimensions;
     public Pair<Double, Double> adjustedCardDimensions;
-    public double cardCompressionFactor;
+    public double cardCompressionFactor;    // target = 100 --> 0.1292, target = 200 -> 0.2584
 
-    public Map<PlayerToken, GridPane> tokenToGridBoard;
-    public PlayerToken selfPlayerToken;
+    public Integer DEFAULT_OBJECTIVE_CARD_BACK = 86;
+
     public List<UserInfo> players;
+    public Map<UserInfo, PlayerToken> userInfoToToken;
+    public SlimGameModel slimGameModel;
+
+    public List<Integer> commonObjectives;
+
+    public ImageView firstObjectiveSlot;
+    public ImageView secondObjectiveSlot;
+    public ImageView secretObjectiveSlot;
 
     private double zoomScale;
     private double zoomIncrement;
@@ -67,17 +79,128 @@ public class TempGameController {
     @FXML
     public Button rightPanelButton;
 
+    @FXML
+    public ImageView resourceDeckImageView;
+
+    @FXML
+    public ImageView firstResourceImageView;
+
+    @FXML
+    public ImageView secondResourceImageView;
+
+    @FXML
+    public ImageView goldDeckImageView;
+
+    @FXML
+    public ImageView firstGoldImageView;
+
+    @FXML
+    public ImageView secondGoldImageView;
+
+    @FXML
+    public VBox playersList;
+
+    public PlayerToken currentToken;
+
+    @FXML
+    public HBox currentHandPanel;
+
+    @FXML
+    public HBox currentTopPanel;
+
+    @FXML
+    public ScrollPane currentScrollPane;
+
+    public Map<PlayerToken, ScrollPane> tokenToScrollPane;
+    public Map<PlayerToken, ScrollPane> tokenToHandPanel;
+    public Map<PlayerToken, ScrollPane> tokenToTopPanel;
+
     private Pair<Integer, Integer> gridCellsCount;
 
     public void initialize(GUI gui) {
         screenResolution = new Pair<>(1440, 900);
         screenRatio =  0.01 * ((double) (100 * screenResolution.first) / screenResolution.second);
 
+        UserInfo firstUserInfo = new UserInfo(new User("Andrea"));
+        UserInfo secondUserInfo = new UserInfo(new User("Maradona"));
+        UserInfo thirdUserInfo = new UserInfo(new User("John"));
+        players = new ArrayList<>(Arrays.asList(firstUserInfo, secondUserInfo, thirdUserInfo));
+
+        userInfoToToken = new HashMap<>() {{
+            put(firstUserInfo, PlayerToken.RED);
+            put(secondUserInfo, PlayerToken.BLUE);
+            put(thirdUserInfo, PlayerToken.YELLOW);
+        }};
+
+        slimGameModel = new SlimGameModel(
+                new HashMap<>() {{
+                    put(PlayerToken.RED, new HashMap<>() {{
+                        put(0, new Trio<>(80, CardSide.FRONT, new Coords(0,0)));
+                        }});
+                    put(PlayerToken.BLUE, new HashMap<>() {{
+                        put(0, new Trio<>(81, CardSide.BACK, new Coords(0,0)));
+                    }});
+                    put(PlayerToken.YELLOW, new HashMap<>() {{
+                        put(0, new Trio<>(82, CardSide.FRONT, new Coords(0,0)));
+                    }});
+                }},
+                new HashMap<>() {{
+                    put(PlayerToken.RED, new Trio<>(0,1,7));
+                    put(PlayerToken.BLUE, new Trio<>(10,11,17));
+                    put(PlayerToken.YELLOW, new Trio<>(20,21,27));
+                }},
+                new HashMap<>() {{
+                    put(PlayerToken.RED, new HashMap<>() {{
+                        put(Resources.PLANT, 0);
+                        put(Resources.ANIMAL, 0);
+                        put(Resources.FUNGI, 0);
+                        put(Resources.INSECT, 0);
+                        put(Items.QUILL, 0);
+                        put(Items.INKWELL, 0);
+                        put(Items.MANUSCRIPT, 0);
+                    }});
+                    put(PlayerToken.BLUE, new HashMap<>() {{
+                        put(Resources.PLANT, 0);
+                        put(Resources.ANIMAL, 0);
+                        put(Resources.FUNGI, 0);
+                        put(Resources.INSECT, 0);
+                        put(Items.QUILL, 0);
+                        put(Items.INKWELL, 0);
+                        put(Items.MANUSCRIPT, 0);
+                    }});
+                    put(PlayerToken.YELLOW, new HashMap<>() {{
+                        put(Resources.PLANT, 0);
+                        put(Resources.ANIMAL, 0);
+                        put(Resources.FUNGI, 0);
+                        put(Resources.INSECT, 0);
+                        put(Items.QUILL, 0);
+                        put(Items.INKWELL, 0);
+                        put(Items.MANUSCRIPT, 0);
+                    }});
+                }},
+                new HashMap<>() {{
+                    put(PlayerToken.RED, 86);
+                    put(PlayerToken.BLUE, 87);
+                    put(PlayerToken.YELLOW, 88);
+                }},
+                new ArrayList<>(Arrays.asList(89, 101)),
+                new ArrayList<>(Arrays.asList(new Pair<>(false, Resources.PLANT), new Pair<>(false, Resources.FUNGI), new Pair<>(false, null), new Pair<>(false, null))),
+                new Pair<>(30, 31),
+                new Pair<>(8, 18),
+                new HashMap<>() {{
+                    put(PlayerToken.RED, 0);
+                    put(PlayerToken.BLUE, 0);
+                    put(PlayerToken.YELLOW, 0);
+                }}
+        );
+
+        currentToken = PlayerToken.RED;
+
         rawCellDimension = new Pair<>(774.0, 397.0);
         rawCardDimension = new Pair<>(993.0, 662.0);
 
         targetCellWidth = 100;
-        cardCompressionFactor = targetCellWidth / rawCellDimension.first;   // target = 100 --> 0.1292, target = 200 -> 0.2584
+        cardCompressionFactor = targetCellWidth / rawCellDimension.first;
 
         adjustedCellDimensions = new Pair<>(rawCellDimension.first * cardCompressionFactor, rawCellDimension.second * cardCompressionFactor);
         adjustedCardDimensions = new Pair<>(rawCardDimension.first * cardCompressionFactor, rawCardDimension.second * cardCompressionFactor);
@@ -87,9 +210,17 @@ public class TempGameController {
         zoomScale = 1;
         zoomIncrement = 0.1;
 
+        commonObjectives = Arrays.asList(DEFAULT_OBJECTIVE_CARD_BACK, DEFAULT_OBJECTIVE_CARD_BACK);
+
+        firstObjectiveSlot.setImage(new Image("images/cards/backs/" + commonObjectives.getFirst() + ".png"));
+        secondObjectiveSlot.setImage(new Image("images/cards/backs/" + commonObjectives.get(1) + ".png"));
+
+        secretObjectiveSlot.setImage(new Image("images/cards/backs/" + DEFAULT_OBJECTIVE_CARD_BACK + ".png"));
+
         initializePlayerBoardGrid();
         initializeScrollPane();
         initializeSidePanels();
+        initializePlayersList(players);
 
         handlePlayedCardEvent(PlayerToken.RED, 85, CardSide.BACK, new Coords(0, 0));
         handlePlayedCardEvent(PlayerToken.RED, 52, CardSide.FRONT, new Coords(-1, -1));
@@ -119,6 +250,37 @@ public class TempGameController {
     }
 
     public void initializeSidePanels() {
+
+    }
+
+    public void initializePlayersList(List<UserInfo> players) {
+        int playersCount = players.size();
+
+        double vBoxWidth = 269;
+
+        Pair<Double, Double> playerImageViewDimensions;
+        switch (playersCount) {
+            case 2 -> playerImageViewDimensions = new Pair<>(vBoxWidth, 90.0);
+            case 3 -> playerImageViewDimensions = new Pair<>(vBoxWidth, 58.33);
+            case 4 -> playerImageViewDimensions = new Pair<>(vBoxWidth, 42.5);
+            default -> throw new RuntimeException("Unsupported number of players");
+        }
+
+        boolean first = true;
+        for(int i = 0; i < playersCount; i++) {
+            ImageView playerEntry = new ImageView(new Image("images/cards/backs/" + DEFAULT_OBJECTIVE_CARD_BACK + ".png"));
+            playerEntry.setPreserveRatio(false);
+
+            playerEntry.setFitWidth(playerImageViewDimensions.first);
+            playerEntry.setFitHeight(playerImageViewDimensions.second);
+
+            playersList.getChildren().add(playerEntry);
+            if(!first) VBox.setMargin(playerEntry, new Insets(5.0, 0.0, 0.0, 0.0));
+            first = false;
+        }
+    }
+
+    public void firstGuiUpdate() {
 
     }
 
@@ -205,10 +367,10 @@ public class TempGameController {
      * @param playerToken token of the player whose board the user is interested to see
      */
     public void switchGrid(PlayerToken playerToken) {
-        if(!tokenToGridBoard.containsKey(playerToken)) throw new RuntimeException("player not found");
+        if(!tokenToScrollPane.containsKey(playerToken)) throw new RuntimeException("player not found");
 
-        GridPane newGridPane = tokenToGridBoard.get(playerToken);
-        mainStackPane.getChildren().set(mainStackPane.getChildren().size() - 2, tokenToGridBoard.get(playerToken));
+        ScrollPane newScrollPane = tokenToScrollPane.get(playerToken);
+        mainStackPane.getChildren().set(mainStackPane.getChildren().size() - 2, tokenToScrollPane.get(playerToken));
     }
 
     public void handleOnMouseClickedLeftPanelButton(MouseEvent event) {

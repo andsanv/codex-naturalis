@@ -8,6 +8,7 @@ import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Resources;
@@ -231,6 +232,11 @@ public class CLITest implements UI {
   @Override
   public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
 
+  }
+
+  @Override
+  public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+    
   }
 
   @Override

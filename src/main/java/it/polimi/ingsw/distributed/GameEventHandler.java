@@ -1,6 +1,7 @@
 package it.polimi.ingsw.distributed;
 
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Resources;
@@ -208,4 +209,11 @@ public interface GameEventHandler {
          Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability);
 
    public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints);
+
+   /**
+    * Handles the ending of the initialization phase of the game, receiving a slim game model and setting up a client's internal model.
+    *
+    * @param slimGameModel slimGameModel representing the initial collections
+    */
+   public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel);
 }
