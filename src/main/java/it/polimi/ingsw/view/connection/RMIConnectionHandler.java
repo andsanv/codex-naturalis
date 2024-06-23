@@ -12,6 +12,7 @@ import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.distributed.server.MainServerActions;
 import it.polimi.ingsw.view.UI;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -124,7 +125,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
         System.out.println(userInterface.getUserInfo());
 
         return true;
-      } catch (RemoteException e) {
+      } catch (IOException e) {
         e.printStackTrace();
         return false;
       }
@@ -141,7 +142,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
         } catch (InterruptedException e) {
         }
 
-      } catch (RemoteException e) {
+      } catch (IOException e) {
         e.printStackTrace();
         return false;
       }

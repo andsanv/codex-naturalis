@@ -51,14 +51,17 @@ public class SocketServer {
 
   /**
    * This method keeps listening for new clients.
-   * Once a new client is accpted, object streams are configured and the client
+   * Once a new client is accepted, object streams are configured and the client
    * handler is created.
+   * 
    * The first command received must be either a ConnectionCommand or a
    * ReconnectionCommand. If not request is ignored.
-   * If the command is a ConnectionCommand, the server controller creates a new
+   * 
+   * If the command is a ConnectionCommand, the server controller assigns a new
    * UserInfo for the client.
    * If the command is Reconnection command, the UserInfo is contained in the
-   * request.
+   * request and the server controller will analyze it.
+   * 
    * In both cases, the UserInfo and the ClientHandler are added to the
    * connections map.
    */

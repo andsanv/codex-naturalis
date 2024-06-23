@@ -9,7 +9,6 @@ import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,29 +17,30 @@ import java.rmi.RemoteException;
 
 /**
  * This class will handle the communication with the client.
- * Receiving command from the client and  sending events to it.
+ * Receiving command from the client and sending events to it.
  */
 public class SocketClientHandler extends Client implements Runnable {
 
   /**
-   * The input stream for the client Command requests
+   * The input stream for the client Command requests.
    */
   private final ObjectInputStream in;
 
   /**
-   * The output stream for the Event server responses
+   * The output stream for the Event server responses.
    */
   private final ObjectOutputStream out;
 
   /**
-   * This is a reference to the gameFlowManager the clientHandler is connected to
+   * This is a reference to the gameFlowManager the clientHandler is connected to.
    */
   private GameFlowManager gameFlowManager;
 
   /**
-   * The constructor initializes the streams
-   * @param out the output stream
-   * @param in the input stream
+   * The constructor initializes the streams for the socket connection.
+   * 
+   * @param out the output stream.
+   * @param in  the input stream.
    */
   public SocketClientHandler(ObjectOutputStream out, ObjectInputStream in) {
     this.out = out;
@@ -49,9 +49,11 @@ public class SocketClientHandler extends Client implements Runnable {
 
   /**
    * This method keeps waiting for reading commands from the client.
-   * If the received command is a GameCommand, after checking if the gameFlowManager is set, it is executed.
-   * If the received command is a MainCommand, it is executed.
-   * If exceptions are thrown, the loop is stopped and a new ClientHandler should be created (sending a new connection request to the socket server).
+   * If the received command is a GameCommand, after checking if the
+   * gameFlowManager is set, it is executed.
+   * If the received command is a MainCommand, it is directly executed.
+   * If exceptions are thrown, the loop is stopped and a new ClientHandler should
+   * be created (sending a new connection request to the socket server).
    */
   @Override
   public void run() {
@@ -66,6 +68,7 @@ public class SocketClientHandler extends Client implements Runnable {
           }
           ((GameCommand) command).execute(gameFlowManager);
         } else if (command instanceof MainCommand) {
+          System.out.println("Executing main command");
           ((MainCommand) command).execute();
         } else {
           System.err.println("Unrecognized command: " + command);
@@ -99,7 +102,9 @@ public class SocketClientHandler extends Client implements Runnable {
   }
 
   /**
-   * This method sets the gameFlowManager for the clientHandler that is created only when a lobby starts a game.
+   * This method sets the gameFlowManager for the clientHandler that is created
+   * only when a lobby starts a game.
+   * 
    * @param gameFlowManager
    */
   public void setGameFlowManager(GameFlowManager gameFlowManager) {

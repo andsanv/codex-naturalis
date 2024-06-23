@@ -14,6 +14,7 @@ public abstract class Client implements Observer, MainViewActions, GameViewActio
 
     /** This field represents the state of the connection */
     private Status status = Status.OFFLINE;
+    
     /** This object is used to ensure thread safety */
     private final Object statusLock = new Object();
 

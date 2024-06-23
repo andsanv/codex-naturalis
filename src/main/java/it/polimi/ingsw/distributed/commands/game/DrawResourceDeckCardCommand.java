@@ -3,19 +3,24 @@ package it.polimi.ingsw.distributed.commands.game;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.model.player.PlayerToken;
 
-/**
- * Command to allow a player to draw a resource card from the deck.
- */
+/** This command is used to draw a resource card. */
 public class DrawResourceDeckCardCommand extends GameCommand {
-  /**
-   * Token of the player drawing the card.
-   */
+  
+  /** The token of the player drawing */
   private final PlayerToken playerToken;
 
+  /**
+   * This constructor creates the command starting from the player token.
+   * 
+   * @param playerToken
+   */
   public DrawResourceDeckCardCommand(PlayerToken playerToken) {
     this.playerToken = playerToken;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean execute(GameFlowManager gameFlowManager) {
     if(gameFlowManager.currentState.drawResourceDeckCard(playerToken)) {
