@@ -11,11 +11,14 @@ import it.polimi.ingsw.distributed.MainEventHandler;
  * will receive both an error message and a new valid UserInfo.
  */
 public class LoginEvent extends MainEvent {
-
-  /** The user info of the player. */
+  /**
+   * The user info of the player.
+   */
   private final UserInfo userInfo;
 
-  /** The optional error message. */
+  /**
+   * The optional error message.
+   */
   private final String error;
 
   /**

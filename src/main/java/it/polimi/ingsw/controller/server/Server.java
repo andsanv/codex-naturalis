@@ -370,20 +370,19 @@ public enum Server {
         } else {
             System.err.println(
                     "Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
-            // try {
-            // client.receiveEvent(new MainErrorEvent("Error: User was not found in recent
-            // sessions or another user has the same user id. Assignign a new user id."));
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
             this.clientSignUp(userInfo.name, client);
         }
     }
 
     public UserInfo clientSignUp(String username, Client client) {
-        User user = new User(username);
+        User user;
+        try {
+            user = new User(username);
+        } catch (IllegalArgumentException e) {
+            user = new User(User.randomUsername(8));
+        }
 
-        UserInfo userInfo = new UserInfo(user);
+        UserInfo userInfo = user.toUserInfo();
 
         executorService.submit(() -> {
             try {

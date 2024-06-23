@@ -3,7 +3,9 @@ package it.polimi.ingsw.controller.server;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Contains an user's information (name and unique id). The class is meant to be
@@ -99,6 +101,34 @@ public final class User {
         synchronized (User.class) {
             return users.stream().anyMatch(u -> u.name.equals(userInfo.name) && u.id == userInfo.id);
         }
+    }
+
+    /**
+     * Generates a random valid username of the given length.
+     * If the length is smaller than 3, the username will have length 3.
+     * 
+     * @param length desired length for the username
+     * 
+     * @return the random generated username
+     */
+    public static String randomUsername(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        length = Math.min(length, 3);
+        Random random = new Random();
+
+        return random.ints(length, 0, chars.length())
+                .mapToObj(i -> String.valueOf(chars.charAt(i)))
+                .collect(Collectors.joining());
+    }
+
+    /**
+     * Creates an UserInfo from the give user.
+     * 
+     * @param user the user
+     * @return the UserInfo of the user
+     */
+    public synchronized UserInfo toUserInfo() {
+        return this!=null ? new UserInfo(this) : null;
     }
 
     @Override
