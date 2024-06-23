@@ -11,6 +11,9 @@ import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
+/**
+ * The user is in this scene when he loses the connection to the server.
+ */
 public class ConnectionLostScene extends Scene {
 
     public ConnectionLostScene(SceneManager sceneManager) {

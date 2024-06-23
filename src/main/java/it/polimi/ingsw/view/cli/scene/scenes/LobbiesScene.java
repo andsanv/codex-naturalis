@@ -15,6 +15,11 @@ import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
+/**
+ * In this scene the user can join, leave and create lobbies.
+ * Moreover, he can decide to start a game if he is the manager of the lobby and
+ * if there are enough players.
+ */
 public class LobbiesScene extends Scene {
     public LobbiesScene(SceneManager sceneManager) {
         super(sceneManager);
@@ -122,7 +127,7 @@ public class LobbiesScene extends Scene {
 
                     if (CLIPrinter.displayLoadingMessage("Starting the game", cli.startingGame,
                             connectionHandler.isConnected, cli.startingGameError)) {
-                        // If the game was started 
+                        // If the game was started
                         if (cli.inGame.get())
                             sceneManager.transition(null); // TODO transition to game scene
                     } else

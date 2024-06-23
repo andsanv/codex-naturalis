@@ -1,7 +1,6 @@
 package it.polimi.ingsw.view.cli.scene;
 
 import java.util.List;
-import java.util.Optional;
 
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;

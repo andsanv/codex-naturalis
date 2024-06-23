@@ -14,7 +14,7 @@ import it.polimi.ingsw.view.connection.RMIConnectionHandler;
 import it.polimi.ingsw.view.connection.SocketConnectionHandler;
 
 /**
- * Scene for selecting the connection type
+ * Scene for selecting the connection type.
  */
 public class ConnectionScene extends Scene {
     public ConnectionScene(SceneManager sceneManager) {
