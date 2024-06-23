@@ -24,266 +24,383 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GameFlowManagerTest {
-  private UserInfo creator;
-  private UserInfo player;
-  private Lobby lobby;
+	private UserInfo creator;
+	private UserInfo player;
+	private Lobby lobby;
 
-  private List<it.polimi.ingsw.controller.observer.Observer> observers;
-  private Map<UserInfo, Supplier<Boolean>> isConnected;
+	private List<it.polimi.ingsw.controller.observer.Observer> observers;
+	private Map<UserInfo, Supplier<Boolean>> isConnected;
 
-  @BeforeEach
-  void setUp() {
-    observers = new ArrayList<>();
+	@BeforeEach
+	void setUp() {
+		observers = new ArrayList<>();
 
-    User creatorUser = new User("Andrea");
-    creator = new UserInfo(creatorUser);
+		User creatorUser = new User("Andrea");
+		creator = new UserInfo(creatorUser);
 
-    User playerUser = new User("Maradona");
-    player = new UserInfo(playerUser);
+		User playerUser = new User("Maradona");
+		player = new UserInfo(playerUser);
 
-    lobby = new Lobby(creatorUser);
-    lobby.addUser(playerUser);
+		lobby = new Lobby(creatorUser);
+		lobby.addUser(playerUser);
 
-    isConnected = new HashMap<UserInfo, Supplier<Boolean>>() {{
-      put(creator, ()-> true);
-      put(player, ()-> true);
-    }};
-  }
+		isConnected = new HashMap<UserInfo, Supplier<Boolean>>() {
+			{
+				put(creator, () -> true);
+				put(player, () -> true);
+			}
+		};
+	}
 
-  @Test
-  void gameFlowManagerConstructorTest() {
-    GameFlowManager gameFlowManager;
+	@Test
+	void gameFlowManagerConstructorTest() {
+		GameFlowManager gameFlowManager;
 
-    gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
+		gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
 
-    assertNotNull(gameFlowManager.userInfoToToken);
-    assertEquals(0, gameFlowManager.userInfoToToken.size());
-    
-    assertNotNull(gameFlowManager.playerTokens);
-    assertEquals(0, gameFlowManager.playerTokens.size());
+		assertNotNull(gameFlowManager.userInfoToToken);
+		assertEquals(0, gameFlowManager.userInfoToToken.size());
 
-    assertEquals(gameFlowManager.tokenSelectionState, gameFlowManager.currentState);
-  }
+		assertNotNull(gameFlowManager.playerTokens);
+		assertEquals(0, gameFlowManager.playerTokens.size());
 
-  @Test
-  void gameInitializationTest() {
-    GameFlowManager gameFlowManager;
-    GameModelUpdater gameModelUpdater;
-    GameModel gameModel;
+		assertEquals(gameFlowManager.tokenSelectionState, gameFlowManager.currentState);
+	}
 
-    gameFlowManager = new GameFlowManager(lobby, isConnected, observers, 3);
-    gameModelUpdater = gameFlowManager.gameModelUpdater;
+	@Test
+	void gameInitializationTest() {
+		GameFlowManager gameFlowManager;
+		GameModelUpdater gameModelUpdater;
+		GameModel gameModel;
 
-    PlayerToken firstPlayerToken = PlayerToken.RED;
+		gameFlowManager = new GameFlowManager(lobby, isConnected, observers, 3);
+		gameModelUpdater = gameFlowManager.gameModelUpdater;
 
-    Thread gameFlowManagerThread = new Thread(gameFlowManager);
-    gameFlowManagerThread.start();
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		PlayerToken firstPlayerToken = PlayerToken.RED;
 
-    gameFlowManager.addCommand(new SelectTokenCommand(creator, PlayerToken.RED));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		Thread gameFlowManagerThread = new Thread(gameFlowManager);
+		gameFlowManagerThread.start();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.RED));    
-    // gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.BLUE));    
-    try { Thread.sleep(3100); } catch (InterruptedException e) { e.printStackTrace(); }
+		gameFlowManager.addCommand(new SelectTokenCommand(creator, PlayerToken.RED));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    assertEquals(gameFlowManager.starterCardSelectionState, gameFlowManager.currentState);
-    gameFlowManager.currentState.handleTokenSelection(new ArrayList<>());
-    assertEquals(2, gameFlowManager.playerTokens.size());
-    gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.RED));    
+		gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.RED));
+		// gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.BLUE));
+		try {
+			Thread.sleep(3100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    PlayerToken secondPlayerToken = gameFlowManager.playerTokens.stream().filter(x -> !x.equals(firstPlayerToken)).findFirst().orElseThrow();
+		assertEquals(gameFlowManager.starterCardSelectionState, gameFlowManager.currentState);
+		gameFlowManager.currentState.handleTokenSelection(new ArrayList<>());
+		assertEquals(2, gameFlowManager.playerTokens.size());
+		gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.RED));
 
-    // gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.RED));
-    gameFlowManager.addCommand(new DrawStarterCardCommand(secondPlayerToken));
-    gameFlowManager.addCommand(new DrawStarterCardCommand(secondPlayerToken));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-  
-    assertEquals(gameFlowManager.starterCardSelectionState, gameFlowManager.currentState); 
-  
-    gameFlowManager.addCommand(new SelectStarterCardSideCommand(secondPlayerToken, CardSide.FRONT));
-    gameFlowManager.addCommand(new SelectStarterCardSideCommand(secondPlayerToken, CardSide.FRONT));
-    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.RED, CardSide.BACK));
+		PlayerToken secondPlayerToken = gameFlowManager.playerTokens.stream().filter(x -> !x.equals(firstPlayerToken))
+				.findFirst().orElseThrow();
 
-    try { Thread.sleep(3100); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(gameFlowManager.objectiveCardSelectionState, gameFlowManager.currentState); 
-    gameFlowManager.currentState.handleStarterCardSelection();
+		// gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.RED));
+		gameFlowManager.addCommand(new DrawStarterCardCommand(secondPlayerToken));
+		gameFlowManager.addCommand(new DrawStarterCardCommand(secondPlayerToken));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    gameFlowManager.addCommand(new DrawStarterCardCommand(secondPlayerToken));
-    gameFlowManager.addCommand(new SelectStarterCardSideCommand(secondPlayerToken, CardSide.FRONT));
+		assertEquals(gameFlowManager.starterCardSelectionState, gameFlowManager.currentState);
 
-    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(secondPlayerToken));
-    gameFlowManager.addCommand(new SelectObjectiveCardCommand(secondPlayerToken, 0));
-    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 0));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(gameFlowManager.objectiveCardSelectionState, gameFlowManager.currentState);
+		gameFlowManager.addCommand(new SelectStarterCardSideCommand(secondPlayerToken, CardSide.FRONT));
+		gameFlowManager.addCommand(new SelectStarterCardSideCommand(secondPlayerToken, CardSide.FRONT));
+		gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.RED, CardSide.BACK));
 
-    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.RED));
-    // gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 1));
-    try { Thread.sleep(3100); } catch (InterruptedException e) { e.printStackTrace(); }
-    
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
-    
-    gameFlowManager.currentState.handleObjectiveCardSelection();
-    gameFlowManager.currentState.handleInitialization(null, null, null, null);
-    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(secondPlayerToken));
-    gameFlowManager.addCommand(new SelectObjectiveCardCommand(secondPlayerToken, 0));
-    try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+		try {
+			Thread.sleep(3100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(gameFlowManager.objectiveCardSelectionState, gameFlowManager.currentState);
+		gameFlowManager.currentState.handleStarterCardSelection();
 
-    assertNull(gameModelUpdater);
-    gameModelUpdater = gameFlowManager.gameModelUpdater;
-    gameModel = gameModelUpdater.gameModel;
-    assertNotNull(gameModelUpdater);
-    assertNotNull(gameModel);
+		gameFlowManager.addCommand(new DrawStarterCardCommand(secondPlayerToken));
+		gameFlowManager.addCommand(new SelectStarterCardSideCommand(secondPlayerToken, CardSide.FRONT));
 
-    assertTrue(gameFlowManager.playerTokens.stream().allMatch(x -> gameModel.tokenToPlayer.get(x).secretObjective != null));
-    assertTrue(gameFlowManager.playerTokens.stream().allMatch(x -> gameModel.tokenToPlayer.get(x).playerBoard.board.get(new Coords(0,0)) != null));
-    assertTrue(gameFlowManager.playerTokens.stream().allMatch(x -> gameModel.tokenToPlayer.get(x).playerHand.size() == 3));
-    assertTrue(gameModel.tokenToPlayer.get(secondPlayerToken).playerBoard.getCard(new Coords(0,0)).getPlayedSide().equals(CardSide.FRONT));
-  }
+		gameFlowManager.addCommand(new DrawObjectiveCardsCommand(secondPlayerToken));
+		gameFlowManager.addCommand(new SelectObjectiveCardCommand(secondPlayerToken, 0));
+		gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 0));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(gameFlowManager.objectiveCardSelectionState, gameFlowManager.currentState);
 
-  @Test
-  void gameTest() {
-    GameFlowManager gameFlowManager;
-    GameModelUpdater gameModelUpdater;
-    GameModel gameModel;
+		gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.RED));
+		// gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED,
+		// 1));
+		try {
+			Thread.sleep(3100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    // System.out.println("observers = " + observers);
-    // System.out.println("is connected = " + isConnected);
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
 
-    gameFlowManager = new GameFlowManager(lobby, isConnected, observers, 3);
+		gameFlowManager.currentState.handleObjectiveCardSelection();
+		gameFlowManager.currentState.handleInitialization(null, null, null, null);
+		gameFlowManager.addCommand(new DrawObjectiveCardsCommand(secondPlayerToken));
+		gameFlowManager.addCommand(new SelectObjectiveCardCommand(secondPlayerToken, 0));
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    Thread gameFlowManagerThread = new Thread(gameFlowManager);
-    gameFlowManagerThread.start();
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		assertNull(gameModelUpdater);
+		gameModelUpdater = gameFlowManager.gameModelUpdater;
+		gameModel = gameModelUpdater.gameModel;
+		assertNotNull(gameModelUpdater);
+		assertNotNull(gameModel);
 
-    assertNull(gameFlowManager.getTurn());
+		assertTrue(
+				gameFlowManager.playerTokens.stream()
+						.allMatch(x -> gameModel.tokenToPlayer.get(x).secretObjective != null));
+		assertTrue(gameFlowManager.playerTokens.stream()
+				.allMatch(x -> gameModel.tokenToPlayer.get(x).playerBoard.board.get(new Coords(0, 0)) != null));
+		assertTrue(
+				gameFlowManager.playerTokens.stream()
+						.allMatch(x -> gameModel.tokenToPlayer.get(x).playerHand.size() == 3));
+		assertTrue(gameModel.tokenToPlayer.get(secondPlayerToken).playerBoard.getCard(new Coords(0, 0)).getPlayedSide()
+				.equals(CardSide.FRONT));
+	}
 
-    gameFlowManager.addCommand(new SelectTokenCommand(creator, PlayerToken.RED));
-    gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.BLUE));    
+	@Test
+	void gameTest() {
+		GameFlowManager gameFlowManager;
+		GameModelUpdater gameModelUpdater;
+		GameModel gameModel;
 
-    gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.RED));
-    gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.BLUE));
-  
-    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.BLUE, CardSide.BACK));
-    gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.RED, CardSide.BACK));
+		// System.out.println("observers = " + observers);
+		// System.out.println("is connected = " + isConnected);
 
-    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.BLUE));
-    gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.RED));
-    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.BLUE, 0));
-    gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 1));
+		gameFlowManager = new GameFlowManager(lobby, isConnected, observers, 3);
 
-    try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-    
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		Thread gameFlowManagerThread = new Thread(gameFlowManager);
+		gameFlowManagerThread.start();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    gameModelUpdater = gameFlowManager.gameModelUpdater;
-    gameModel = gameModelUpdater.gameModel;
+		assertNull(gameFlowManager.getTurn());
 
-    PlayerToken firstPlayerToken = gameFlowManager.getTurn();
-    PlayerToken secondPlayerToken = gameFlowManager.playerTokens.stream().filter(pt -> pt != firstPlayerToken).findFirst().orElseThrow();
+		gameFlowManager.addCommand(new SelectTokenCommand(creator, PlayerToken.RED));
+		gameFlowManager.addCommand(new SelectTokenCommand(player, PlayerToken.BLUE));
 
-    
-    assertEquals(CardSide.BACK, gameModel.tokenToPlayer.get(firstPlayerToken).playerBoard.getCard(new Coords(0,0)).getPlayedSide());
-    assertEquals(CardSide.BACK, gameModel.tokenToPlayer.get(secondPlayerToken).playerBoard.getCard(new Coords(0,0)).getPlayedSide());
+		gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.RED));
+		gameFlowManager.addCommand(new DrawStarterCardCommand(PlayerToken.BLUE));
 
-    Player firstPlayer = gameModel.tokenToPlayer.get(firstPlayerToken);
-    PlayerHand firstPlayerHand = firstPlayer.playerHand;
+		gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.BLUE, CardSide.BACK));
+		gameFlowManager.addCommand(new SelectStarterCardSideCommand(PlayerToken.RED, CardSide.BACK));
 
-    Player secondPlayer = gameModel.tokenToPlayer.get(secondPlayerToken);
-    PlayerHand secondPlayerHand = secondPlayer.playerHand;
-    PlayerBoard secondPlayerBoard = secondPlayer.playerBoard;
+		gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.BLUE));
+		gameFlowManager.addCommand(new DrawObjectiveCardsCommand(PlayerToken.RED));
+		gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.BLUE, 0));
+		gameFlowManager.addCommand(new SelectObjectiveCardCommand(PlayerToken.RED, 1));
 
-    PlayableCard resourceCard = firstPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1,1), resourceCard.id, CardSide.FRONT));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
-    assertEquals(firstPlayerToken, gameFlowManager.getTurn());
-    assertEquals(0, gameFlowManager.getRound());
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
 
-    gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayerToken));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		gameModelUpdater = gameFlowManager.gameModelUpdater;
+		gameModel = gameModelUpdater.gameModel;
 
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertEquals(1, gameFlowManager.turn);
-    assertEquals(0, gameFlowManager.getRound());
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		PlayerToken firstPlayerToken = gameFlowManager.getTurn();
+		PlayerToken secondPlayerToken = gameFlowManager.playerTokens.stream().filter(pt -> pt != firstPlayerToken)
+				.findFirst().orElseThrow();
 
-    resourceCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(0,0), resourceCard.id, CardSide.FRONT));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		assertEquals(CardSide.BACK,
+				gameModel.tokenToPlayer.get(firstPlayerToken).playerBoard.getCard(new Coords(0, 0)).getPlayedSide());
+		assertEquals(CardSide.BACK,
+				gameModel.tokenToPlayer.get(secondPlayerToken).playerBoard.getCard(new Coords(0, 0)).getPlayedSide());
 
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		Player firstPlayer = gameModel.tokenToPlayer.get(firstPlayerToken);
+		PlayerHand firstPlayerHand = firstPlayer.playerHand;
 
-    gameFlowManager.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(1,-1), resourceCard.id, CardSide.FRONT));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+		Player secondPlayer = gameModel.tokenToPlayer.get(secondPlayerToken);
+		PlayerHand secondPlayerHand = secondPlayer.playerHand;
+		PlayerBoard secondPlayerBoard = secondPlayer.playerBoard;
 
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+		PlayableCard resourceCard = firstPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1, 1), resourceCard.id, CardSide.FRONT));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    resourceCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(-1,-1), resourceCard.id, CardSide.FRONT));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertNull(secondPlayerBoard.getCard(new Coords(-1,-1)));
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+		assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+		assertEquals(firstPlayerToken, gameFlowManager.getTurn());
+		assertEquals(0, gameFlowManager.getRound());
 
-    gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayerToken));
-    gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayerToken));
-    gameFlowManager.addCommand(new DrawVisibleResourceCardCommand(firstPlayerToken, 1));
-    gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(firstPlayerToken, 1));
+		gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayerToken));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    gameFlowManager.addCommand(new DrawVisibleResourceCardCommand(secondPlayerToken, 1));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(firstPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
-    assertEquals(2, gameFlowManager.turn);
-    assertEquals(1, gameFlowManager.getRound());
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertEquals(1, gameFlowManager.turn);
+		assertEquals(0, gameFlowManager.getRound());
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
 
-    gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayerToken));
-    gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayerToken));
-    gameFlowManager.addCommand(new DrawVisibleResourceCardCommand(firstPlayerToken, 1));
-    gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(firstPlayerToken, 1));
+		resourceCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(0, 0), resourceCard.id, CardSide.FRONT));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    PlayableCard goldCard = firstPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1,-1), goldCard.id, CardSide.BACK));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(firstPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
 
-    gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayerToken));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(1, -1), resourceCard.id, CardSide.FRONT));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-    gameFlowManager.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1,-1), goldCard.id, CardSide.BACK));
-    goldCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(1,1), goldCard.id, CardSide.BACK));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
 
-    gameModel.scoreTrack.updatePlayerScore(firstPlayerToken, 25);
+		resourceCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(
+						new PlayCardCommand(secondPlayerToken, new Coords(-1, -1), resourceCard.id, CardSide.FRONT));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertNull(secondPlayerBoard.getCard(new Coords(-1, -1)));
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
 
-    gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(secondPlayerToken, 1));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-    assertEquals(firstPlayerToken, gameFlowManager.getTurn());
-    assertTrue(gameFlowManager.isLastRound);
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayerToken));
+		gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayerToken));
+		gameFlowManager.addCommand(new DrawVisibleResourceCardCommand(firstPlayerToken, 1));
+		gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(firstPlayerToken, 1));
 
-    goldCard = firstPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(-1,1), goldCard.id, CardSide.BACK));
-    try { Thread.sleep(3100); } catch (InterruptedException e) { e.printStackTrace(); }
+		gameFlowManager.addCommand(new DrawVisibleResourceCardCommand(secondPlayerToken, 1));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(firstPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		assertEquals(2, gameFlowManager.turn);
+		assertEquals(1, gameFlowManager.getRound());
 
-    assertEquals(secondPlayerToken, gameFlowManager.getTurn());
-    assertTrue(gameFlowManager.isLastRound);
-    assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+		gameFlowManager.addCommand(new DrawResourceDeckCardCommand(firstPlayerToken));
+		gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayerToken));
+		gameFlowManager.addCommand(new DrawVisibleResourceCardCommand(firstPlayerToken, 1));
+		gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(firstPlayerToken, 1));
 
-    goldCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull).filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
-    gameFlowManager.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(-1,1), goldCard.id, CardSide.BACK));
-    gameFlowManager.addCommand(new DrawGoldDeckCardCommand(secondPlayerToken));
-    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
-  }
+		PlayableCard goldCard = firstPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1, -1), goldCard.id, CardSide.BACK));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(firstPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+
+		gameFlowManager.addCommand(new DrawGoldDeckCardCommand(firstPlayerToken));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+
+		gameFlowManager
+				.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1, -1), goldCard.id, CardSide.BACK));
+		goldCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(1, 1), goldCard.id, CardSide.BACK));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertEquals(gameFlowManager.drawCardState, gameFlowManager.currentState);
+
+		gameModel.scoreTrack.updatePlayerScore(firstPlayerToken, 25);
+
+		gameFlowManager.addCommand(new DrawVisibleGoldCardCommand(secondPlayerToken, 1));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		assertEquals(firstPlayerToken, gameFlowManager.getTurn());
+		assertTrue(gameFlowManager.isLastRound);
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+
+		goldCard = firstPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(firstPlayerToken, new Coords(-1, 1), goldCard.id, CardSide.BACK));
+		try {
+			Thread.sleep(3100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		assertEquals(secondPlayerToken, gameFlowManager.getTurn());
+		assertTrue(gameFlowManager.isLastRound);
+		assertEquals(gameFlowManager.playCardState, gameFlowManager.currentState);
+
+		goldCard = secondPlayerHand.getCards().stream().filter(Objects::nonNull)
+				.filter(x -> x.getClass().equals(GoldCard.class)).findFirst().orElse(null);
+		gameFlowManager
+				.addCommand(new PlayCardCommand(secondPlayerToken, new Coords(-1, 1), goldCard.id, CardSide.BACK));
+		gameFlowManager.addCommand(new DrawGoldDeckCardCommand(secondPlayerToken));
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }
