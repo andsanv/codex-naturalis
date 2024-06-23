@@ -2,9 +2,9 @@ package it.polimi.ingsw.controller.server;
 
 import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.CYAN;
-import static org.fusesource.jansi.Ansi.Color.GREEN;
-import static org.fusesource.jansi.Ansi.Color.MAGENTA;
 import static org.fusesource.jansi.Ansi.Color.RED;
+import static org.fusesource.jansi.Ansi.Color.WHITE;
+import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 /**
  * Class used to print formatted messages in the server.
@@ -32,7 +32,7 @@ public class ServerPrinter {
      */
     public static void displayWarning(String warning) {
         if (SHOW_WARNING)
-            System.out.println(ansi().reset().bg(MAGENTA).a("WARNING").reset().a(" " + warning));
+            System.out.println(ansi().reset().bg(YELLOW).a("WARNING").reset().a(" " + warning));
     }
 
     /**
@@ -52,6 +52,6 @@ public class ServerPrinter {
      */
     public static void displayDebug(String debug) {
         if (SHOW_DEBUG)
-            System.out.println(ansi().reset().bg(GREEN).a("INFO").reset().a(" " + debug));
+            System.out.println(ansi().reset().bg(WHITE).a("DEBUG").reset().a(" " + debug));
     }
 }

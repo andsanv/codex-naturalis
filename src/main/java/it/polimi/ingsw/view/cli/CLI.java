@@ -168,10 +168,10 @@ public class CLI implements UI {
             this.userInfo = userInfo;
             UserInfoManager.saveUserInfo(userInfo);
         }
-        
+
         waitingUserInfo.set(false);
 
-        if(error!=null)
+        if (error != null)
             CLIPrinter.displayError(error);
     }
 
@@ -373,7 +373,7 @@ public class CLI implements UI {
     @Override
     public UserInfo getUserInfo() {
         synchronized (userInfoLock) {
-            return new UserInfo(userInfo);
+            return userInfo != null ? new UserInfo(userInfo) : null;
         }
     }
 
