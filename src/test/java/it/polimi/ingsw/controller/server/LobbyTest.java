@@ -55,7 +55,7 @@ public class LobbyTest {
     }
 
     @Test
-    void test2() {
+    void testLobbyInfo() {
         User leader = new User("leader");
         Lobby lobby = new Lobby(leader);
 
