@@ -67,6 +67,7 @@ public class LobbiesScene extends Scene {
 
     @Override
     public void onEntry() {
+        CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Lobbies", BLUE);
     }
 }

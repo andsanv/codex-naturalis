@@ -14,6 +14,6 @@ public class CreateLobbyError extends MainErrorEvent {
 
   @Override
   public void execute(MainEventHandler mainEventHandler) {
-    mainEventHandler.handleCreateLobbyError();
+    mainEventHandler.handleCreateLobbyError(message);
   }
 }

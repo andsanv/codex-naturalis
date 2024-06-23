@@ -58,5 +58,10 @@ public interface MainEventHandler {
 
   public void handleStartGameError(String message);
 
-  public void handleCreateLobbyError();
+  /**
+   * Method called when an error occurred while creating a lobby.
+   * 
+   * @param message the error message
+   */
+  public void handleCreateLobbyError(String message);
 }

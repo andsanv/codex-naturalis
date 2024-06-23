@@ -94,6 +94,11 @@ public class CLI implements UI {
      */
     public final AtomicBoolean creatingLobby = new AtomicBoolean(false);
 
+    /**
+     * Thread-safe boolean that is true while the user is starting a game.
+     */
+    public final AtomicBoolean startingGame = new AtomicBoolean(false);
+
     private CLI() {
         /*
          * Register scenes in the SceneManager
@@ -391,19 +396,19 @@ public class CLI implements UI {
 
     @Override
     public void handleJoinLobbyError(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleJoinLobbyError'");
+        startingGame.set(false);
+        CLIPrinter.displayError(message);
     }
 
     @Override
     public void handleStartGameError(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleStartGameError'");
+        startingGame.set(false);
+        CLIPrinter.displayError(message);
     }
 
     @Override
-    public void handleCreateLobbyError() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
+    public void handleCreateLobbyError(String message) {
+        creatingLobby.set(false);
+        CLIPrinter.displayError(message);
     }
 }

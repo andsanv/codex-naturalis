@@ -624,7 +624,7 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleCreateLobbyError() {
+    public void handleCreateLobbyError(String message) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
     }
