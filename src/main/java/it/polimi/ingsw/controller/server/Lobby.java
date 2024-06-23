@@ -105,6 +105,7 @@ public class Lobby {
 
     /**
      * Constructs a Lobby with an unique id (incremental from 0).
+     * The creator must be not null.
      *
      * @param creator The user who creates the lobby.
      */
@@ -167,10 +168,9 @@ public class Lobby {
 
     /**
      * Must be called when starting a game. After this method is called, the
-     * gameStarted attribute
-     * will be equal to true.
+     * gameStarted attribute will be equal to true.
      *
-     * @return false if the game was already started, true otherwise
+     * @return false if the game was already started or there are not enough players, true otherwise
      */
     public synchronized boolean startGame() {
         if (gameStarted || users.size() < 2)

@@ -56,7 +56,14 @@ public final class UserInfo implements Serializable {
       return false;
 
     UserInfo other = (UserInfo) obj;
-    return this.name.equals(other.name) && this.id == other.id;
+    return this.equals(other);
+  }
+
+  public boolean equals(UserInfo userInfo) {
+    if (userInfo == null)
+      return false;
+
+    return this.name.equals(userInfo.name) && this.id == userInfo.id;
   }
 
   public boolean equals(User user) {

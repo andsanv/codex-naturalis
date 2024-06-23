@@ -84,7 +84,7 @@ public final class User {
 
         synchronized (User.class) {
             return users.stream()
-                    .filter(user -> user.name.equals(userInfo.name) && user.id == userInfo.id)
+                    .filter(user -> user.equals(userInfo))
                     .findFirst()
                     .orElse(null);
         }
@@ -128,7 +128,7 @@ public final class User {
      * @return the UserInfo of the user
      */
     public synchronized UserInfo toUserInfo() {
-        return this!=null ? new UserInfo(this) : null;
+        return this != null ? new UserInfo(this) : null;
     }
 
     @Override
@@ -140,6 +140,10 @@ public final class User {
     public boolean equals(Object obj) {
         User other = (User) obj;
         return this.name.equals(other.name) && this.id == other.id;
+    }
+
+    public boolean equals(User user) {
+        return this.name.equals(user.name) && this.id == user.id;
     }
 
     public boolean equals(UserInfo userInfo) {

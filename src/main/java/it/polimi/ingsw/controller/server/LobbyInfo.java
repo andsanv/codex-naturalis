@@ -10,38 +10,51 @@ import java.util.stream.Collectors;
  * shared since it is final and doesn't hold any references.
  */
 public final class LobbyInfo implements Serializable {
-  public final int id;
-  public final UserInfo manager;
-  public final List<UserInfo> users;
-  public final boolean gameStarted;
+    public final int id;
+    public final UserInfo manager;
+    public final List<UserInfo> users;
+    public final boolean gameStarted;
 
-  public LobbyInfo(Lobby lobby) {
-    this.id = lobby.id;
-    this.manager = lobby.getManager();
-    this.users = lobby.getUsers().stream().map(user -> new UserInfo(user)).collect(Collectors.toList());
-    this.gameStarted = lobby.gameStarted();
-  }
+    public LobbyInfo(Lobby lobby) {
+        this.id = lobby.id;
+        this.manager = lobby.getManager();
+        this.users = lobby.getUsers().stream().map(user -> new UserInfo(user)).collect(Collectors.toList());
+        this.gameStarted = lobby.gameStarted();
+    }
 
-  /**
-   * Checks if the given UserInfo is in the lobby.
-   * 
-   * @param userInfo the UserInfo of the user
-   * @return true if the user is in the lobby, false otherwise
-   */
-  public boolean contains(UserInfo userInfo) {
-    return users.stream()
-        .anyMatch(u -> u.equals(userInfo));
-  }
+    /**
+     * Checks if the given UserInfo is in the lobby.
+     * 
+     * @param userInfo the UserInfo of the user
+     * @return true if the user is in the lobby, false otherwise
+     */
+    public boolean contains(UserInfo userInfo) {
+        return users.stream()
+                .anyMatch(u -> u.equals(userInfo));
+    }
 
-  @Override
-  public String toString() {
-    return "id: "
-        + id
-        + ", manager: "
-        + manager
-        + ", users"
-        + users.toString()
-        + ", gameStarted: "
-        + gameStarted;
-  }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+
+        LobbyInfo other = (LobbyInfo) obj;
+
+        return this.id == other.id ? true : false;
+    }
+
+    @Override
+    public String toString() {
+        return "id: "
+                + id
+                + ", manager: "
+                + manager
+                + ", users"
+                + users.toString()
+                + ", gameStarted: "
+                + gameStarted;
+    }
 }
