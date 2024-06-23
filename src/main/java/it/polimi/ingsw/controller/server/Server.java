@@ -21,15 +21,14 @@ import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
-import it.polimi.ingsw.distributed.events.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.CreateLobbyError;
 import it.polimi.ingsw.distributed.events.main.JoinLobbyError;
-import it.polimi.ingsw.distributed.events.main.StartGameError;
+import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
-import it.polimi.ingsw.distributed.events.main.MainErrorEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
+import it.polimi.ingsw.distributed.events.main.StartGameError;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
 import it.polimi.ingsw.distributed.server.rmi.RMIHandler;
 import it.polimi.ingsw.distributed.server.rmi.RMIMainServer;
@@ -438,27 +437,6 @@ public enum Server {
                                     });
                 });
     }
-
-    // /**
-    //  * Sends an error to the given user if they are in the main menu.
-    //  * 
-    //  * @param userInfo the user who will receive the error
-    //  * @param error    the error message
-    //  */
-    // private void sendMainError(UserInfo userInfo, String error) {
-    //     executorService.submit(() -> {
-    //         System.out.println("Sending error to " + userInfo + ": " + error);
-
-    //         Client client = connectedPlayers.get(userInfo);
-    //         if (client.getStatus() == Status.IN_MENU) {
-    //             try {
-    //                 client.trasmitEvent(new MainErrorEvent(error));
-    //             } catch (IOException e) {
-    //                 System.err.println("Could not send error message to " + userInfo);
-    //             }
-    //         }
-    //     });
-    // }
 
     /**
      * Sends an event to the given user if they are in the main menu.

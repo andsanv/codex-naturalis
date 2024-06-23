@@ -18,7 +18,6 @@ import it.polimi.ingsw.model.player.PlayerHand;
 import it.polimi.ingsw.model.player.PlayerToken;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -149,8 +148,8 @@ class GameFlowManagerTest {
     GameModelUpdater gameModelUpdater;
     GameModel gameModel;
 
-    System.out.println("observers = " + observers);
-    System.out.println("is connected = " + isConnected);
+    // System.out.println("observers = " + observers);
+    // System.out.println("is connected = " + isConnected);
 
     gameFlowManager = new GameFlowManager(lobby, isConnected, observers, 3);
 
