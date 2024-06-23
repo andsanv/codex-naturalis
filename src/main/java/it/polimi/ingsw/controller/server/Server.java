@@ -43,8 +43,6 @@ import it.polimi.ingsw.distributed.server.socket.SocketServer;
 public enum Server {
     INSTANCE;
 
-    private final Map<Lobby, GameFlowManager> lobbyToGameFlowManager = new HashMap<>();
-
     /**
      * Links the UserInfo to their respective client.
      * From the Client instance, the server can get their status.
@@ -276,7 +274,7 @@ public enum Server {
                                 () -> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
 
         GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
-        lobbyToGameFlowManager.put(lobby, gameFlowManager);
+        lobby.setGameFlowManager(gameFlowManager);
 
         // set gameflow to redirect requests to, on client handler only for the users in
         // the starting game
