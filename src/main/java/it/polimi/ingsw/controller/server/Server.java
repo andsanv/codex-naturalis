@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.Client;
@@ -27,7 +28,9 @@ import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
 import it.polimi.ingsw.distributed.server.rmi.RMIHandler;
+import it.polimi.ingsw.distributed.server.rmi.RMIMainServer;
 import it.polimi.ingsw.distributed.server.socket.SocketClientHandler;
+import it.polimi.ingsw.distributed.server.socket.SocketServer;
 
 /**
  * The server is implemented using the Singleton pattern. It handles users,
@@ -48,6 +51,24 @@ public enum Server {
     private final ConcurrentHashMap<UserInfo, Client> connectedPlayers;
 
     private final ExecutorService executorService;
+
+    public static void main(String[] args) {
+        try {
+            new SocketServer(Config.MainSocketPort);
+            System.out.println("Socket server started");
+        } catch (IOException e) {
+            System.err.println("Couldn't start Socket server");
+            System.exit(0);
+        }
+
+        try {
+            new RMIMainServer().run();
+            System.out.println("RMI server started");
+        } catch (IOException e) {
+            System.err.println("Couldn't start RMI server");
+            System.exit(0);
+        }
+    }
 
     /**
      * Constructor of the only instance of the Server singleton.

@@ -44,8 +44,6 @@ public class SocketServer {
     this.serverSocket = new ServerSocket(port);
     this.connections = new ConcurrentHashMap<>();
 
-    System.out.println("Socket server started on port " + port);
-
     executorService.submit(this::startAcceptingClients);
   }
 
