@@ -17,6 +17,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.*;
@@ -237,7 +238,7 @@ public class TempGameController {
         initializeSidePanels();
         initializePlayersList(players);
 
-        String path = "images/cards/backs/" + DEFAULT_STARTER_CARD_ID + ".png";
+        String path = "images/miscellaneous/default_starter_card.png";
 
         ImageView defaultStarterCardView = new ImageView(new Image(path));
         defaultStarterCardView.setEffect(new DropShadow());
@@ -259,7 +260,6 @@ public class TempGameController {
         selfPlayerToken = PlayerToken.RED;
         currentPlayerToken = selfPlayerToken;
 
-        handlePlayedCardEvent(PlayerToken.RED, DEFAULT_STARTER_CARD_ID, CardSide.FRONT, new Coords(0,0));
         handlePlayedCardEvent(PlayerToken.RED, 45, CardSide.FRONT, new Coords(1,1));
         handlePlayedCardEvent(PlayerToken.BLUE, 45, CardSide.FRONT, new Coords(-1,1));
 
@@ -303,6 +303,13 @@ public class TempGameController {
     public void initializePlayersList(List<UserInfo> players) {
         int playersCount = players.size();
 
+        List<Image> playersImages = new ArrayList<>(Arrays.asList(
+                new Image("images/players/first_player.png"),
+                new Image("images/players/second_player.png"),
+                new Image("images/players/third_player.png"),
+                new Image("images/players/fourth_player.png")
+        ));
+
         double vBoxWidth = 269;
 
         Pair<Double, Double> playerImageViewDimensions;
@@ -315,11 +322,18 @@ public class TempGameController {
 
         boolean first = true;
         for(int i = 0; i < playersCount; i++) {
-            ImageView playerEntry = new ImageView(new Image("images/cards/backs/" + DEFAULT_STARTER_CARD_ID + ".png"));
-            playerEntry.setPreserveRatio(false);
+            HBox playerEntry = new HBox();
 
-            playerEntry.setFitWidth(playerImageViewDimensions.first);
-            playerEntry.setFitHeight(playerImageViewDimensions.second);
+            ImageView playerAvatar = new ImageView(playersImages.get(i));
+            playerAvatar.setPreserveRatio(true);
+            playerAvatar.setFitHeight(playerImageViewDimensions.second - 10);
+            HBox.setMargin(playerAvatar, new Insets(5, 0, 0, 5));
+
+            Label playerName = new Label(players.get(i).name);
+            HBox.setMargin(playerName, new Insets(5, 0, 0, 5));
+
+            playerEntry.getChildren().add(playerAvatar);
+            playerEntry.getChildren().add(playerName);
 
             playersList.getChildren().add(playerEntry);
             if(!first) VBox.setMargin(playerEntry, new Insets(5.0, 0.0, 0.0, 0.0));
