@@ -177,9 +177,4 @@ public abstract class Controller implements UI {
     public void handleReconnetionToGame() {
         return;
     }
-
-    @Override
-    public void handleAlreadyInLobbyErrorEvent() {
-        return;
-    }
 }

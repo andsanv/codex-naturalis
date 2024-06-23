@@ -592,12 +592,6 @@ public class TUI implements UI {
     }
 
     @Override
-    public void handleAlreadyInLobbyErrorEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleAlreadyInLobbyErrorEvent'");
-    }
-
-    @Override
     public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
             Optional<Resources> nextCardSeed, int handIndex) {
         // TODO Auto-generated method stub
@@ -615,6 +609,24 @@ public class TUI implements UI {
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
+    }
+
+    @Override
+    public void handleJoinLobbyError(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleJoinLobbyError'");
+    }
+
+    @Override
+    public void handleStartGameError(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleStartGameError'");
+    }
+
+    @Override
+    public void handleCreateLobbyError() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
     }
 }
 

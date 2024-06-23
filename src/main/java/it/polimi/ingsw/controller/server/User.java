@@ -85,6 +85,19 @@ public final class User {
         }
     }
 
+    /**
+     * Checks if the given UserInfo is registered in the server.
+     * 
+     * @param userInfo the UserInfo of the user
+     * 
+     * @return true if the user exists
+     */
+    public static boolean exists(UserInfo userInfo) {
+        synchronized (User.class) {
+            return users.stream().anyMatch(u -> u.name.equals(userInfo.name) && u.id == userInfo.id);
+        }
+    }
+
     @Override
     public String toString() {
         return name + "#" + id;
@@ -94,5 +107,9 @@ public final class User {
     public boolean equals(Object obj) {
         User other = (User) obj;
         return this.name.equals(other.name) && this.id == other.id;
+    }
+
+    public boolean equals(UserInfo userInfo) {
+        return this.name.equals(userInfo.name) && this.id == userInfo.id;
     }
 }

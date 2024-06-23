@@ -70,37 +70,43 @@ public class CLITest implements UI {
   }
 
   @Override
-  public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+  public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+      Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
 
   }
 
   @Override
-  public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+  public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+      Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
 
   }
 
-  /*@Override
-  public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
-    System.out.println("Drawn gold deck card event received");
-    System.out.println("Player Token: " + playerToken);
-    System.out.println("Drawn Card ID: " + drawnCardId);
-  }
-
-  @Override
-  public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId) {
-    System.out.println("Drawn resource deck card event received");
-    System.out.println("Player Token: " + playerToken);
-    System.out.println("Drawn Card ID: " + drawnCardId);
-  }
-
-  @Override
-  public void handleDrawnVisibleResourceCardEvent(
-      PlayerToken playerToken, int drawnCardPosition, int drawnCardId) {
-    System.out.println("Drawn visible resource card event received");
-    System.out.println("Player Token: " + playerToken);
-    System.out.println("Drawn Card Position: " + drawnCardPosition);
-    System.out.println("Drawn Card ID: " + drawnCardId);
-  }*/
+  /*
+   * @Override
+   * public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int
+   * drawnCardId) {
+   * System.out.println("Drawn gold deck card event received");
+   * System.out.println("Player Token: " + playerToken);
+   * System.out.println("Drawn Card ID: " + drawnCardId);
+   * }
+   * 
+   * @Override
+   * public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int
+   * drawnCardId) {
+   * System.out.println("Drawn resource deck card event received");
+   * System.out.println("Player Token: " + playerToken);
+   * System.out.println("Drawn Card ID: " + drawnCardId);
+   * }
+   * 
+   * @Override
+   * public void handleDrawnVisibleResourceCardEvent(
+   * PlayerToken playerToken, int drawnCardPosition, int drawnCardId) {
+   * System.out.println("Drawn visible resource card event received");
+   * System.out.println("Player Token: " + playerToken);
+   * System.out.println("Drawn Card Position: " + drawnCardPosition);
+   * System.out.println("Drawn Card ID: " + drawnCardId);
+   * }
+   */
 
   @Override
   public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId) {
@@ -236,13 +242,7 @@ public class CLITest implements UI {
 
   @Override
   public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
-    
-  }
 
-  @Override
-  public void handleAlreadyInLobbyErrorEvent() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleAlreadyInLobbyErrorEvent'");
   }
 
   @Override
@@ -257,5 +257,23 @@ public class CLITest implements UI {
       Optional<Resources> nextCardSeed, int handIndex) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
+  }
+
+  @Override
+  public void handleJoinLobbyError(String message) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleJoinLobbyError'");
+  }
+
+  @Override
+  public void handleStartGameError(String message) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleStartGameError'");
+  }
+
+  @Override
+  public void handleCreateLobbyError() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
   }
 }

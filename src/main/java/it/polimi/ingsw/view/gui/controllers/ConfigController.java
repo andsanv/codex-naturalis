@@ -84,4 +84,22 @@ public class ConfigController extends Controller {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
     }
+
+    @Override
+    public void handleJoinLobbyError(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleJoinLobbyError'");
+    }
+
+    @Override
+    public void handleStartGameError(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleStartGameError'");
+    }
+
+    @Override
+    public void handleCreateLobbyError() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
+    }
 }

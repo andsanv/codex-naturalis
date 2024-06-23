@@ -35,7 +35,7 @@ public final class UserInfo implements Serializable {
    * Constructor with name and id.
    * 
    * @param name the username
-   * @param id the id
+   * @param id   the id
    */
   public UserInfo(String name, int id) {
     this.name = name;
@@ -49,16 +49,21 @@ public final class UserInfo implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
 
-    if (obj == null || getClass() != obj.getClass()) {
+    if (obj == null || getClass() != obj.getClass())
       return false;
-    }
 
     UserInfo other = (UserInfo) obj;
     return this.name.equals(other.name) && this.id == other.id;
+  }
+
+  public boolean equals(User user) {
+    if (user == null)
+      return false;
+
+    return this.name.equals(user.name) && this.id == user.id;
   }
 
   @Override

@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.fusesource.jansi.AnsiConsole;
+
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.observer.Observer;
@@ -20,7 +22,9 @@ import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
 import it.polimi.ingsw.distributed.events.KeepAliveEvent;
-import it.polimi.ingsw.distributed.events.main.AlreadyInLobbyErrorEvent;
+import it.polimi.ingsw.distributed.events.main.CreateLobbyError;
+import it.polimi.ingsw.distributed.events.main.JoinLobbyError;
+import it.polimi.ingsw.distributed.events.main.StartGameError;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainErrorEvent;
@@ -40,24 +44,33 @@ import it.polimi.ingsw.distributed.server.socket.SocketServer;
 public enum Server {
     INSTANCE;
 
-    /** A map from the lobby id to the corresponding lobby */
-    private final Map<Integer, Lobby> lobbies;
-    private final Map<Lobby, GameFlowManager> lobbyToGameFlowManager;
+    private final Map<Lobby, GameFlowManager> lobbyToGameFlowManager = new HashMap<>();
 
     /**
      * Links the UserInfo to their respective client.
      * From the Client instance, the server can get their status.
      */
-    private final ConcurrentHashMap<UserInfo, Client> connectedPlayers;
+    private final ConcurrentHashMap<UserInfo, Client> connectedPlayers = new ConcurrentHashMap<>();
 
-    private final ExecutorService executorService;
+    /**
+     * ExecutorService for all Runnables created by the server.
+     */
+    private final ExecutorService executorService = Executors.newCachedThreadPool();;
 
+    /**
+     * Server entrypoint, must be called to start the Codex Naturalis server.
+     * 
+     * @param args not needed, they are ignored
+     */
     public static void main(String[] args) {
+        AnsiConsole.systemInstall();
+
         try {
             new SocketServer(Config.MainSocketPort);
             System.out.println("Socket server started");
         } catch (IOException e) {
             System.err.println("Couldn't start Socket server");
+            AnsiConsole.systemUninstall();
             System.exit(0);
         }
 
@@ -66,6 +79,7 @@ public enum Server {
             System.out.println("RMI server started");
         } catch (IOException e) {
             System.err.println("Couldn't start RMI server");
+            AnsiConsole.systemUninstall();
             System.exit(0);
         }
     }
@@ -74,11 +88,6 @@ public enum Server {
      * Constructor of the only instance of the Server singleton.
      */
     Server() {
-        this.lobbies = new HashMap<>();
-        this.connectedPlayers = new ConcurrentHashMap<>();
-        this.lobbyToGameFlowManager = new HashMap<>();
-        this.executorService = Executors.newCachedThreadPool();
-
         executorService.submit(() -> {
             while (true) {
                 checkConnections();
@@ -92,6 +101,10 @@ public enum Server {
         });
     }
 
+    /**
+     * Function that checks if clients are connected and updates their status
+     * otherwise.
+     */
     public void checkConnections() {
         connectedPlayers.entrySet().stream()
                 .filter(entry -> {
@@ -102,16 +115,16 @@ public enum Server {
                         entry -> {
                             try {
                                 entry.getValue().trasmitEvent(new KeepAliveEvent());
-                                System.out.println("Sent keep alive to " + entry.getKey());
+                                ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
                             } catch (IOException e) {
                                 if (entry.getValue().getStatus() == Status.IN_GAME) {
                                     entry.getValue().setStatus(Status.DISCONNETED_FROM_GAME);
                                 } else if (entry.getValue().getStatus() == Status.IN_MENU)
                                     entry.getValue().setStatus(Status.OFFLINE);
 
-                                System.err
-                                        .println("Error: Couldn't send message to " + entry.getValue());
-                                System.err.println("Client " + entry.getKey() + " is disconnected");
+                                ServerPrinter
+                                        .displayError("Couldn't send connection check event to " + entry.getValue());
+                                ServerPrinter.displayError("Client " + entry.getKey() + " disconnected");
                             }
                         });
     }
@@ -119,39 +132,37 @@ public enum Server {
     /**
      * Adds the user to the lobby with the given id.
      *
-     * @param user    The user who wants to join the lobby
-     * @param lobbyId The lobby id
+     * @param userInfo The userInfo of the user who wants to join the lobby
+     * @param lobbyId  The lobby id
      * @return True if joining was successfull, false if the lobby doesn't exist or
      *         if the user is
      *         already in the lobby.
      */
     public boolean joinLobby(UserInfo userInfo, int lobbyId) {
-        synchronized (lobbies) {
-            Lobby lobby = lobbies.get(lobbyId);
+        Lobby lobby = Lobby.getLobby(lobbyId);
 
-            // Try to add the user to the lobby
-            String error = null;
-            if (isInLobby(userInfo))
-                error = "Couldn't join the lobby: you are already in another one";
-            else if (lobby == null)
-                error = "Couldn't join the lobby: the lobby doesn't exist";
-            else if (!lobby.addUser(User.userInfoToUser(userInfo))) {
-                if (lobby.isFull()) {
-                    error = "Couldn't join the lobby: the lobby is full";
-                } else {
-                    error = "Couldn't join the lobby: you are already in the lobby";
-                }
+        // Try to add the user to the lobby
+        String error = null;
+        if (lobby == null)
+            error = "The lobby " + lobbyId + " doesn't exist";
+        else if (lobby.contains(userInfo))
+            error = "You are already in the lobby " + lobbyId;
+        else if (!lobby.addUser(User.userInfoToUser(userInfo))) {
+            if (lobby.isFull()) {
+                error = "The lobby " + lobbyId + " is full";
+            } else {
+                error = "You are already in another lobby";
             }
-
-            // If there was an error, send an error event to the client
-            if (error != null) {
-                sendMainError(userInfo, error);
-                return false;
-            }
-
-            broadcastLobbies(getLobbies());
-            return true;
         }
+
+        // If there was an error, send an error event to the client
+        if (error != null) {
+            sendMainEvent(userInfo, new JoinLobbyError(error));
+            return false;
+        }
+
+        broadcastLobbies();
+        return true;
     }
 
     /**
@@ -165,63 +176,49 @@ public enum Server {
      *         user are not found or if the user is already in the lobby.
      */
     public boolean leaveLobby(User user, int lobbyId) {
-        synchronized (lobbies) {
-            Lobby lobby = lobbies.get(lobbyId);
+        Lobby lobby = Lobby.getLobby(lobbyId);
 
-            if (lobby == null)
-                return false;
+        if (lobby == null)
+            return false;
 
-            System.out.println("leaving lobby = " + lobby);
-
-            if (!lobby.removeUser(user)) {
-                lobbies.remove(lobbyId);
-            }
-
-            broadcastLobbies(getLobbies());
-
-            return true;
+        if (!lobby.removeUser(user)) {
+            Lobby.deleteLobby(lobbyId);
         }
+
+        ServerPrinter.displayInfo(user + " left lobby " + lobbyId);
+
+        broadcastLobbies();
+        return true;
     }
 
     /**
-     * Deletes a lobby.
-     * Must be called when the match ends.
-     * 
-     * @param lobbyId the id of the lobby
-     */
-    public void deleteLobby(int lobbyId) {
-        synchronized (lobbies) {
-            lobbies.remove(lobbyId);
-        }
-    }
-
-    /**
-     * Removes the given user from the given lobby.
+     * Removes the user from the lobby with the given id.
+     * If the user was the last one in the lobby, the lobby gets deleted.
      * 
      * @param userInfo the user's UserInfo
      * @param lobbyId  the id of the lobby
      * 
-     * @return true if successful, false if the user is not found or isn't in the
-     *         lobby
+     * @return true if successful, false if the user or the lobby isn't found or the
+     *         user isn't in the lobby
      */
     public boolean leaveLobby(UserInfo userInfo, int lobbyId) {
-        User user = User.userInfoToUser(userInfo);
-        return user != null && leaveLobby(user, lobbyId);
-    }
+        if (userInfo == null)
+            return false;
 
-    /**
-     * Gives lobby informations.
-     *
-     * @return The list of lobbies as LobbyInfo classes.
-     * 
-     * @see LobbyInfo
-     */
-    public List<LobbyInfo> getLobbies() {
-        synchronized (lobbies) {
-            return lobbies.values().stream()
-                    .map(lobby -> new LobbyInfo(lobby))
-                    .collect(Collectors.toList());
-        }
+        User user = User.userInfoToUser(userInfo);
+
+        if (user == null)
+            return false;
+
+        Lobby lobby = Lobby.getLobby(lobbyId);
+
+        if (lobby == null || !lobby.removeUser(user))
+            return false;
+
+        ServerPrinter.displayInfo(user + " left lobby " + lobbyId);
+        broadcastLobbies();
+        return true;
+
     }
 
     /**
@@ -236,78 +233,76 @@ public enum Server {
     public boolean startGame(UserInfo userInfo, int lobbyId) {
         User user = User.userInfoToUser(userInfo);
 
-        if (user == null)
+        if (!User.exists(userInfo))
             return false;
 
-        synchronized (lobbies) {
-            Lobby lobby = lobbies.get(lobbyId);
+        Lobby lobby = Lobby.getLobby(lobbyId);
 
-            // Try to start the game and save the eventual error message
-            String error = null;
-            if (lobby == null)
-                error = "Could't start game: invalid lobby id";
-            else if (user != lobby.getManager())
-                error = "Could't start game: you are not the leader of the lobby";
-            else if (!lobby.startGame()) {
-                if (lobby.gameStarted)
-                    error = "The match has already been started";
-                else
-                    error = "Could't start game: not enough players";
-            }
-
-            // If there was an error, send an error event to the client
-            if (error != null) {
-                sendMainError(userInfo, error);
-                return false;
-            }
-
-            connectedPlayers.get(userInfo).setStatus(Status.IN_GAME);
-
-            List<Observer> observers = connectedPlayers.entrySet().stream()
-                    .filter(entry -> lobby.getUsers().contains(User.userInfoToUser(entry.getKey())))
-                    .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
-                    .map(entry -> entry.getValue())
-                    .collect(Collectors.toList());
-
-            observers = new CopyOnWriteArrayList<>(observers);
-
-            ConcurrentHashMap<UserInfo, Supplier<Boolean>> isConnected = new ConcurrentHashMap<>();
-            connectedPlayers
-                    .entrySet()
-                    .stream()
-                    .filter(e -> lobby.getUsers().contains(User.userInfoToUser(e.getKey())))
-                    .forEach(
-                            e -> isConnected.put(e.getKey(),
-                                    () -> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
-
-            GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
-            lobbyToGameFlowManager.put(lobby, gameFlowManager);
-
-            // set gameflow to redirect requests to, on client handler only for the users in
-            // the starting game
-            // update playersInGame map
-            connectedPlayers.entrySet().stream()
-                    .filter(entry -> lobby.getUsers().contains(User.userInfoToUser(entry.getKey())))
-                    .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
-                    .forEach(
-                            entry -> {
-                                entry.getValue().setStatus(Status.IN_GAME);
-                                try {
-                                    if (entry.getValue() instanceof SocketClientHandler) {
-                                        SocketClientHandler client = (SocketClientHandler) entry.getValue();
-                                        client.setGameFlowManager(gameFlowManager);
-                                    } else if (entry.getValue() instanceof RMIHandler) {
-                                        RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
-                                                "gameServer" + lobbyId);
-                                        RMIHandler client = (RMIHandler) entry.getValue();
-                                        client.setGameServer(gameServer);
-                                    }
-                                } catch (RemoteException e) {
-                                    System.err.println("Couldn't send connection event to");
-                                    e.printStackTrace();
-                                }
-                            });
+        // Try to start the game and save the eventual error message
+        String error = null;
+        if (lobby == null)
+            error = "Invalid lobby id";
+        else if (!lobby.getManager().equals(user))
+            error = "You are not the manager of the lobby";
+        else if (!lobby.startGame()) {
+            if (lobby.gameStarted())
+                error = "The match has already been started";
+            else
+                error = "Could't start game: not enough players";
         }
+
+        // If there was an error, send an error event to the client
+        if (error != null) {
+            sendMainEvent(userInfo, new StartGameError(error));
+            return false;
+        }
+
+        connectedPlayers.get(userInfo).setStatus(Status.IN_GAME);
+
+        List<Observer> observers = connectedPlayers.entrySet().stream()
+                .filter(entry -> lobby.getUsers().contains(User.userInfoToUser(entry.getKey())))
+                .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
+                .map(entry -> entry.getValue())
+                .collect(Collectors.toList());
+
+        observers = new CopyOnWriteArrayList<>(observers);
+
+        ConcurrentHashMap<UserInfo, Supplier<Boolean>> isConnected = new ConcurrentHashMap<>();
+        connectedPlayers
+                .entrySet()
+                .stream()
+                .filter(e -> lobby.getUsers().contains(User.userInfoToUser(e.getKey())))
+                .forEach(
+                        e -> isConnected.put(e.getKey(),
+                                () -> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
+
+        GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
+        lobbyToGameFlowManager.put(lobby, gameFlowManager);
+
+        // set gameflow to redirect requests to, on client handler only for the users in
+        // the starting game
+        // update playersInGame map
+        connectedPlayers.entrySet().stream()
+                .filter(entry -> lobby.getUsers().contains(User.userInfoToUser(entry.getKey())))
+                .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
+                .forEach(
+                        entry -> {
+                            entry.getValue().setStatus(Status.IN_GAME);
+                            try {
+                                if (entry.getValue() instanceof SocketClientHandler) {
+                                    SocketClientHandler client = (SocketClientHandler) entry.getValue();
+                                    client.setGameFlowManager(gameFlowManager);
+                                } else if (entry.getValue() instanceof RMIHandler) {
+                                    RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
+                                            "gameServer" + lobbyId);
+                                    RMIHandler client = (RMIHandler) entry.getValue();
+                                    client.setGameServer(gameServer);
+                                }
+                            } catch (RemoteException e) {
+                                System.err.println("Couldn't send connection event to");
+                                e.printStackTrace();
+                            }
+                        });
 
         return true;
     }
@@ -322,41 +317,31 @@ public enum Server {
      *         null if the user is already in a lobby
      * 
      * @see LobbyInfo
-     * @see AlreadyInLobbyErrorEvent
+     * @see CreateLobbyError
      */
     public LobbyInfo createLobby(UserInfo userInfo) {
-        synchronized (lobbies) {
-            if (isInLobby(userInfo)) {
-                System.err.println(
-                        "Lobby creation request by " + userInfo + " failed: the user is already in another lobby");
-                try {
-                    connectedPlayers.get(userInfo).trasmitEvent(new AlreadyInLobbyErrorEvent());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
+        if (Lobby.anyLobbyContains(userInfo)) {
+            System.err.println(
+                    "Lobby creation request by " + userInfo + " failed: the user is already in another lobby");
 
-            Optional<User> serverUser = User.getUsers().stream()
-                    .filter(user -> user.equals(User.userInfoToUser(userInfo)))
-                    .findAny();
-
-            if (!serverUser.isPresent()) {
-                System.err.println("Error: User not found");
-                return null;
-            }
-
-            Lobby newLobby = new Lobby(serverUser.get());
-            lobbies.put(newLobby.id, newLobby);
-
-            broadcastLobbies(getLobbies());
-
-            return new LobbyInfo(newLobby);
+            sendMainEvent(userInfo, new CreateLobbyError("You are in another lobby"));
+            return null;
         }
-    }
 
-    private boolean isInLobby(UserInfo userInfo) {
-        return getLobbies().stream().anyMatch(lobby -> lobby.users.contains(userInfo));
+        Optional<User> serverUser = User.getUsers().stream()
+                .filter(user -> user.equals(User.userInfoToUser(userInfo)))
+                .findAny();
+
+        if (!serverUser.isPresent()) {
+            System.err.println("Error: User not found");
+            return null;
+        }
+
+        Lobby newLobby = new Lobby(serverUser.get());
+
+        broadcastLobbies();
+
+        return new LobbyInfo(newLobby);
     }
 
     public void clientLogin(UserInfo userInfo, Client client) {
@@ -374,18 +359,12 @@ public enum Server {
             try {
                 if (oldClient.getStatus() == Status.OFFLINE) {
                     System.out.println("Reconnecting to main menu");
-
-                    // TODO rave, ho aggiunto il login event che sostituisce lo userinfo event, va
-                    // inviato ogni volta che il client si connette/riconnette
                     client.trasmitEvent(new LoginEvent(userInfo, null));
+                    client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
 
-                    client.trasmitEvent(new LobbiesEvent(getLobbies()));
                 } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
                     System.out.println("Reconnecting to game");
-                    GameFlowManager gameFlowManager = lobbyToGameFlowManager.get(lobbies.values().stream()
-                            .filter(lobby -> lobby.getUsers().contains(User.userInfoToUser(userInfo)))
-                            .findFirst()
-                            .orElse(null));
+                    GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
                     client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
 
                     // TODO: add as properties of reconnectToGameEvent the mapping <UserInfo, Token>
@@ -417,7 +396,7 @@ public enum Server {
         executorService.submit(() -> {
             try {
                 client.trasmitEvent(new LoginEvent(userInfo, null));
-                client.trasmitEvent(new LobbiesEvent(getLobbies()));
+                client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
             } catch (IOException e) {
                 client.setStatus(Status.OFFLINE);
                 System.err.println("Couldn't send userInfo event to " + userInfo);
@@ -438,11 +417,10 @@ public enum Server {
     /**
      * This function sends a NewLobbiesEvent to all connected clients in the main
      * menu.
-     * 
-     * @param lobbies the list of LobbyInfo of the existing lobbies
      */
-    private void broadcastLobbies(List<LobbyInfo> lobbies) {
+    private void broadcastLobbies() {
         System.out.println("Broadcasting lobbies to all connected players in the main menu");
+        List<LobbyInfo> lobbies = Lobby.getLobbies();
 
         executorService.submit(
                 () -> {
@@ -461,26 +439,26 @@ public enum Server {
                 });
     }
 
-    /**
-     * Sends an error to the given user if they are in the main menu.
-     * 
-     * @param userInfo the user who will receive the error
-     * @param error    the error message
-     */
-    private void sendMainError(UserInfo userInfo, String error) {
-        executorService.submit(() -> {
-            System.out.println("Sending error to " + userInfo + ": " + error);
+    // /**
+    //  * Sends an error to the given user if they are in the main menu.
+    //  * 
+    //  * @param userInfo the user who will receive the error
+    //  * @param error    the error message
+    //  */
+    // private void sendMainError(UserInfo userInfo, String error) {
+    //     executorService.submit(() -> {
+    //         System.out.println("Sending error to " + userInfo + ": " + error);
 
-            Client client = connectedPlayers.get(userInfo);
-            if (client.getStatus() == Status.IN_MENU) {
-                try {
-                    client.trasmitEvent(new MainErrorEvent(error));
-                } catch (IOException e) {
-                    System.err.println("Could not send error message to " + userInfo);
-                }
-            }
-        });
-    }
+    //         Client client = connectedPlayers.get(userInfo);
+    //         if (client.getStatus() == Status.IN_MENU) {
+    //             try {
+    //                 client.trasmitEvent(new MainErrorEvent(error));
+    //             } catch (IOException e) {
+    //                 System.err.println("Could not send error message to " + userInfo);
+    //             }
+    //         }
+    //     });
+    // }
 
     /**
      * Sends an event to the given user if they are in the main menu.

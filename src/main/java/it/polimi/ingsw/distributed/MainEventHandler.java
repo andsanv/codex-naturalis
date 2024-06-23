@@ -53,6 +53,10 @@ public interface MainEventHandler {
    * This method is called when the user tries to join a lobby or create one while
    * being in another.
    */
-  public void handleAlreadyInLobbyErrorEvent();
 
+  public void handleJoinLobbyError(String message);
+
+  public void handleStartGameError(String message);
+
+  public void handleCreateLobbyError();
 }

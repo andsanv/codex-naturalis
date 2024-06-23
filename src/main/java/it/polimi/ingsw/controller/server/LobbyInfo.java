@@ -16,10 +16,10 @@ public final class LobbyInfo implements Serializable {
 
   public LobbyInfo(Lobby lobby) {
     this.id = lobby.id;
-    this.manager = new UserInfo(lobby.getManager());
+    this.manager = lobby.getManager();
     this.users =
         lobby.getUsers().stream().map(user -> new UserInfo(user)).collect(Collectors.toList());
-    this.gameStarted = lobby.gameStarted;
+    this.gameStarted = lobby.gameStarted();
   }
 
   @Override
