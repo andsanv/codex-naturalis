@@ -252,6 +252,15 @@ public class Lobby {
     }
 
     /**
+     * Creates a LobbyInfo of the lobby on which it is called.
+     * 
+     * @return the LobbyInfo
+     */
+    public synchronized LobbyInfo toLobbyInfo() {
+        return new LobbyInfo(this);
+    }
+
+    /**
      * Checks if the user is in one of the active lobbies.
      * 
      * @param userInfo the user

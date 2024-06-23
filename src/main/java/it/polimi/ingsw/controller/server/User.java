@@ -77,6 +77,9 @@ public final class User {
      * @see UserInfo
      */
     public static User userInfoToUser(UserInfo userInfo) {
+        if (userInfo == null)
+            return null;
+
         synchronized (User.class) {
             return users.stream()
                     .filter(user -> user.name.equals(userInfo.name) && user.id == userInfo.id)

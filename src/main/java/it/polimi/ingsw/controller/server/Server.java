@@ -2,10 +2,7 @@ package it.polimi.ingsw.controller.server;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -64,18 +61,18 @@ public enum Server {
 
         try {
             new SocketServer(Config.MainSocketPort);
-            System.out.println("Socket server started");
+            ServerPrinter.displayInfo("Socket server started");
         } catch (IOException e) {
-            System.err.println("Couldn't start Socket server");
+            ServerPrinter.displayError("Couldn't start Socket server");
             AnsiConsole.systemUninstall();
             System.exit(0);
         }
 
         try {
             new RMIMainServer().run();
-            System.out.println("RMI server started");
+            ServerPrinter.displayInfo("RMI server started");
         } catch (IOException e) {
-            System.err.println("Couldn't start RMI server");
+            ServerPrinter.displayError("Couldn't start RMI server");
             AnsiConsole.systemUninstall();
             System.exit(0);
         }
@@ -92,7 +89,7 @@ public enum Server {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    System.err.println("Check connection thread was interrupted.");
+                    ServerPrinter.displayError("Check connection thread was interrupted.");
                 }
             }
         });
@@ -296,7 +293,7 @@ public enum Server {
                                     client.setGameServer(gameServer);
                                 }
                             } catch (RemoteException e) {
-                                System.err.println("Couldn't send connection event to");
+                                ServerPrinter.displayError("Couldn't send connection event to");
                                 e.printStackTrace();
                             }
                         });
@@ -317,28 +314,26 @@ public enum Server {
      * @see CreateLobbyError
      */
     public LobbyInfo createLobby(UserInfo userInfo) {
-        if (Lobby.anyLobbyContains(userInfo)) {
-            System.err.println(
+        User user = User.userInfoToUser(userInfo);
+
+        if (user == null) {
+            ServerPrinter
+                    .displayInfo("Lobby creation request by " + userInfo + " failed: user not found in the server");
+            return null;
+        }
+
+        if (Lobby.anyLobbyContains(user)) {
+            ServerPrinter.displayInfo(
                     "Lobby creation request by " + userInfo + " failed: the user is already in another lobby");
 
             sendMainEvent(userInfo, new CreateLobbyError("You are in another lobby"));
             return null;
         }
 
-        Optional<User> serverUser = User.getUsers().stream()
-                .filter(user -> user.equals(User.userInfoToUser(userInfo)))
-                .findAny();
-
-        if (!serverUser.isPresent()) {
-            System.err.println("Error: User not found");
-            return null;
-        }
-
-        Lobby newLobby = new Lobby(serverUser.get());
-
+        Lobby newLobby = new Lobby(user);
         broadcastLobbies();
 
-        return new LobbyInfo(newLobby);
+        return newLobby.toLobbyInfo();
     }
 
     public void clientLogin(UserInfo userInfo, Client client) {
@@ -416,23 +411,16 @@ public enum Server {
      * menu.
      */
     private void broadcastLobbies() {
-        System.out.println("Broadcasting lobbies to all connected players in the main menu");
+        ServerPrinter.displayInfo("Broadcasting updated lobbies to players in the main menu");
         List<LobbyInfo> lobbies = Lobby.getLobbies();
 
         executorService.submit(
                 () -> {
+                    LobbiesEvent event = new LobbiesEvent(lobbies);
+
                     connectedPlayers.entrySet().stream()
                             .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
-                            .forEach(
-                                    entry -> {
-                                        try {
-                                            System.out.println("Sending lobbies to " + entry.getKey());
-                                            entry.getValue().trasmitEvent(new LobbiesEvent(lobbies));
-                                        } catch (IOException e) {
-                                            entry.getValue().setStatus(Status.OFFLINE);
-                                            System.err.println("Error: Couldn't send message to " + entry.getKey());
-                                        }
-                                    });
+                            .forEach(entry -> sendMainEvent(entry.getKey(), event));
                 });
     }
 
@@ -444,14 +432,14 @@ public enum Server {
      */
     private void sendMainEvent(UserInfo userInfo, MainEvent event) {
         executorService.submit(() -> {
-            System.out.println("Sending a " + event.getClass().getName() + " to " + userInfo);
+            ServerPrinter.displayDebug("Sending a " + event.getClass().getName() + " to " + userInfo);
 
             Client client = connectedPlayers.get(userInfo);
             if (client.getStatus() == Status.IN_MENU) {
                 try {
                     client.trasmitEvent(event);
                 } catch (IOException e) {
-                    System.err.println("Could not send " + event.getClass().getName() + " to " + userInfo);
+                    ServerPrinter.displayDebug("Could not send " + event.getClass().getName() + " to " + userInfo);
                 }
             }
         });
