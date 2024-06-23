@@ -628,6 +628,12 @@ public class TUI implements UI {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
     }
+
+    @Override
+    public void handleLeaveLobbyError(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleLeaveLobbyError'");
+    }
 }
 
 enum State {

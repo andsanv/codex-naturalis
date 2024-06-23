@@ -95,6 +95,11 @@ public class CLI implements UI {
     public final AtomicBoolean creatingLobby = new AtomicBoolean(false);
 
     /**
+     * Thread-safe boolean that is true while the user is leaving a lobby.
+     */
+    public final AtomicBoolean leavingLobby = new AtomicBoolean(false);
+
+    /**
      * Thread-safe boolean that is true while the user is starting a game.
      */
     public final AtomicBoolean startingGame = new AtomicBoolean(false);
@@ -159,11 +164,11 @@ public class CLI implements UI {
     }
 
     /**
-     * Lobbies getter.
+     * Lobbies getter as copy.
      */
     public List<LobbyInfo> getLobbies() {
         synchronized (lobbiesLock) {
-            return new ArrayList<>(lobbies);
+            return lobbies != null ? new ArrayList<>(lobbies) : null;
         }
     }
 
@@ -193,21 +198,20 @@ public class CLI implements UI {
             UserInfo userInfo = this.getUserInfo();
 
             lobbies.stream()
-                    .filter(lobby -> lobby.users.contains(userInfo))
+                    .filter(lobby -> lobby.contains(userInfo))
                     .findAny()
                     .ifPresentOrElse(
                             lobby -> {
                                 lobbyId.set(lobby.id);
 
-                                if (joiningLobby.get()) {
-                                    joiningLobby.set(false);
-                                }
+                                joiningLobby.set(false);
 
-                                if (creatingLobby.get() && lobby.manager.equals(userInfo)) {
+                                if (lobby.manager.equals(userInfo)) {
                                     creatingLobby.set(false);
                                 }
                             },
                             () -> {
+                                leavingLobby.set(false);
                                 lobbyId.set(-1);
                             });
         }
@@ -409,6 +413,12 @@ public class CLI implements UI {
     @Override
     public void handleCreateLobbyError(String message) {
         creatingLobby.set(false);
+        CLIPrinter.displayError(message);
+    }
+
+    @Override
+    public void handleLeaveLobbyError(String message) {
+        leavingLobby.set(false);
         CLIPrinter.displayError(message);
     }
 }

@@ -53,15 +53,30 @@ public interface MainEventHandler {
    * This method is called when the user tries to join a lobby or create one while
    * being in another.
    */
-
   public void handleJoinLobbyError(String message);
 
+  /**
+   * Method called when an error occurred while starting a game.
+   * Possible errors are user is not the lobby manager, the lobby doesn't
+   * exist or there aren't enough players in the lobby.
+   * 
+   * @param message the error message
+   */
   public void handleStartGameError(String message);
 
   /**
    * Method called when an error occurred while creating a lobby.
+   * The user could already be in another one.
    * 
    * @param message the error message
    */
   public void handleCreateLobbyError(String message);
+
+  /**
+   * Method called when the user tried to leave a lobby that was non-existent or
+   * a lobby he wasn't in.
+   * 
+   * @param message the error message
+   */
+  public void handleLeaveLobbyError(String message);
 }

@@ -44,7 +44,7 @@ public class UserInfoLoginScene extends Scene {
 
     @Override
     public void onEntry() {
-        CLIPrinter.clear();
+        // CLIPrinter.clear();
 
         userInfo = UserInfoManager.retrieveUserInfo();
 

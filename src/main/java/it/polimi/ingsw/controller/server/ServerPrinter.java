@@ -13,7 +13,7 @@ public class ServerPrinter {
     public static final boolean SHOW_ERROR = true;
     public static final boolean SHOW_WARNING = true;
     public static final boolean SHOW_INFO = true;
-    public static final boolean SHOW_DEBUG = true;
+    public static final boolean SHOW_DEBUG = false;
 
     /**
      * Prints a formatted error.

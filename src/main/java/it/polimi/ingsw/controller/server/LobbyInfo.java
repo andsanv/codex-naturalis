@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * LobbyInfo contains all the info about a lobby at the time it was created. The class can be safely
+ * LobbyInfo contains all the info about a lobby at the time it was created. The
+ * class can be safely
  * shared since it is final and doesn't hold any references.
  */
 public final class LobbyInfo implements Serializable {
@@ -17,9 +18,19 @@ public final class LobbyInfo implements Serializable {
   public LobbyInfo(Lobby lobby) {
     this.id = lobby.id;
     this.manager = lobby.getManager();
-    this.users =
-        lobby.getUsers().stream().map(user -> new UserInfo(user)).collect(Collectors.toList());
+    this.users = lobby.getUsers().stream().map(user -> new UserInfo(user)).collect(Collectors.toList());
     this.gameStarted = lobby.gameStarted();
+  }
+
+  /**
+   * Checks if the given UserInfo is in the lobby.
+   * 
+   * @param userInfo the UserInfo of the user
+   * @return true if the user is in the lobby, false otherwise
+   */
+  public boolean contains(UserInfo userInfo) {
+    return users.stream()
+        .anyMatch(u -> u.equals(userInfo));
   }
 
   @Override

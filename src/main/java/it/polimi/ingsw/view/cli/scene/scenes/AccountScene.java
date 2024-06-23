@@ -29,7 +29,7 @@ public class AccountScene extends Scene {
                     cli.getConnectionHandler().sendToMainServer(new ConnectionCommand(args[1]));
                     CLIPrinter.displayLoadingMessage("Creating an account", cli.waitingUserInfo);
 
-                    sceneManager.transition(null);
+                    sceneManager.transition(LobbiesScene.class);
                 }),
                 new CLICommand("login", Arrays.asList("username", "id"), "to use a previously created account", () -> {
                     if (args.length != 3) {
@@ -54,12 +54,14 @@ public class AccountScene extends Scene {
 
                     cli.waitingUserInfo.set(true);
                     CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo);
+
+                    sceneManager.transition(LobbiesScene.class);
                 }));
     }
 
     @Override
     public void onEntry() {
-        CLIPrinter.clear();
+        // CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Account Menu", BLUE);
 
         System.out.println("Do you want to create a new account or log in with a previously created one?");

@@ -143,13 +143,15 @@ public class Lobby {
      * Removes the given user from the lobby, if he's present. If the lobby manager
      * is removed, the next "oldest" user in the lobby takes his place. If there are
      * no users left after removing the given one, this method deletes the lobby and
-     * returns false.
+     * returns false. The method removes the user only if the game hasn't been
+     * started.
      *
      * @param user user to remove from the lobby
-     * @return true if removed, false if the user wasn't in the lobby
+     * @return true if removed, false if the user wasn't in the lobby or the game
+     *         has already been started.
      */
     public synchronized boolean removeUser(User user) {
-        if (!users.remove(user))
+        if (gameStarted || !users.remove(user))
             return false;
 
         if (users.isEmpty()) {
@@ -270,6 +272,20 @@ public class Lobby {
         synchronized (Lobby.class) {
             return lobbies.stream()
                     .anyMatch(l -> l.contains(user));
+        }
+    }
+
+    /**
+     * Removes the user from the lobby he is in.
+     * If the game has already been started no action is done.
+     * 
+     * @param userInfo the UserInfo of the player
+     * @return true if removed from any lobby, false otherwise
+     */
+    public static boolean removeUserIfGameNotStarted(UserInfo userInfo) {
+        synchronized (Lobby.class) {
+            return lobbies.stream().filter(l -> !l.gameStarted && l.contains(userInfo)).findAny()
+                    .map(l -> l.removeUser(User.userInfoToUser(userInfo))).orElse(false);
         }
     }
 

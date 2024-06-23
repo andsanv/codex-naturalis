@@ -21,6 +21,7 @@ import it.polimi.ingsw.distributed.client.Status;
 import it.polimi.ingsw.distributed.events.main.CreateLobbyError;
 import it.polimi.ingsw.distributed.events.main.JoinLobbyError;
 import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
+import it.polimi.ingsw.distributed.events.main.LeaveLobbyError;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
@@ -196,9 +197,6 @@ public enum Server {
      *         user isn't in the lobby
      */
     public boolean leaveLobby(UserInfo userInfo, int lobbyId) {
-        if (userInfo == null)
-            return false;
-
         User user = User.userInfoToUser(userInfo);
 
         if (user == null)
@@ -206,13 +204,14 @@ public enum Server {
 
         Lobby lobby = Lobby.getLobby(lobbyId);
 
-        if (lobby == null || !lobby.removeUser(user))
+        if (lobby == null || !lobby.removeUser(user)) {
+            sendMainEvent(userInfo, new LeaveLobbyError("You are not in the lobby"));
             return false;
+        }
 
         ServerPrinter.displayInfo(user + " left lobby " + lobbyId);
         broadcastLobbies();
         return true;
-
     }
 
     /**
@@ -338,7 +337,7 @@ public enum Server {
 
     public void clientLogin(UserInfo userInfo, Client client) {
         if (connectedPlayers.containsKey(userInfo)) {
-            System.out.println("Reconnecting user " + userInfo);
+            ServerPrinter.displayInfo("User " + userInfo + " reconnecting");
             Client oldClient = connectedPlayers.get(userInfo);
 
             System.out.println("Old client: " + connectedPlayers.get(userInfo));

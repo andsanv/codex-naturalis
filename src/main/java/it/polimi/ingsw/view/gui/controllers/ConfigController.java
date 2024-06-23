@@ -102,4 +102,10 @@ public class ConfigController extends Controller {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
     }
+
+    @Override
+    public void handleLeaveLobbyError(String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleLeaveLobbyError'");
+    }
 }

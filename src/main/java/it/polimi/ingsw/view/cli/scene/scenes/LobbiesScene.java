@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.LeaveLobbyCommand;
+import it.polimi.ingsw.distributed.commands.main.StartGameCommand;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
@@ -48,7 +50,7 @@ public class LobbiesScene extends Scene {
                     cli.getConnectionHandler().sendToMainServer(new JoinLobbyCommand(cli.getUserInfo(), id));
                     CLIPrinter.displayLoadingMessage("Joining the lobby", cli.joiningLobby);
                 }),
-                new CLICommand("create", "to list active lobbies", () -> {
+                new CLICommand("create", "to create a new lobby", () -> {
                     if (args.length != 1) {
                         CLIPrinter.displayError("Too many arguments");
                         return;
@@ -58,16 +60,53 @@ public class LobbiesScene extends Scene {
 
                     cli.creatingLobby.set(true);
                     cli.getConnectionHandler().sendToMainServer(new CreateLobbyCommand(cli.getUserInfo()));
-                    CLIPrinter.displayLoadingMessage("Waiting for lobby creation", cli.creatingLobby);
+                    CLIPrinter.displayLoadingMessage("Creating the lobby", cli.creatingLobby);
                 }),
-                new CLICommand("leave", "to list active lobbies", () -> {
+                new CLICommand("leave", "to leave the current lobby", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
 
+                    CLI cli = sceneManager.cli;
+
+                    int id = cli.lobbyId.get();
+
+                    if (id == -1) {
+                        CLIPrinter.displayError("You are not in a lobby");
+                        return;
+                    }
+
+                    cli.leavingLobby.set(true);
+                    cli.getConnectionHandler()
+                            .sendToMainServer(new LeaveLobbyCommand(cli.getUserInfo(), id));
+                    CLIPrinter.displayLoadingMessage("Leaving the lobby", cli.creatingLobby);
+                }),
+                new CLICommand("start", "to start a game in the current lobby", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+
+                    int id = cli.lobbyId.get();
+
+                    if (id == -1) {
+                        CLIPrinter.displayError("You are not in a lobby");
+                        return;
+                    }
+
+                    cli.startingGame.set(true);
+                    cli.getConnectionHandler()
+                            .sendToMainServer(new StartGameCommand(cli.getUserInfo(), id));
+                    CLIPrinter.displayLoadingMessage("Starting the game", cli.startingGame);
                 }));
     }
 
     @Override
     public void onEntry() {
-        CLIPrinter.clear();
+        // CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Lobbies", BLUE);
     }
 }
