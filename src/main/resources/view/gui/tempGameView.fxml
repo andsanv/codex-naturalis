@@ -21,7 +21,7 @@
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ScrollPane fx:id="currentScrollPane" hbarPolicy="NEVER" onKeyPressed="#handleKeyPressedEvent" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
+            <ScrollPane fx:id="currentScrollPane" hbarPolicy="NEVER" onDragDetected="#handleHandDragDetected" onDragDropped="#handleHandDragDropped" onKeyPressed="#handleKeyPressedEvent" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
                <content>
                   <GridPane fx:id="currentGridPane" alignment="CENTER" gridLinesVisible="true" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
                   </GridPane>
@@ -465,7 +465,7 @@
       <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="150.0" stroke="#c9c18f" strokeType="INSIDE" width="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5" />
       <HBox fx:id="currentHandPanel" layoutX="446.0" layoutY="659.0" prefHeight="136.0" prefWidth="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5">
          <children>
-            <ImageView fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="130.0" fitWidth="195.0" onDragDetected="#handleHandDragDetected" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </HBox.margin>
