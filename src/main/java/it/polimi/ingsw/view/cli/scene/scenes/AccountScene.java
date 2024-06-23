@@ -11,7 +11,11 @@ import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
+import it.polimi.ingsw.view.connection.ConnectionHandler;
 
+/**
+ * In this scene the user decides if he wants to log-in or create a new account.
+ */
 public class AccountScene extends Scene {
     public AccountScene(SceneManager sceneManager) {
         super(sceneManager);
@@ -24,12 +28,16 @@ public class AccountScene extends Scene {
                     }
 
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingUserInfo.set(true);
-                    cli.getConnectionHandler().sendToMainServer(new ConnectionCommand(args[1]));
-                    CLIPrinter.displayLoadingMessage("Creating an account", cli.waitingUserInfo);
+                    connectionHandler.sendToMainServer(new ConnectionCommand(args[1]));
 
-                    sceneManager.transition(LobbiesScene.class);
+                    if (CLIPrinter.displayLoadingMessage("Creating an account", cli.waitingUserInfo,
+                            connectionHandler.isConnected))
+                        sceneManager.transition(LobbiesScene.class);
+                    else
+                        sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("login", Arrays.asList("username", "id"), "to use a previously created account", () -> {
                     if (args.length != 3) {
@@ -38,6 +46,7 @@ public class AccountScene extends Scene {
                     }
 
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     String username = args[1];
                     int id;
@@ -50,12 +59,14 @@ public class AccountScene extends Scene {
                     }
 
                     cli.setUserInfo(new UserInfo(username, id));
-                    cli.getConnectionHandler().reconnect();
+                    connectionHandler.reconnect();
 
                     cli.waitingUserInfo.set(true);
-                    CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo);
-
-                    sceneManager.transition(LobbiesScene.class);
+                    if (CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo,
+                            connectionHandler.isConnected))
+                        sceneManager.transition(LobbiesScene.class);
+                    else
+                        sceneManager.transition(ConnectionLostScene.class);
                 }));
     }
 

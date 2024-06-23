@@ -13,6 +13,7 @@ import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
+import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 /**
  * Scene for logging in with the saved UserInfo.
@@ -28,14 +29,17 @@ public class UserInfoLoginScene extends Scene {
         this.commands = Arrays.asList(
                 new CLICommand("yes", "to continue with the saved account", () -> {
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.setUserInfo(userInfo.get());
 
                     cli.waitingUserInfo.set(true);
-                    cli.getConnectionHandler().reconnect();
-                    CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo);
-
-                    sceneManager.transition(LobbiesScene.class);
+                    connectionHandler.reconnect();
+                    
+                    if(CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo, connectionHandler.isConnected))
+                        sceneManager.transition(LobbiesScene.class);
+                    else
+                        sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("no", "to create a new account or log in to an existing one", () -> {
                     sceneManager.transition(AccountScene.class);

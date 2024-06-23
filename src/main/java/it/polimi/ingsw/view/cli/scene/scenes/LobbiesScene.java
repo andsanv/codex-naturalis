@@ -13,6 +13,7 @@ import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
+import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 public class LobbiesScene extends Scene {
     public LobbiesScene(SceneManager sceneManager) {
@@ -27,10 +28,16 @@ public class LobbiesScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
+                    if (!cli.getConnectionHandler().isConnected.get()) {
+                        sceneManager.transition(ConnectionLostScene.class);
+                        return;
+                    }
+
                     CLIPrinter.printLobbies(cli.getLobbies(), cli.getUserInfo());
                 }),
                 new CLICommand("join", Arrays.asList("id"), "to join the lobby with the given id", () -> {
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     if (args.length != 2) {
                         CLIPrinter.displayError("Invalid arguments");
@@ -48,7 +55,10 @@ public class LobbiesScene extends Scene {
 
                     cli.joiningLobby.set(true);
                     cli.getConnectionHandler().sendToMainServer(new JoinLobbyCommand(cli.getUserInfo(), id));
-                    CLIPrinter.displayLoadingMessage("Joining the lobby", cli.joiningLobby);
+
+                    if (!CLIPrinter.displayLoadingMessage("Joining the lobby", cli.joiningLobby,
+                            connectionHandler.isConnected))
+                        sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("create", "to create a new lobby", () -> {
                     if (args.length != 1) {
@@ -57,10 +67,14 @@ public class LobbiesScene extends Scene {
                     }
 
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.creatingLobby.set(true);
                     cli.getConnectionHandler().sendToMainServer(new CreateLobbyCommand(cli.getUserInfo()));
-                    CLIPrinter.displayLoadingMessage("Creating the lobby", cli.creatingLobby);
+
+                    if (!CLIPrinter.displayLoadingMessage("Creating the lobby", cli.creatingLobby,
+                            connectionHandler.isConnected))
+                        sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("leave", "to leave the current lobby", () -> {
                     if (args.length != 1) {
@@ -69,6 +83,7 @@ public class LobbiesScene extends Scene {
                     }
 
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     int id = cli.lobbyId.get();
 
@@ -80,7 +95,10 @@ public class LobbiesScene extends Scene {
                     cli.leavingLobby.set(true);
                     cli.getConnectionHandler()
                             .sendToMainServer(new LeaveLobbyCommand(cli.getUserInfo(), id));
-                    CLIPrinter.displayLoadingMessage("Leaving the lobby", cli.creatingLobby);
+
+                    if (!CLIPrinter.displayLoadingMessage("Leaving the lobby", cli.creatingLobby,
+                            connectionHandler.isConnected))
+                        sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("start", "to start a game in the current lobby", () -> {
                     if (args.length != 1) {
@@ -89,6 +107,7 @@ public class LobbiesScene extends Scene {
                     }
 
                     CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     int id = cli.lobbyId.get();
 
@@ -100,7 +119,12 @@ public class LobbiesScene extends Scene {
                     cli.startingGame.set(true);
                     cli.getConnectionHandler()
                             .sendToMainServer(new StartGameCommand(cli.getUserInfo(), id));
-                    CLIPrinter.displayLoadingMessage("Starting the game", cli.startingGame);
+
+                    if (CLIPrinter.displayLoadingMessage("Starting the game", cli.startingGame,
+                            connectionHandler.isConnected))
+                        sceneManager.transition(null); // TODO transition to game scene
+                    else
+                        sceneManager.transition(ConnectionLostScene.class);
                 }));
     }
 
