@@ -33,10 +33,10 @@ public class UserInfoLoginScene extends Scene {
 
                     cli.setUserInfo(userInfo.get());
 
-                    cli.waitingUserInfo.set(true);
+                    cli.waitinLogin.set(true);
                     connectionHandler.reconnect();
                     
-                    if(CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo, connectionHandler.isConnected))
+                    if(CLIPrinter.displayLoadingMessage("Logging in", cli.waitinLogin, connectionHandler.isConnected, cli.waitingLoginError))
                         sceneManager.transition(LobbiesScene.class);
                     else
                         sceneManager.transition(ConnectionLostScene.class);
@@ -48,7 +48,7 @@ public class UserInfoLoginScene extends Scene {
 
     @Override
     public void onEntry() {
-        // CLIPrinter.clear();
+        CLIPrinter.clear();
 
         userInfo = UserInfoManager.retrieveUserInfo();
 

@@ -33,7 +33,7 @@ public class ConnectionLostScene extends Scene {
 
     @Override
     public void onEntry() {
-        // CLIPrinter.clear();
+        CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Connection Lost", RED);
         System.out.println("The connection to the Codex Naturalis server was lost");
     }

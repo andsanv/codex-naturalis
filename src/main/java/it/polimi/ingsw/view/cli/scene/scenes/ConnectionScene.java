@@ -48,7 +48,7 @@ public class ConnectionScene extends Scene {
 
     @Override
     public void onEntry() {
-        // CLIPrinter.clear();
+        CLIPrinter.clear();
 
         CLIPrinter.displaySceneTitle("Connection Menu", BLUE);
 

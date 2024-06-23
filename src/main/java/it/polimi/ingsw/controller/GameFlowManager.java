@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.controller.states.DrawCardState;
 import it.polimi.ingsw.controller.states.GameState;
@@ -20,7 +21,6 @@ import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,9 +56,9 @@ public class GameFlowManager implements Runnable {
   public GameModelUpdater gameModelUpdater;
 
   /**
-   * Represents the lobby, or the "room" containing the players (more games can be started sequentially from a single lobby)
+   * Stores the id of the lobby, or the "room" containing the players
    */
-  private final Lobby lobby;
+  public final int lobbyId;
 
   /**
    * Map that keeps track of active connections (non AFK players)
@@ -133,8 +133,8 @@ public class GameFlowManager implements Runnable {
    * @param observers list of observers
    */
   public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers, int timeLimit) {
-    this.lobby = lobby;
-    this.users = lobby.getUsers().stream().map(u -> new UserInfo(u)).collect(Collectors.toList());
+    this.lobbyId = lobby.id;
+    this.users = lobby.getUsers().stream().map(User::toUserInfo).collect(Collectors.toList());
 
     this.isConnected = isConnected;
 

@@ -253,7 +253,7 @@ public enum Server {
         connectedPlayers.get(userInfo).setStatus(Status.IN_GAME);
 
         List<Observer> observers = connectedPlayers.entrySet().stream()
-                .filter(entry -> lobby.getUsers().contains(User.userInfoToUser(entry.getKey())))
+                .filter(entry -> lobby.contains(userInfo))
                 .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
                 .map(entry -> entry.getValue())
                 .collect(Collectors.toList());
@@ -264,7 +264,7 @@ public enum Server {
         connectedPlayers
                 .entrySet()
                 .stream()
-                .filter(e -> lobby.getUsers().contains(User.userInfoToUser(e.getKey())))
+                .filter(e -> lobby.contains(userInfo))
                 .forEach(
                         e -> isConnected.put(e.getKey(),
                                 () -> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
@@ -276,7 +276,7 @@ public enum Server {
         // the starting game
         // update playersInGame map
         connectedPlayers.entrySet().stream()
-                .filter(entry -> lobby.getUsers().contains(User.userInfoToUser(entry.getKey())))
+                .filter(entry -> lobby.contains(userInfo))
                 .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
                 .forEach(
                         entry -> {

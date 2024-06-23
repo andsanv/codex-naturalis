@@ -40,7 +40,7 @@ public class HomeScene extends Scene {
 
     @Override
     public void onEntry() {
-        System.out.println(ansi().eraseScreen().cursor(0, 0));
+        CLIPrinter.clear();
 
         System.out.println(CODEX_NATURALIS + "\n");
 

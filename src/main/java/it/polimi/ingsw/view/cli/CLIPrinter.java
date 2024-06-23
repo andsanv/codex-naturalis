@@ -5,6 +5,7 @@ import static org.fusesource.jansi.Ansi.Color.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.fusesource.jansi.Ansi;
 
@@ -58,16 +59,27 @@ public class CLIPrinter {
 
     /**
      * This method is called while waiting for a server event.
-     * It shows a loading message until the given condition becomes false.
+     * It shows a loading message until the given condition becomes false or the
+     * client loses connection.
+     * Can print an error message if given an AtomicReference of a String that is
+     * checked after waiting.
      * 
-     * @param msg       message of loading animation
-     * @param isLoading an AtomicBoolean that, upon becoming false, stops the
-     *                  loading animation
+     * @param msg         message of loading animation
+     * @param isLoading   an AtomicBoolean that, upon becoming false, stops the
+     *                    loading animation
+     * @param isConnected an AtomicBoolean that is true if the client is connected
+     *                    to the server
+     * @param error       an error message that can occurr if the request was
+     *                    invalid, set it to null to ignore
+     * 
+     * @return true if successfully waited for the server (even if an error message
+     *         arrived), false if connection was lost
      */
-    public static void displayLoadingMessage(String msg, AtomicBoolean isLoading) {
+    public static boolean displayLoadingMessage(String msg, AtomicBoolean isLoading, AtomicBoolean isConnected,
+            AtomicReference<String> error) {
         String[] sequence = { "", ".", "..", "..." };
         int curr = 0;
-        while (isLoading.get()) {
+        while (isLoading.get() && isConnected.get()) {
             System.out.print(ansi().reset().eraseLine().cursorToColumn(0).bg(GREEN).a("LOADING").reset()
                     .a(" " + msg + sequence[curr++ % sequence.length]));
             System.out.flush();
@@ -77,8 +89,21 @@ public class CLIPrinter {
             } catch (InterruptedException e) {
             }
         }
+
         System.out.println(ansi().reset().eraseLine().cursorToColumn(0));
         System.out.flush();
+
+        // Early return if connection was lost
+        if (!isConnected.get())
+            return false;
+
+        // Print the error if occurred
+        if (error != null && error.get() != null) {
+            displayError(error.get());
+            error.set(null);
+        }
+
+        return true;
     }
 
     /**
@@ -95,13 +120,13 @@ public class CLIPrinter {
             /*
              * Lobbies will be printed with the following format
              * ╒═══════════════╕
-             * │ Lobby 13      │
+             * │ Lobby 13 │
              * ├───────────────┤
-             * │ user#21       │
+             * │ user#21 │
              * │ anotherUser#3 │
-             * │ lastUser#1    │
+             * │ lastUser#1 │
              * ├───────────────┤
-             * │ In-Game? X    │
+             * │ In-Game? X │
              * ╘═══════════════╛
              */
             for (LobbyInfo lobby : lobbies) {

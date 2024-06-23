@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
@@ -74,9 +75,15 @@ public class CLI implements UI {
 
     /**
      * Thread-safe boolean that is true if the CLI is waiting for the server to send
-     * the userInfo.
+     * the UserInfo used to make the following requests.
      */
-    public final AtomicBoolean waitingUserInfo = new AtomicBoolean(false);
+    public final AtomicBoolean waitinLogin = new AtomicBoolean(false);
+
+    /**
+     * Thread-safe string that contains an error message that the user can receive
+     * while logging-in.
+     */
+    public final AtomicReference<String> waitingLoginError = new AtomicReference<>(null);
 
     /**
      * Thread-safe boolean that is true if the CLI is waiting for the server to send
@@ -90,9 +97,21 @@ public class CLI implements UI {
     public final AtomicBoolean joiningLobby = new AtomicBoolean(false);
 
     /**
+     * Thread-safe string that contains an error message if the user couldn't join
+     * the lobby.
+     */
+    public final AtomicReference<String> joiningLobbyError = new AtomicReference<>(null);
+
+    /**
      * Thread-safe boolean that is true while the user is creating a lobby.
      */
     public final AtomicBoolean creatingLobby = new AtomicBoolean(false);
+
+    /**
+     * Thread-safe string that contains an error message if creating the lobby went
+     * wrong.
+     */
+    public final AtomicReference<String> creatingLobbyError = new AtomicReference<>(null);
 
     /**
      * Thread-safe boolean that is true while the user is leaving a lobby.
@@ -100,9 +119,25 @@ public class CLI implements UI {
     public final AtomicBoolean leavingLobby = new AtomicBoolean(false);
 
     /**
+     * Thread-safe string that contains an error message if the user couldn't leave
+     * the lobby.
+     */
+    public final AtomicReference<String> leavingLobbyError = new AtomicReference<>(null);
+
+    /**
      * Thread-safe boolean that is true while the user is starting a game.
      */
     public final AtomicBoolean startingGame = new AtomicBoolean(false);
+
+    /**
+     * Thread-safe string that contains an error message if start game failed.
+     */
+    public final AtomicReference<String> startingGameError = new AtomicReference<>(null);
+
+    /**
+     * Thread-safe boolean that is true if the user is in a match.
+     */
+    public final AtomicBoolean inGame = new AtomicBoolean(false);
 
     private CLI() {
         /*
@@ -179,10 +214,8 @@ public class CLI implements UI {
             UserInfoManager.saveUserInfo(userInfo);
         }
 
-        waitingUserInfo.set(false);
-
-        if (error != null)
-            CLIPrinter.displayError(error);
+        waitingLoginError.set(error);
+        waitinLogin.set(false);
     }
 
     @Override
@@ -400,25 +433,25 @@ public class CLI implements UI {
 
     @Override
     public void handleJoinLobbyError(String message) {
-        startingGame.set(false);
-        CLIPrinter.displayError(message);
+        joiningLobbyError.set(message);
+        joiningLobby.set(false);
     }
 
     @Override
     public void handleStartGameError(String message) {
+        startingGameError.set(message);
         startingGame.set(false);
-        CLIPrinter.displayError(message);
     }
 
     @Override
     public void handleCreateLobbyError(String message) {
+        creatingLobbyError.set(message);
         creatingLobby.set(false);
-        CLIPrinter.displayError(message);
     }
 
     @Override
     public void handleLeaveLobbyError(String message) {
+        leavingLobbyError.set(message);
         leavingLobby.set(false);
-        CLIPrinter.displayError(message);
     }
 }

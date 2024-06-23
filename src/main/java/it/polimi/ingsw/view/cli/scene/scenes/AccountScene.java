@@ -30,11 +30,11 @@ public class AccountScene extends Scene {
                     CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
-                    cli.waitingUserInfo.set(true);
+                    cli.waitinLogin.set(true);
                     connectionHandler.sendToMainServer(new ConnectionCommand(args[1]));
 
-                    if (CLIPrinter.displayLoadingMessage("Creating an account", cli.waitingUserInfo,
-                            connectionHandler.isConnected))
+                    if (CLIPrinter.displayLoadingMessage("Creating an account", cli.waitinLogin,
+                            connectionHandler.isConnected, cli.waitingLoginError))
                         sceneManager.transition(LobbiesScene.class);
                     else
                         sceneManager.transition(ConnectionLostScene.class);
@@ -61,9 +61,9 @@ public class AccountScene extends Scene {
                     cli.setUserInfo(new UserInfo(username, id));
                     connectionHandler.reconnect();
 
-                    cli.waitingUserInfo.set(true);
-                    if (CLIPrinter.displayLoadingMessage("Logging in", cli.waitingUserInfo,
-                            connectionHandler.isConnected))
+                    cli.waitinLogin.set(true);
+                    if (CLIPrinter.displayLoadingMessage("Logging in", cli.waitinLogin,
+                            connectionHandler.isConnected, cli.waitingLoginError))
                         sceneManager.transition(LobbiesScene.class);
                     else
                         sceneManager.transition(ConnectionLostScene.class);
@@ -72,7 +72,7 @@ public class AccountScene extends Scene {
 
     @Override
     public void onEntry() {
-        // CLIPrinter.clear();
+        CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Account Menu", BLUE);
 
         System.out.println("Do you want to create a new account or log in with a previously created one?");

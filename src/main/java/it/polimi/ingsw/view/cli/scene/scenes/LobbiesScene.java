@@ -47,7 +47,7 @@ public class LobbiesScene extends Scene {
                     int id;
 
                     try {
-                        id = Integer.parseInt(args[2]);
+                        id = Integer.parseInt(args[1]);
                     } catch (NumberFormatException e) {
                         CLIPrinter.displayError("The id must be an integer");
                         return;
@@ -57,7 +57,7 @@ public class LobbiesScene extends Scene {
                     cli.getConnectionHandler().sendToMainServer(new JoinLobbyCommand(cli.getUserInfo(), id));
 
                     if (!CLIPrinter.displayLoadingMessage("Joining the lobby", cli.joiningLobby,
-                            connectionHandler.isConnected))
+                            connectionHandler.isConnected, cli.joiningLobbyError))
                         sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("create", "to create a new lobby", () -> {
@@ -73,7 +73,7 @@ public class LobbiesScene extends Scene {
                     cli.getConnectionHandler().sendToMainServer(new CreateLobbyCommand(cli.getUserInfo()));
 
                     if (!CLIPrinter.displayLoadingMessage("Creating the lobby", cli.creatingLobby,
-                            connectionHandler.isConnected))
+                            connectionHandler.isConnected, cli.creatingLobbyError))
                         sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("leave", "to leave the current lobby", () -> {
@@ -97,7 +97,7 @@ public class LobbiesScene extends Scene {
                             .sendToMainServer(new LeaveLobbyCommand(cli.getUserInfo(), id));
 
                     if (!CLIPrinter.displayLoadingMessage("Leaving the lobby", cli.creatingLobby,
-                            connectionHandler.isConnected))
+                            connectionHandler.isConnected, cli.leavingLobbyError))
                         sceneManager.transition(ConnectionLostScene.class);
                 }),
                 new CLICommand("start", "to start a game in the current lobby", () -> {
@@ -121,16 +121,18 @@ public class LobbiesScene extends Scene {
                             .sendToMainServer(new StartGameCommand(cli.getUserInfo(), id));
 
                     if (CLIPrinter.displayLoadingMessage("Starting the game", cli.startingGame,
-                            connectionHandler.isConnected))
-                        sceneManager.transition(null); // TODO transition to game scene
-                    else
+                            connectionHandler.isConnected, cli.startingGameError)) {
+                        // If the game was started 
+                        if (cli.inGame.get())
+                            sceneManager.transition(null); // TODO transition to game scene
+                    } else
                         sceneManager.transition(ConnectionLostScene.class);
                 }));
     }
 
     @Override
     public void onEntry() {
-        // CLIPrinter.clear();
+        CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Lobbies", BLUE);
     }
 }
