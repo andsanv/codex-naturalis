@@ -4,7 +4,6 @@
 
 .root {
     -fx-font-family: 'Fraktur No2';
-    -fx-font-size: 18;
 }
 
 .tab .tab-label {
@@ -15,16 +14,17 @@
 
 .tab {
     -fx-background-color: #e7e1a8;
-    -fx-background-insets: 0.0;
-    -fx-background-radius: 0.0;
-    -fx-padding: 0 30 0 30;
+    -fx-background-radius: 10px;
+    -fx-border-color: #c9c18f;
+    -fx-border-radius: 10px;
+    -fx-padding: 3 20 3 20;
 }
 
 .tab:selected {
     -fx-background-color: #e7e1a8;
-    -fx-background-radius: 0.0;
+    -fx-background-radius: 10px;
     -fx-background-insets: 0.0;
-    -fx-border-width: 5 0 0 0;
+    -fx-border-width: 4 1 1 1;
     -fx-border-color: #c5a641;
 }
 
@@ -52,17 +52,13 @@
 }
 
 .button {
-    -fx-padding: 8 15 15 15;
     -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;
     -fx-background-radius: 8;
-    -fx-background-color: #e7e1a8;
-    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 );
+    -fx-background-color: #dcdcdc;
+    -fx-border-radius: 8;
+    -fx-border-color: #bdbdbd;
 }
 
 .button:hover {
-    -fx-background-color: #e7e1a8;
-}
-.button:pressed {
-    -fx-padding: 10 15 13 15;
-    -fx-background-insets: 2 0 0 0,2 0 3 0, 2 0 4 0, 2 0 5 0;
+    -fx-background-color: #cdcdcd;
 }

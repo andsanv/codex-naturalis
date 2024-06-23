@@ -17,7 +17,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -279,11 +279,11 @@
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" />
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#f2f2f2" height="365.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="259.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#f2f2f2" height="365.0" layoutX="10.0" layoutY="10.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="259.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <VBox prefHeight="365.0" prefWidth="259.0">
                                        <VBox.margin>
-                                          <Insets left="15.0" right="15.0" top="15.0" />
+                                          <Insets left="15.0" right="25.0" top="15.0" />
                                        </VBox.margin>
                                        <children>
                                           <ImageView fx:id="resourceDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
@@ -314,7 +314,7 @@
                                     </VBox>
                                     <VBox prefHeight="365.0" prefWidth="259.0">
                                        <VBox.margin>
-                                          <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                          <Insets bottom="15.0" left="15.0" right="25.0" top="15.0" />
                                        </VBox.margin>
                                        <children>
                                           <ImageView fx:id="goldDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
@@ -358,22 +358,28 @@
                 </Tab>
               </tabs>
                <StackPane.margin>
-                  <Insets bottom="20.0" left="20.0" right="1100.0" top="105.0" />
+                  <Insets bottom="20.0" left="20.0" right="1090.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
-            <StackPane prefHeight="150.0" prefWidth="200.0">
+            <StackPane prefHeight="30.0" prefWidth="30.0">
                <children>
-                  <Button fx:id="leftPanelButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
+                  <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
                      <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" scaleX="0.75" scaleY="0.75">
                            <image>
-                              <Image url="@../../images/icons/angle-left.png" />
+                              <Image url="@../../images/icons/angle-right.png" />
                            </image>
                         </ImageView>
-                     </graphic></Button>
+                     </graphic>
+                     <StackPane.margin>
+                        <Insets />
+                     </StackPane.margin>
+                     <padding>
+                        <Insets bottom="4.0" left="3.0" right="3.0" top="4.0" />
+                     </padding></Button>
                </children>
                <StackPane.margin>
-                  <Insets bottom="765.0" left="20.0" right="1390.0" top="105.0" />
+                  <Insets bottom="766.0" left="20.0" right="1388.0" top="105.0" />
                </StackPane.margin>
             </StackPane>
             <TabPane fx:id="rightTabPane" prefHeight="608.0" prefWidth="232.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
@@ -383,7 +389,7 @@
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
-                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <VBox prefHeight="200.0" prefWidth="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <ImageView fitHeight="560.0" fitWidth="270.0" pickOnBounds="true">
                                        <VBox.margin>
@@ -413,10 +419,13 @@
                   </Tab>
                   <Tab>
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="0.0">
                            <children>
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
                            </children>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
                         </AnchorPane>
                      </content>
                      <graphic>
@@ -429,17 +438,17 @@
                   </Tab>
                </tabs>
                <StackPane.margin>
-                  <Insets bottom="20.0" left="1100.0" right="20.0" top="105.0" />
+                  <Insets bottom="20.0" left="1090.0" right="20.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
             <StackPane fx:id="rightStackPane" prefHeight="150.0" prefWidth="400.0">
                <children>
-                  <Button fx:id="rightPanelButton" alignment="TOP_RIGHT" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton" StackPane.alignment="CENTER">
-                     <StackPane.margin>
-                        <Insets />
-                     </StackPane.margin>
+                  <Button fx:id="rightPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton">
+                     <padding>
+                        <Insets bottom="4.0" left="3.0" right="3.0" top="4.0" />
+                     </padding>
                      <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" scaleX="0.75" scaleY="0.75">
                            <image>
                               <Image url="@../../images/icons/angle-left.png" />
                            </image>
@@ -448,7 +457,7 @@
                   </Button>
                </children>
                <StackPane.margin>
-                  <Insets bottom="765.0" left="1390.0" right="20.0" top="105.0" />
+                  <Insets bottom="765.0" left="1390.0" right="23.0" top="105.0" />
                </StackPane.margin>
             </StackPane>
          </children>

@@ -274,6 +274,8 @@ public class TempGameController {
     }
 
     public void initializeScrollPane(ScrollPane scrollPane) {
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setHvalue(0.5);
         scrollPane.setVvalue(0.5);
     }
@@ -451,8 +453,6 @@ public class TempGameController {
         cardImage.setFitHeight(rawCardDimension.second * cardCompressionFactor);
 
         ((GridPane) tokenToScrollPane.get(playerToken).getContent()).add(stackPane, coords.x + (gridCellsCount.first - 1)/ 2, - coords.y + (gridCellsCount.second - 1)/ 2);
-
-        System.out.println("Played card in (" + coords.x + "," + coords.y + "), for playertoken: " + playerToken);
     }
 
 
@@ -465,12 +465,14 @@ public class TempGameController {
         // switch grid pane
         if(!tokenToScrollPane.containsKey(playerToken)) throw new RuntimeException("player not found");
 
-        System.out.println("before: " + mainStackPane.getChildren());
+        ScrollPane nextScrollPane = tokenToScrollPane.get(playerToken);
 
-        mainStackPane.getChildren().set(0, tokenToScrollPane.get(playerToken));
+        mainStackPane.getChildren().set(0, nextScrollPane);
 
+        currentScrollPane = nextScrollPane;
+        currentGridPane = (GridPane) currentScrollPane.getContent();
 
-        System.out.println("after: " + mainStackPane.getChildren());
+        System.out.println(mainStackPane.getChildren());
 
         // switch hand
         currentHandHBox = tokenToHandHBox.get(playerToken);
