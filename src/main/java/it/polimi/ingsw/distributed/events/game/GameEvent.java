@@ -14,9 +14,9 @@ public abstract class GameEvent extends Event {
   private int id = 0;
 
   /**
-   * This method is called to handle a game event
+   * This method is called to handle a game event.
    *
-   * @param gameUpdateHandler the event to handle
+   * @param gameUpdateHandler the event handler.
    */
   public abstract void execute(GameEventHandler gameUpdateHandler);
 

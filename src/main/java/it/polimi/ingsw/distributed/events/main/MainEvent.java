@@ -12,7 +12,8 @@ public abstract class MainEvent extends Event {
 
   /**
    * This method is executed on the client side, propagating the event to the client's main event handler.
-   * @param mainEventHandler
+   * 
+   * @param mainEventHandler the event handler.
    */
   public abstract void execute(MainEventHandler mainEventHandler);
 }

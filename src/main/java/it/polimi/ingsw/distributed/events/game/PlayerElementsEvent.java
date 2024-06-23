@@ -5,20 +5,30 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.PlayerToken;
 import java.util.Map;
 
-/** Event to signal a player's updated elements' map. */
+/** This event is used to notify about a player's updated elements' map. */
 public final class PlayerElementsEvent extends GameEvent {
+
+  /** The player's token */
   public final PlayerToken playerToken;
+
+  /** The updated elements map */
   public final Map<Elements, Integer> resources;
 
   /**
+   * This constructor creates the event starting from the player token and the
+   * updated elements map.
+   * 
    * @param playerToken the token of the player that gets his elements updated
-   * @param resources the updated elements map
+   * @param resources   the updated elements map
    */
   public PlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
     this.playerToken = playerToken;
     this.resources = resources;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(GameEventHandler gameUpdateHandler) {
     gameUpdateHandler.handlePlayerElementsEvent(playerToken, resources);

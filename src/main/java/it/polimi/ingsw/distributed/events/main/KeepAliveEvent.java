@@ -1,13 +1,15 @@
-package it.polimi.ingsw.distributed.events;
+package it.polimi.ingsw.distributed.events.main;
 
 import it.polimi.ingsw.distributed.MainEventHandler;
-import it.polimi.ingsw.distributed.events.main.MainEvent;
 
+/** This event is used to notify that the connection is still alive. */
 public class KeepAliveEvent extends MainEvent {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(MainEventHandler mainEventHandler) {
         ;
     }
-    
 }

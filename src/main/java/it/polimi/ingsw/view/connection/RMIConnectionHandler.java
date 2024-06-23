@@ -73,13 +73,16 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
+
+      this.isConnected.set(true);
     } catch (Exception e) {
+      this.isConnected.set(false);
       throw new Exception("Failed to connect to RMI server");
     }
   }
 
   /**
-   * Thi method adds a main command to the server command queue.
+   * This method adds a main command to the server command queue.
    * 
    * @param command the command to be added
    */
