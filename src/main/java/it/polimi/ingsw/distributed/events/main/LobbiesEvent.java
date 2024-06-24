@@ -16,7 +16,6 @@ public class LobbiesEvent extends MainEvent {
    * @param lobbies the list of lobbies.
    */
   public LobbiesEvent(List<LobbyInfo> lobbies) {
-    System.out.println("Lobbies event created");
     this.lobbies = lobbies;
   }
 

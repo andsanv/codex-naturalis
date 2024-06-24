@@ -57,11 +57,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
     this.isConnected.set(true);
 
-    // System.out.println("Connected to server and set up streams");
-
     createListenerThread();
-
-    // System.out.println("Started listening for events");
   }
 
   /**
@@ -76,7 +72,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
           while (true) {
             try {
               Event event = (Event) inputStream.readObject();
-              // System.out.println("Received event: " + event);
 
               if (event instanceof KeepAliveEvent) {
                 ;
@@ -86,10 +81,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
               } else if (event instanceof MainEvent) {
                 MainEvent mainEvent = (MainEvent) event;
                 mainEvent.execute(userInterface);
-              } else {
-                // System.err.println("Received unknown event");
               }
-
             } catch (IOException e) {
               this.isConnected.set(false);
               this.close();
@@ -114,7 +106,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
    */
   @Override
   public boolean sendToMainServer(MainCommand command) {
-    // System.out.println("Sending command to main server");
     if (userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand)
         && !(command instanceof ConnectionCommand)) {
       this.isConnected.set(false);
@@ -194,13 +185,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
       new Thread(() -> {
         Queue<Event> events = new ConcurrentLinkedQueue<>();
         while (true) {
-          // System.out.println("Waiting for events");
           try {
             Object obj = inputStream.readObject();
-            // System.out.println("Received object: " + obj);
 
             Event event = (Event) obj;
-            // System.out.println("Received event (reconnect): " + event);
 
             if (event instanceof ReconnectToGameEvent) {
               ReconnectToGameEvent reconnectToGameEvent = (ReconnectToGameEvent) event;
@@ -231,7 +219,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
         while (!events.isEmpty() && this.isConnected.get()) {
           Event event = events.poll();
-          // System.out.println("Queued event: " + event);
 
           if (event instanceof GameEvent) {
             GameEvent gameEvent = (GameEvent) event;
@@ -239,8 +226,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
           } else if (event instanceof MainEvent) {
             MainEvent mainEvent = (MainEvent) event;
             mainEvent.execute(userInterface);
-          } else {
-            // System.err.println("Received unknown event");
           }
           try {
             Thread.sleep(100);

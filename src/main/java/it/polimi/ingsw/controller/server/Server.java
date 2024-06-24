@@ -150,7 +150,7 @@ public enum Server {
 
         // If there was an error, send an error event to the client
         if (error != null) {
-            ServerPrinter.displayInfo(userInfo + " " + error);
+            ServerPrinter.displayInfo(userInfo + "could not join. Error: " + error);
             sendMainEvent(userInfo, new JoinLobbyError(error));
             return false;
         }
@@ -249,7 +249,7 @@ public enum Server {
         // If there was an error, send an error event to the client
         if (error != null) {
             sendMainEvent(userInfo, new StartGameError(error));
-            ServerPrinter.displayInfo(userInfo + " cannot start the game. " + error);
+            ServerPrinter.displayInfo(userInfo + " cannot start the game. Error: " + error);
             return false;
         }
 

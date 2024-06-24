@@ -117,15 +117,12 @@ public class RMIConnectionHandler extends ConnectionHandler {
         mainServerActions.connectToMain(((ConnectionCommand) mainCommand).username, this.clientMainView,
             this.clientGameView);
 
-        System.out.println("Waiting for user info");
-        System.out.println(userInterface.getUserInfo());
         while (userInterface.getUserInfo() == null) {
           try {
             Thread.sleep(200);
           } catch (InterruptedException e) {
           }
         }
-        System.out.println(userInterface.getUserInfo());
 
         return true;
       } catch (IOException e) {
@@ -136,7 +133,6 @@ public class RMIConnectionHandler extends ConnectionHandler {
       try {
         this.clientMainView = new RMIMainView(userInterface);
 
-        System.out.println(this.clientMainView);
         mainServerActions.reconnect(((ReconnectionCommand) mainCommand).userInfo, this.clientMainView,
             this.clientGameView);
 
