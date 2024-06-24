@@ -357,9 +357,9 @@ public enum Server {
                 } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
                     System.out.println("Reconnecting to game");
                     GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
-                    client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel()));
+                    client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(), gameFlowManager.userInfoToToken));
 
-                    // TODO: add as properties of reconnectToGameEvent the mapping <UserInfo, Token>
+                    // TODO: when reconnecting add to the reconnectToGameEvent the mapping <UserInfo, Token>
 
                     gameFlowManager.observers.remove(oldClient);
                     gameFlowManager.observers.add(client);

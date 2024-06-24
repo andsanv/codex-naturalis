@@ -2,7 +2,11 @@ package it.polimi.ingsw.distributed;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.SlimGameModel;
+import it.polimi.ingsw.model.player.PlayerToken;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * This interface represents the main event handler, which is used to handle the
@@ -46,8 +50,11 @@ public interface MainEventHandler {
 
   /**
    * This method handles the reconnection to an active game
+   * 
+   * @param userToToken UserInfo to PlayerToken mapping
+   * @param slimModel   the simplified game model
    */
-  public void handleReconnetionToGame();
+  public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken);
 
   /**
    * This method is called when the user tries to join a lobby or create one while

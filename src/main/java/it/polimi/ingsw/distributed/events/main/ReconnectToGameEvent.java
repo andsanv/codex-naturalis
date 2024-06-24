@@ -1,24 +1,37 @@
 package it.polimi.ingsw.distributed.events.main;
 
+import java.util.Map;
+
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.model.SlimGameModel;
+import it.polimi.ingsw.model.player.PlayerToken;
 
 /**
  * This event is used to notify that the user is reconnecting to a game.
- * It constains the slim model of the game as its necessary to recreate the game state.
+ * It constains the slim model of the game as its necessary to recreate the game
+ * state.
  */
 public class ReconnectToGameEvent extends MainEvent {
-    
-    /** The slim game model */
+    /**
+     * The slim game model
+     */
     public final SlimGameModel slimModel;
+
+    /**
+     * Mapping from UserInfo to PlayerToken
+     */
+    public final Map<UserInfo, PlayerToken> userToToken;
 
     /**
      * This constructor creates the event starting from the slim model of the game.
      * 
-     * @param slimModel the slim model of the game.
+     * @param slimModel the slim model of the game
+     * @param userToToken mapping from UserInfo to the respective PlayerToken
      */
-    public ReconnectToGameEvent(SlimGameModel slimModel) {
+    public ReconnectToGameEvent(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
         this.slimModel = slimModel;
+        this.userToToken = userToToken;
     }
 
     /**
@@ -26,6 +39,6 @@ public class ReconnectToGameEvent extends MainEvent {
      */
     @Override
     public void execute(MainEventHandler mainEventHandler) {
-        mainEventHandler.handleReconnetionToGame(/* slim model */);
+        mainEventHandler.handleReconnetionToGame(slimModel, userToToken);
     }
 }

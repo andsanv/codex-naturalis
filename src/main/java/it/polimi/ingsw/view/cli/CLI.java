@@ -3,7 +3,6 @@ package it.polimi.ingsw.view.cli;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,17 +13,16 @@ import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
-import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.UserInfoManager;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
+import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
-import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
@@ -263,12 +261,6 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleReconnetionToGame() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
-    }
-
-    @Override
     public void handleScoreTrackEvent(PlayerToken senderToken, int score) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleScoreTrackEvent'");
@@ -453,5 +445,11 @@ public class CLI implements UI {
             Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleDrawnVisibleGoldCardEvent'");
+    }
+
+    @Override
+    public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
     }
 }

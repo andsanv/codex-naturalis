@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Resources;
@@ -18,10 +19,9 @@ import java.util.Optional;
 public abstract class Controller implements UI {
     public final GUI gui;
 
-    public Controller (GUI gui) {
+    public Controller(GUI gui) {
         this.gui = gui;
     }
-
 
     @Override
     public UserInfo getUserInfo() {
@@ -39,27 +39,32 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handlePlayedCardEvent(PlayerToken playerToken, int playedCardId, CardSide playedCardSide, Coords playedCardCoordinates) {
+    public void handlePlayedCardEvent(PlayerToken playerToken, int playedCardId, CardSide playedCardSide,
+            Coords playedCardCoordinates) {
         return;
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         return;
     }
 
@@ -139,7 +144,8 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
+            Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
         return;
     }
 
@@ -174,7 +180,7 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleReconnetionToGame() {
+    public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
         return;
     }
 }

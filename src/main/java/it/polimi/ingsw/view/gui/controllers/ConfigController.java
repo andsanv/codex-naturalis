@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.model.SlimGameModel;
+import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class ConfigController extends Controller {
     public ConfigController(GUI gui) {
