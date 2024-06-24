@@ -22,13 +22,13 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
   private final int drawnCardId;
 
   /** The id of the replacement card. */
-  private final Optional<Integer> replacementCardId;
+  private final Integer replacementCardId;
 
   /** This boolean field informs about the decks state. */
   private final boolean emptiedDeck;
 
-  /** The seed of the next card. */
-  private final Optional<Resources> nextCardSeed;
+  /** The id of the next card. */
+  private final Integer nextCardId;
 
   /** The position of the card in the player's hand. */
   private final int handIndex;
@@ -43,18 +43,18 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
    * @param replacementCardId the id of the replacement card.
    * @param emptiedDeck       true if deck was emptied drawing the replacement
    *                          card, false otherwise.
-   * @param nextCardSeed      seed of the next card.
+   * @param nextCardId        id of the next card.
    * @param handIndex         index of the playerHand where drawn card will be
    *                          placed.
    */
   public DrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-      Optional<Integer> replacementCardId, boolean emptiedDeck, Optional<Resources> nextCardSeed, int handIndex) {
+      Integer replacementCardId, boolean emptiedDeck, Integer nextCardId, int handIndex) {
     this.playerToken = playerToken;
     this.drawnCardPosition = drawnCardPosition;
     this.drawnCardId = drawnCardId;
     this.replacementCardId = replacementCardId;
     this.emptiedDeck = emptiedDeck;
-    this.nextCardSeed = nextCardSeed;
+    this.nextCardId = nextCardId;
     this.handIndex = handIndex;
   }
 
@@ -64,6 +64,6 @@ public final class DrawnVisibleResourceCardEvent extends GameEvent {
   @Override
   public void execute(GameEventHandler gameUpdateHandler) {
     gameUpdateHandler.handleDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId,
-        replacementCardId, emptiedDeck, nextCardSeed, handIndex);
+        replacementCardId, emptiedDeck, nextCardId, handIndex);
   }
 }

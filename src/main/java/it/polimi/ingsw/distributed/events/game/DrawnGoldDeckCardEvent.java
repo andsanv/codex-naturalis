@@ -14,7 +14,7 @@ public final class DrawnGoldDeckCardEvent extends GameEvent {
   private final PlayerToken playerToken;
   private final int drawnCardId;
   private final boolean deckEmptied;
-  private final Optional<Resources> nextCardSeed;
+  private final Integer nextCardId;
   private final int handIndex;
 
   /**
@@ -25,16 +25,15 @@ public final class DrawnGoldDeckCardEvent extends GameEvent {
    * @param drawnCardId  the drawn card id.
    * @param deckEmptied  a flag that is true if the deck is now empty, false
    *                     otherwise.
-   * @param nextCardSeed the seed of the next card; it is an empty optional if
-   *                     there is no next card.
+   * @param nextCardId   the id of the next card; null if there is no next card.
    * @param handIndex    the position (0,1,2) of the drawn card in the player hand.
    */
   public DrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
-      Optional<Resources> nextCardSeed, int handIndex) {
+      Integer nextCardId, int handIndex) {
     this.playerToken = playerToken;
     this.drawnCardId = drawnCardId;
     this.deckEmptied = deckEmptied;
-    this.nextCardSeed = nextCardSeed;
+    this.nextCardId = nextCardId;
     this.handIndex = handIndex;
   }
 
@@ -43,6 +42,6 @@ public final class DrawnGoldDeckCardEvent extends GameEvent {
    */
   @Override
   public void execute(GameEventHandler gameUpdateHandler) {
-    gameUpdateHandler.handleDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardSeed, handIndex);
+    gameUpdateHandler.handleDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
   }
 }

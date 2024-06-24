@@ -53,20 +53,18 @@ public class Deck<CardType extends Card> extends Observable {
 
     CardType card = deck.pop();
 
-    Optional<Resources> nextCardSeed = Optional.empty();
+    Integer nextCardId = null;
     if(!deck.isEmpty()) {
       CardType nextCard = deck.peek();
 
-      if(nextCard instanceof ResourceCard)
-        nextCardSeed = ((ResourceCard) nextCard).type;
-      else if(nextCard instanceof GoldCard)
-        nextCardSeed = ((GoldCard) nextCard).type;
+      if(nextCard instanceof ResourceCard || nextCard instanceof GoldCard)
+        nextCardId = nextCard.id;
     }
 
     if(card instanceof ResourceCard)
-      notify(new DrawnResourceDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardSeed, handIndex));
+      notify(new DrawnResourceDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardId, handIndex));
     else if (card instanceof GoldCard)
-      notify(new DrawnGoldDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardSeed, handIndex));
+      notify(new DrawnGoldDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardId, handIndex));
     else if(card instanceof StarterCard)
       notify(new DrawnStarterCardEvent(playerToken, card.id));
 
@@ -108,35 +106,31 @@ public class Deck<CardType extends Card> extends Observable {
    * Only used during setup phase of the game and when it's guaranteed decks are not empty.
    * Invocation of this method will not notify observers.
    *
-   * @return a trio containing: the drawn card, a boolean telling if the draw emptied the main deck, and the next card's seed
+   * @return a trio containing: the drawn card, a boolean telling if the draw emptied the main deck, and the next card's id
    */
-  public Trio<Optional<CardType>, Boolean, Optional<Resources>> anonymousDraw() {
-    if (isEmpty()) return new Trio<>(Optional.empty(), true, Optional.empty());
+  public Trio<Optional<CardType>, Boolean, Integer> anonymousDraw() {
+    if (isEmpty()) return new Trio<>(Optional.empty(), true, null);
 
     CardType card = deck.pop();
-    if (isEmpty()) return new Trio<>(Optional.of(card), true, Optional.empty()); {}
+    if (isEmpty()) return new Trio<>(Optional.of(card), true, null); {}
 
     CardType nextCard = deck.peek();
-    Optional<Resources> nextCardSeed = Optional.empty();
-    if (nextCard instanceof ResourceCard) {
-        nextCardSeed = ((ResourceCard) nextCard).type;
-    }
-    else if (nextCard instanceof GoldCard) {
-      nextCardSeed = ((GoldCard) nextCard).type;
+    Integer nextCardId = null;
+    if (nextCard instanceof ResourceCard || nextCard instanceof GoldCard) {
+        nextCardId = nextCard.id;
     }
 
-    return new Trio<>(Optional.of(card), deck.isEmpty(), nextCardSeed);
+    return new Trio<>(Optional.of(card), deck.isEmpty(), nextCardId);
   }
 
   /**
-   * Allows to retrieve the seed of the card at the top of the deck.
-   * 
-   * @return Optional.empty() if deck is empty or CardType does not have a seed, the seed of the top card otherwise
+   * Allows to retrieve the id of the card at the top of the deck.
+   *
+   * @return null if deck is empty, the id of the top card otherwise
    */
-  public Optional<Resources> getNextCardSeed() {
-    if (isEmpty()) return Optional.empty();
-    if(deck.peek().getClass() != ResourceCard.class && deck.peek().getClass() != GoldCard.class) return Optional.empty();
+  public Integer getNextCardId() {
+    if (isEmpty()) return null;;
 
-    return ((PlayableCard) deck.peek()).type;
+    return deck.peek().id;
   }
 }

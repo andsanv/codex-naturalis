@@ -22,7 +22,7 @@ public final class DrawnResourceDeckCardEvent extends GameEvent {
   private final boolean deckEmptied;
 
   /** The seed of the next card. */
-  private final Optional<Resources> nextCardSeed;
+  private final Integer nextCardId;
 
   /** The position of the drawn card in the player hand. */
   private final int handIndex;
@@ -35,16 +35,15 @@ public final class DrawnResourceDeckCardEvent extends GameEvent {
    * @param drawnCardId  the drawn card id
    * @param deckEmptied  a flag that is true if the deck is now empty, false
    *                     otherwise
-   * @param nextCardSeed the seed of the next card; it is an empty optional if
-   *                     there is no next card
+   * @param nextCardId   the id of the next card; null if there is no next card.
    * @param handIndex    the position (0,1,2) of the drawn card in the player hand
    */
   public DrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
-      Optional<Resources> nextCardSeed, int handIndex) {
+      Integer nextCardId, int handIndex) {
     this.playerToken = playerToken;
     this.drawnCardId = drawnCardId;
     this.deckEmptied = deckEmptied;
-    this.nextCardSeed = nextCardSeed;
+    this.nextCardId = nextCardId;
     this.handIndex = handIndex;
   }
 
@@ -53,6 +52,6 @@ public final class DrawnResourceDeckCardEvent extends GameEvent {
    */
   @Override
   public void execute(GameEventHandler gameUpdateHandler) {
-    gameUpdateHandler.handleDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardSeed, handIndex);
+    gameUpdateHandler.handleDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
   }
 }

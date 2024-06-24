@@ -44,22 +44,22 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId, boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex) {
+    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         return;
     }
 

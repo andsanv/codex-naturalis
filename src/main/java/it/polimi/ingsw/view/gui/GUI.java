@@ -65,7 +65,7 @@ public class GUI extends Application {
             String url = Objects.requireNonNull(getClass().getResource("/css/gameView.css")).toExternalForm();
             scene.getStylesheets().add(url);
 
-            primaryStage.setResizable(false);
+            // primaryStage.setResizable(false);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Codex Naturalis");
             primaryStage.show();

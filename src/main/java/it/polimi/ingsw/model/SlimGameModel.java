@@ -46,9 +46,9 @@ public class SlimGameModel implements Serializable {
     public final List<Integer> commonObjectives;
     
     /**
-     * List containing a Pair for each deck, where the first element tells whether the deck is empty or not, and the second specifies the resource of the top card of the deck.
+     * List containing a Pair for each deck, where the first element tells whether the deck is empty or not, and the second specifies the id of the top card of the deck.
      */
-    public final List<Pair<Boolean, Resources>> decks;
+    public final List<Pair<Boolean, Integer>> decks;
 
     /**
      * Structure to keep track of the ids of the cards in the visible resource card list.
@@ -82,7 +82,7 @@ public class SlimGameModel implements Serializable {
         Map<PlayerToken, Map<Elements, Integer>> tokenToElements,
         Map<PlayerToken, Integer> tokenToSecretObjective,
         List<Integer> commonObjectives,
-        List<Pair<Boolean, Resources>> decks,
+        List<Pair<Boolean, Integer>> decks,
         Pair<Integer, Integer> visibleResourceCardsList,
         Pair<Integer, Integer> visibleGoldCardsList,
         Map<PlayerToken, Integer> scores

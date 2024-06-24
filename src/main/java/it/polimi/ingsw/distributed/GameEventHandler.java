@@ -50,12 +50,11 @@ public interface GameEventHandler {
     * @param drawnCardId  the drawn card id
     * @param deckEmptied  a flag that is true if the deck is now empty, false
     *                     otherwise
-    * @param nextCardSeed the seed of the next card; it is an empty optional if
-    *                     there is no next card
+    * @param nextCardId   the id of the next card; null if there is no next card
     * @param handIndex    the position (0,1,2) of the drawn card in the player hand
     */
    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
-         Optional<Resources> nextCardSeed, int handIndex);
+        Integer nextCardId, int handIndex);
 
    /**
     * This method handles the received update of a drawn card from the resource
@@ -65,12 +64,11 @@ public interface GameEventHandler {
     * @param drawnCardId  the id of the drawn card
     * @param deckEmptied  a flag that is true if the deck is now empty, false
     *                     otherwise
-    * @param nextCardSeed the seed of the next card; it is an empty optional if
-    *                     there is no next card
+    * @param nextCardId   the id of the next card; null if there is no next card
     * @param handIndex    the position (0,1,2) of the drawn card in the player hand
     */
    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
-         Optional<Resources> nextCardSeed, int handIndex);
+         Integer nextCardId, int handIndex);
 
    /**
     * This method handles the received update of a drawn card from the visible
@@ -79,14 +77,15 @@ public interface GameEventHandler {
     * @param playerToken       the player token which drew the card
     * @param drawnCardPosition the position of the drawn card between the visibles
     * @param drawnCardId       the id of the drawn card
+    * // TODO update javadocs
     */
    public void handleDrawnVisibleResourceCardEvent(
-         PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId,
-         boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex);
+         PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId,
+         boolean deckEmptied, Integer nextCardId, int handIndex);
 
    public void handleDrawnVisibleGoldCardEvent(
-         PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Optional<Integer> replacementCardId,
-         boolean deckEmptied, Optional<Resources> nextCardSeed, int handIndex);
+         PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId,
+         boolean deckEmptied, Integer nextCardId, int handIndex);
 
    /**
     * This method handles the received update of a drawn card from the starter deck
@@ -119,7 +118,7 @@ public interface GameEventHandler {
     * @param secondDrawnCardId the id of the second drawn card
     */
    public void handleDrawnObjectiveCardsEvent(
-         PlayerToken playerToken, int drawnCardId, int secondDrawnCardId);
+           PlayerToken playerToken, int firstDrawnCardId, int secondDrawnCardId);
 
    /**
     * This method handles the received update of the chosen objective card

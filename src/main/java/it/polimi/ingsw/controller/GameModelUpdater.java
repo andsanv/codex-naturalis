@@ -224,9 +224,9 @@ public class GameModelUpdater {
     
     List<Integer> commonObjectives = gameModel.commonObjectives.stream().map(x -> x.id).collect(Collectors.toList());
 
-    List<Pair<Boolean, Resources>> decks = Arrays.asList(gameModel.resourceCardsDeck, gameModel.goldCardsDeck, gameModel.starterCardsDeck, gameModel.objectiveCardsDeck).stream()
+    List<Pair<Boolean, Integer>> decks = Arrays.asList(gameModel.resourceCardsDeck, gameModel.goldCardsDeck, gameModel.starterCardsDeck, gameModel.objectiveCardsDeck).stream()
       .map(
-        x -> new Pair<>(x.isEmpty(), x.getNextCardSeed().orElse(null))
+        x -> new Pair<>(x.isEmpty(), x.getNextCardId())
       )
       .collect(Collectors.toList());
 

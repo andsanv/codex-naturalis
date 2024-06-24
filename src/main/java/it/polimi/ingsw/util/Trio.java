@@ -40,6 +40,35 @@ public final class Trio<T1, T2, T3> {
     }
 
     /**
+     * Allows to retrieve the index of the element given as parameter inside the Trio.
+     *
+     * @param object object of which to find the index
+     * @return the index if the element is in the Trio, -1 otherwise
+     */
+    public Integer getIndexOf(Object object) {
+        if (object == null) return -1;
+
+        if (Objects.equals(object, first)) return 0;
+        if (Objects.equals(object, second)) return 1;
+        if (Objects.equals(object, third)) return 2;
+
+        return -1;
+    }
+
+    /**
+     * Allows to retrieve the first "empty" position, which is the position with the first null value
+     *
+     * @return index of the first null slot, -1 if all slots are full
+     */
+    public Integer getNullIndex() {
+        if(first == null) return 0;
+        if(second == null) return 1;
+        if(third == null) return 2;
+
+        return -1;
+    }
+
+    /**
      * Override of the Objects::equals method.
      * 
      * @param other the object to compare this to

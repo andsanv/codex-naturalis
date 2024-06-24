@@ -26,4 +26,18 @@ public class TrioTest {
         assertNotEquals(trio, new Trio<Integer, Boolean, String>(1, true, "test"));
         assertNotEquals(trio, new Trio<Integer, Boolean, String>(1, false, "nontest"));
     }
+
+    @Test
+    void getIndexOfTest() {
+        Trio<Integer, Boolean, String> trio = new Trio<>(1, false, "test");
+
+        assertEquals(0, trio.getIndexOf(1));
+        assertEquals(1, trio.getIndexOf(false));
+        assertEquals(2, trio.getIndexOf("test"));
+
+        assertEquals(-1, trio.getIndexOf("nontest"));
+        assertEquals(-1, trio.getIndexOf(2));
+
+        Trio<Integer, Boolean, String> other = new Trio<>(1, false, null);
+    }
 }

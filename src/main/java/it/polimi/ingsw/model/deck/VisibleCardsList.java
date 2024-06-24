@@ -62,15 +62,16 @@ public class VisibleCardsList<CardType extends Card> extends Observable {
     if(listIndex < 0 || listIndex > 1 || cards.get(listIndex) == null) return Optional.empty();
 
     CardType card = cards.get(listIndex);
-    Trio<Optional<CardType>, Boolean, Optional<Resources>> deckDrawResult = deck.anonymousDraw();
+    Trio<Optional<CardType>, Boolean, Integer> deckDrawResult = deck.anonymousDraw();
 
     if (card instanceof ResourceCard) {
       notify(new DrawnVisibleResourceCardEvent(
               playerToken,
               listIndex,
               card.id,
-              deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
-              deckDrawResult.second, deckDrawResult.third,
+              deckDrawResult.first.isEmpty() ? null : deckDrawResult.first.get().id,
+              deckDrawResult.second,
+              deckDrawResult.third,
               handIndex));
     }
     else if (card instanceof GoldCard) {
@@ -78,8 +79,9 @@ public class VisibleCardsList<CardType extends Card> extends Observable {
               playerToken,
               listIndex,
               card.id,
-              deckDrawResult.first.isEmpty() ? Optional.empty() : Optional.of(deckDrawResult.first.get().id),
-              deckDrawResult.second, deckDrawResult.third,
+              deckDrawResult.first.isEmpty() ? null : deckDrawResult.first.get().id,
+              deckDrawResult.second,
+              deckDrawResult.third,
               handIndex));
     }
     else throw new RuntimeException("Illegal card type");
