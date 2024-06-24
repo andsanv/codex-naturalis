@@ -218,6 +218,7 @@ public class CLI implements UI {
                 if (readingInput && inGame.get()) {
                     inGame.set(false);
                     userInputThread.interrupt();
+                    scanner.close();
                     sceneManager.transition(TokenSelectionScene.class);
                     startUserInputHandler();
                 }
@@ -234,7 +235,6 @@ public class CLI implements UI {
      * Handles user input and can be safely interrupted
      */
     private void startUserInputHandler() {
-        scanner.close();
         scanner = new Scanner(System.in);
 
         userInputThread = new Thread(() -> {
