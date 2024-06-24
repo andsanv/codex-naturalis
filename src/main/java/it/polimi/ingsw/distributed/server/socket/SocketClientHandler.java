@@ -1,6 +1,7 @@
 package it.polimi.ingsw.distributed.server.socket;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.server.ServerPrinter;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
@@ -60,25 +61,28 @@ public class SocketClientHandler extends Client implements Runnable {
     while (true) {
       try {
         Command command = (Command) in.readObject();
-        System.out.println("Received command: " + command);
+
+        ServerPrinter.displayDebug("Received command: " + command);
 
         if (command instanceof GameCommand) {
           if (gameFlowManager == null) {
-            System.err.println("GameFlowManager not set");
+            ServerPrinter.displayError("GameFlowManager not set");
           }
-          ((GameCommand) command).execute(gameFlowManager);
+          gameFlowManager.addCommand((GameCommand) command);
         } else if (command instanceof MainCommand) {
-          System.out.println("Executing main command");
           ((MainCommand) command).execute();
         } else {
-          System.err.println("Unrecognized command: " + command);
+          ServerPrinter.displayWarning("Unrecognized command: " + command);
         }
       } catch (EOFException e) {
+        ServerPrinter.displayError("Error while reading command");
+        ServerPrinter.displayError("Setting client as disconnected");
         setDisconnectionStatus();
         break;
       } catch (IOException | ClassNotFoundException e) {
+        ServerPrinter.displayError("Error while reading command");
+        ServerPrinter.displayError("Setting client as disconnected");
         setDisconnectionStatus();
-        System.err.println("Error while reading command: " + e.getMessage());
         break;
       }
     }
@@ -91,6 +95,7 @@ public class SocketClientHandler extends Client implements Runnable {
   public void trasmitEvent(MainEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
+    ServerPrinter.displayDebug("Sent event: " + event);
   }
 
   /**
@@ -100,6 +105,7 @@ public class SocketClientHandler extends Client implements Runnable {
   public void transmitEvent(GameEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
+    ServerPrinter.displayDebug("Sent event: " + event);
   }
 
   /**
@@ -110,6 +116,7 @@ public class SocketClientHandler extends Client implements Runnable {
    */
   public void setGameFlowManager(GameFlowManager gameFlowManager) {
     this.gameFlowManager = gameFlowManager;
+    ServerPrinter.displayInfo("GameFlowManager set");
   }
 
   /**
@@ -121,9 +128,10 @@ public class SocketClientHandler extends Client implements Runnable {
   public void update(GameEvent event) {
     try {
       transmitEvent(event);
+      ServerPrinter.displayDebug("Sent update");
     } catch (IOException e) {
       setDisconnectionStatus();
-      System.err.println("Error while sending event");
+      ServerPrinter.displayError("Failed to send update");
     }
   }
 

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.distributed.server.socket;
 
 import it.polimi.ingsw.controller.server.Server;
+import it.polimi.ingsw.controller.server.ServerPrinter;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
@@ -67,7 +68,7 @@ public class SocketServer {
     while (true) {
       try {
         Socket socket = serverSocket.accept();
-        System.out.println("New connection from " + socket.getInetAddress() + ":" + socket.getPort());
+        ServerPrinter.displayDebug("New connection from " + socket.getInetAddress() + ":" + socket.getPort());
 
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
@@ -77,13 +78,11 @@ public class SocketServer {
 
         Command command = (Command) in.readObject();
 
-        System.out.println("Received command: " + command);
-
         if (command instanceof ConnectionCommand) {
           ConnectionCommand connectionCommand = (ConnectionCommand) command;
           String username = connectionCommand.username;
 
-          System.out.println("New connection from " + username);
+          ServerPrinter.displayDebug("Connection request from " + username);
 
           UserInfo userInfo = Server.INSTANCE.clientSignUp(username, connection);
           connections.put(userInfo, connection);
@@ -91,18 +90,18 @@ public class SocketServer {
           ReconnectionCommand reconnectionCommand = (ReconnectionCommand) command;
           UserInfo userInfo = reconnectionCommand.userInfo;
 
-          System.out.println("Reconnection from " + userInfo);
+          ServerPrinter.displayDebug("Reconnection request from " + userInfo);
 
           Server.INSTANCE.clientLogin(userInfo, connection);
           connections.put(userInfo, connection);
         } else {
-          System.err.println("Unrecognized request on socket server");
+          ServerPrinter.displayWarning("Invalid intial request");
         }
 
         executorService.submit(connection);
 
       } catch (Exception e) {
-        System.err.println("Error while accepting client: " + e.getMessage());
+        ServerPrinter.displayError("Error while accepting new client");
       }
     }
   }

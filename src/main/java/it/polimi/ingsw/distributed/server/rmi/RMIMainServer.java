@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.server.Server;
+import it.polimi.ingsw.controller.server.ServerPrinter;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
@@ -51,13 +52,13 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
       registry = LocateRegistry.createRegistry(Config.RMIServerPort);
       registry.bind(Config.RMIServerName, this);
     } catch (RemoteException e) {
-      System.err.println("Error: " + e.toString());
+      ServerPrinter.displayError("Error: " + e.toString());
       e.printStackTrace();
     } catch (AlreadyBoundException e) {
-      System.err.println("Error: " + Config.RMIServerName + " already bound");
+      ServerPrinter.displayError("Error: " + Config.RMIServerName + " already bound");
       e.printStackTrace();
     } catch (Exception e) {
-      System.err.println("Error: " + e.toString());
+      ServerPrinter.displayError("Error: " + e.toString());
       e.printStackTrace();
     }
   }
@@ -71,12 +72,10 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   @Override
   public void connectToMain(String username, MainViewActions clientMainView, GameViewActions gameViewActions)
       throws RemoteException {
-    System.out.println(clientMainView);
-    System.out.println(gameViewActions);
 
     RMIHandler rmiHandler = new RMIHandler(clientMainView, gameViewActions);
 
-    System.out.println("User " + username + "main view " + clientMainView);
+    ServerPrinter.displayDebug("Received connection request from username: " + username);;
     executorService.submit(
         () -> {
           Server.INSTANCE.clientSignUp(username, rmiHandler);
@@ -94,6 +93,9 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
       throws RemoteException {
 
     RMIHandler rmiHandler = new RMIHandler(clientMainView, gameViewActions);
+
+    ServerPrinter.displayDebug("Received reconnection request from username: " + userInfo);
+
     executorService.submit(
         () -> {
           Server.INSTANCE.clientLogin(userInfo, rmiHandler);
@@ -107,7 +109,7 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
    */
   @Override
   public void transmitCommand(MainCommand command) throws RemoteException {
-    System.out.println(command);
+    ServerPrinter.displayDebug("Received command: " + command);
     executorService.submit(command::execute);
   }
 }

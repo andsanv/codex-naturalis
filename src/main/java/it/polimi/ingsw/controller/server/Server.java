@@ -59,7 +59,7 @@ public enum Server {
      */
     public static void main(String[] args) {
         AnsiConsole.systemInstall();
-        System.setProperty("java.rmi.server.hostname", "192.168.20.88");
+        // System.setProperty("java.rmi.server.hostname", "192.168.20.88");
 
         try {
             new SocketServer(Config.MainSocketPort);
@@ -85,6 +85,7 @@ public enum Server {
      */
     Server() {
         executorService.submit(() -> {
+            ServerPrinter.displayInfo("Check connection thread started");
             while (true) {
                 checkConnections();
 
@@ -114,9 +115,8 @@ public enum Server {
                                 ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
                             } catch (IOException e) {
                                 entry.getValue().setDisconnectionStatus();
-
                                 ServerPrinter
-                                        .displayError("Couldn't send connection check event to " + entry.getValue());
+                                        .displayError("Couldn't send keep alive event to " + entry.getValue());
                                 ServerPrinter.displayError("Client " + entry.getKey() + " disconnected");
                             }
                         });
@@ -150,9 +150,12 @@ public enum Server {
 
         // If there was an error, send an error event to the client
         if (error != null) {
+            ServerPrinter.displayInfo(userInfo + " " + error);
             sendMainEvent(userInfo, new JoinLobbyError(error));
             return false;
         }
+
+        ServerPrinter.displayInfo(userInfo + " joined lobby " + lobbyId);
 
         broadcastLobbies();
         return true;
@@ -204,6 +207,7 @@ public enum Server {
 
         if (lobby == null || !lobby.removeUser(user)) {
             sendMainEvent(userInfo, new LeaveLobbyError("You are not in the lobby"));
+            ServerPrinter.displayInfo(user + " couldn't leave lobby " + lobbyId + ". The user was not in the lobby.");
             return false;
         }
 
@@ -245,6 +249,7 @@ public enum Server {
         // If there was an error, send an error event to the client
         if (error != null) {
             sendMainEvent(userInfo, new StartGameError(error));
+            ServerPrinter.displayInfo(userInfo + " cannot start the game. " + error);
             return false;
         }
 
@@ -290,11 +295,13 @@ public enum Server {
                                     client.setGameServer(gameServer);
                                 }
                             } catch (RemoteException e) {
-                                ServerPrinter.displayError("Couldn't send connection event to");
+                                ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
+                                ServerPrinter.displayError("Setting " + userInfo + " disconnected");
                                 entry.getValue().setDisconnectionStatus();
                             }
                         });
 
+        ServerPrinter.displayInfo(userInfo + " started the game in lobby " + lobbyId);
         return true;
     }
 
@@ -338,41 +345,44 @@ public enum Server {
             ServerPrinter.displayInfo("User " + userInfo + " reconnecting");
             Client oldClient = connectedPlayers.get(userInfo);
 
-            System.out.println("Old client: " + connectedPlayers.get(userInfo));
-            System.out.println("State: " + oldClient.getStatus());
-
             connectedPlayers.put(userInfo, client);
 
             client.setStatus(Status.IN_MENU);
 
             try {
                 if (oldClient.getStatus() == Status.OFFLINE) {
-                    System.out.println("Reconnecting to main menu");
                     client.trasmitEvent(new LoginEvent(userInfo, null));
                     client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
 
                     client.setStatus(Status.IN_MENU);
 
-                } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
-                    System.out.println("Reconnecting to game");
-                    GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
-                    client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(), gameFlowManager.userInfoToToken));
+                    ServerPrinter.displayInfo("User " + userInfo + " reconnected to menu");
 
-                    // TODO: when reconnecting add to the reconnectToGameEvent the mapping <UserInfo, Token>
+                } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
+                    GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
+                    client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
+                            gameFlowManager.userInfoToToken));
+
+                    // TODO: when reconnecting add to the reconnectToGameEvent the mapping
+                    // <UserInfo, Token>
                     client.setStatus(Status.IN_GAME);
 
                     gameFlowManager.observers.remove(oldClient);
                     gameFlowManager.observers.add(client);
+
+                    ServerPrinter.displayInfo("Reconnectiong user " + userInfo + " to game");
                 }
             } catch (IOException e) {
-                if(oldClient.getStatus() == Status.IN_GAME) {
+                ServerPrinter.displayError("Couldn't recconnect " + userInfo);
+                ServerPrinter.displayError("Setting " + userInfo + " disconnected");
+                if (oldClient.getStatus() == Status.IN_GAME) {
                     client.setStatus(Status.DISCONNETED_FROM_GAME);
                 } else {
                     client.setStatus(Status.OFFLINE);
                 }
             }
         } else {
-            System.err.println(
+            ServerPrinter.displayInfo(
                     "Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
             this.clientSignUp(userInfo.name, client);
         }
@@ -383,6 +393,7 @@ public enum Server {
         try {
             user = new User(username);
         } catch (IllegalArgumentException e) {
+            ServerPrinter.displayInfo("User " + username + " is invalid. Assigning a random username.");
             user = new User(User.randomUsername(8));
         }
 
@@ -394,7 +405,8 @@ public enum Server {
                 client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
             } catch (IOException e) {
                 client.setStatus(Status.OFFLINE);
-                System.err.println("Couldn't send userInfo event to " + userInfo);
+                ServerPrinter.displayError("Couldn't send userInfo event to " + userInfo);
+                ServerPrinter.displayError("Setting " + userInfo + " disconnected");
                 e.printStackTrace();
             }
         });
@@ -402,6 +414,7 @@ public enum Server {
         connectedPlayers.put(userInfo, client);
         client.setStatus(Status.IN_MENU);
 
+        ServerPrinter.displayInfo("User " + userInfo + " signed up");
         return userInfo;
     }
 

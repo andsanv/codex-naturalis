@@ -2,6 +2,7 @@ package it.polimi.ingsw.distributed.server.rmi;
 
 import java.io.IOException;
 
+import it.polimi.ingsw.controller.server.ServerPrinter;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
@@ -34,51 +35,62 @@ public class RMIHandler extends Client {
 
     @Override
     public void update(GameEvent event) {
-        if (isDisconnected())
+        if (isDisconnected()){
+            ServerPrinter.displayError("Client is disconnected cannot send event " + event);
             return;
+        }
         try {
             rmiGameView.transmitEvent(event);
         } catch (IOException e) {
             setDisconnectionStatus();
-            System.err.println("Failed to send");
+            ServerPrinter.displayError("Failed to send update event " + event);
+            ServerPrinter.displayError("Setting client as disconnected");
         }
 
     }
 
     // TODO: If status is disconnected do not send
     @Override
-    public void trasmitEvent(MainEvent serverEvent) {
-        if (isDisconnected())
+    public void trasmitEvent(MainEvent event) {
+        if (isDisconnected()){
+            ServerPrinter.displayError("Client is disconnected cannot send event " + event);
             return;
+        }
         try {
-            rmiMainView.trasmitEvent(serverEvent);
+            rmiMainView.trasmitEvent(event);
         } catch (IOException e) {
             setDisconnectionStatus();
-            System.err.println("Failed to send");
+            ServerPrinter.displayError("Failed to send event " + event);
+            ServerPrinter.displayError("Setting client as disconnected");
         }
     }
 
     @Override
     public void setGameServer(GameServerActions gameServer) {
-        if (isDisconnected())
+        if (isDisconnected()){
+            ServerPrinter.displayError("Client is disconnected cannot set game server");
             return;
+        }
         try {
             rmiMainView.setGameServer(gameServer);
         } catch (IOException e) {
             setDisconnectionStatus();
-            System.err.println("Failed to send");
+            ServerPrinter.displayError("Failed to set game server");
+            ServerPrinter.displayError("Setting client as disconnected");
         }
     }
 
     @Override
     public void transmitEvent(GameEvent event) {
-        if (isDisconnected())
+        if (isDisconnected()){
             return;
+        }
         try {
             rmiGameView.transmitEvent(event);
         } catch (IOException e) {
             setDisconnectionStatus();
-            System.err.println("Failed to send");
+            ServerPrinter.displayError("Failed to send event " + event);
+            ServerPrinter.displayError("Setting client as disconnected");
         }
     }
 
