@@ -464,4 +464,10 @@ public class CLI implements UI {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
     }
+
+    @Override
+    public void handleGameStarted(List<UserInfo> users) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleGameStarted'");
+    }
 }

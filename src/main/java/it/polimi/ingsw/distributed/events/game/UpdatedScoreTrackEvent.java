@@ -6,17 +6,22 @@ import it.polimi.ingsw.model.player.PlayerToken;
 /** This event is used to notify an update of a player's points. */
 public final class UpdatedScoreTrackEvent extends GameEvent {
 
-  /** The player's token. */
+  /**
+   * The player's token.
+   */
   public final PlayerToken playerToken;
 
-  /** The new score. */
+  /**
+   * The new score.
+   */
   public final int score;
 
   /**
-   * This constructor creates the event starting from the player token and the new score.
+   * This constructor creates the event starting from the player token and the new
+   * score.
    * 
    * @param playerToken the token of the player that gets a new score
-   * @param score the new score
+   * @param score       the new score
    */
   public UpdatedScoreTrackEvent(PlayerToken playerToken, int score) {
     this.playerToken = playerToken;

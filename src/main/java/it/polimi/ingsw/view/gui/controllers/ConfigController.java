@@ -19,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class ConfigController extends Controller {
@@ -134,5 +135,11 @@ public class ConfigController extends Controller {
     public void handleGroupMessageEvent(UserInfo sender, String message) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
+    }
+
+    @Override
+    public void handleGameStarted(List<UserInfo> users) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleGameStarted'");
     }
 }
