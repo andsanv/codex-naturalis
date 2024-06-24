@@ -1,22 +1,22 @@
 package it.polimi.ingsw.controller.states;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.events.game.EndedInitializationPhaseEvent;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.PlayerToken;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * State through which the flow manager initializes the model

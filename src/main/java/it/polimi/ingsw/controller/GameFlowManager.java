@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.server.ServerPrinter;
 import it.polimi.ingsw.controller.server.User;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.controller.states.DrawCardState;
@@ -14,14 +15,18 @@ import it.polimi.ingsw.controller.states.StarterCardSelectionState;
 import it.polimi.ingsw.controller.states.TokenSelectionState;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
+import it.polimi.ingsw.distributed.events.game.LastRoundEvent;
+import it.polimi.ingsw.distributed.events.game.PlayerTurnEvent;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
 import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.view.cli.CLIPrinter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +40,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-
 /**
  * This class allows to manage a single game.
  * It's the middle point between the clients and the game model.
- * Implemented as a runnable in order to be able to run more games on a single server.
+ * Implemented as a runnable in order to be able to run more games on a single
+ * server.
  *
  * Uses a state pattern to manage the flow of the game.
  * Uses the command pattern to keep track of every player's moves.
@@ -71,7 +76,8 @@ public class GameFlowManager implements Runnable {
   public List<UserInfo> users;
 
   /**
-   * List of observers (the clients connected), which will be notified for every event thrown.
+   * List of observers (the clients connected), which will be notified for every
+   * event thrown.
    */
   public final List<Observer> observers;
 
@@ -110,7 +116,9 @@ public class GameFlowManager implements Runnable {
   /** Time limit for a player to make his move (in seconds) */
   private final long timeLimit;
 
-  /** Boolean used by the timer to tell whether time limit has been reached or not */
+  /**
+   * Boolean used by the timer to tell whether time limit has been reached or not
+   */
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
   /**
@@ -128,13 +136,16 @@ public class GameFlowManager implements Runnable {
   /**
    * Main constructor for the class.
    * 
-   * @param lobby lobby from which the game was started
-   * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
-   * @param observers list of observers
+   * @param lobby       lobby from which the game was started
+   * @param isConnected map from user to a connection boolean, used to skip turn
+   *                    if client is no more connected
+   * @param observers   list of observers
    */
-  public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers, int timeLimit) {
+  public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers,
+      int timeLimit) {
     this.lobbyId = lobby.id;
     this.users = lobby.getUsers().stream().map(User::toUserInfo).collect(Collectors.toList());
+    Collections.shuffle(users);
 
     this.isConnected = isConnected;
 
@@ -157,11 +168,13 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * Constructor of the class without specifying the time limit. Default time limit set to 60 seconds.
+   * Constructor of the class without specifying the time limit. Default time
+   * limit set to 60 seconds.
    * 
-   * @param lobby lobby from which the game was started
-   * @param isConnected map from user to a connection boolean, used to skip turn if client is no more connected
-   * @param observers list of observers
+   * @param lobby       lobby from which the game was started
+   * @param isConnected map from user to a connection boolean, used to skip turn
+   *                    if client is no more connected
+   * @param observers   list of observers
    */
   public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers) {
     this(lobby, isConnected, observers, 60);
@@ -170,22 +183,26 @@ public class GameFlowManager implements Runnable {
   /**
    * Override of the Runnable::run method.
    *
-   * As soon as the thread is started, the setup phase begins, where players choose their token, starter card and objective card.
-   * Then the in-game phase starts, where players place and draw cards, until someone reaches the limit score.
+   * As soon as the thread is started, the setup phase begins, where players
+   * choose their token, starter card and objective card.
+   * Then the in-game phase starts, where players place and draw cards, until
+   * someone reaches the limit score.
    * When the game ends, the post-game phase starts.
    */
   @Override
   public void run() {
     // pre-game phase
     Map<UserInfo, PlayerToken> idToToken = currentState.handleTokenSelection(playerTokens); // select token phase
-    Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> tokenToStarterCardAndCardSide = currentState.handleStarterCardSelection(); // select starter card side phase
+    Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> tokenToStarterCardAndCardSide = currentState
+        .handleStarterCardSelection(); // select starter card side phase
     Map<PlayerToken, StarterCard> tokenToStarterCard = tokenToStarterCardAndCardSide.first;
     Map<PlayerToken, CardSide> tokenToCardSide = tokenToStarterCardAndCardSide.second;
-    Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard = currentState.handleObjectiveCardSelection(); // select objective card phase
+    Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard = currentState.handleObjectiveCardSelection(); // select
+                                                                                                        // objective
+                                                                                                        // card phase
 
     currentState.handleInitialization(
-        idToToken, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard
-    );
+        idToToken, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard);
 
     // in-game phase
     while (!currentState.equals(postGameState)) {
@@ -194,7 +211,7 @@ public class GameFlowManager implements Runnable {
         turnHandlerThread.start();
         turnHandlerThread.join();
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        ServerPrinter.displayError("GameFlowManager thread was interrupted.");
       }
     }
 
@@ -203,30 +220,30 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * Synchronized, allows to handle a players' turn. A timer is started as soon as player's turn starts.
+   * Synchronized, allows to handle a players' turn. A timer is started as soon as
+   * player's turn starts.
    * If the timer expires before the player makes his move, the turn is skipped.
    */
   private void handleTurn() {
     Timer timer = new Timer();
     timeLimitReached.set(false);
 
-    TimerTask timeElapsedTask =
-        new TimerTask() {
-          @Override
-          public void run() {
-            timeLimitReached.set(true);
-              
-            synchronized(commands) {
-              commands.notifyAll();
-            }
-          }
-        };
+    TimerTask timeElapsedTask = new TimerTask() {
+      @Override
+      public void run() {
+        timeLimitReached.set(true);
+
+        synchronized (commands) {
+          commands.notifyAll();
+        }
+      }
+    };
 
     timer.schedule(timeElapsedTask, timeLimit * 1000);
-    
+
     while (true) {
       synchronized (commands) {
-        if(commands.isEmpty()) {
+        if (commands.isEmpty()) {
           try {
             commands.wait();
           } catch (InterruptedException e) {
@@ -238,29 +255,33 @@ public class GameFlowManager implements Runnable {
           // TODO time limit reached event
           break;
         }
-        
-        if (!isConnected.get(userInfoToToken.keySet().stream().filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow()).get()) {
+
+        if (!isConnected.get(userInfoToToken.keySet().stream()
+            .filter(user -> userInfoToToken.get(user).equals(getTurn())).findAny().orElseThrow()).get()) {
           // TODO user not connected event
           break;
         }
 
-        if(commands.isEmpty()) continue;
+        if (commands.isEmpty())
+          continue;
 
         if (commands.poll().execute(this)) {
           timer.cancel();
 
-          if (currentState.equals(playCardState)) currentState = drawCardState;
-          else switchTurn();
+          if (currentState.equals(playCardState))
+            currentState = drawCardState;
+          else
+            switchTurn();
 
           return;
-        }
-        else {
+        } else {
           // TODO cannot execute command event
         }
       }
     }
 
-    if (currentState.equals(drawCardState)) drawRandomCard(getTurn());
+    if (currentState.equals(drawCardState))
+      drawRandomCard(getTurn());
 
     switchTurn();
   }
@@ -311,13 +332,14 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * @return token of the player whose turn it is, null if in a state where turns don't exist
+   * @return token of the player whose turn it is, null if in a state where turns
+   *         don't exist
    */
   public PlayerToken getTurn() {
-    if(currentState.equals(playCardState) || currentState.equals(drawCardState))
+    if (currentState.equals(playCardState) || currentState.equals(drawCardState))
       return userInfoToToken.get(users.get(turn % users.size()));
 
-    return null; 
+    return null;
   }
 
   /**
@@ -328,7 +350,8 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * Manages the turns, the rounds and checks whether the next turn will be the last.
+   * Manages the turns, the rounds and checks whether the next turn will be the
+   * last.
    */
   public void switchTurn() {
     if (turn % users.size() == users.size() - 1) {
@@ -336,14 +359,17 @@ public class GameFlowManager implements Runnable {
         setState(postGameState);
         return;
       } else {
-        if (gameModelUpdater.limitScoreReached() || gameModelUpdater.anyDeckEmpty())
+        if (gameModelUpdater.limitScoreReached() || gameModelUpdater.anyDeckEmpty()) {
+          notify(new LastRoundEvent());
           isLastRound = true;
+        }
         round += 1;
       }
     }
-    
+
     turn += 1;
     setState(playCardState);
+    notify(new PlayerTurnEvent(getTurn()));
   }
 
   /**
@@ -358,7 +384,8 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * GameModelUpdater and GameModel are instantiated only after setup phase is finished.
+   * GameModelUpdater and GameModel are instantiated only after setup phase is
+   * finished.
    *
    * @param gameModelUpdater the newly instantiated GameModelUpdater
    */
@@ -367,7 +394,8 @@ public class GameFlowManager implements Runnable {
   }
 
   /**
-   * Side method to set up some game states, that require a GameModelUpdater given as parameter.
+   * Side method to set up some game states, that require a GameModelUpdater given
+   * as parameter.
    */
   public void initializeGameStates() {
     this.playCardState = new PlayCardState(this);
