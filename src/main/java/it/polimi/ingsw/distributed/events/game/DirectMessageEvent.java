@@ -1,39 +1,40 @@
 package it.polimi.ingsw.distributed.events.game;
 
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
-import it.polimi.ingsw.model.player.PlayerToken;
 
-/** This event is used to notify that a direct message has been sent. */
-public final class DirectMessageEvent extends GameEvent {
+/**
+ * A direct message from a player to another.
+ */
+public class DirectMessageEvent extends MessageEvent {
+    /**
+     * Sender of the message
+     */
+    private final UserInfo sender;
 
-  /** The token of the sending player. */
-  private final PlayerToken senderToken;
+    /**
+     * Receiver of the message
+     */
+    private final UserInfo receiver;
 
-  /** The token of the receiving player. */
-  private final PlayerToken receiverToken;
+    /**
+     * Message as a string
+     */
+    private final String message;
 
-  /** The message sent */
-  private final String message;
+    /**
+     * @param sender   the sender of the message
+     * @param receiver the receiver of the message
+     * @param message  the message as a string
+     */
+    public DirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.message = message;
+    }
 
-  /**
-   * This constructor creates the event starting from the sender token, the
-   * receiver token and the message.
-   * 
-   * @param senderToken   the token of the sender of the message
-   * @param receiverToken the token of the receiver of the message
-   * @param message       the message sent
-   */
-  public DirectMessageEvent(PlayerToken senderToken, PlayerToken receiverToken, String message) {
-    this.senderToken = senderToken;
-    this.receiverToken = receiverToken;
-    this.message = message;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void execute(GameEventHandler gameUpdateHandler) {
-    gameUpdateHandler.handleDirectMessageEvent(senderToken, receiverToken, message);
-  }
+    @Override
+    public void execute(GameEventHandler gameUpdateHandler) {
+        gameUpdateHandler.handleDirectMessageEvent(sender, sender, message);
+    }
 }

@@ -1,34 +1,33 @@
 package it.polimi.ingsw.distributed.events.game;
 
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
-import it.polimi.ingsw.model.player.PlayerToken;
 
-/** Thi event is used to notify that a group message has been sent. */
-public final class GroupMessageEvent extends GameEvent {
+/**
+ * Event for a message that is sent to all player in the lobby.
+ */
+public class GroupMessageEvent extends MessageEvent {
+    /**
+     * Sender of the message
+     */
+    private final UserInfo sender;
 
-  /** The token of the player sending the message. */
-  private final PlayerToken senderToken;
+    /**
+     * Message as a string
+     */
+    private final String message;
 
-  /** The message sent. */
-  private final String message;
+    /**
+     * @param sender  the sender of the message
+     * @param message the message as a string
+     */
+    public GroupMessageEvent(UserInfo sender, String message) {
+        this.sender = sender;
+        this.message = message;
+    }
 
-  /**
-   * This constructor creates the event starting from the sender token and the
-   * message.
-   * 
-   * @param senderToken the token of the sender of the message.
-   * @param message     the message sent.
-   */
-  public GroupMessageEvent(PlayerToken senderToken, String message) {
-    this.senderToken = senderToken;
-    this.message = message;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void execute(GameEventHandler gameUpdateHandler) {
-    gameUpdateHandler.handleGroupMessageEvent(senderToken, message);
-  }
+    @Override
+    public void execute(GameEventHandler gameUpdateHandler) {
+        gameUpdateHandler.handleGroupMessageEvent(sender, message);
+    }
 }

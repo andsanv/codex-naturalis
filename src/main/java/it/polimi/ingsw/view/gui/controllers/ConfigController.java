@@ -123,4 +123,16 @@ public class ConfigController extends Controller {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleLastRoundEvent'");
     }
+
+    @Override
+    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDirectMessageEvent'");
+    }
+
+    @Override
+    public void handleGroupMessageEvent(UserInfo sender, String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
+    }
 }

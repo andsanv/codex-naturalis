@@ -147,20 +147,20 @@ public interface GameEventHandler {
        * This method handles the received update about a direct player to player
        * message
        * 
-       * @param senderToken   the player token which sent the message
-       * @param receiverToken the player token which receive the message
-       * @param message       the content of the message
+       * @param sender   the player which sent the message
+       * @param receiver the player which receive the message
+       * @param message  the content of the message
        */
       public void handleDirectMessageEvent(
-                  PlayerToken senderToken, PlayerToken receiverToken, String message);
+                  UserInfo sender, UserInfo receiver, String message);
 
       /**
        * This method handles the received update about a group message
        * 
-       * @param senderToken the player token which sent the message
-       * @param message     the content of the message
+       * @param sender  the player who sent the message
+       * @param message the content of the message
        */
-      public void handleGroupMessageEvent(PlayerToken senderToken, String message);
+      public void handleGroupMessageEvent(UserInfo sender, String message);
 
       /**
        * This method handles the received update about the start of the game

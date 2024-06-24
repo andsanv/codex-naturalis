@@ -316,18 +316,6 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleDirectMessageEvent(PlayerToken senderToken, PlayerToken receiverToken, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDirectMessageEvent'");
-    }
-
-    @Override
-    public void handleGroupMessageEvent(PlayerToken senderToken, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
-    }
-
-    @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleTokenAssignmentEvent'");
@@ -463,5 +451,17 @@ public class CLI implements UI {
     public void handleLastRoundEvent() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleLastRoundEvent'");
+    }
+
+    @Override
+    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDirectMessageEvent'");
+    }
+
+    @Override
+    public void handleGroupMessageEvent(UserInfo sender, String message) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
     }
 }

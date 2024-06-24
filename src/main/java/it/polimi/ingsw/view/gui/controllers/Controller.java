@@ -104,16 +104,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleDirectMessageEvent(PlayerToken senderToken, PlayerToken receiverToken, String message) {
-        return;
-    }
-
-    @Override
-    public void handleGroupMessageEvent(PlayerToken senderToken, String message) {
-        return;
-    }
-
-    @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
         return;
     }

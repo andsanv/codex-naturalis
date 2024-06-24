@@ -1,5 +1,6 @@
 package it.polimi.ingsw.util;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Objects;
  *
  * @see Pair
  */
-public final class Trio<T1, T2, T3> {
+public final class Trio<T1, T2, T3> implements Serializable {
     /**
      * The first element of the pair.
      */

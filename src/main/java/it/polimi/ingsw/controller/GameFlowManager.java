@@ -14,8 +14,10 @@ import it.polimi.ingsw.controller.states.PostGameState;
 import it.polimi.ingsw.controller.states.StarterCardSelectionState;
 import it.polimi.ingsw.controller.states.TokenSelectionState;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.commands.game.MessageCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.game.LastRoundEvent;
+import it.polimi.ingsw.distributed.events.game.MessageEvent;
 import it.polimi.ingsw.distributed.events.game.PlayerTurnEvent;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
@@ -305,6 +307,15 @@ public class GameFlowManager implements Runnable {
       commands.add(command);
       commands.notifyAll();
     }
+  }
+
+  /**
+   * Forwards the message event to all players.
+   * 
+   * @param message the message event to forward
+   */
+  public void forwardMessage(MessageEvent message) {
+    notify(message);
   }
 
   /**

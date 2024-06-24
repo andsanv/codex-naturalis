@@ -1,5 +1,7 @@
 package it.polimi.ingsw.util;
 
+import java.io.Serializable;
+
 /**
  * Utility class, where each object is a pair of two objects.
  *
@@ -8,7 +10,7 @@ package it.polimi.ingsw.util;
  *
  * @see Trio
  */
-public final class Pair<T1, T2> {
+public final class Pair<T1, T2> implements Serializable {
   /**
    * The first element of the pair.
    */
