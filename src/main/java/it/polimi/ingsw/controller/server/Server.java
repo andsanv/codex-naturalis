@@ -280,28 +280,27 @@ public enum Server {
         GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, new CopyOnWriteArrayList<>(clients));
         lobby.setGameFlowManager(gameFlowManager);
 
-        // set gameflow to redirect requests to, on client handler only for the users in
-        // the starting game
-        // update playersInGame map
-        clients.stream().forEach(
-                c -> {
-                    c.setStatus(Status.IN_GAME);
-                    try {
-                        if (c instanceof SocketClientHandler) {
-                            SocketClientHandler client = (SocketClientHandler) c;
-                            client.setGameFlowManager(gameFlowManager);
-                        } else if (c instanceof RMIHandler) {
-                            RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
-                                    "gameServer" + lobbyId);
-                            RMIHandler client = (RMIHandler) c;
-                            client.setGameServer(gameServer);
-                        }
-                    } catch (RemoteException e) {
-                        ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
-                        ServerPrinter.displayError("Setting " + userInfo + " disconnected");
-                        c.setDisconnectionStatus();
-                    }
-                });
+        for (Client c : clients) {
+            // Set in game status
+            c.setStatus(Status.IN_GAME);
+
+            // Init connection to the game
+            try {
+                if (c instanceof SocketClientHandler) {
+                    SocketClientHandler client = (SocketClientHandler) c;
+                    client.setGameFlowManager(gameFlowManager);
+                } else if (c instanceof RMIHandler) {
+                    RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
+                            "gameServer" + lobbyId);
+                    RMIHandler client = (RMIHandler) c;
+                    client.setGameServer(gameServer);
+                }
+            } catch (RemoteException e) {
+                ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
+                ServerPrinter.displayError("Setting " + userInfo + " disconnected");
+                c.setDisconnectionStatus();
+            }
+        }
 
         ServerPrinter.displayInfo(userInfo + " started the game in lobby " + lobbyId);
         return true;
