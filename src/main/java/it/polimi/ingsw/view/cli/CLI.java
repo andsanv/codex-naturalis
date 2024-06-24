@@ -9,6 +9,7 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
@@ -57,7 +58,7 @@ public class CLI implements UI {
     /**
      * The only input scanner used by the CLI
      */
-    private final Scanner scanner = new Scanner(System.in);
+    private Scanner scanner;
 
     /**
      * The UserInfo of the user that is logged-in.
@@ -156,6 +157,18 @@ public class CLI implements UI {
     public final AtomicReference<List<UserInfo>> usersInGame = new AtomicReference<>(null);
 
     /**
+     * Thread-safe string that contains an error message if the user couldn't do a
+     * command successfully.
+     */
+    public final AtomicReference<String> lastGameError = new AtomicReference<>(null);
+
+    /**
+     * Thread-safe boolean that is true if the user is waiting for a sent command to
+     * be executed by the server.
+     */
+    public final AtomicBoolean waitingGameEvent = new AtomicBoolean(false);
+
+    /**
      * Mapping between players and tokens
      */
     private Map<PlayerToken, UserInfo> tokenToUser = new HashMap<>();
@@ -166,15 +179,9 @@ public class CLI implements UI {
     public final Object tokenToUserLock = new Object();
 
     /**
-     * Thread-safe boolean that is true if the user asked to use a certain token and
-     * is waiting for confirmation by the server.
+     * Token that the player is trying to select.
      */
-    public final AtomicBoolean waitingTokenSelection = new AtomicBoolean(false);
-
-    /**
-     * Token that the player tried to select.
-     */
-    public final AtomicReference selectedToken = new AtomicReference<>(null);
+    public final AtomicReference<PlayerToken> selectedToken = new AtomicReference<>(null);
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -227,6 +234,9 @@ public class CLI implements UI {
      * Handles user input and can be safely interrupted
      */
     private void startUserInputHandler() {
+        scanner.close();
+        scanner = new Scanner(System.in);
+
         userInputThread = new Thread(() -> {
             try {
                 while (sceneManager.isRunning.get()) {
@@ -265,6 +275,19 @@ public class CLI implements UI {
     public boolean isTokenAvailable(PlayerToken token) {
         synchronized (tokenToUserLock) {
             return !tokenToUser.containsKey(token);
+        }
+    }
+
+    /**
+     * Returns the list of available tokens.
+     * 
+     * @return a List of PlayerTokens that are available for selection.
+     */
+    public List<PlayerToken> getAvailableTokens() {
+        List<PlayerToken> allTokens = Arrays.asList(PlayerToken.values());
+
+        synchronized (tokenToUserLock) {
+            return allTokens.stream().filter(t -> !tokenToUser.containsKey(t)).collect(Collectors.toList());
         }
     }
 
@@ -422,8 +445,8 @@ public class CLI implements UI {
             tokenToUser.put(assignedToken, player);
         }
 
-        if (assignedToken == selectedToken.get()) {
-            waitingTokenSelection.set(false);
+        if (getUserInfo().equals(player)) {
+            waitingGameEvent.set(false);
         }
     }
 
@@ -447,8 +470,7 @@ public class CLI implements UI {
 
     @Override
     public void handleGameError(String error) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGameError'");
+        lastGameError.set(error);
     }
 
     @Override

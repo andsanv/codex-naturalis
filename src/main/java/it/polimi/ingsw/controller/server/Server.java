@@ -18,6 +18,7 @@ import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.game.GameStartedEvent;
 import it.polimi.ingsw.distributed.events.main.CreateLobbyError;
 import it.polimi.ingsw.distributed.events.main.JoinLobbyError;
@@ -462,4 +463,30 @@ public enum Server {
             }
         });
     }
+
+    /**
+     * Sends a game event to the given user if they are in-game.
+     * The function is public so it can be used by the GameFlowManager the event
+     * only to the given user and not broadcast it to all users in the game.
+     * This is particularly useful when sending errors to a certain user.
+     * 
+     * @param userInfo the user who will receive the event
+     * @param event    the event to send
+     */
+    public void sendGameEvent(UserInfo userInfo, GameEvent event) {
+        executorService.submit(() -> {
+            ServerPrinter.displayDebug("Sending a " + event.getClass().getName() + " to " + userInfo);
+
+            Client client = connectedPlayers.get(userInfo);
+            if (client.getStatus() == Status.IN_GAME) {
+                try {
+                    client.transmitEvent(event);
+                } catch (IOException e) {
+                    client.setStatus(Status.DISCONNETED_FROM_GAME);
+                    ServerPrinter.displayDebug("Could not send " + event.getClass().getName() + " to " + userInfo);
+                }
+            }
+        });
+    }
+
 }

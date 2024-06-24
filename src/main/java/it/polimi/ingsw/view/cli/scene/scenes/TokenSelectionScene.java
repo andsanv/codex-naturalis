@@ -4,8 +4,6 @@ import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.cli.CLI;
@@ -20,8 +18,8 @@ public class TokenSelectionScene extends Scene {
     public TokenSelectionScene(SceneManager sceneManager) {
         super(sceneManager);
 
-        this.commandsDescription = "Available token options (if not already selected) are:";
         this.commands = Arrays.asList(
+                new CLICommand("list", "to print available tokens", null),
                 new CLICommand("blue", "to select the blue token", null),
                 new CLICommand("green", "to select the green token", null),
                 new CLICommand("red", "to select the red token", null),
@@ -43,15 +41,23 @@ public class TokenSelectionScene extends Scene {
 
     @Override
     public void handleCommand(String[] args) {
-        if (args.length != 1 || Arrays.asList(PlayerToken.values()).stream()
-                .map(PlayerToken::toString)
-                .noneMatch(t -> args[1].equalsIgnoreCase(t)))
-            CLIPrinter.displayError("Invalid option");
-
-        PlayerToken token = PlayerToken.valueOf(args[1]);
-
         CLI cli = sceneManager.cli;
         ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+        if (args.length != 1)
+            CLIPrinter.displayError("Invalid option");
+
+        if (args[0].equalsIgnoreCase("list")) {
+            cli.getAvailableTokens().forEach(System.out::println);
+            return;
+        }
+
+        if (Arrays.asList(PlayerToken.values()).stream()
+                .map(PlayerToken::toString)
+                .noneMatch(t -> args[0].equalsIgnoreCase(t)))
+            CLIPrinter.displayError("Invalid option");
+
+        PlayerToken token = PlayerToken.valueOf(args[0]);
 
         if (!sceneManager.cli.isTokenAvailable(token)) {
             CLIPrinter.displayError(token + " token already selected by another player.");
@@ -59,9 +65,17 @@ public class TokenSelectionScene extends Scene {
         }
 
         if (!CLIPrinter.displayLoadingMessage("Selecting " + token.toString().toLowerCase() + " token",
-                cli.waitingTokenSelection, connectionHandler.isConnected, null)) {
+                cli.waitingGameEvent, connectionHandler.isConnected, cli.lastGameError)) {
             sceneManager.transition(ConnectionLostScene.class);
             return;
         }
+
+        if (!CLIPrinter.displayLoadingMessage("Waiting for all users to select their token",
+                cli.waitingGameEvent, connectionHandler.isConnected, cli.lastGameError)) {
+            sceneManager.transition(ConnectionLostScene.class);
+            return;
+        }
+
+        sceneManager.transition(StarterCardScene.class);
     }
 }
