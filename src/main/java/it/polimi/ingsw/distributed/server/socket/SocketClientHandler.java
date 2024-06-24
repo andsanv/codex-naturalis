@@ -5,6 +5,7 @@ import it.polimi.ingsw.controller.server.ServerPrinter;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.commands.game.MessageCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
@@ -68,7 +69,13 @@ public class SocketClientHandler extends Client implements Runnable {
           if (gameFlowManager == null) {
             ServerPrinter.displayError("GameFlowManager not set");
           }
-          gameFlowManager.addCommand((GameCommand) command);
+
+          GameCommand gameCommand = (GameCommand) command;
+
+          if(gameCommand instanceof MessageCommand)
+            gameCommand.execute(gameFlowManager);
+          else
+            gameFlowManager.addCommand(gameCommand);
         } else if (command instanceof MainCommand) {
           ((MainCommand) command).execute();
         } else {
