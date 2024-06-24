@@ -202,7 +202,8 @@ public class TempGameController {
                     put(PlayerToken.YELLOW, 88);
                 }},
                 new ArrayList<>(Arrays.asList(89, 101)),
-                new ArrayList<>(Arrays.asList(new Pair<>(false, 17), new Pair<>(false, 5), new Pair<>(false, null), new Pair<>(false, null))),
+                new ArrayList<>(Arrays.asList(12, 34, 7, 5, 10, 23, 24)),
+                new ArrayList<>(Arrays.asList(52, 44, 67, 75, 40, 63, 64)),
                 new Pair<>(30, 31),
                 new Pair<>(8, 18),
                 new HashMap<>() {{
@@ -301,13 +302,13 @@ public class TempGameController {
 
         // resource deck
         resourceDeckImageView.setImage(getCardImage(
-                slimGameModel.decks.get(0).first ? DEFAULT_OBJECTIVE_CARD_ID : slimGameModel.decks.get(0).second, CardSide.BACK
+                !slimGameModel.resourceDeck.isEmpty() ? slimGameModel.resourceDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
         resourceDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // gold deck
         goldDeckImageView.setImage(getCardImage(
-                slimGameModel.decks.get(1).first ? DEFAULT_OBJECTIVE_CARD_ID : slimGameModel.decks.get(1).second, CardSide.BACK
+                !slimGameModel.goldDeck.isEmpty() ? slimGameModel.goldDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
         goldDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
@@ -392,7 +393,7 @@ public class TempGameController {
             initializeGridPane(gridPane);
             gridPane.setOnDragOver(this::handleDragOver);
             gridPane.setOnDragDropped(this::handleHandDragDropped);
-            gridPane.setGridLinesVisible(true);
+            gridPane.setGridLinesVisible(false);
 
             scrollPane.setContent(gridPane);
 
@@ -769,16 +770,39 @@ public class TempGameController {
         cardImageView.setDisable(false);
     }
 
+    /**
+     * Handles the click on a deck.
+     * Removes the card from the deck and adds the card to the hand, updating their corresponding ImageView
+     * Requires correct turn, deck not empty and an available slot in the hand.
+     *
+     * @param mouseEvent click MouseEvent
+     */
     public void handleDeckMouseClicked(MouseEvent mouseEvent) {
-        Pair<ImageView, Integer> deckClicked;
+        ImageView deckImageView;
+        List<Integer> deck;
 
-        if (Objects.equals(mouseEvent.getTarget(), resourceDeckImageView)) deckClicked = new Pair<>(resourceDeckImageView, 0);
-        else if (Objects.equals(mouseEvent.getTarget(), goldDeckImageView)) deckClicked = new Pair<>(goldDeckImageView, 1);
+        if (Objects.equals(mouseEvent.getTarget(), resourceDeckImageView)) {
+            deckImageView = resourceDeckImageView;
+            deck = slimGameModel.resourceDeck;
+        }
+        else if (Objects.equals(mouseEvent.getTarget(), goldDeckImageView)) {
+            deckImageView = goldDeckImageView;
+            deck = slimGameModel.goldDeck;
+        }
         else throw new RuntimeException("Unsupported deck");
 
-        if (slimGameModel.decks.get(deckClicked.second).first) throw new RuntimeException("Deck is empty");
+        if (deck.isEmpty()) throw new RuntimeException("Deck is empty");
 
-        deckClicked.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-        bringCardToHand(slimGameModel.decks.get(deckClicked.second).second);
+        int drawnCardId = deck.removeLast();
+
+        if (deck.isEmpty()) {
+            deckImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+            deckImageView.setDisable(true);
+        }
+        deckImageView.setImage(getCardImage(
+                deck.isEmpty() ? DEFAULT_OBJECTIVE_CARD_ID : deck.getLast(), CardSide.BACK
+        ));
+
+        bringCardToHand(drawnCardId);
     }
 }
