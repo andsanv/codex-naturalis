@@ -27,6 +27,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class TempGameController {
@@ -111,6 +112,15 @@ public class TempGameController {
 
     @FXML
     public HBox currentHandHBox;
+
+
+    public Pair<ImageView, List<Integer>> resourceDeck;
+    public Pair<ImageView, List<Integer>> goldDeck;
+    public Pair<Pair<ImageView, AtomicInteger>, Pair<ImageView, AtomicInteger>> resourceVisibleList;
+    public Pair<Pair<ImageView, AtomicInteger>, Pair<ImageView, AtomicInteger>> goldVisibleList;
+
+    Map<ImageView, AtomicInteger> visibleSlotToCardId;
+    Map<ImageView, Pair<ImageView, List<Integer>>> visibleSlotToDeck;  // from visible list to its deck
 
     public Text animalResourcesCounter;
     public Text plantResourcesCounter;
@@ -213,6 +223,17 @@ public class TempGameController {
                 }}
         );
 
+        resourceDeck = new Pair<>(resourceDeckImageView, slimGameModel.resourceDeck);
+
+        goldDeck = new Pair<>(goldDeckImageView, slimGameModel.goldDeck);
+
+        visibleSlotToDeck = new HashMap<>() {{
+            put(firstResourceImageView, resourceDeck);
+            put(secondResourceImageView, resourceDeck);
+            put(firstGoldImageView, goldDeck);
+            put(secondGoldImageView, goldDeck);
+        }};
+
         rawCellDimension = new Pair<>(774.0, 397.0);
         rawCardDimension = new Pair<>(993.0, 662.0);
 
@@ -254,7 +275,6 @@ public class TempGameController {
         defaultStarterCardView.setFitHeight(rawCardDimension.second * cardCompressionFactor);
 
         currentGridPane.add(stackPane, 40, 40);
-
 
         initializeAllPlayers();
 
@@ -314,11 +334,15 @@ public class TempGameController {
 
         // resource visible
         firstResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.first, CardSide.FRONT));
+        firstResourceImageView.setOnMouseClicked(this::handleDeckMouseClicked);
         secondResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.second, CardSide.FRONT));
+        secondResourceImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // gold visible
         firstGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.first, CardSide.FRONT));
+        firstGoldImageView.setOnMouseClicked(this::handleDeckMouseClicked);
         secondGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.second, CardSide.FRONT));
+        secondGoldImageView.setOnMouseClicked(this::handleDeckMouseClicked);
     }
 
     public void initializePlayersList(List<UserInfo> players) {
@@ -804,5 +828,58 @@ public class TempGameController {
         ));
 
         bringCardToHand(drawnCardId);
+    }
+
+    /**
+     * Handles the click on a visible card.
+     * Puts the card in the player's hand, and takes a new card if the corresponding deck is not empty.
+     * Requires correct turn and a non-null slot.
+     *
+     * @param mouseEvent the clicked MouseEvent
+     */
+    public void handleVisibleListMouseClicked(MouseEvent mouseEvent) {
+        ImageView visibleSlotImageView = (ImageView) mouseEvent.getTarget();
+
+        if (visibleSlotToCardId.get(visibleSlotImageView) == null) throw new RuntimeException("No card");
+        if (!visibleSlotToDeck.containsKey(visibleSlotImageView)) throw new RuntimeException("Cannot find corresponding deck");
+
+        Pair<ImageView, List<Integer>> deck = visibleSlotToDeck.get(visibleSlotImageView);
+
+        bringCardToHand(visibleSlotToCardId.get(visibleSlotImageView).get());
+
+        if (deck.second.isEmpty()) {
+            visibleSlotImageView.setDisable(true);
+            visibleSlotImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+
+            return;
+        }
+
+        Integer nextCard = popCardFromDeck(deck);
+
+        visibleSlotToCardId.get(visibleSlotImageView).set(nextCard);
+        visibleSlotImageView.setImage(getCardImage(nextCard, CardSide.BACK));
+    }
+
+    /**
+     * Allows to pop a card from the deck structure.
+     * Updates all corresponding objects.
+     *
+     * @param deck deck from which to draw
+     * @return the card drawn
+     */
+    public Integer popCardFromDeck(Pair<ImageView, List<Integer>> deck) {
+        if (deck.second.isEmpty()) throw new RuntimeException("Deck is empty");
+
+        int drawnCardId = deck.second.removeLast();
+
+        if (deck.second.isEmpty()) {
+            deck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+            deck.first.setDisable(true);
+        }
+        deck.first.setImage(getCardImage(
+                deck.second.isEmpty() ? DEFAULT_OBJECTIVE_CARD_ID : deck.second.getLast(), CardSide.BACK
+        ));
+
+        return drawnCardId;
     }
 }
