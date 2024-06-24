@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.cli;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -155,11 +156,31 @@ public class CLI implements UI {
     public final AtomicReference<List<UserInfo>> usersInGame = new AtomicReference<>(null);
 
     /**
-     * List of available player tokens
+     * Mapping between players and tokens
      */
-    public final AtomicReference<List<PlayerToken>> availableTokens = new AtomicReference<>(
-            Arrays.asList(PlayerToken.values()));
+    private Map<PlayerToken, UserInfo> tokenToUser = new HashMap<>();
 
+    /**
+     * Object for synchronizing access to the map tokenToUser
+     */
+    public final Object tokenToUserLock = new Object();
+
+    /**
+     * Thread-safe boolean that is true if the user asked to use a certain token and
+     * is waiting for confirmation by the server.
+     */
+    public final AtomicBoolean waitingTokenSelection = new AtomicBoolean(false);
+
+    /**
+     * Token that the player tried to select.
+     */
+    public final AtomicReference selectedToken = new AtomicReference<>(null);
+
+    /**
+     * Cli private constructor, can only be called by the main static method in this
+     * class.
+     * Inits helper threads and creates the needed scenes.
+     */
     private CLI() {
         /*
          * Register scenes in the SceneManager
@@ -229,8 +250,22 @@ public class CLI implements UI {
      * Method called when the game ends.
      */
     public void resetAttributesAfterMatch() {
-        availableTokens.set(Arrays.asList(PlayerToken.values()));
-        
+        // Reset the token to user map
+        synchronized (tokenToUserLock) {
+            tokenToUser = new HashMap<>();
+        }
+
+    }
+
+    /**
+     * Checks if the given token is available
+     * 
+     * @return true if the token is available for selection
+     */
+    public boolean isTokenAvailable(PlayerToken token) {
+        synchronized (tokenToUserLock) {
+            return !tokenToUser.containsKey(token);
+        }
     }
 
     /**
@@ -383,8 +418,13 @@ public class CLI implements UI {
 
     @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleTokenAssignmentEvent'");
+        synchronized (tokenToUserLock) {
+            tokenToUser.put(assignedToken, player);
+        }
+
+        if (assignedToken == selectedToken.get()) {
+            waitingTokenSelection.set(false);
+        }
     }
 
     @Override
