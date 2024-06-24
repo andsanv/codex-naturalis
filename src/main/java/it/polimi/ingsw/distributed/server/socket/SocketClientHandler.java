@@ -123,7 +123,7 @@ public class SocketClientHandler extends Client implements Runnable {
    */
   public void setGameFlowManager(GameFlowManager gameFlowManager) {
     this.gameFlowManager = gameFlowManager;
-    ServerPrinter.displayInfo("GameFlowManager set");
+    ServerPrinter.displayDebug("GameFlowManager set");
   }
 
   /**

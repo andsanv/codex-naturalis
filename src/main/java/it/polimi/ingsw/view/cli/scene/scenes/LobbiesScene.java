@@ -129,7 +129,7 @@ public class LobbiesScene extends Scene {
                             connectionHandler.isConnected, cli.startingGameError)) {
                         // If the game was started
                         if (cli.inGame.get())
-                            sceneManager.transition(null); // TODO transition to game scene
+                            sceneManager.transition(TokenSelectionScene.class); // TODO transition to game scene
                     } else
                         sceneManager.transition(ConnectionLostScene.class);
                 }));

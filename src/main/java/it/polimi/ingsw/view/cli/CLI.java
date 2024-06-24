@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.cli;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -23,6 +24,7 @@ import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
+import it.polimi.ingsw.view.cli.scene.scenes.TokenSelectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
@@ -30,6 +32,16 @@ public class CLI implements UI {
     public static void main(String[] args) {
         new CLI();
     }
+
+    /**
+     * Volatile boolean to use when reading input
+     */
+    private volatile boolean readingInput = false;
+
+    /**
+     * Thread for handling user input
+     */
+    private Thread userInputThread;
 
     /**
      * The connection handler used to communicate with the server
@@ -137,6 +149,17 @@ public class CLI implements UI {
      */
     public final AtomicBoolean inGame = new AtomicBoolean(false);
 
+    /**
+     * List of players in the match.
+     */
+    public final AtomicReference<List<UserInfo>> usersInGame = new AtomicReference<>(null);
+
+    /**
+     * List of available player tokens
+     */
+    public final AtomicReference<List<PlayerToken>> availableTokens = new AtomicReference<>(
+            Arrays.asList(PlayerToken.values()));
+
     private CLI() {
         /*
          * Register scenes in the SceneManager
@@ -146,6 +169,7 @@ public class CLI implements UI {
         sceneManager.registerScene(new UserInfoLoginScene(sceneManager));
         sceneManager.registerScene(new AccountScene(sceneManager));
         sceneManager.registerScene(new LobbiesScene(sceneManager));
+        sceneManager.registerScene(new TokenSelectionScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -154,17 +178,59 @@ public class CLI implements UI {
         sceneManager.start();
 
         /*
-         * Thread for handling the user input
+         * Start the user input thread
+         */
+        startUserInputHandler();
+
+        /*
+         * Thread for stopping user input if conditions are met
          */
         new Thread(() -> {
-            while (sceneManager.isRunning.get()) {
-                System.out.print("> ");
-                System.out.flush();
-                String input = scanner.nextLine();
-                sceneManager.handleInput(input);
+            while (true) {
+                if (readingInput && inGame.get()) {
+                    inGame.set(false);
+                    userInputThread.interrupt();
+                    sceneManager.transition(TokenSelectionScene.class);
+                    startUserInputHandler();
+                }
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Handles user input and can be safely interrupted
+     */
+    private void startUserInputHandler() {
+        userInputThread = new Thread(() -> {
+            try {
+                while (sceneManager.isRunning.get()) {
+                    System.out.print("> ");
+                    System.out.flush();
+                    readingInput = true;
+                    String input = scanner.nextLine();
+                    readingInput = false;
+                    sceneManager.handleInput(input);
+                }
+            } catch (Exception e) {
+                // Thread is volountarily stopped
             }
             scanner.close();
-        }).start();
+        });
+
+        userInputThread.start();
+    }
+
+    /**
+     * Method called when the game ends.
+     */
+    public void resetAttributesAfterMatch() {
+        availableTokens.set(Arrays.asList(PlayerToken.values()));
+        
     }
 
     /**
@@ -467,7 +533,8 @@ public class CLI implements UI {
 
     @Override
     public void handleGameStartedEvent(List<UserInfo> users) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGameStarted'");
+        this.startingGame.set(false);
+        this.inGame.set(true);
+        this.usersInGame.set(users);
     }
 }
