@@ -452,4 +452,16 @@ public class CLI implements UI {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
     }
+
+    @Override
+    public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handlePlayerTurnEvent'");
+    }
+
+    @Override
+    public void handleLastRoundEvent() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleLastRoundEvent'");
+    }
 }
