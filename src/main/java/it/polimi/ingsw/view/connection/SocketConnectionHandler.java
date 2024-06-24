@@ -55,6 +55,8 @@ public class SocketConnectionHandler extends ConnectionHandler {
     this.outputStream.flush();
     this.inputStream = new ObjectInputStream(socket.getInputStream());
 
+    this.isConnected.set(true);
+
     // System.out.println("Connected to server and set up streams");
 
     createListenerThread();
@@ -90,9 +92,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
             } catch (IOException e) {
               this.isConnected.set(false);
+              this.close();
               break;
             } catch (ClassNotFoundException e) {
               this.isConnected.set(false);
+              this.close();
               break;
             }
           }
@@ -114,6 +118,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
     if (userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand)
         && !(command instanceof ConnectionCommand)) {
       this.isConnected.set(false);
+      this.close();
       return false;
     }
     try {
@@ -121,6 +126,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
       outputStream.reset();
     } catch (IOException e) {
       this.isConnected.set(false);
+      this.close();
       return false;
     }
 
@@ -139,6 +145,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
   public boolean sendToGameServer(GameCommand command) {
     if (userInterface.getUserInfo() == null) {
       this.isConnected.set(false);
+      this.close();
       return false;
     }
     try {
@@ -146,6 +153,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
       outputStream.reset();
     } catch (IOException e) {
       this.isConnected.set(false);
+      this.close();
       return false;
     }
 
@@ -179,6 +187,8 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
       this.inputStream = new ObjectInputStream(socket.getInputStream());
 
+      this.isConnected.set(true);
+
       sendToMainServer(reconnectionCommand);
 
       new Thread(() -> {
@@ -205,23 +215,25 @@ public class SocketConnectionHandler extends ConnectionHandler {
             }
 
           } catch (IOException e) {
-            // System.err.println("Failed to receive event");
-            // System.err.println("Server probably disconnected");
+            this.isConnected.set(false);
+            this.close();
             e.printStackTrace();
             
             break;
           } catch (ClassNotFoundException e) {
-            // System.err.println("Failed to decode event");
+            this.isConnected.set(false);
+            this.close();
             e.printStackTrace();
+
+            break;
           }
         }
 
-        while (!events.isEmpty()) {
+        while (!events.isEmpty() && this.isConnected.get()) {
           Event event = events.poll();
           // System.out.println("Queued event: " + event);
-          if (event instanceof KeepAliveEvent) {
-            ;
-          } else if (event instanceof GameEvent) {
+
+          if (event instanceof GameEvent) {
             GameEvent gameEvent = (GameEvent) event;
             gameEvent.execute(userInterface);
           } else if (event instanceof MainEvent) {
@@ -233,22 +245,23 @@ public class SocketConnectionHandler extends ConnectionHandler {
           try {
             Thread.sleep(100);
           } catch (InterruptedException e) {
-            e.printStackTrace();
+            this.isConnected.set(false);
+            this.close();
           }
         }
 
-        createListenerThread();
+        if(this.isConnected.get())
+          createListenerThread();
 
       }).start();
 
     } catch (IOException e) {
-      e.printStackTrace();
-      // System.err.println("Failed to reconnect to server");
       this.isConnected.set(false);
+      this.close();
       return false;
     }
 
-    return true;
+    return this.isConnected.get();
   }
 
   /**

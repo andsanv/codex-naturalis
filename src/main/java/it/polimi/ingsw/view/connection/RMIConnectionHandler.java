@@ -143,22 +143,23 @@ public class RMIConnectionHandler extends ConnectionHandler {
         try {
           Thread.sleep(500);
         } catch (InterruptedException e) {
+
         }
 
       } catch (IOException e) {
-        e.printStackTrace();
+        this.isConnected.set(false);
         return false;
       }
     } else {
       try {
         mainServerActions.transmitCommand(mainCommand);
-        return true;
       } catch (Exception e) {
-        e.printStackTrace();
+        this.isConnected.set(false);
+        return false;
       }
     }
 
-    return false;
+    return true;
   }
 
   /**
@@ -172,13 +173,13 @@ public class RMIConnectionHandler extends ConnectionHandler {
     try {
       if (gameServerActions != null) {
         gameServerActions.transmitCommand(gameCommand);
-        return true;
       }
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
     }
 
-    return false;
+    return true;
   }
 
   /**
