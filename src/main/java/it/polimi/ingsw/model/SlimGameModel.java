@@ -31,7 +31,7 @@ public class SlimGameModel implements Serializable {
     /**
      * Map to keep track of each player's hand.
      */
-    public final Map<PlayerToken, Trio<Integer, Integer, Integer>> tokenToHand;
+    public final Map<PlayerToken, List<Integer>> tokenToHand;
 
     /**
      * Map that keeps track of elements for every player.
@@ -64,13 +64,13 @@ public class SlimGameModel implements Serializable {
      * Structure to keep track of the ids of the cards in the visible resource card
      * list.
      */
-    public final Pair<AtomicInteger, AtomicInteger> visibleResourceCardsList;
+    public final List<Integer> visibleResourceCardsList;
 
     /**
      * Structure to keep track of the ids of the cards in the visible gold card
      * list.
      */
-    public final Pair<AtomicInteger, AtomicInteger> visibleGoldCardsList;
+    public final List<Integer> visibleGoldCardsList;
 
     /**
      * Map to keep track of the scoreboard.
@@ -85,22 +85,22 @@ public class SlimGameModel implements Serializable {
      * @param commonObjectives         list of common objectives
      * @param resourceDeck             list with ids of cards in the resource deck
      * @param goldDeck                 list with ids of cards in the gold deck
-     * @param visibleResourceCardsList pair of the two cards in the visible resource
+     * @param visibleResourceCardsList list of the two cards in the visible resource
      *                                 cards list
-     * @param visibleGoldCardsList     pair of the two cards in the visible gold
+     * @param visibleGoldCardsList     list of the two cards in the visible gold
      *                                 cards list
      * @param scores                   map from token to his score
      */
     public SlimGameModel(
             Map<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> tokenToPlayedCards,
-            Map<PlayerToken, Trio<Integer, Integer, Integer>> tokenToHand,
+            Map<PlayerToken, List<Integer>> tokenToHand,
             Map<PlayerToken, Map<Elements, Integer>> tokenToElements,
             Map<PlayerToken, Integer> tokenToSecretObjective,
             List<Integer> commonObjectives,
             List<Integer> resourceDeck,
             List<Integer> goldDeck,
-            Pair<AtomicInteger, AtomicInteger> visibleResourceCardsList,
-            Pair<AtomicInteger, AtomicInteger> visibleGoldCardsList,
+            List<Integer> visibleResourceCardsList,
+            List<Integer> visibleGoldCardsList,
             Map<PlayerToken, Integer> scores) {
         this.tokenToPlayedCards = tokenToPlayedCards;
         this.tokenToHand = tokenToHand;
