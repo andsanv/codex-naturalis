@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.distributed.events.game.CardsPlayabilityEvent;
@@ -198,9 +199,9 @@ public class GameModelUpdater {
   public SlimGameModel getSlimGameModel() {
     Map<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> tokenToPlayedCards = gameModel.tokenToPlayer.entrySet().stream()
       .collect(Collectors.toMap(
-        x -> x.getKey(),
+        Map.Entry::getKey,
         x -> x.getValue().playerBoard.cardsPlacementOrder.entrySet().stream().collect(Collectors.toMap(
-          y -> y.getKey(),
+          Map.Entry::getKey,
           y -> new Trio<>(
             y.getValue().first.id,
             y.getValue().first.getPlayedSide(),
@@ -222,7 +223,7 @@ public class GameModelUpdater {
     Map<PlayerToken, Map<Elements, Integer>> tokenToElements = gameModel.tokenToPlayer.entrySet().stream()
       .collect(Collectors.toMap(
         Map.Entry::getKey,
-        x -> new HashMap<Elements, Integer>(x.getValue().playerBoard.playerElements)
+        x -> new HashMap<>(x.getValue().playerBoard.playerElements)
       ));
 
     Map<PlayerToken, Integer> tokenToSecretObjective = gameModel.tokenToPlayer.entrySet().stream()
@@ -237,14 +238,14 @@ public class GameModelUpdater {
 
     List<Integer> goldDeck = gameModel.goldCardsDeck.asListOfIds();
 
-    Pair<Integer,Integer> visibleResourceCardsList = new Pair<>(
-      gameModel.visibleResourceCards.getCards().get(0) != null ? gameModel.visibleResourceCards.getCards().get(0).id : null,
-      gameModel.visibleResourceCards.getCards().get(1) != null ? gameModel.visibleResourceCards.getCards().get(1).id : null
+    Pair<AtomicInteger, AtomicInteger> visibleResourceCardsList = new Pair<>(
+      gameModel.visibleResourceCards.getCards().get(0) != null ? new AtomicInteger(gameModel.visibleResourceCards.getCards().get(0).id) : null,
+      gameModel.visibleResourceCards.getCards().get(1) != null ? new AtomicInteger(gameModel.visibleResourceCards.getCards().get(1).id) : null
     );
 
-    Pair<Integer,Integer> visibleGoldCardsList = new Pair<>(
-      gameModel.visibleGoldCards.getCards().get(0) != null ? gameModel.visibleGoldCards.getCards().get(0).id : null,
-      gameModel.visibleGoldCards.getCards().get(1) != null ? gameModel.visibleGoldCards.getCards().get(1).id : null
+    Pair<AtomicInteger, AtomicInteger> visibleGoldCardsList = new Pair<>(
+      gameModel.visibleGoldCards.getCards().get(0) != null ? new AtomicInteger(gameModel.visibleGoldCards.getCards().get(0).id) : null,
+      gameModel.visibleGoldCards.getCards().get(1) != null ? new AtomicInteger(gameModel.visibleGoldCards.getCards().get(1).id) : null
     );
 
     Map<PlayerToken, Integer> scores = gameModel.scoreTrack.getScores();

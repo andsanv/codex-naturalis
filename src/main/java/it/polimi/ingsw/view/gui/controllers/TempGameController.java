@@ -7,7 +7,6 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
-import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.util.Trio;
@@ -31,127 +30,119 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class TempGameController {
-    public Pair<Integer, Integer> screenResolution;
-    public double screenRatio;
+    /* DIMENSIONS AND CONSTANTS */
+    // screen
+    public final Pair<Integer, Integer> screenResolution = new Pair<>(1440, 900);
+    public final double screenRatio = 0.01 * ((double) (100 * screenResolution.first) / screenResolution.second);;
 
-    public Pair<Double, Double> rawCellDimension;
-    public Pair<Double, Double> rawCardDimension;
-    public double targetCellWidth;
-    public Pair<Double, Double> adjustedCellDimensions;
-    public Pair<Double, Double> adjustedCardDimensions;
-    public double cardCompressionFactor;    // target = 100 --> 0.1292, target = 200 -> 0.2584
+    // zoom
+    private double currentZoomScale = 1;
+    private final double zoomIncrement = 0.1;
 
-    public Integer DEFAULT_OBJECTIVE_CARD_ID = 86;
-    public Integer DEFAULT_STARTER_CARD_ID = 86; // TODO image of empty starter card back
+    // cells and cards
+    public final Pair<Double, Double> rawCellDimensions = new Pair<>(774.0, 397.0);;
+    public final Pair<Double, Double> rawCardDimensions = new Pair<>(993.0, 662.0);;
+    public final double targetCellWidth = 100;
+    public final double cardCompressionFactor = targetCellWidth / rawCellDimensions.first;    // target = 100 --> 0.1292, target = 200 -> 0.2584
+    public final Pair<Double, Double> adjustedCellDimensions = new Pair<>(rawCellDimensions.first * cardCompressionFactor, rawCellDimensions.second * cardCompressionFactor);
+    public final Pair<Double, Double> adjustedCardDimensions = new Pair<>(rawCardDimensions.first * cardCompressionFactor, rawCardDimensions.second * cardCompressionFactor);
+    public final Pair<Integer, Integer> gridCellsCount = new Pair<>(81, 81);
 
+    public final Integer DEFAULT_OBJECTIVE_CARD_ID = 86;
+
+
+    /* GRAPHIC STRUCTURE */
+    // fixed
+    @FXML public AnchorPane mainAnchorPane;
+    @FXML public StackPane mainStackPane;
+    @FXML public TabPane leftTabPane;
+    @FXML public TabPane rightTabPane;
+    @FXML public Button leftPanelButton;
+    @FXML public Button rightPanelButton;
+
+    // dynamic
+    @FXML public ScrollPane currentScrollPane;
+    @FXML public GridPane currentGridPane;
+    @FXML public HBox currentHandHBox;
+
+    // in-game objects
+    @FXML public VBox playersList;
+
+    @FXML public ImageView resourceDeckImageView;
+    @FXML public ImageView firstResourceImageView;
+    @FXML public ImageView secondResourceImageView;
+    @FXML public ImageView goldDeckImageView;
+    @FXML public ImageView firstGoldImageView;
+    @FXML public ImageView secondGoldImageView;
+
+    @FXML public ImageView firstObjectiveSlot;
+    @FXML public ImageView secondObjectiveSlot;
+    @FXML public ImageView secretObjectiveSlot;
+
+    // in-game elements
+    @FXML public Text animalResourcesCounter;
+    @FXML public Text plantResourcesCounter;
+    @FXML public Text fungiResourcesCounter;
+    @FXML public Text insectResourcesCounter;
+    @FXML public Text manuscriptItemsCounter;
+    @FXML public Text inkwellItemsCounter;
+    @FXML public Text quillItemsCounter;
+
+
+    /* NETWORK */
     public List<UserInfo> players;
     public Map<UserInfo, PlayerToken> userInfoToToken;
     public SlimGameModel slimGameModel;
 
-    public List<Integer> commonObjectives;
 
-    public ImageView firstObjectiveSlot;
-    public ImageView secondObjectiveSlot;
-    public ImageView secretObjectiveSlot;
+    /* GAME FLOW */
+    public PlayerToken selfPlayerToken;
+    public PlayerToken currentPlayerToken;
+    public Map<PlayerToken, ScrollPane> tokenToScrollPane = new HashMap<>();
+    public Map<PlayerToken, HBox> tokenToHandHBox = new HashMap<>();
 
-    private double zoomScale;
-    private double zoomIncrement;
 
-    // to handle mouse drag
+    /* HELPERS */
+    // card click
+    public Timer cardClickTimer;
+    public boolean cardClickTimerExpired;
+    public long cardClickDelay = 125;
+
+    // mouse drag
     private double dragStartX;
     private double dragStartY;
 
-    private Integer selectedCard;
-
-    @FXML
-    public AnchorPane mainAnchorPane;
-
-    @FXML
-    public StackPane mainStackPane;
-
-    @FXML
-    public TabPane leftTabPane;
-
-    @FXML
-    public TabPane rightTabPane;
-
-    @FXML
-    public Button leftPanelButton;
-
-    @FXML
-    public Button rightPanelButton;
-
-    @FXML
-    public ImageView resourceDeckImageView;
-
-    @FXML
-    public ImageView firstResourceImageView;
-
-    @FXML
-    public ImageView secondResourceImageView;
-
-    @FXML
-    public ImageView goldDeckImageView;
-
-    @FXML
-    public ImageView firstGoldImageView;
-
-    @FXML
-    public ImageView secondGoldImageView;
-
-    @FXML
-    public VBox playersList;
-
-    public PlayerToken currentPlayerToken;
-
-    @FXML
-    public ScrollPane currentScrollPane;
-
-    @FXML
-    public GridPane currentGridPane;
-
-    @FXML
-    public HBox currentHandHBox;
-
-
+    // miscellaneous structures
     public Pair<ImageView, List<Integer>> resourceDeck;
     public Pair<ImageView, List<Integer>> goldDeck;
     public Pair<Pair<ImageView, AtomicInteger>, Pair<ImageView, AtomicInteger>> resourceVisibleList;
     public Pair<Pair<ImageView, AtomicInteger>, Pair<ImageView, AtomicInteger>> goldVisibleList;
 
+    Map<ImageView, Pair<ImageView, List<Integer>>> deckViewToDeck;
     Map<ImageView, AtomicInteger> visibleSlotToCardId;
     Map<ImageView, Pair<ImageView, List<Integer>>> visibleSlotToDeck;  // from visible list to its deck
-
-    public Text animalResourcesCounter;
-    public Text plantResourcesCounter;
-    public Text fungiResourcesCounter;
-    public Text insectResourcesCounter;
-
-    public Text manuscriptItemsCounter;
-    public Text inkwellItemsCounter;
-    public Text quillItemsCounter;
-
-    public PlayerToken selfPlayerToken;
 
     public Trio<CardSide, CardSide, CardSide> visibleHandCardsSides;
     public List<Coords> cardsPlayability;
 
-    public Timer cardClickTimer;
-    public boolean cardClickTimerExpired;
-    public long cardClickDelay = 100;
 
-    public Map<PlayerToken, ScrollPane> tokenToScrollPane = new HashMap<>();
-    public Map<PlayerToken, HBox> tokenToHandHBox = new HashMap<>();
 
-    private Pair<Integer, Integer> gridCellsCount;
-
+    /**
+     * Method to call to initialize the controller and the scene.
+     * Sets up all needed structures, panes, and objects.
+     *
+     * @param gui the main application
+     * @throws InterruptedException if initialization is interrupted
+     */
     public void initialize(GUI gui) throws InterruptedException {
-        screenResolution = new Pair<>(1440, 900);
-        screenRatio =  0.01 * ((double) (100 * screenResolution.first) / screenResolution.second);
+        // build default view
 
+
+        // simulating game setup phase
         UserInfo firstUserInfo = new UserInfo(new User("Andrea"));
         UserInfo secondUserInfo = new UserInfo(new User("Maradona"));
         UserInfo thirdUserInfo = new UserInfo(new User("John"));
+
         players = new ArrayList<>(Arrays.asList(firstUserInfo, secondUserInfo, thirdUserInfo));
 
         userInfoToToken = new HashMap<>() {{
@@ -214,8 +205,8 @@ public class TempGameController {
                 new ArrayList<>(Arrays.asList(89, 101)),
                 new ArrayList<>(Arrays.asList(12, 34, 7, 5, 10, 23, 24)),
                 new ArrayList<>(Arrays.asList(52, 44, 67, 75, 40, 63, 64)),
-                new Pair<>(30, 31),
-                new Pair<>(8, 18),
+                new Pair<>(new AtomicInteger(30), new AtomicInteger(31)),
+                new Pair<>(new AtomicInteger(8), new AtomicInteger(18)),
                 new HashMap<>() {{
                     put(PlayerToken.RED, 0);
                     put(PlayerToken.BLUE, 0);
@@ -224,7 +215,6 @@ public class TempGameController {
         );
 
         resourceDeck = new Pair<>(resourceDeckImageView, slimGameModel.resourceDeck);
-
         goldDeck = new Pair<>(goldDeckImageView, slimGameModel.goldDeck);
 
         visibleSlotToDeck = new HashMap<>() {{
@@ -234,35 +224,17 @@ public class TempGameController {
             put(secondGoldImageView, goldDeck);
         }};
 
-        rawCellDimension = new Pair<>(774.0, 397.0);
-        rawCardDimension = new Pair<>(993.0, 662.0);
-
-        targetCellWidth = 100;
-        cardCompressionFactor = targetCellWidth / rawCellDimension.first;
-
-        adjustedCellDimensions = new Pair<>(rawCellDimension.first * cardCompressionFactor, rawCellDimension.second * cardCompressionFactor);
-        adjustedCardDimensions = new Pair<>(rawCardDimension.first * cardCompressionFactor, rawCardDimension.second * cardCompressionFactor);
-
-        gridCellsCount = new Pair<>(81, 81);
-
-        zoomScale = 1;
-        zoomIncrement = 0.1;
-
-        commonObjectives = Arrays.asList(DEFAULT_OBJECTIVE_CARD_ID, DEFAULT_OBJECTIVE_CARD_ID);
-
-        firstObjectiveSlot.setImage(new Image("images/cards/backs/" + commonObjectives.getFirst() + ".png"));
-        secondObjectiveSlot.setImage(new Image("images/cards/backs/" + commonObjectives.get(1) + ".png"));
-
-        secretObjectiveSlot.setImage(new Image("images/cards/backs/" + DEFAULT_OBJECTIVE_CARD_ID + ".png"));
+        firstObjectiveSlot.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+        secondObjectiveSlot.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+        secretObjectiveSlot.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
 
         initializeGridPane(currentGridPane);
         initializeScrollPane(currentScrollPane);
         initializePlayersList(players);
         initializeDecks();
 
-        String path = "images/miscellaneous/default_starter_card.png";
 
-        ImageView defaultStarterCardView = new ImageView(new Image(path));
+        ImageView defaultStarterCardView = new ImageView(new Image("images/miscellaneous/default_starter_card.png"));
         defaultStarterCardView.setEffect(new DropShadow());
 
         StackPane stackPane = new StackPane(defaultStarterCardView);
@@ -271,20 +243,20 @@ public class TempGameController {
         GridPane.setHalignment(stackPane, HPos.CENTER);
         GridPane.setValignment(stackPane, VPos.CENTER);
 
-        defaultStarterCardView.setFitWidth(rawCardDimension.first * cardCompressionFactor);
-        defaultStarterCardView.setFitHeight(rawCardDimension.second * cardCompressionFactor);
+        defaultStarterCardView.setFitWidth(rawCardDimensions.first * cardCompressionFactor);
+        defaultStarterCardView.setFitHeight(rawCardDimensions.second * cardCompressionFactor);
 
         currentGridPane.add(stackPane, 40, 40);
 
         initializeAllPlayers();
 
         selfPlayerToken = PlayerToken.RED;
-        currentPlayerToken = selfPlayerToken;
 
+        // simulate some turns
         handlePlayedCardEvent(PlayerToken.RED, 45, CardSide.FRONT, new Coords(1,1));
         handlePlayedCardEvent(PlayerToken.BLUE, 45, CardSide.FRONT, new Coords(-1,1));
 
-        visibleHandCardsSides = new Trio<>(CardSide.BACK, CardSide.FRONT, CardSide.BACK);
+        visibleHandCardsSides = new Trio<>(CardSide.BACK, CardSide.BACK, CardSide.BACK);
         cardsPlayability = new ArrayList<>(Arrays.asList(new Coords(1,1), new Coords(-1,-1)));
 
         switchPlayerView(PlayerToken.RED);
@@ -333,15 +305,15 @@ public class TempGameController {
         goldDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // resource visible
-        firstResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.first, CardSide.FRONT));
+        firstResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.first.get(), CardSide.FRONT));
         firstResourceImageView.setOnMouseClicked(this::handleDeckMouseClicked);
-        secondResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.second, CardSide.FRONT));
+        secondResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.second.get(), CardSide.FRONT));
         secondResourceImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // gold visible
-        firstGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.first, CardSide.FRONT));
+        firstGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.first.get(), CardSide.FRONT));
         firstGoldImageView.setOnMouseClicked(this::handleDeckMouseClicked);
-        secondGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.second, CardSide.FRONT));
+        secondGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.second.get(), CardSide.FRONT));
         secondGoldImageView.setOnMouseClicked(this::handleDeckMouseClicked);
     }
 
@@ -520,12 +492,12 @@ public class TempGameController {
      */
     private void zoom(double zoomIncrement) {
         // TODO
-        if(zoomScale + zoomIncrement < 0 || zoomScale + zoomIncrement > 2) return;
+        if(currentZoomScale + zoomIncrement < 0 || currentZoomScale + zoomIncrement > 2) return;
 
-        zoomScale += zoomIncrement;
+        currentZoomScale += zoomIncrement;
 
-        currentGridPane.setScaleX(zoomScale);
-        currentGridPane.setScaleY(zoomScale);
+        currentGridPane.setScaleX(currentZoomScale);
+        currentGridPane.setScaleY(currentZoomScale);
     }
 
     public void handlePlayedCardEvent(PlayerToken playerToken, Integer cardId, CardSide cardSide, Coords coords) {
@@ -663,12 +635,12 @@ public class TempGameController {
         }
 
         PixelReader reader = draggedCardImage.getPixelReader();
-        WritableImage resizedImage = new WritableImage((int) (double) (zoomScale * adjustedCardDimensions.first), (int) (double) (zoomScale * adjustedCardDimensions.second));
+        WritableImage resizedImage = new WritableImage((int) (double) (currentZoomScale * adjustedCardDimensions.first), (int) (double) (currentZoomScale * adjustedCardDimensions.second));
         PixelWriter writer = resizedImage.getPixelWriter();
 
-        for(int y = 0; y < (int) (double) (zoomScale * adjustedCardDimensions.second); y++)
-            for(int x = 0; x < (int) (double) (zoomScale * adjustedCardDimensions.first); x++)
-                writer.setArgb(x, y, reader.getArgb((int) (x / (cardCompressionFactor * zoomScale)), (int) (y / (cardCompressionFactor * zoomScale))));
+        for(int y = 0; y < (int) (double) (currentZoomScale * adjustedCardDimensions.second); y++)
+            for(int x = 0; x < (int) (double) (currentZoomScale * adjustedCardDimensions.first); x++)
+                writer.setArgb(x, y, reader.getArgb((int) (x / (cardCompressionFactor * currentZoomScale)), (int) (y / (cardCompressionFactor * currentZoomScale))));
 
         content.putImage(resizedImage);
         dragboard.setContent(content);
@@ -746,8 +718,8 @@ public class TempGameController {
         GridPane.setHgrow(stackPane, Priority.NEVER);
         GridPane.setVgrow(stackPane, Priority.NEVER);
 
-        cardImage.setFitWidth(rawCardDimension.first * cardCompressionFactor);
-        cardImage.setFitHeight(rawCardDimension.second * cardCompressionFactor);
+        cardImage.setFitWidth(rawCardDimensions.first * cardCompressionFactor);
+        cardImage.setFitHeight(rawCardDimensions.second * cardCompressionFactor);
 
         ((GridPane) tokenToScrollPane.get(playerToken).getContent()).add(stackPane, y, x);
         if(handIndex != -1) {
@@ -769,7 +741,7 @@ public class TempGameController {
         }
     }
 
-    public void bringCardToHand(int cardId) {
+    public void addCardToHand(int cardId) {
         int handIndex = slimGameModel.tokenToHand.get(selfPlayerToken).getNullIndex();
 
         if(handIndex == -1) throw new RuntimeException("Hand is full");
@@ -802,32 +774,16 @@ public class TempGameController {
      * @param mouseEvent click MouseEvent
      */
     public void handleDeckMouseClicked(MouseEvent mouseEvent) {
-        ImageView deckImageView;
-        List<Integer> deck;
+        ImageView deckImageViewClicked = (ImageView) mouseEvent.getTarget();
+        Pair<ImageView, List<Integer>> deck = deckViewToDeck.get(deckImageViewClicked);
 
-        if (Objects.equals(mouseEvent.getTarget(), resourceDeckImageView)) {
-            deckImageView = resourceDeckImageView;
-            deck = slimGameModel.resourceDeck;
-        }
-        else if (Objects.equals(mouseEvent.getTarget(), goldDeckImageView)) {
-            deckImageView = goldDeckImageView;
-            deck = slimGameModel.goldDeck;
-        }
-        else throw new RuntimeException("Unsupported deck");
+        if (deck == null) throw new RuntimeException("Deck clicked not found");
+        if (deck.second.isEmpty()) throw new RuntimeException("Deck is empty: should be disabled");
 
-        if (deck.isEmpty()) throw new RuntimeException("Deck is empty");
+        Integer drawnCardId = popCardFromDeck(deck);
+        if (drawnCardId == null) throw new RuntimeException("No card in deck found");
 
-        int drawnCardId = deck.removeLast();
-
-        if (deck.isEmpty()) {
-            deckImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-            deckImageView.setDisable(true);
-        }
-        deckImageView.setImage(getCardImage(
-                deck.isEmpty() ? DEFAULT_OBJECTIVE_CARD_ID : deck.getLast(), CardSide.BACK
-        ));
-
-        bringCardToHand(drawnCardId);
+        addCardToHand(popCardFromDeck(deck));
     }
 
     /**
@@ -845,7 +801,7 @@ public class TempGameController {
 
         Pair<ImageView, List<Integer>> deck = visibleSlotToDeck.get(visibleSlotImageView);
 
-        bringCardToHand(visibleSlotToCardId.get(visibleSlotImageView).get());
+        addCardToHand(visibleSlotToCardId.get(visibleSlotImageView).get());
 
         if (deck.second.isEmpty()) {
             visibleSlotImageView.setDisable(true);
@@ -868,7 +824,7 @@ public class TempGameController {
      * @return the card drawn
      */
     public Integer popCardFromDeck(Pair<ImageView, List<Integer>> deck) {
-        if (deck.second.isEmpty()) throw new RuntimeException("Deck is empty");
+        if (deck.second.isEmpty()) return null;
 
         int drawnCardId = deck.second.removeLast();
 
@@ -876,9 +832,7 @@ public class TempGameController {
             deck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
             deck.first.setDisable(true);
         }
-        deck.first.setImage(getCardImage(
-                deck.second.isEmpty() ? DEFAULT_OBJECTIVE_CARD_ID : deck.second.getLast(), CardSide.BACK
-        ));
+        else deck.first.setImage(getCardImage(deck.second.getLast(), CardSide.BACK));
 
         return drawnCardId;
     }

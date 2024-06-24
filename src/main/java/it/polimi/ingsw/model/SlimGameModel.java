@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
@@ -63,13 +64,13 @@ public class SlimGameModel implements Serializable {
      * Structure to keep track of the ids of the cards in the visible resource card
      * list.
      */
-    public final Pair<Integer, Integer> visibleResourceCardsList;
+    public final Pair<AtomicInteger, AtomicInteger> visibleResourceCardsList;
 
     /**
      * Structure to keep track of the ids of the cards in the visible gold card
      * list.
      */
-    public final Pair<Integer, Integer> visibleGoldCardsList;
+    public final Pair<AtomicInteger, AtomicInteger> visibleGoldCardsList;
 
     /**
      * Map to keep track of the scoreboard.
@@ -98,8 +99,8 @@ public class SlimGameModel implements Serializable {
             List<Integer> commonObjectives,
             List<Integer> resourceDeck,
             List<Integer> goldDeck,
-            Pair<Integer, Integer> visibleResourceCardsList,
-            Pair<Integer, Integer> visibleGoldCardsList,
+            Pair<AtomicInteger, AtomicInteger> visibleResourceCardsList,
+            Pair<AtomicInteger, AtomicInteger> visibleGoldCardsList,
             Map<PlayerToken, Integer> scores) {
         this.tokenToPlayedCards = tokenToPlayedCards;
         this.tokenToHand = tokenToHand;
