@@ -86,4 +86,6 @@ public interface MainEventHandler {
    * @param message the error message
    */
   public void handleLeaveLobbyError(String message);
+
+  public void handleGameStartedEvent(List<UserInfo> users);
 }

@@ -18,6 +18,7 @@ import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
+import it.polimi.ingsw.distributed.events.game.GameStartedEvent;
 import it.polimi.ingsw.distributed.events.main.CreateLobbyError;
 import it.polimi.ingsw.distributed.events.main.JoinLobbyError;
 import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
@@ -253,17 +254,21 @@ public enum Server {
             return false;
         }
 
-        connectedPlayers.get(userInfo).setStatus(Status.IN_GAME);
+        List<UserInfo> usersInLobby = lobby.getUsers().stream()
+                .map(User::toUserInfo)
+                .collect(Collectors.toList());
 
-        List<Observer> observers = connectedPlayers.entrySet().stream()
-                .filter(entry -> lobby.contains(userInfo))
-                .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
+        // Clients that are in the lobby
+        List<Client> clients = connectedPlayers.entrySet().stream()
+                .filter(entry -> usersInLobby.contains(entry.getKey()))
+                .peek(entry -> sendMainEvent(entry.getKey(), new GameStartedEvent(usersInLobby)))
                 .map(entry -> entry.getValue())
                 .collect(Collectors.toList());
 
-        observers = new CopyOnWriteArrayList<>(observers);
-
+        // Create a map from userInfo to a Supplier that says if the user is connected
+        // (needed by the game flow manager)
         ConcurrentHashMap<UserInfo, Supplier<Boolean>> isConnected = new ConcurrentHashMap<>();
+
         connectedPlayers
                 .entrySet()
                 .stream()
@@ -272,34 +277,31 @@ public enum Server {
                         e -> isConnected.put(e.getKey(),
                                 () -> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
 
-        GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, observers);
+        GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, new CopyOnWriteArrayList<>(clients));
         lobby.setGameFlowManager(gameFlowManager);
 
         // set gameflow to redirect requests to, on client handler only for the users in
         // the starting game
         // update playersInGame map
-        connectedPlayers.entrySet().stream()
-                .filter(entry -> lobby.contains(userInfo))
-                .filter(entry -> entry.getValue().getStatus() == Status.IN_MENU)
-                .forEach(
-                        entry -> {
-                            entry.getValue().setStatus(Status.IN_GAME);
-                            try {
-                                if (entry.getValue() instanceof SocketClientHandler) {
-                                    SocketClientHandler client = (SocketClientHandler) entry.getValue();
-                                    client.setGameFlowManager(gameFlowManager);
-                                } else if (entry.getValue() instanceof RMIHandler) {
-                                    RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
-                                            "gameServer" + lobbyId);
-                                    RMIHandler client = (RMIHandler) entry.getValue();
-                                    client.setGameServer(gameServer);
-                                }
-                            } catch (RemoteException e) {
-                                ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
-                                ServerPrinter.displayError("Setting " + userInfo + " disconnected");
-                                entry.getValue().setDisconnectionStatus();
-                            }
-                        });
+        clients.stream().forEach(
+                c -> {
+                    c.setStatus(Status.IN_GAME);
+                    try {
+                        if (c instanceof SocketClientHandler) {
+                            SocketClientHandler client = (SocketClientHandler) c;
+                            client.setGameFlowManager(gameFlowManager);
+                        } else if (c instanceof RMIHandler) {
+                            RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
+                                    "gameServer" + lobbyId);
+                            RMIHandler client = (RMIHandler) c;
+                            client.setGameServer(gameServer);
+                        }
+                    } catch (RemoteException e) {
+                        ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
+                        ServerPrinter.displayError("Setting " + userInfo + " disconnected");
+                        c.setDisconnectionStatus();
+                    }
+                });
 
         ServerPrinter.displayInfo(userInfo + " started the game in lobby " + lobbyId);
         return true;

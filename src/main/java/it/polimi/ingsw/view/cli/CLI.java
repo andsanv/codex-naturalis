@@ -466,7 +466,7 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleGameStarted(List<UserInfo> users) {
+    public void handleGameStartedEvent(List<UserInfo> users) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleGameStarted'");
     }

@@ -4,11 +4,13 @@ import java.util.List;
 
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.distributed.events.main.MainEvent;
 
 /**
  * Event to signal that the game has been started.
  */
-public class GameStartedEvent extends GameEvent {
+public class GameStartedEvent extends MainEvent {
     /**
      * The list of users in the game.
      */
@@ -22,8 +24,7 @@ public class GameStartedEvent extends GameEvent {
     }
 
     @Override
-    public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleGameStarted(users);
+    public void execute(MainEventHandler mainEventHandler) {
+        mainEventHandler.handleGameStartedEvent(users);
     }
-
 }

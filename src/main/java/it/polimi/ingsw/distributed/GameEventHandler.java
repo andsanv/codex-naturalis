@@ -218,6 +218,4 @@ public interface GameEventHandler {
       public void handlePlayerTurnEvent(PlayerToken currentPlayer);
 
       public void handleLastRoundEvent();
-
-      public void handleGameStarted(List<UserInfo> users);
 }
