@@ -65,7 +65,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
     gameServerActions = null;
 
     try {
-      Registry registry = LocateRegistry.getRegistry(Config.RMIServerPort);
+      Registry registry = LocateRegistry.getRegistry(Config.ServerIP, Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
       this.clientMainView = new RMIMainView(userInterface);
@@ -129,7 +129,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
         return true;
       } catch (IOException e) {
-        e.printStackTrace();
+        this.isConnected.set(false);
         return false;
       }
     } else if (mainCommand instanceof ReconnectionCommand) {

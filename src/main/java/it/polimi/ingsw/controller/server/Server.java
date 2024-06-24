@@ -59,6 +59,7 @@ public enum Server {
      */
     public static void main(String[] args) {
         AnsiConsole.systemInstall();
+        System.setProperty("java.rmi.server.hostname", "192.168.20.88");
 
         try {
             new SocketServer(Config.MainSocketPort);

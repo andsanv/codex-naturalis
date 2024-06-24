@@ -12,7 +12,7 @@ import it.polimi.ingsw.view.UI;
  */
 public abstract class ConnectionHandler {
 
-  public final AtomicBoolean isConnected;
+  public final AtomicBoolean isConnected = new AtomicBoolean(false);
   
   /**
    * This represents the user interface of the client.
@@ -21,7 +21,6 @@ public abstract class ConnectionHandler {
 
   public ConnectionHandler(UI userInterface) {
     this.userInterface = userInterface;
-    this.isConnected = new AtomicBoolean(false);
   }
 
   /**

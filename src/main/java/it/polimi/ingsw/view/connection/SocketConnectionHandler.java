@@ -89,13 +89,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
               }
 
             } catch (IOException e) {
-              // System.err.println("Failed to receive event");
-              // System.err.println("Server probably disconnected");
-
+              this.isConnected.set(false);
               break;
             } catch (ClassNotFoundException e) {
-              // System.err.println("Failed to decode event");
-              e.printStackTrace();
+              this.isConnected.set(false);
+              break;
             }
           }
         })
@@ -115,7 +113,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
     // System.out.println("Sending command to main server");
     if (userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand)
         && !(command instanceof ConnectionCommand)) {
-      // System.err.println("User info is null");
       this.isConnected.set(false);
       return false;
     }
@@ -123,7 +120,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
       outputStream.writeObject(command);
       outputStream.reset();
     } catch (IOException e) {
-      e.printStackTrace();
       this.isConnected.set(false);
       return false;
     }
@@ -142,7 +138,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
   @Override
   public boolean sendToGameServer(GameCommand command) {
     if (userInterface.getUserInfo() == null) {
-      // System.err.println("User info is null");
       this.isConnected.set(false);
       return false;
     }
@@ -150,7 +145,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
       outputStream.writeObject(command);
       outputStream.reset();
     } catch (IOException e) {
-      e.printStackTrace();
       this.isConnected.set(false);
       return false;
     }
@@ -179,7 +173,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
     try {
       socket = new Socket(Config.ServerIP, Config.MainSocketPort);
-      // System.out.println(socket);
 
       this.outputStream = new ObjectOutputStream(socket.getOutputStream());
       this.outputStream.flush();
@@ -207,10 +200,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
               LobbiesEvent lobbiesEvent = (LobbiesEvent) event;
               lobbiesEvent.execute(userInterface);
               break;
-            } else if (event instanceof RefusedConnectionEvent) {
-              RefusedConnectionEvent refusedConnectionEvent = (RefusedConnectionEvent) event;
-              refusedConnectionEvent.execute(userInterface);
-              this.isConnected.set(false);
             } else {
               events.add(event);
             }

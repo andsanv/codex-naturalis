@@ -1,5 +1,6 @@
 package it.polimi.ingsw.distributed.server.rmi;
 
+import java.net.InetAddress;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -46,7 +47,7 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   public void run() {
     Registry registry;
 
-    try {
+    try {   
       registry = LocateRegistry.createRegistry(Config.RMIServerPort);
       registry.bind(Config.RMIServerName, this);
     } catch (RemoteException e) {
@@ -54,6 +55,9 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
       e.printStackTrace();
     } catch (AlreadyBoundException e) {
       System.err.println("Error: " + Config.RMIServerName + " already bound");
+      e.printStackTrace();
+    } catch (Exception e) {
+      System.err.println("Error: " + e.toString());
       e.printStackTrace();
     }
   }
