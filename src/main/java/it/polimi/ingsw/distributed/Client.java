@@ -44,7 +44,7 @@ public abstract class Client implements Observer, MainViewActions, GameViewActio
      * This is a helper method that accordingly to the previous state of the connection sets the new one.
      * This function is called when a client results disconnected.
      */
-    protected final void setDisconnectionStatus() {
+    public final void setDisconnectionStatus() {
         synchronized(statusLock) {
             if (status == Status.IN_GAME) {
                 status = Status.DISCONNETED_FROM_GAME;

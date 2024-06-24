@@ -34,7 +34,7 @@ public class RMIHandler extends Client {
 
     @Override
     public void update(GameEvent event) {
-        if (getStatus() == Status.DISCONNETED_FROM_GAME || getStatus() == Status.OFFLINE)
+        if (isDisconnected())
             return;
         try {
             rmiGameView.transmitEvent(event);
@@ -48,7 +48,7 @@ public class RMIHandler extends Client {
     // TODO: If status is disconnected do not send
     @Override
     public void trasmitEvent(MainEvent serverEvent) {
-        if (getStatus() == Status.DISCONNETED_FROM_GAME || getStatus() == Status.OFFLINE)
+        if (isDisconnected())
             return;
         try {
             rmiMainView.trasmitEvent(serverEvent);
@@ -60,7 +60,7 @@ public class RMIHandler extends Client {
 
     @Override
     public void setGameServer(GameServerActions gameServer) {
-        if (getStatus() == Status.DISCONNETED_FROM_GAME || getStatus() == Status.OFFLINE)
+        if (isDisconnected())
             return;
         try {
             rmiMainView.setGameServer(gameServer);
@@ -72,7 +72,7 @@ public class RMIHandler extends Client {
 
     @Override
     public void transmitEvent(GameEvent event) {
-        if (getStatus() == Status.DISCONNETED_FROM_GAME || getStatus() == Status.OFFLINE)
+        if (isDisconnected())
             return;
         try {
             rmiGameView.transmitEvent(event);
@@ -80,5 +80,9 @@ public class RMIHandler extends Client {
             setDisconnectionStatus();
             System.err.println("Failed to send");
         }
+    }
+
+    public boolean isDisconnected() {
+        return getStatus() == Status.DISCONNETED_FROM_GAME || getStatus() == Status.OFFLINE;
     }
 }

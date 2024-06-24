@@ -74,9 +74,10 @@ public class SocketClientHandler extends Client implements Runnable {
           System.err.println("Unrecognized command: " + command);
         }
       } catch (EOFException e) {
-        System.out.println("Client disconnected");
+        setDisconnectionStatus();
         break;
       } catch (IOException | ClassNotFoundException e) {
+        setDisconnectionStatus();
         System.err.println("Error while reading command: " + e.getMessage());
         break;
       }
@@ -121,6 +122,7 @@ public class SocketClientHandler extends Client implements Runnable {
     try {
       transmitEvent(event);
     } catch (IOException e) {
+      setDisconnectionStatus();
       System.err.println("Error while sending event");
     }
   }

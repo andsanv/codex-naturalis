@@ -113,10 +113,7 @@ public enum Server {
                                 entry.getValue().trasmitEvent(new KeepAliveEvent());
                                 ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
                             } catch (IOException e) {
-                                if (entry.getValue().getStatus() == Status.IN_GAME) {
-                                    entry.getValue().setStatus(Status.DISCONNETED_FROM_GAME);
-                                } else if (entry.getValue().getStatus() == Status.IN_MENU)
-                                    entry.getValue().setStatus(Status.OFFLINE);
+                                entry.getValue().setDisconnectionStatus();
 
                                 ServerPrinter
                                         .displayError("Couldn't send connection check event to " + entry.getValue());
@@ -294,7 +291,7 @@ public enum Server {
                                 }
                             } catch (RemoteException e) {
                                 ServerPrinter.displayError("Couldn't send connection event to");
-                                e.printStackTrace();
+                                entry.getValue().setDisconnectionStatus();
                             }
                         });
 
@@ -354,18 +351,25 @@ public enum Server {
                     client.trasmitEvent(new LoginEvent(userInfo, null));
                     client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
 
+                    client.setStatus(Status.IN_MENU);
+
                 } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
                     System.out.println("Reconnecting to game");
                     GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
                     client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(), gameFlowManager.userInfoToToken));
 
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping <UserInfo, Token>
+                    client.setStatus(Status.IN_GAME);
 
                     gameFlowManager.observers.remove(oldClient);
                     gameFlowManager.observers.add(client);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                if(oldClient.getStatus() == Status.IN_GAME) {
+                    client.setStatus(Status.DISCONNETED_FROM_GAME);
+                } else {
+                    client.setStatus(Status.OFFLINE);
+                }
             }
         } else {
             System.err.println(
@@ -438,6 +442,7 @@ public enum Server {
                 try {
                     client.trasmitEvent(event);
                 } catch (IOException e) {
+                    client.setStatus(Status.OFFLINE);
                     ServerPrinter.displayDebug("Could not send " + event.getClass().getName() + " to " + userInfo);
                 }
             }
