@@ -84,12 +84,13 @@ public class SocketClientHandler extends Client implements Runnable {
           ServerPrinter.displayWarning("Unrecognized command: " + command);
         }
       } catch (EOFException e) {
-        ServerPrinter.displayError("Error while reading command to " + this.userInfo.get());
+        e.printStackTrace();
+        ServerPrinter.displayError("Error while reading command from " + this.userInfo.get());
         ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         setDisconnectionStatus();
         break;
       } catch (IOException | ClassNotFoundException e) {
-        ServerPrinter.displayError("Error while reading command to " + this.userInfo.get());
+        ServerPrinter.displayError("Error while reading command from " + this.userInfo.get());
         ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         setDisconnectionStatus();
         break;

@@ -58,6 +58,33 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	}
 
 	/**
+	 * This function checks if the timeout was exceeded, if true the method quits
+	 * the loop setting the state as disconnected.
+	 */
+	private void checkConnection() {
+		new Thread(
+				() -> {
+					while (true) {
+						if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
+							System.out.println("Imposto a falso");
+							this.isConnected.set(false);
+							this.close();
+							break;
+						}
+
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							this.isConnected.set(false);
+							this.close();
+							break;
+						}
+					}
+				}).start();
+	}
+
+	/**
 	 * This method keeps listening for events from the server.
 	 * Based on the type of the event, it executes the event, except for
 	 * KeepAliveEvent that will check if the timeout between the new and the
@@ -72,14 +99,8 @@ public class SocketConnectionHandler extends ConnectionHandler {
 							Event event = (Event) inputStream.readObject();
 
 							if (event instanceof KeepAliveEvent) {
-								if (this.lastKeepAliveTime != 0 && System.currentTimeMillis()
-										- this.lastKeepAliveTime > ConnectionHandler.MILLISEC_TIME_OUT)
-									throw new IOException();
 
 								this.lastKeepAliveTime = System.currentTimeMillis();
-
-								// System.out.println(System.currentTimeMillis() - this.lastKeepAliveTime);
-								// System.out.println(System.currentTimeMillis());
 
 							} else if (event instanceof GameEvent) {
 								GameEvent gameEvent = (GameEvent) event;
@@ -179,7 +200,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
 				this.isConnected.set(true);
 			}
 
+			this.lastKeepAliveTime = System.currentTimeMillis();
+
 			createListenerThread();
+			checkConnection();
 
 			return this.sendToMainServer(connectionCommand);
 		} catch (Exception e) {
@@ -274,8 +298,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
 					}
 				}
 
-				if (this.isConnected.get())
+				if (this.isConnected.get()) {
+					this.lastKeepAliveTime = System.currentTimeMillis();
 					createListenerThread();
+					checkConnection();
+				}
 
 			}).start();
 

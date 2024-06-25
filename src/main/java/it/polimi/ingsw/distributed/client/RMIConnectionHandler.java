@@ -69,8 +69,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
       Registry registry = LocateRegistry.getRegistry(Config.ServerIP, Config.RMIServerPort);
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
-      this.clientMainView = new RMIMainView(userInterface);
-      this.clientGameView = new RMIGameView(userInterface);
+      this.clientMainView = new RMIMainView(userInterface, this);
+      this.clientGameView = new RMIGameView(userInterface, this);
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
@@ -125,6 +125,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
           }
         }
 
+        this.lastKeepAliveTime = System.currentTimeMillis();
+        checkConnection();
         return true;
       } catch (IOException e) {
         this.isConnected.set(false);
@@ -132,7 +134,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       }
     } else if (mainCommand instanceof ReconnectionCommand) {
       try {
-        this.clientMainView = new RMIMainView(userInterface);
+        this.clientMainView = new RMIMainView(userInterface, this);
 
         mainServerActions.reconnect(((ReconnectionCommand) mainCommand).userInfo, this.clientMainView,
             this.clientGameView);
@@ -143,6 +145,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
         }
 
+        this.lastKeepAliveTime = System.currentTimeMillis();
+        checkConnection();
       } catch (IOException e) {
         this.isConnected.set(false);
         return false;
@@ -181,7 +185,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
   /**
    * This method tries to connect to the main server.
-   * It simply forwards the command to the method sendToMainServer that will handle it properly.ù
+   * It simply forwards the command to the method sendToMainServer that will
+   * handle it properly.ù
    * 
    * @return true if the the reconnection request is sent, false otherwise
    */
@@ -219,6 +224,30 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
   public BlockingQueue<GameCommand> getGameCommandQueue() {
     return gameCommandQueue;
+  }
+
+  /**
+   * This function checks if the timeout was exceeded, if true the method quits
+   * the loop setting the state as disconnected.
+   */
+  private void checkConnection() {
+    new Thread(
+        () -> {
+          while (true) {
+            if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
+              this.isConnected.set(false);
+              break;
+            }
+
+            try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+              this.isConnected.set(false);
+              break;
+						}
+          }
+        }).start();
   }
 
 }

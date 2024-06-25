@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.client.RMIConnectionHandler;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
@@ -27,7 +28,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
   /** 
    * This conncetion handler will be used to handle the communication with the server.
    */
-  private RMIConnectionHandler connectionHandler;
+  private final RMIConnectionHandler connectionHandler;
 
   /**
    * This constructor creates a new RMIMainView.
@@ -35,8 +36,9 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    * @param mainEventHandler the main event handler to propagate the updates (events) to.
    * @throws RemoteException thrown when a communication error occurs
    */
-  public RMIMainView(MainEventHandler mainEventHandler) throws RemoteException {
+  public RMIMainView(MainEventHandler mainEventHandler, RMIConnectionHandler rmiConnectionHandler) throws RemoteException {
     this.mainEventHandler = mainEventHandler;
+    this.connectionHandler = rmiConnectionHandler;
   }
 
   /**
@@ -44,7 +46,10 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    * This method is used by the server to send an event to the client.
    */
   @Override
-  public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException {      
+  public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException {   
+    if(serverEvent instanceof KeepAliveEvent) 
+      connectionHandler.lastKeepAliveTime = System.currentTimeMillis();
+      
     serverEvent.execute(mainEventHandler);
   }
 
@@ -54,6 +59,8 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    */
   @Override
   public void setGameServer(GameServerActions gameServer) throws RemoteException, IOException {
-    this.connectionHandler.setGameServerActions(gameServer);
+    connectionHandler.setGameServerActions(gameServer);
   }
+
+  
 }
