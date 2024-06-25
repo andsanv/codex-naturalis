@@ -2,6 +2,8 @@ package it.polimi.ingsw.controller.server;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -281,25 +283,7 @@ public enum Server {
         GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, new CopyOnWriteArrayList<>(clients));
         lobby.setGameFlowManager(gameFlowManager);
 
-        for (Client c : clients) {
-            // Set in game status
-            c.setStatus(Status.IN_GAME);
-
-            // Init connection to the game
-            try {
-                if (c instanceof SocketClientHandler) {
-                    SocketClientHandler client = (SocketClientHandler) c;
-                    client.setGameFlowManager(gameFlowManager);
-                } else if (c instanceof RMIHandler) {
-                    RMIHandler client = (RMIHandler) c;
-                    client.setGameServer(new RMIGameServer(gameFlowManager));
-                }
-            } catch (RemoteException e) {
-                ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
-                ServerPrinter.displayError("Setting " + userInfo + " disconnected");
-                c.setDisconnectionStatus();
-            }
-        }
+        setUpClientsForGame(clients, gameFlowManager);
 
         ServerPrinter.displayInfo(userInfo + " started the game in lobby " + lobbyId);
         return true;
@@ -362,6 +346,8 @@ public enum Server {
                     GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
                     client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
                             gameFlowManager.userInfoToToken));
+                            
+                    setUpClientsForGame(Arrays.asList(client), gameFlowManager);
 
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping
                     // <UserInfo, Token>
@@ -485,6 +471,38 @@ public enum Server {
                 }
             }
         });
+    }
+
+    /**
+     * This method sets up the clients. It is used to start a game or to reconnect
+     * players to it.
+     * On socket client handlers sets the game corresponding gameFlowManager.
+     * On rmi client handler passes the game server remote object linked to the
+     * gameFlowManager of the game.
+     * 
+     * @param clients
+     * @param gameFlowManager
+     */
+    private void setUpClientsForGame(List<Client> clients, GameFlowManager gameFlowManager) {
+        for (Client c : clients) {
+            // Set in game status
+            c.setStatus(Status.IN_GAME);
+
+            // Init connection to the game
+            try {
+                if (c instanceof SocketClientHandler) {
+                    SocketClientHandler client = (SocketClientHandler) c;
+                    client.setGameFlowManager(gameFlowManager);
+                } else if (c instanceof RMIHandler) {
+                    RMIHandler client = (RMIHandler) c;
+                    client.setGameServer(new RMIGameServer(gameFlowManager));
+                }
+            } catch (RemoteException e) {
+                ServerPrinter.displayError("Couldn't send connection event to " + c);
+                ServerPrinter.displayError("Setting " + c + " disconnected");
+                c.setDisconnectionStatus();
+            }
+        }
     }
 
 }
