@@ -31,6 +31,7 @@ import it.polimi.ingsw.view.cli.scene.scenes.ConnectionLostScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
+import it.polimi.ingsw.view.cli.scene.scenes.ObjectiveCardScene;
 import it.polimi.ingsw.view.cli.scene.scenes.StarterCardScene;
 import it.polimi.ingsw.view.cli.scene.scenes.TokenSelectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
@@ -176,12 +177,17 @@ public class CLI implements UI {
     /**
      * Object for synchronizing access to the map tokenToUser
      */
-    public final Object tokenToUserLock = new Object();
+    private final Object tokenToUserLock = new Object();
 
     /**
      * Token that the player has selected.
      */
     public final AtomicReference<PlayerToken> token = new AtomicReference<>(null);
+
+    /**
+     * Token that the player has selected.
+     */
+    public final AtomicInteger lastDrawnCardId = new AtomicInteger(-1);
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -200,6 +206,7 @@ public class CLI implements UI {
         sceneManager.registerScene(new LobbiesScene(sceneManager));
         sceneManager.registerScene(new TokenSelectionScene(sceneManager));
         sceneManager.registerScene(new StarterCardScene(sceneManager));
+        sceneManager.registerScene(new ObjectiveCardScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -248,10 +255,11 @@ public class CLI implements UI {
      * Method called when the game ends.
      */
     public void resetAttributesAfterMatch() {
-        // Reset the token to user map
         synchronized (tokenToUserLock) {
             tokenToUser = new HashMap<>();
         }
+
+        lastDrawnCardId.set(-1);
     }
 
     /**
@@ -262,6 +270,17 @@ public class CLI implements UI {
     public boolean isTokenAvailable(PlayerToken token) {
         synchronized (tokenToUserLock) {
             return !tokenToUser.containsKey(token);
+        }
+    }
+
+    /**
+     * Token to user map getter.
+     * 
+     * @return a copy of the token to user map
+     */
+    public Map<PlayerToken, UserInfo> getTokenToPlayerMap() {
+        synchronized (tokenToUserLock) {
+            return new HashMap<>(tokenToUser);
         }
     }
 
@@ -374,8 +393,11 @@ public class CLI implements UI {
 
     @Override
     public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnStarterCardEvent'");
+        if (playerToken != this.token.get())
+            return;
+
+        lastDrawnCardId.set(drawnCardId);
+        waitingGameEvent.set(false);
     }
 
     @Override
@@ -386,8 +408,10 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedStarterCardPhaseEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedStarterCardPhaseEvent'");
+        waitingGameEvent.set(false);
+
+        sceneManager.transition(ObjectiveCardScene.class);
+        resetPrompt();
     }
 
     @Override
@@ -582,7 +606,9 @@ public class CLI implements UI {
 
         waitingGameEvent.set(false);
 
-        sceneManager.transition(StarterCardScene.class);
-        resetPrompt();
+        if (sceneManager.getCurrentScene() != StarterCardScene.class) {
+            sceneManager.transition(StarterCardScene.class);
+            resetPrompt();
+        }
     }
 }

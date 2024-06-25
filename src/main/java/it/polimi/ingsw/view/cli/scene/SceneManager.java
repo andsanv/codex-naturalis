@@ -54,7 +54,7 @@ public class SceneManager {
      * 
      * @param scene the scene to register
      */
-    public void registerScene(Scene scene) {
+    public synchronized void registerScene(Scene scene) {
         scenes.put(scene.getClass(), scene);
     }
 
@@ -65,7 +65,7 @@ public class SceneManager {
      * 
      * @param initialScene the initial scene
      */
-    public void setInitialScene(Class<? extends Scene> initialScene) {
+    public synchronized void setInitialScene(Class<? extends Scene> initialScene) {
         if (isStarted || isRunning.get())
             return;
 
@@ -84,7 +84,7 @@ public class SceneManager {
      * Returns early if no initial scene has been set or if the method has already
      * been called.
      */
-    public void start() {
+    public synchronized void start() {
         if (isStarted || this.currentScene == null)
             return;
 
@@ -102,7 +102,7 @@ public class SceneManager {
      * 
      * @param scene the class of the scene to transition to
      */
-    public void transition(Class<? extends Scene> scene) {
+    public synchronized void transition(Class<? extends Scene> scene) {
         currentScene.onExit();
         currentScene = scenes.get(scene);
         currentScene.onEntry();
@@ -112,7 +112,7 @@ public class SceneManager {
      * Stops the SceneManager, uninstalls the AnsiConsole and closes the game.
      * Returns early if the SceneManager isn't running.
      */
-    public void stop() {
+    public synchronized void stop() {
         if (!isRunning.get())
             return;
 
@@ -128,7 +128,7 @@ public class SceneManager {
      * 
      * @param input the user input
      */
-    public void handleInput(String input) {
+    public synchronized void handleInput(String input) {
         String[] args = input.trim().split("\\s+");
 
         if (args[0].equalsIgnoreCase("help")) {
@@ -138,5 +138,14 @@ public class SceneManager {
         } else {
             this.currentScene.handleCommand(args);
         }
+    }
+
+    /**
+     * Current scene as Class getter.
+     * 
+     * @return the Class of the current scene
+     */
+    public synchronized Class<? extends Scene> getCurrentScene() {
+        return currentScene.getClass();
     }
 }

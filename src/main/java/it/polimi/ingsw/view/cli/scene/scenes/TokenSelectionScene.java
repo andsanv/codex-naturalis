@@ -77,6 +77,7 @@ public class TokenSelectionScene extends Scene {
         }
 
         cli.waitingGameEvent.set(true);
+
         connectionHandler.sendToGameServer(new SelectTokenCommand(cli.getUserInfo(), token));
 
         if (!CLIPrinter.displayLoadingMessage("Selecting " + token.toString().toLowerCase() + " token",
@@ -98,6 +99,7 @@ public class TokenSelectionScene extends Scene {
             return;
         }
 
-        sceneManager.transition(StarterCardScene.class);
+        if (sceneManager.getCurrentScene() != StarterCardScene.class)
+            sceneManager.transition(StarterCardScene.class);
     }
 }

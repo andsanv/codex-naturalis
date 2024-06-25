@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
+import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.Arrays;
 
@@ -17,7 +18,6 @@ import it.polimi.ingsw.view.cli.scene.SceneManager;
  */
 public class StarterCardScene extends Scene {
     private boolean cardDrawn;
-    private boolean cardPlayed;
 
     public StarterCardScene(SceneManager sceneManager) {
         super(sceneManager);
@@ -50,6 +50,8 @@ public class StarterCardScene extends Scene {
                     if (!cardDrawn)
                         CLIPrinter.displayError("Draw a card first");
 
+
+
                 }),
                 new CLICommand("back", "to play the back of the drawn card", () -> {
                     if (args.length != 1)
@@ -64,11 +66,17 @@ public class StarterCardScene extends Scene {
     @Override
     public void onEntry() {
         cardDrawn = false;
-        cardPlayed = false;
 
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Starter Card Selection", YELLOW);
 
-        System.out.println("Draw a starter card and decide how to place it on your board");
+        System.out.println("The final token assignments are:");
+        System.out.println(ansi().fg(YELLOW));
+        sceneManager.cli.getTokenToPlayerMap().entrySet().stream().forEach(e -> {
+            System.out.println(e.getValue() + " -> " + e.getKey());
+        });
+        System.out.println(ansi().reset());
+
+        System.out.println("You have to draw a starter card and decide how to place it on your board");
     }
 }

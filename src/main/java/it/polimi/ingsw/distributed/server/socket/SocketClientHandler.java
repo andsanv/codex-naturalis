@@ -106,7 +106,7 @@ public class SocketClientHandler extends Client implements Runnable {
       this.userInfo.set(((LoginEvent) event).getUserInfo());
     out.writeObject(event);
     out.reset();
-    ServerPrinter.displayDebug("Sent event: " + event);
+    // ServerPrinter.displayDebug("Sent event: " + event);
   }
 
   /**
@@ -116,7 +116,7 @@ public class SocketClientHandler extends Client implements Runnable {
   public void transmitEvent(GameEvent event) throws IOException {
     out.writeObject(event);
     out.reset();
-    ServerPrinter.displayDebug("Sent event: " + event);
+    // ServerPrinter.displayDebug("Sent event: " + event);
   }
 
   /**

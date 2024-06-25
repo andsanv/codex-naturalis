@@ -117,7 +117,7 @@ public enum Server {
                         entry -> {
                             try {
                                 entry.getValue().trasmitEvent(new KeepAliveEvent());
-                                ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
+                                // ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
                             } catch (IOException e) {
                                 entry.getValue().setDisconnectionStatus();
                                 ServerPrinter
