@@ -264,7 +264,6 @@ public class CLI implements UI {
         synchronized (tokenToUserLock) {
             tokenToUser = new HashMap<>();
         }
-
     }
 
     /**
@@ -497,12 +496,6 @@ public class CLI implements UI {
         synchronized (userInfoLock) {
             return userInfo != null ? new UserInfo(userInfo) : null;
         }
-    }
-
-    @Override
-    public void connectionToGameResult(boolean connectedToGame) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'connectionToGameResult'");
     }
 
     @Override

@@ -29,11 +29,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void connectionToGameResult(boolean connectedToGame) {
-        return;
-    }
-
-    @Override
     public void handleScoreTrackEvent(PlayerToken senderToken, int score) {
         return;
     }
