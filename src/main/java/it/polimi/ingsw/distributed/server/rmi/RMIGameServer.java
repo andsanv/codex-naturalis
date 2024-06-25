@@ -1,6 +1,11 @@
 package it.polimi.ingsw.distributed.server.rmi;
 
-import it.polimi.ingsw.Config;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
@@ -8,22 +13,13 @@ import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.game.MessageCommand;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * This class represents the RMI Game server to connect to.
  * The game server is used in in-game communications.
  * The class implements runnable so that when the server controller creates the
  * RMIGameServer can delegate its execution to a new thread.
  */
-public class RMIGameServer extends UnicastRemoteObject implements Runnable, GameServerActions {
+public class RMIGameServer extends UnicastRemoteObject implements GameServerActions {
 
 	/**
 	 * This is a reference to the gameFlowManager the client is playing the game
@@ -31,11 +27,6 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Game
 	 * It needs to execute the commands received from the client.
 	 */
 	private final GameFlowManager gameFlowManager;
-
-	/**
-	 * This string contains the information for the RMI connection.
-	 */
-	private final String rmiConnectionInfo;
 
 	/**
 	 * This map the GameViewAction for each client.
@@ -53,14 +44,12 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Game
 	 * The constructor initializes the attributes and assign the parameters.
 	 * 
 	 * @param gameFlowManager   the gameflowmanager of the started game
-	 * @param rmiConnectionInfo the rmi connection info
 	 * @throws RemoteException
 	 */
-	public RMIGameServer(GameFlowManager gameFlowManager, String rmiConnectionInfo)
+	public RMIGameServer(GameFlowManager gameFlowManager)
 			throws RemoteException {
 		executorService = Executors.newCachedThreadPool();
 		this.gameFlowManager = gameFlowManager;
-		this.rmiConnectionInfo = rmiConnectionInfo;
 	}
 
 	/**
@@ -87,24 +76,5 @@ public class RMIGameServer extends UnicastRemoteObject implements Runnable, Game
 	public void connectToGame(UserInfo userInfo, GameViewActions clientGameView)
 			throws RemoteException {
 		clients.put(userInfo, clientGameView);
-	}
-
-	/**
-	 * This method sets up the RMI server registry.
-	 */
-	@Override
-	public void run() {
-		Registry registry;
-
-		try {
-			registry = LocateRegistry.getRegistry(Config.RMIServerPort);
-			registry.bind(rmiConnectionInfo, this);
-		} catch (RemoteException e) {
-			System.err.println("Error: " + e.toString());
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			System.err.println("Error: " + rmiConnectionInfo + " already bound");
-			e.printStackTrace();
-		}
 	}
 }

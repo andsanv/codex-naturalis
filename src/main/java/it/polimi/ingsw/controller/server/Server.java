@@ -291,10 +291,8 @@ public enum Server {
                     SocketClientHandler client = (SocketClientHandler) c;
                     client.setGameFlowManager(gameFlowManager);
                 } else if (c instanceof RMIHandler) {
-                    RMIGameServer gameServer = new RMIGameServer(gameFlowManager,
-                            "gameServer" + lobbyId);
                     RMIHandler client = (RMIHandler) c;
-                    client.setGameServer(gameServer);
+                    client.setGameServer(new RMIGameServer(gameFlowManager));
                 }
             } catch (RemoteException e) {
                 ServerPrinter.displayError("Couldn't send connection event to " + userInfo);
