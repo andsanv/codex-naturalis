@@ -61,4 +61,13 @@
 
 .button:hover {
     -fx-background-color: #cdcdcd;
+    -fx-border-radius: 20;
+}
+
+.highlightPlayable {
+    -fx-background-color: yellow;
+    -fx-background-radius: 4;
+    -fx-scale-x: 1.2829;
+    -fx-scale-y: 1.667;
+    -fx-opacity: 0.5;
 }

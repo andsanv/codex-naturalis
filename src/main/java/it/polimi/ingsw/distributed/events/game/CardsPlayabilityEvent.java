@@ -32,7 +32,7 @@ public class CardsPlayabilityEvent extends GameEvent {
      * This constructor creates the event starting from the player token, the
      * available slots and the cards playability.
      * 
-     * @param playerToken      token of the player that requested the cards
+     * @param playerToken      token of the player that requested the cards'
      *                         playability.
      * @param availableSlots   list of available slots.
      * @param cardsPlayability map that tracks whether a card can be placed or not,
