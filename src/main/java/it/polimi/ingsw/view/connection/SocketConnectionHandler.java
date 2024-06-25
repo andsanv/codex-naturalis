@@ -49,7 +49,13 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	public SocketConnectionHandler(UI userInterface) throws UnknownHostException, IOException {
 		super(userInterface);
 
-		createListenerThread();
+		socket = new Socket(Config.ServerIP, Config.MainSocketPort);
+
+		this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+		this.outputStream.flush();
+		this.inputStream = new ObjectInputStream(socket.getInputStream());
+
+		this.isConnected.set(true);
 	}
 
 	/**
@@ -156,13 +162,15 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	@Override
 	public boolean connect(ConnectionCommand connectionCommand) {
 		try {
-			socket = new Socket(Config.ServerIP, Config.MainSocketPort);
+			if (!this.isConnected.get()) {
+				socket = new Socket(Config.ServerIP, Config.MainSocketPort);
 
-			this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-			this.outputStream.flush();
-			this.inputStream = new ObjectInputStream(socket.getInputStream());
+				this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+				this.outputStream.flush();
+				this.inputStream = new ObjectInputStream(socket.getInputStream());
 
-			this.isConnected.set(true);
+				this.isConnected.set(true);
+			}
 
 			createListenerThread();
 
@@ -199,8 +207,9 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 				this.outputStream = new ObjectOutputStream(socket.getOutputStream());
 				this.outputStream.flush();
-
 				this.inputStream = new ObjectInputStream(socket.getInputStream());
+
+				this.isConnected.set(true);
 			}
 
 			this.isConnected.set(true);
