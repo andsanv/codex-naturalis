@@ -470,22 +470,60 @@ public class CLICardUtils {
         return null;
     }
 
+    /**
+     * Returns an Ansi sequence of the given string with the foreground colored with
+     * the given Ansi.Color
+     * 
+     * @param string the string to color
+     * @param color  the color as Ansi.Color
+     * @return the formatted Ansi sequence
+     */
     private static Ansi colorAndResetFg(String string, Ansi.Color color) {
         return ansi().reset().fg(color).a(string).reset();
     }
+
+    /**
+     * Returns an Ansi sequence of the given char with the foreground colored with
+     * the given Ansi.Color
+     * 
+     * @param string the char to color
+     * @param color  the color as Ansi.Color
+     * @return the formatted Ansi sequence
+     */
 
     private static Ansi colorAndResetFg(char c, Ansi.Color color) {
         return ansi().reset().fg(color).a(c).reset();
     }
 
+    /**
+     * Returns an Ansi sequence of the given string with the background colored with
+     * the given Ansi.Color
+     * 
+     * @param string the string to color
+     * @param color  the color as Ansi.Color
+     * @return the formatted Ansi sequence
+     */
     private static Ansi colorAndResetBg(String string, Ansi.Color color) {
         return ansi().reset().bg(color).a(string).reset();
     }
 
+    /**
+     * Returns an Ansi sequence of the given char with the background colored with
+     * the given Ansi.Color
+     * 
+     * @param string the char to color
+     * @param color  the color as Ansi.Color
+     * @return the formatted Ansi sequence
+     */
     private static Ansi colorAndResetBg(char c, Ansi.Color color) {
         return ansi().reset().bg(color).a(c).reset();
     }
 
+    /**
+     * Creates an empty space ansi sequence without any formatting
+     * 
+     * @return one empty space as an Ansi sequence
+     */
     private static Ansi emptyAnsi() {
         return ansi().reset().a(" ");
     }
