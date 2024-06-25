@@ -144,8 +144,7 @@ public class TokenSelectionState extends GameState {
     public boolean selectToken(UserInfo player, PlayerToken playerToken) {
         synchronized (userInfoToToken) {
             if (userInfoToToken.containsKey(player)) {
-                Server.INSTANCE.sendGameEvent(player, new GameErrorEvent("You have already selected the "
-                        + userInfoToToken.get(player).toString().toLowerCase() + " token"));
+                Server.INSTANCE.sendGameEvent(player, new GameErrorEvent("You have already selected your token"));
                 return false;
             }
 
