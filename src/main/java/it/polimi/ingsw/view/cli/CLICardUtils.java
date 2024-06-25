@@ -583,6 +583,9 @@ public class CLICardUtils {
         init = true;
     }
 
+    /**
+     * Loads resource cards
+     */
     private static void loadResourceCards() {
         resourceCards = new HashMap<>();
         Deck<ResourceCard> deck = ResourceDeckCreator.createDeck(fakeObserversList, fakeAtomicInt);
@@ -607,6 +610,9 @@ public class CLICardUtils {
         }
     }
 
+    /**
+     * Loads gold cards
+     */
     private static void loadGoldCards() {
         goldCards = new HashMap<>();
         Deck<GoldCard> deck = GoldDeckCreator.createDeck(fakeObserversList, fakeAtomicInt);
@@ -662,6 +668,9 @@ public class CLICardUtils {
         }
     }
 
+    /**
+     * Loads starter cards
+     */
     private static void loadStarterCards() {
         starterCards = new HashMap<>();
         Deck<StarterCard> deck = StarterDeckCreator.createDeck(fakeObserversList, fakeAtomicInt);
@@ -693,6 +702,9 @@ public class CLICardUtils {
     }
 }
 
+/**
+ * Simple resource card representation
+ */
 class LightResourceCard {
     final String type;
     final Map<CornerPosition, String> corners;
@@ -705,6 +717,9 @@ class LightResourceCard {
     }
 }
 
+/**
+ * Simple gold card representation
+ */
 class LightGoldCard {
     final String type;
     final Map<CornerPosition, String> corners;
@@ -719,6 +734,9 @@ class LightGoldCard {
     }
 }
 
+/**
+ * Simple starter card representation
+ */
 class LightStarterCard {
     final List<String> resources;
     final Map<CornerPosition, String> cornersFront;
@@ -729,17 +747,5 @@ class LightStarterCard {
         this.resources = resources;
         this.cornersFront = cornersFront;
         this.cornersBack = cornersBack;
-    }
-}
-
-class LightObjectiveCard {
-    final int points;
-    final String pattern;
-    final String resources;
-
-    public LightObjectiveCard(int points, String pattern, String resources) {
-        this.points = points;
-        this.pattern = pattern;
-        this.resources = resources;
     }
 }
