@@ -7,6 +7,8 @@ import java.rmi.server.UnicastRemoteObject;
 import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
+import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
+import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 import it.polimi.ingsw.view.connection.RMIConnectionHandler;
@@ -42,7 +44,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    * This method is used by the server to send an event to the client.
    */
   @Override
-  public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException {
+  public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException {      
     serverEvent.execute(mainEventHandler);
   }
 

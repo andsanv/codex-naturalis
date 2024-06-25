@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.server.Server;
 import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
@@ -55,8 +56,11 @@ public abstract class Client implements Observer, MainViewActions, GameViewActio
             if (status == Status.IN_GAME) {
                 status = Status.DISCONNETED_FROM_GAME;
             } else if (status == Status.IN_MENU) {
-                Lobby.removeUserIfGameNotStarted(this.userInfo.get());
+                boolean lobbiesChanged = Lobby.removeUserIfGameNotStarted(this.userInfo.get());
                 status = Status.OFFLINE;
+
+                if(lobbiesChanged)
+                    Server.INSTANCE.broadcastLobbies();
             }
         }
     }

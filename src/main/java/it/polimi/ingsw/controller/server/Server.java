@@ -416,7 +416,7 @@ public enum Server {
      * This function sends a NewLobbiesEvent to all connected clients in the main
      * menu.
      */
-    private void broadcastLobbies() {
+    public void broadcastLobbies() {
         ServerPrinter.displayInfo("Broadcasting updated lobbies to players in the main menu");
         List<LobbyInfo> lobbies = Lobby.getLobbies();
 
