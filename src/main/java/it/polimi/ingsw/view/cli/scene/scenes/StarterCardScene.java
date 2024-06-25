@@ -16,7 +16,8 @@ import it.polimi.ingsw.view.connection.ConnectionHandler;
  * Scene where the user can select the starter card.
  */
 public class StarterCardScene extends Scene {
-    private boolean cardDrawn = false;
+    private boolean cardDrawn;
+    private boolean cardPlayed;
 
     public StarterCardScene(SceneManager sceneManager) {
         super(sceneManager);
@@ -38,25 +39,33 @@ public class StarterCardScene extends Scene {
                     connectionHandler.sendToGameServer(new DrawStarterCardCommand(cli.token.get()));
                     if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
                             connectionHandler.isConnected, null)) {
-                                sceneManager.transition(ConnectionLostScene.class);
+                        sceneManager.transition(ConnectionLostScene.class);
                     }
 
-                    
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
+
+                    if (!cardDrawn)
+                        CLIPrinter.displayError("Draw a card first");
 
                 }),
                 new CLICommand("back", "to play the back of the drawn card", () -> {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
+                    if (!cardDrawn)
+                        CLIPrinter.displayError("Draw a card first");
+
                 }));
     }
 
     @Override
     public void onEntry() {
+        cardDrawn = false;
+        cardPlayed = false;
+
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Starter Card Selection", YELLOW);
 
