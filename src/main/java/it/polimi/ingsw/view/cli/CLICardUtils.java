@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -74,7 +75,7 @@ public class CLICardUtils {
         print(20, 75, 101, CardSide.FRONT);
         print(25, 75, 102, CardSide.FRONT);
 
-        Ansi[][] card = cardToMatrix(22, CardSide.FRONT);
+        Ansi[][] card = cardToMatrix(43, CardSide.FRONT);
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < card[0].length; j++) {
                 System.out.print(card[i][j]);
@@ -465,6 +466,9 @@ public class CLICardUtils {
 
         if (resourceCards.containsKey(id))
             return side == CardSide.FRONT ? resourceCardFront(id) : resourceCardBack(id);
+        else if (goldCards.containsKey(id)) {
+            return side == CardSide.FRONT ? goldCardFront(id) : goldCardBack(id);
+        }
 
         return null;
     }
@@ -672,11 +676,121 @@ public class CLICardUtils {
         return result;
     }
 
+    /**
+     * Creates an Ansi matrix for printing the back of a resource card
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
     public static Ansi[][] resourceCardBack(int id) {
+        LightResourceCard card = resourceCards.get(id);
 
-        Ansi[][] result = new Ansi[5][11];
+        Ansi.Color borderColor = elementToColor(card.type);
+
+        Ansi[][] result = playableCard(borderColor);
+
+        result[2][5] = colorAndResetFg(card.type, elementToColor(card.type));
 
         return result;
+    }
+
+    /**
+     * Creates an Ansi matrix for printing the front of a gold card
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
+    public static Ansi[][] goldCardFront(int id) {
+        LightGoldCard card = goldCards.get(id);
+        Map<CornerPosition, String> corners = card.corners;
+
+        Ansi.Color borderColor = elementToColor(card.type);
+
+        Ansi[][] result = playableCard(borderColor);
+
+        result[1][1] = colorAndResetFg(corners.get(CornerPosition.TOP_LEFT),
+                elementToColor(corners.get(CornerPosition.TOP_LEFT)));
+        result[1][4] = colorAndResetFg(card.points.charAt(0), DEFAULT);
+        result[1][5] = colorAndResetFg(card.points.charAt(1), DEFAULT);
+        result[1][6] = colorAndResetFg(card.points.charAt(2), DEFAULT);
+        result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
+                elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
+
+        result[2][5] = colorAndResetBg(card.type, YELLOW);
+
+        result[3][1] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_LEFT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_LEFT)));
+
+        String paddedRequiredResources = addPadding(card.required.stream().collect(Collectors.joining()), 5);
+
+        List<Ansi> requiredAsAnsi = IntStream.range(0, paddedRequiredResources.length())
+                .mapToObj(i -> Character.toString(paddedRequiredResources.charAt(i)))
+                .map(c -> c.equals(" ") ? emptyAnsi() : colorAndResetFg(c, elementToColor(c)))
+                .collect(Collectors.toList());
+
+        for (int i = 3; i <= 7; i++) {
+            result[3][i] = requiredAsAnsi.get(i - 3);
+        }
+
+        result[3][9] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_RIGHT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_RIGHT)));
+
+        return result;
+    }
+
+    /**
+     * Creates an Ansi matrix for printing the front of a gold card
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
+    public static Ansi[][] goldCardBack(int id) {
+        LightGoldCard card = goldCards.get(id);
+
+        Ansi.Color borderColor = elementToColor(card.type);
+
+        Ansi[][] result = playableCard(borderColor);
+
+        result[2][5] = colorAndResetBg(card.type, YELLOW);
+
+        return result;
+    }
+
+    /**
+     * Adds padding to the given string.
+     * The string must be shorter or equal to the desired length.
+     * 
+     * @param string        the string to add padding to
+     * @param desiredLenght the desired length of the padded string
+     * @return the padded string
+     */
+    private static String addPadding(String string, int desiredLenght) {
+        int padding = desiredLenght - string.length();
+
+        if (padding <= 0)
+            return string;
+
+        int leftPadding;
+        int righPadding;
+
+        if (padding % 2 == 0) {
+            leftPadding = righPadding = padding / 2;
+        } else {
+            leftPadding = padding / 2;
+            righPadding = leftPadding + 1;
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < leftPadding; i++)
+            result.append(' ');
+
+        result.append(string);
+
+        for (int i = 0; i < righPadding; i++)
+            result.append(' ');
+
+        return result.toString();
     }
 
     /**
