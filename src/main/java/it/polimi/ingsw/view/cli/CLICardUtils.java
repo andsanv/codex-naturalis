@@ -74,8 +74,7 @@ public class CLICardUtils {
         print(20, 75, 101, CardSide.FRONT);
         print(25, 75, 102, CardSide.FRONT);
 
-        // Ansi[][] card = cardToMatrix(1, CardSide.FRONT);
-        Ansi[][] card = simpleCard(RED);
+        Ansi[][] card = cardToMatrix(22, CardSide.FRONT);
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < card[0].length; j++) {
                 System.out.print(card[i][j]);
@@ -528,50 +527,6 @@ public class CLICardUtils {
         return ansi().reset().a(" ");
     }
 
-    public static Ansi[][] resourceCardFront(int id) {
-        Ansi[][] result = new Ansi[3][11];
-
-        LightResourceCard card = resourceCards.get(id);
-        Ansi.Color borderColor = elementToColor(card.type);
-        Map<CornerPosition, String> corners = card.corners;
-
-        String UPPER_RES_GOLD_BORDER = "╭─┬─────┬─╮";
-        String LOWER_RES_GOLD_BORDER = "╰─┴─────┴─╯";
-
-        for (int i = 0; i < 11; i++) {
-            result[0][i] = colorAndResetFg(UPPER_RES_GOLD_BORDER.charAt(i), borderColor);
-            result[2][i] = colorAndResetFg(LOWER_RES_GOLD_BORDER.charAt(i), borderColor);
-        }
-
-        result[1][0] = colorAndResetFg("│", borderColor);
-        result[1][1] = colorAndResetFg(corners.get(CornerPosition.TOP_LEFT),
-                elementToColor(corners.get(CornerPosition.TOP_LEFT)));
-        result[1][2] = colorAndResetFg("│", borderColor);
-        result[1][3] = emptyAnsi();
-        result[1][4] = emptyAnsi();
-        result[1][5] = ansi().a(card.points != 0 ? card.points : " ");
-        result[1][6] = emptyAnsi();
-        result[1][7] = emptyAnsi();
-        result[1][8] = colorAndResetFg("│", borderColor);
-        result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
-                elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
-        result[1][10] = colorAndResetFg("│", borderColor);
-
-        result[2][0] = colorAndResetFg("├", borderColor);
-        result[2][1] = colorAndResetFg("─", borderColor);
-        result[2][2] = colorAndResetFg("┤", borderColor);
-        result[2][3] = emptyAnsi();
-        result[2][4] = emptyAnsi();
-        result[2][5] = colorAndResetFg(card.type, elementToColor(card.type));
-        result[2][6] = emptyAnsi();
-        result[2][7] = emptyAnsi();
-        result[2][8] = colorAndResetFg("├", borderColor);
-        result[2][9] = colorAndResetFg("─", borderColor);
-        result[2][10] = colorAndResetFg("┤", borderColor);
-
-        return result;
-    }
-
     /**
      * Creates a printable matrix with the border of the given color for a playable
      * card. Can be used as helper for printing resource, gold and starter cards.
@@ -682,6 +637,37 @@ public class CLICardUtils {
         result[3][8] = emptyAnsi();
         result[3][9] = emptyAnsi();
         result[3][10] = colorAndResetFg("│", borderColor);
+
+        return result;
+    }
+
+    /**
+     * Creates an Ansi matrix for printing the front of a resource card
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
+    public static Ansi[][] resourceCardFront(int id) {
+        LightResourceCard card = resourceCards.get(id);
+        Map<CornerPosition, String> corners = card.corners;
+
+        Ansi.Color borderColor = elementToColor(card.type);
+
+        Ansi[][] result = playableCard(borderColor);
+
+        result[1][1] = colorAndResetFg(corners.get(CornerPosition.TOP_LEFT),
+                elementToColor(corners.get(CornerPosition.TOP_LEFT)));
+        result[1][5] = ansi().a(card.points != 0 ? card.points : " ");
+        result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
+                elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
+
+        result[2][5] = colorAndResetFg(card.type, elementToColor(card.type));
+
+        result[3][1] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_LEFT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_LEFT)));
+        result[1][5] = ansi().a(card.points != 0 ? card.points : " ");
+        result[3][9] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_RIGHT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_RIGHT)));
 
         return result;
     }
