@@ -4,18 +4,18 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import it.polimi.ingsw.distributed.MainEventHandler;
-import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.distributed.client.RMIConnectionHandler;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
-import it.polimi.ingsw.distributed.server.GameServerActions;
-import it.polimi.ingsw.view.connection.RMIConnectionHandler;
+import it.polimi.ingsw.distributed.interfaces.GameServerActions;
+import it.polimi.ingsw.distributed.interfaces.MainViewActions;
+import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**
  * This class is the RMI implementation of the MainViewActions interface.
- * So it used from the server to perform actions on the client main view.
+ * It is used from the server to perform actions on the client main view.
  */
 public class RMIMainView extends UnicastRemoteObject implements MainViewActions {
 

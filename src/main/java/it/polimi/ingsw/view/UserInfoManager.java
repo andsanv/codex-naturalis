@@ -3,11 +3,12 @@ package it.polimi.ingsw.view;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Optional;
+
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import it.polimi.ingsw.controller.server.UserInfo;
 
 /**
  * UserInfoManager is used for loading and saving an UserInfo instance to file.
@@ -36,6 +37,8 @@ public class UserInfoManager {
 
     /**
      * Attempts to save UserInfo to file, to use it for future logins.
+     * 
+     * @param userInfo the UserInfo of the user
      * 
      * @return true if successful, false otherwise
      */

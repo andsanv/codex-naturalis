@@ -1,8 +1,8 @@
 package it.polimi.ingsw.distributed.server.socket;
 
-import it.polimi.ingsw.controller.server.Server;
-import it.polimi.ingsw.controller.server.ServerPrinter;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.Server;
+import it.polimi.ingsw.controller.ServerPrinter;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;

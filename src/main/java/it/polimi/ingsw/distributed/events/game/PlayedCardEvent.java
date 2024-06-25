@@ -1,9 +1,9 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /** This event is used to notify that a card has been played by a player. */
 public final class PlayedCardEvent extends GameEvent {

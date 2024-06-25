@@ -1,6 +1,6 @@
 package it.polimi.ingsw.distributed.commands.main;
 
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 
 /** 
  * This command is used to reconnect to the server. 

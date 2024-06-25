@@ -1,6 +1,6 @@
 package it.polimi.ingsw.distributed.events.main;
 
-import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**
  * This event is used to notify an error to a user in the main menu.

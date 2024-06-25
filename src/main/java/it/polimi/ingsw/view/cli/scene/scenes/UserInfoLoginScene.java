@@ -6,14 +6,14 @@ import static org.fusesource.jansi.Ansi.Color.BLUE;
 import java.util.Arrays;
 import java.util.Optional;
 
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.view.UserInfoManager;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
-import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 /**
  * Scene for logging in with the saved UserInfo.

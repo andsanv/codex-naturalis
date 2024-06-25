@@ -2,15 +2,15 @@ package it.polimi.ingsw.distributed.server.rmi;
 
 import java.io.IOException;
 
-import it.polimi.ingsw.controller.server.ServerPrinter;
-import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.client.Status;
+import it.polimi.ingsw.controller.ServerPrinter;
+import it.polimi.ingsw.controller.usermanagement.Status;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
-import it.polimi.ingsw.distributed.server.GameServerActions;
+import it.polimi.ingsw.distributed.interfaces.GameServerActions;
+import it.polimi.ingsw.distributed.interfaces.GameViewActions;
+import it.polimi.ingsw.distributed.interfaces.MainViewActions;
+import it.polimi.ingsw.distributed.server.Client;
 
 /**
  * This class is the RMI implementation of the Client abstract class.

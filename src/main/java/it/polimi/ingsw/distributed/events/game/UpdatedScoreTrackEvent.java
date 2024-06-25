@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /** This event is used to notify an update of a player's points. */
 public final class UpdatedScoreTrackEvent extends GameEvent {

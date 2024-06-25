@@ -1,9 +1,8 @@
 package it.polimi.ingsw.distributed.server.socket;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.ServerPrinter;
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.Client;
+import it.polimi.ingsw.controller.ServerPrinter;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.game.MessageCommand;
@@ -11,7 +10,8 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
-import it.polimi.ingsw.distributed.server.GameServerActions;
+import it.polimi.ingsw.distributed.interfaces.GameServerActions;
+import it.polimi.ingsw.distributed.server.Client;
 
 import java.io.EOFException;
 import java.io.IOException;

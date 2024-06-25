@@ -1,9 +1,9 @@
-package it.polimi.ingsw.distributed;
+package it.polimi.ingsw.view.interfaces;
 
 import java.util.List;
 import java.util.Map;
 
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;

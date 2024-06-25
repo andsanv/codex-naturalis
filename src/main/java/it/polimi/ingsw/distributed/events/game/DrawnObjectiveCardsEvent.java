@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /** Thi event notify that a player has drawn his possible objective cards. */
 public class DrawnObjectiveCardsEvent extends GameEvent {

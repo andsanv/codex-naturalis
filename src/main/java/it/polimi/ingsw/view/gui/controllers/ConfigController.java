@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.gui.controllers;
 
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.gui.GUI;

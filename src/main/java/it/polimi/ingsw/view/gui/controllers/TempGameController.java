@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
-import it.polimi.ingsw.controller.server.User;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Items;

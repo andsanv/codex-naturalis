@@ -1,7 +1,7 @@
-package it.polimi.ingsw.distributed;
+package it.polimi.ingsw.view.interfaces;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.player.PlayerToken;
 

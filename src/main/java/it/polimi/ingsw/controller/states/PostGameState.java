@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.usermanagement.Lobby;
 import it.polimi.ingsw.distributed.events.game.GameResultsEvent;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;

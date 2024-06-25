@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.fusesource.jansi.Ansi;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 
 /**
  * This class provides static methods for writing formatted text

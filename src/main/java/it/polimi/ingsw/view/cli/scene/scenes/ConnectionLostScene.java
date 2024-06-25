@@ -4,12 +4,12 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 
 import java.util.Arrays;
 
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
-import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 /**
  * The user is in this scene when he loses the connection to the server.

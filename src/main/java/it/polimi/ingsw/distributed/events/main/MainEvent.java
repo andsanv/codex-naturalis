@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.events.main;
 
-import it.polimi.ingsw.distributed.MainEventHandler;
 import it.polimi.ingsw.distributed.events.Event;
+import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**
  * THis abstract class represents a main event.

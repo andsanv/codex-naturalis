@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.client;
+package it.polimi.ingsw.distributed.interfaces;
 
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 

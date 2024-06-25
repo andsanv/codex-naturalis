@@ -1,8 +1,6 @@
-package it.polimi.ingsw.distributed.server;
+package it.polimi.ingsw.distributed.interfaces;
 
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 
 import java.io.IOException;

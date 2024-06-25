@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.commands.game;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.events.game.GroupMessageEvent;
 
 /**

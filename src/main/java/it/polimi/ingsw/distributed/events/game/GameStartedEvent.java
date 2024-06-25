@@ -2,10 +2,10 @@ package it.polimi.ingsw.distributed.events.game;
 
 import java.util.List;
 
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.GameEventHandler;
-import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
+import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**
  * Event to signal that the game has been started.

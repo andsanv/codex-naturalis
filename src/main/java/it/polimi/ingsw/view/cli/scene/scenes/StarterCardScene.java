@@ -4,13 +4,13 @@ import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
 
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.DrawStarterCardCommand;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
-import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 /**
  * Scene where the user can select the starter card.

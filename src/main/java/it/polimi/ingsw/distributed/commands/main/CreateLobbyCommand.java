@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.commands.main;
 
-import it.polimi.ingsw.controller.server.Server;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.Server;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 
 /** This command is used to create a new lobby. */
 public class CreateLobbyCommand extends MainCommand {

@@ -1,10 +1,10 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 import java.util.List;
 import java.util.Map;

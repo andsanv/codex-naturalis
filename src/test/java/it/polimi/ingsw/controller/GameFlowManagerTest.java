@@ -2,9 +2,9 @@ package it.polimi.ingsw.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import it.polimi.ingsw.controller.server.Lobby;
-import it.polimi.ingsw.controller.server.User;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.Lobby;
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.*;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;

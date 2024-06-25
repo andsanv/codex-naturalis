@@ -1,4 +1,4 @@
-package it.polimi.ingsw.distributed.client;
+package it.polimi.ingsw.controller.usermanagement;
 
 /**
  * This enum is used to represent the state of the client's connection.

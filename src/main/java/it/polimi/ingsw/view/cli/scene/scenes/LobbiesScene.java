@@ -4,6 +4,7 @@ import static org.fusesource.jansi.Ansi.Color.BLUE;
 
 import java.util.Arrays;
 
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.distributed.commands.main.LeaveLobbyCommand;
@@ -13,7 +14,6 @@ import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
-import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 /**
  * In this scene the user can join, leave and create lobbies.

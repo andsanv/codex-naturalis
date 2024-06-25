@@ -1,6 +1,6 @@
 package it.polimi.ingsw.distributed.events.main;
 
-import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**
  * Event send upon receiving an invalid create lobby command.

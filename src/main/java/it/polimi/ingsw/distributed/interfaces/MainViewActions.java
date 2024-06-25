@@ -1,7 +1,6 @@
-package it.polimi.ingsw.distributed.client;
+package it.polimi.ingsw.distributed.interfaces;
 
 import it.polimi.ingsw.distributed.events.main.MainEvent;
-import it.polimi.ingsw.distributed.server.GameServerActions;
 
 import java.io.IOException;
 import java.io.Serializable;

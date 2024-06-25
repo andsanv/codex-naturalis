@@ -1,6 +1,6 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /**
  * This class is used to notify about a general error in the game phases.

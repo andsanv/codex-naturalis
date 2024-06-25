@@ -10,13 +10,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.server.Server;
-import it.polimi.ingsw.controller.server.ServerPrinter;
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.client.GameViewActions;
-import it.polimi.ingsw.distributed.client.MainViewActions;
+import it.polimi.ingsw.controller.Server;
+import it.polimi.ingsw.controller.ServerPrinter;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
-import it.polimi.ingsw.distributed.server.MainServerActions;
+import it.polimi.ingsw.distributed.interfaces.GameViewActions;
+import it.polimi.ingsw.distributed.interfaces.MainServerActions;
+import it.polimi.ingsw.distributed.interfaces.MainViewActions;
 
 /**
  * This class represents the RMI Main server to connect to.

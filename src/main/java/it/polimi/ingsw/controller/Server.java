@@ -1,4 +1,4 @@
-package it.polimi.ingsw.controller.server;
+package it.polimi.ingsw.controller;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -14,10 +14,11 @@ import java.util.stream.Collectors;
 import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.distributed.Client;
-import it.polimi.ingsw.distributed.client.MainViewActions;
-import it.polimi.ingsw.distributed.client.Status;
+import it.polimi.ingsw.controller.usermanagement.Lobby;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.controller.usermanagement.Status;
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.game.GameStartedEvent;
 import it.polimi.ingsw.distributed.events.main.CreateLobbyError;
@@ -29,6 +30,8 @@ import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
 import it.polimi.ingsw.distributed.events.main.StartGameError;
+import it.polimi.ingsw.distributed.interfaces.MainViewActions;
+import it.polimi.ingsw.distributed.server.Client;
 import it.polimi.ingsw.distributed.server.rmi.RMIGameServer;
 import it.polimi.ingsw.distributed.server.rmi.RMIHandler;
 import it.polimi.ingsw.distributed.server.rmi.RMIMainServer;

@@ -1,8 +1,9 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
+
 import java.util.Map;
 
 /** This event is used to notify about a player's updated elements' map. */

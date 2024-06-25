@@ -1,10 +1,6 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.observer.Observer;
-import it.polimi.ingsw.controller.server.Lobby;
-import it.polimi.ingsw.controller.server.ServerPrinter;
-import it.polimi.ingsw.controller.server.User;
-import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.controller.states.DrawCardState;
 import it.polimi.ingsw.controller.states.GameState;
 import it.polimi.ingsw.controller.states.InitializationState;
@@ -13,6 +9,9 @@ import it.polimi.ingsw.controller.states.PlayCardState;
 import it.polimi.ingsw.controller.states.PostGameState;
 import it.polimi.ingsw.controller.states.StarterCardSelectionState;
 import it.polimi.ingsw.controller.states.TokenSelectionState;
+import it.polimi.ingsw.controller.usermanagement.Lobby;
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.game.MessageCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;

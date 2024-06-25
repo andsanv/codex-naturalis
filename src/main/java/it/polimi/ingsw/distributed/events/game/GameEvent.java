@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.distributed.events.Event;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /**
  * This abstract class represents a game event.

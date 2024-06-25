@@ -1,7 +1,7 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.controller.server.UserInfo;
-import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /**
  * Event for a message that is sent to all player in the lobby.

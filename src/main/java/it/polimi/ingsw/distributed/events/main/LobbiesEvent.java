@@ -1,7 +1,8 @@
 package it.polimi.ingsw.distributed.events.main;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.distributed.MainEventHandler;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.view.interfaces.MainEventHandler;
+
 import java.util.List;
 
 /** This event is used to notify about the lobbies available. */

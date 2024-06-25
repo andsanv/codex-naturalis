@@ -14,8 +14,9 @@ import java.util.stream.Collectors;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-import it.polimi.ingsw.controller.server.LobbyInfo;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
@@ -33,7 +34,6 @@ import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
 import it.polimi.ingsw.view.cli.scene.scenes.StarterCardScene;
 import it.polimi.ingsw.view.cli.scene.scenes.TokenSelectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
-import it.polimi.ingsw.view.connection.ConnectionHandler;
 
 public class CLI implements UI {
     public static void main(String[] args) {

@@ -1,15 +1,16 @@
-package it.polimi.ingsw.view.connection;
+package it.polimi.ingsw.distributed.client;
 
 import it.polimi.ingsw.Config;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.client.rmi.CommandConsumer;
 import it.polimi.ingsw.distributed.client.rmi.RMIGameView;
 import it.polimi.ingsw.distributed.client.rmi.RMIMainView;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
-import it.polimi.ingsw.distributed.server.GameServerActions;
-import it.polimi.ingsw.distributed.server.MainServerActions;
+import it.polimi.ingsw.distributed.interfaces.GameServerActions;
+import it.polimi.ingsw.distributed.interfaces.MainServerActions;
 import it.polimi.ingsw.view.UI;
 
 import java.io.IOException;

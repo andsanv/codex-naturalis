@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.connection;
+package it.polimi.ingsw.distributed.client;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

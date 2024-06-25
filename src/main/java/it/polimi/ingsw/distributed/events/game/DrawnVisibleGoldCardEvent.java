@@ -2,9 +2,9 @@ package it.polimi.ingsw.distributed.events.game;
 
 import java.util.Optional;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /**
  * This event is used to notify that a card has been drawn from visible gold

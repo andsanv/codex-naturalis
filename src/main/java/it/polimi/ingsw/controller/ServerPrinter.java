@@ -1,4 +1,4 @@
-package it.polimi.ingsw.controller.server;
+package it.polimi.ingsw.controller;
 
 import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.CYAN;

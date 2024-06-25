@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.server.Server;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.Server;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.EndedTokenPhaseEvent;
 import it.polimi.ingsw.distributed.events.game.GameErrorEvent;

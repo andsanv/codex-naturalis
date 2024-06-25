@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
 import it.polimi.ingsw.controller.observer.Observer;
-import it.polimi.ingsw.controller.server.UserInfo;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.events.game.EndedInitializationPhaseEvent;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;

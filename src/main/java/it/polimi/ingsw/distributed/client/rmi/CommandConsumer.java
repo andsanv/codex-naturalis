@@ -1,5 +1,6 @@
-package it.polimi.ingsw.view.connection;
+package it.polimi.ingsw.distributed.client.rmi;
 
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import java.util.concurrent.BlockingQueue;

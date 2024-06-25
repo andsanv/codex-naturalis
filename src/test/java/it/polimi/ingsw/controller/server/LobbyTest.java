@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import it.polimi.ingsw.controller.usermanagement.Lobby;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+
 public class LobbyTest {
     @Test
     void testFullLobby() {

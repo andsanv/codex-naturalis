@@ -1,6 +1,6 @@
 package it.polimi.ingsw.distributed.events.game;
 
-import it.polimi.ingsw.distributed.GameEventHandler;
+import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 /**
  * This event is used to notify the clients about the two chosen common
