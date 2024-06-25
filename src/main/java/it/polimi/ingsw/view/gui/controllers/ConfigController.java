@@ -142,4 +142,10 @@ public class ConfigController extends Controller {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleGameStarted'");
     }
+
+    @Override
+    public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
+    }
 }

@@ -8,6 +8,6 @@ public class EndedObjectiveCardPhaseEvent extends GameEvent {
      * {@inheritDoc}
      */
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleEndedTokenPhaseEvent();
+        gameUpdateHandler.handleEndedObjectiveCardPhaseEvent();
     }
 }

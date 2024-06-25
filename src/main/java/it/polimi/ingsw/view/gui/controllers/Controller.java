@@ -104,11 +104,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleEndedTokenPhaseEvent() {
-        return;
-    }
-
-    @Override
     public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId) {
         return;
     }

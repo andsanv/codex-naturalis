@@ -435,12 +435,6 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleEndedTokenPhaseEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
-    }
-
-    @Override
     public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handlePlayedCardEvent'");
@@ -578,5 +572,11 @@ public class CLI implements UI {
 
         sceneManager.transition(TokenSelectionScene.class);
         resetPrompt();
+    }
+
+    @Override
+    public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
     }
 }

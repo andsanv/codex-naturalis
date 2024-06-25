@@ -9,6 +9,6 @@ public class EndedStarterCardPhaseEvent extends GameEvent {
      * {@inheritDoc}
      */
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleEndedTokenPhaseEvent();
+        gameUpdateHandler.handleEndedStarterCardPhaseEvent();
     }
 }

@@ -171,8 +171,11 @@ public interface GameEventHandler {
     /**
      * This method handles the received update about the end of the token selection
      * phase
+     * 
+     * @param userInfoToToken  map from users to their tokens
+     * @param timeLimitReached flag that is true if the time limit is reached
      */
-    public void handleEndedTokenPhaseEvent();
+    public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached);
 
     // TODO: change name to the method. It is not clear what it does
     public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId);
