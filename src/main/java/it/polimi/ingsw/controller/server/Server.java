@@ -2,7 +2,6 @@ package it.polimi.ingsw.controller.server;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +15,6 @@ import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.GameFlowManager;
-import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.distributed.Client;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
@@ -281,6 +279,7 @@ public enum Server {
                                 () -> connectedPlayers.get(e.getKey()).getStatus() == Status.IN_GAME));
 
         GameFlowManager gameFlowManager = new GameFlowManager(lobby, isConnected, new CopyOnWriteArrayList<>(clients));
+        executorService.submit(gameFlowManager);
         lobby.setGameFlowManager(gameFlowManager);
 
         setUpClientsForGame(clients, gameFlowManager);

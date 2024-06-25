@@ -104,7 +104,7 @@ public class TokenSelectionState extends GameState {
                             .filter(u -> !userInfoToToken.containsKey(u))
                             .forEach(
                                     u -> userInfoToToken.put(u,
-                                            availableTokens.get(random.nextInt(availableTokens.size()))));
+                                            availableTokens.remove(random.nextInt(availableTokens.size()))));
 
                     break;
                 }
@@ -125,7 +125,7 @@ public class TokenSelectionState extends GameState {
 
         userInfoToToken.forEach((id, playerToken) -> playerTokens.add(playerToken));
         gameFlowManager.setState(gameFlowManager.starterCardSelectionState);
-        gameFlowManager.notify(new EndedTokenPhaseEvent());
+        gameFlowManager.notify(new EndedTokenPhaseEvent(new HashMap<>(userInfoToToken), timeLimitReached.get()));
         return new HashMap<>(userInfoToToken);
     }
 
