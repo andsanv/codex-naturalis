@@ -86,7 +86,7 @@ public class TokenSelectionScene extends Scene {
             return;
         }
 
-        if (cli.lastGameError != null) {
+        if (cli.lastGameError.get() != null) {
             CLIPrinter.displayError(cli.lastGameError.get());
             cli.lastGameError.set(null);
             return;

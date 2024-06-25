@@ -295,13 +295,15 @@ public class CLI implements UI {
      */
     public void resetAttributesAfterMatch() {
         synchronized (tokenToUserLock) {
-            tokenToUser = new HashMap<>();
+            tokenToUser.clear();
         }
 
         starterCard.set(null);
 
         directMessages.clear();
         groupMessages.clear();
+
+        lastGameError.set(null);
     }
 
     /**
@@ -563,11 +565,11 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
-        synchronized(slimGameModelLock) {
+        synchronized (slimGameModelLock) {
             this.slimGameModel = slimGameModel;
         }
 
-        if(sceneManager.getCurrentScene() != GameScene.class) {
+        if (sceneManager.getCurrentScene() != GameScene.class) {
             sceneManager.transition(GameScene.class);
         }
     }
