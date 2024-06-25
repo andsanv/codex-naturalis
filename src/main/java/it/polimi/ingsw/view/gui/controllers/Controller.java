@@ -99,8 +99,23 @@ public abstract class Controller implements UI {
     }
 
     @Override
+    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
+
+    }
+
+    @Override
+    public void handleGroupMessageEvent(UserInfo sender, String message) {
+
+    }
+
+    @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
         return;
+    }
+
+    @Override
+    public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
+
     }
 
     @Override
@@ -135,6 +150,21 @@ public abstract class Controller implements UI {
     }
 
     @Override
+    public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+
+    }
+
+    @Override
+    public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
+
+    }
+
+    @Override
+    public void handleLastRoundEvent() {
+
+    }
+
+    @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
         return;
     }
@@ -152,5 +182,30 @@ public abstract class Controller implements UI {
     @Override
     public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
         return;
+    }
+
+    @Override
+    public void handleJoinLobbyError(String error) {
+        return;
+    }
+
+    @Override
+    public void handleStartGameError(String message) {
+
+    }
+
+    @Override
+    public void handleCreateLobbyError(String message) {
+
+    }
+
+    @Override
+    public void handleLeaveLobbyError(String message) {
+
+    }
+
+    @Override
+    public void handleGameStartedEvent(List<UserInfo> users) {
+
     }
 }
