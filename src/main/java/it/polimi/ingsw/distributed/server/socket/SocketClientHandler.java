@@ -65,7 +65,7 @@ public class SocketClientHandler extends Client implements Runnable {
       try {
         Command command = (Command) in.readObject();
 
-        ServerPrinter.displayDebug("Received command: " + command);
+        ServerPrinter.displayDebug("Received command: " + command.getClass() + " from client " + this.userInfo.get());
 
         if (command instanceof GameCommand) {
           if (gameFlowManager == null) {
@@ -84,13 +84,13 @@ public class SocketClientHandler extends Client implements Runnable {
           ServerPrinter.displayWarning("Unrecognized command: " + command);
         }
       } catch (EOFException e) {
-        ServerPrinter.displayError("Error while reading command");
-        ServerPrinter.displayError("Setting client as disconnected");
+        ServerPrinter.displayError("Error while reading command to " + this.userInfo.get());
+        ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         setDisconnectionStatus();
         break;
       } catch (IOException | ClassNotFoundException e) {
-        ServerPrinter.displayError("Error while reading command");
-        ServerPrinter.displayError("Setting client as disconnected");
+        ServerPrinter.displayError("Error while reading command to " + this.userInfo.get());
+        ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         setDisconnectionStatus();
         break;
       }
@@ -127,7 +127,7 @@ public class SocketClientHandler extends Client implements Runnable {
    */
   public void setGameFlowManager(GameFlowManager gameFlowManager) {
     this.gameFlowManager = gameFlowManager;
-    ServerPrinter.displayDebug("GameFlowManager set");
+    ServerPrinter.displayDebug("GameFlowManager set on client " + this.userInfo.get());
   }
 
   /**
@@ -139,10 +139,10 @@ public class SocketClientHandler extends Client implements Runnable {
   public void update(GameEvent event) {
     try {
       transmitEvent(event);
-      ServerPrinter.displayDebug("Sent update");
+      ServerPrinter.displayDebug("Sent update event " + event.getClass() + " to client " + this.userInfo.get());
     } catch (IOException e) {
       setDisconnectionStatus();
-      ServerPrinter.displayError("Failed to send update");
+      ServerPrinter.displayError("Failed to send update to client " + this.userInfo.get());
     }
   }
 

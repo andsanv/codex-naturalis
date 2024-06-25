@@ -37,15 +37,15 @@ public class RMIHandler extends Client {
     @Override
     public void update(GameEvent event) {
         if (isDisconnected()){
-            ServerPrinter.displayError("Client is disconnected cannot send event " + event);
+            ServerPrinter.displayError("Client is disconnected cannot send event " + event.getClass() + " to user " + this.userInfo.get());
             return;
         }
         try {
             rmiGameView.transmitEvent(event);
         } catch (IOException e) {
             setDisconnectionStatus();
-            ServerPrinter.displayError("Failed to send update event " + event);
-            ServerPrinter.displayError("Setting client as disconnected");
+            ServerPrinter.displayError("Failed to send update event " + event.getClass() + " to user " + this.userInfo.get());
+            ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         }
 
     }
@@ -54,7 +54,7 @@ public class RMIHandler extends Client {
     @Override
     public void trasmitEvent(MainEvent event) {
         if (isDisconnected()){
-            ServerPrinter.displayError("Client is disconnected cannot send event " + event);
+            ServerPrinter.displayError("Client is disconnected cannot send event " + event.getClass() + " to client " + this.userInfo.get());
             return;
         }
         try {
@@ -64,22 +64,22 @@ public class RMIHandler extends Client {
         } catch (IOException e) {
             setDisconnectionStatus();
             ServerPrinter.displayError("Failed to send event " + event);
-            ServerPrinter.displayError("Setting client as disconnected");
+            ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         }
     }
 
     @Override
     public void setGameServer(GameServerActions gameServer) {
         if (isDisconnected()){
-            ServerPrinter.displayError("Client is disconnected cannot set game server");
+            ServerPrinter.displayError("Client " + this.userInfo.get() + " is disconnected cannot set game server");
             return;
         }
         try {
             rmiMainView.setGameServer(gameServer);
         } catch (IOException e) {
             setDisconnectionStatus();
-            ServerPrinter.displayError("Failed to set game server");
-            ServerPrinter.displayError("Setting client as disconnected");
+            ServerPrinter.displayError("Failed to set game server on client " + this.userInfo.get());
+            ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         }
     }
 
@@ -92,8 +92,8 @@ public class RMIHandler extends Client {
             rmiGameView.transmitEvent(event);
         } catch (IOException e) {
             setDisconnectionStatus();
-            ServerPrinter.displayError("Failed to send event " + event);
-            ServerPrinter.displayError("Setting client as disconnected");
+            ServerPrinter.displayError("Failed to send event " + event.getClass() + " to client " + this.userInfo.get());
+            ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         }
     }
 
