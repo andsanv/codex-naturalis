@@ -135,6 +135,8 @@ public class SceneManager {
             this.currentScene.availableCommands();
         } else if (args[0].equalsIgnoreCase("quit")) {
             this.isRunning.set(false);
+        } else if (cli.inGame.get() && args[0].equalsIgnoreCase("send")) {
+            // TODO handle chat message
         } else {
             this.currentScene.handleCommand(args);
         }
