@@ -60,7 +60,8 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	/**
 	 * This method keeps listening for events from the server.
 	 * Based on the type of the event, it executes the event, except for
-	 * KeepAliveEvent.
+	 * KeepAliveEvent that will check if the timeout between the new and the
+	 * previous one is exceeded.
 	 * If a problem occurs, the method quits the loop.
 	 */
 	private void createListenerThread() {
@@ -71,7 +72,15 @@ public class SocketConnectionHandler extends ConnectionHandler {
 							Event event = (Event) inputStream.readObject();
 
 							if (event instanceof KeepAliveEvent) {
-								;
+								if (this.lastKeepAliveTime != 0 && System.currentTimeMillis()
+										- this.lastKeepAliveTime > ConnectionHandler.MILLISEC_TIME_OUT)
+									throw new IOException();
+
+								this.lastKeepAliveTime = System.currentTimeMillis();
+
+								System.out.println(System.currentTimeMillis() - this.lastKeepAliveTime);
+								System.out.println(System.currentTimeMillis());
+
 							} else if (event instanceof GameEvent) {
 								GameEvent gameEvent = (GameEvent) event;
 								gameEvent.execute(userInterface);

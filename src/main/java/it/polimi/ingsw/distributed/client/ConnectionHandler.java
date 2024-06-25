@@ -20,6 +20,18 @@ public abstract class ConnectionHandler {
    */
   protected final UI userInterface;
 
+  /**
+	 * This field is used to check if the next KeepAliveEvent has come after the
+	 * timeout.
+	 */
+	protected long lastKeepAliveTime = 0L;
+
+	/**
+	 * This field represents the maximum span between two KeepAliveEvent, if the
+	 * time is exceeded the connection is considered lost.
+	 */
+	protected static long MILLISEC_TIME_OUT = 2000;
+
   public ConnectionHandler(UI userInterface) {
     this.userInterface = userInterface;
   }
