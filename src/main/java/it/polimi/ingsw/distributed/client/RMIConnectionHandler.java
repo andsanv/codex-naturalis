@@ -78,6 +78,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       this.isConnected.set(true);
     } catch (Exception e) {
       this.isConnected.set(false);
+      this.userInterface.handleDisconnection();
       throw new Exception("Failed to connect to RMI server");
     }
   }
@@ -130,6 +131,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
         return true;
       } catch (IOException e) {
         this.isConnected.set(false);
+        this.userInterface.handleDisconnection();
         return false;
       }
     } else if (mainCommand instanceof ReconnectionCommand) {
@@ -149,6 +151,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
         checkConnection();
       } catch (IOException e) {
         this.isConnected.set(false);
+        this.userInterface.handleDisconnection();
         return false;
       }
     } else {
@@ -156,6 +159,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
         mainServerActions.transmitCommand(mainCommand);
       } catch (Exception e) {
         this.isConnected.set(false);
+        this.userInterface.handleDisconnection();
         return false;
       }
     }
@@ -236,6 +240,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
           while (true) {
             if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
               this.isConnected.set(false);
+							this.userInterface.handleDisconnection();
               break;
             }
 
@@ -244,6 +249,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
               this.isConnected.set(false);
+							this.userInterface.handleDisconnection();
               break;
 						}
           }

@@ -68,6 +68,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 						if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
 							System.out.println("Imposto a falso");
 							this.isConnected.set(false);
+							this.userInterface.handleDisconnection();
 							this.close();
 							break;
 						}
@@ -77,6 +78,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 							this.isConnected.set(false);
+							this.userInterface.handleDisconnection();
 							this.close();
 							break;
 						}
@@ -111,10 +113,12 @@ public class SocketConnectionHandler extends ConnectionHandler {
 							}
 						} catch (IOException e) {
 							this.isConnected.set(false);
+							this.userInterface.handleDisconnection();
 							this.close();
 							break;
 						} catch (ClassNotFoundException e) {
 							this.isConnected.set(false);
+							this.userInterface.handleDisconnection();
 							this.close();
 							break;
 						}
@@ -136,6 +140,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 		if (userInterface.getUserInfo() == null && !(command instanceof ReconnectionCommand)
 				&& !(command instanceof ConnectionCommand)) {
 			this.isConnected.set(false);
+			this.userInterface.handleDisconnection();
 			this.close();
 			return false;
 		}
@@ -144,6 +149,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 			outputStream.reset();
 		} catch (IOException e) {
 			this.isConnected.set(false);
+			this.userInterface.handleDisconnection();
 			this.close();
 			return false;
 		}
@@ -163,6 +169,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	public boolean sendToGameServer(GameCommand command) {
 		if (userInterface.getUserInfo() == null) {
 			this.isConnected.set(false);
+			this.userInterface.handleDisconnection();
 			this.close();
 			return false;
 		}
@@ -171,6 +178,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 			outputStream.reset();
 		} catch (IOException e) {
 			this.isConnected.set(false);
+			this.userInterface.handleDisconnection();
 			this.close();
 			return false;
 		}
@@ -269,11 +277,13 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 					} catch (IOException e) {
 						this.isConnected.set(false);
+						this.userInterface.handleDisconnection();
 						this.close();
 
 						break;
 					} catch (ClassNotFoundException e) {
 						this.isConnected.set(false);
+						this.userInterface.handleDisconnection();
 						this.close();
 
 						break;
@@ -294,6 +304,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						this.isConnected.set(false);
+						this.userInterface.handleDisconnection();
 						this.close();
 					}
 				}
@@ -308,6 +319,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 		} catch (IOException e) {
 			this.isConnected.set(false);
+			this.userInterface.handleDisconnection();
 			this.close();
 			return false;
 		}
@@ -321,7 +333,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	 * @return true if the socket was closed successfully, false otherwise
 	 */
 	public boolean close() {
-
 		if (socket != null) {
 			try {
 				outputStream.close();
