@@ -7,9 +7,12 @@ import java.util.Arrays;
 
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.DrawStarterCardCommand;
+import it.polimi.ingsw.distributed.commands.game.SelectStarterCardSideCommand;
+import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
+import it.polimi.ingsw.view.cli.TUICardPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
@@ -42,6 +45,15 @@ public class StarterCardScene extends Scene {
                         sceneManager.transition(ConnectionLostScene.class);
                     }
 
+                    if (cli.lastGameError.get() != null) {
+                        CLIPrinter.displayError(cli.lastGameError.get());
+                        cli.lastGameError.set(null);
+                        return;
+                    }
+
+                    TUICardPrinter.print(0, 0, cli.starterCard.get().first, CardSide.FRONT);
+                    TUICardPrinter.print(0, 10, cli.starterCard.get().first, CardSide.BACK);
+
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
                     if (args.length != 1)
@@ -50,7 +62,33 @@ public class StarterCardScene extends Scene {
                     if (!cardDrawn)
                         CLIPrinter.displayError("Draw a card first");
 
+                    CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
+                    cli.waitingGameEvent.set(true);
+                    connectionHandler
+                            .sendToGameServer(new SelectStarterCardSideCommand(cli.token.get(), CardSide.FRONT));
+                    if (!CLIPrinter.displayLoadingMessage("Selecting side", cli.waitingGameEvent,
+                            connectionHandler.isConnected, null)) {
+                        sceneManager.transition(ConnectionLostScene.class);
+                    }
+
+                    if (cli.lastGameError.get() != null) {
+                        CLIPrinter.displayError(cli.lastGameError.get());
+                        cli.lastGameError.set(null);
+                        return;
+                    }
+
+                    cli.waitingGameEvent.set(true);
+                    if (!CLIPrinter.displayLoadingMessage(
+                            "Waiting for all users to draw and choose the side of their starter card",
+                            cli.waitingGameEvent, connectionHandler.isConnected, null)) {
+                        sceneManager.transition(ConnectionLostScene.class);
+                        return;
+                    }
+
+                    if (sceneManager.getCurrentScene() != ObjectiveCardScene.class)
+                        sceneManager.transition(ObjectiveCardScene.class);
 
                 }),
                 new CLICommand("back", "to play the back of the drawn card", () -> {
@@ -60,6 +98,33 @@ public class StarterCardScene extends Scene {
                     if (!cardDrawn)
                         CLIPrinter.displayError("Draw a card first");
 
+                    CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+                    cli.waitingGameEvent.set(true);
+                    connectionHandler
+                            .sendToGameServer(new SelectStarterCardSideCommand(cli.token.get(), CardSide.BACK));
+                    if (!CLIPrinter.displayLoadingMessage("Selecting side", cli.waitingGameEvent,
+                            connectionHandler.isConnected, null)) {
+                        sceneManager.transition(ConnectionLostScene.class);
+                    }
+
+                    if (cli.lastGameError.get() != null) {
+                        CLIPrinter.displayError(cli.lastGameError.get());
+                        cli.lastGameError.set(null);
+                        return;
+                    }
+
+                    cli.waitingGameEvent.set(true);
+                    if (!CLIPrinter.displayLoadingMessage(
+                            "Waiting for all users to draw and choose the side of their starter card",
+                            cli.waitingGameEvent, connectionHandler.isConnected, null)) {
+                        sceneManager.transition(ConnectionLostScene.class);
+                        return;
+                    }
+
+                    if (sceneManager.getCurrentScene() != ObjectiveCardScene.class)
+                        sceneManager.transition(ObjectiveCardScene.class);
                 }));
     }
 

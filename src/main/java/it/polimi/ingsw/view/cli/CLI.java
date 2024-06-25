@@ -29,6 +29,7 @@ import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionLostScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
+import it.polimi.ingsw.view.cli.scene.scenes.GameScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ObjectiveCardScene;
@@ -185,9 +186,46 @@ public class CLI implements UI {
     public final AtomicReference<PlayerToken> token = new AtomicReference<>(null);
 
     /**
-     * Token that the player has selected.
+     * Atomic refererce for the starter card.
      */
-    public final AtomicInteger lastDrawnCardId = new AtomicInteger(-1);
+    public final AtomicReference<Pair<Integer, CardSide>> starterCard = new AtomicReference<>(null);
+
+    /**
+     * Atomic refererce for the drawn secret objectives.
+     */
+    public final AtomicReference<Pair<Integer, Integer>> secretObjectives = new AtomicReference<>(null);
+
+    /**
+     * List with direct messages saved as a pair with the sender of the direct
+     * message and the message itself
+     */
+    private List<Pair<UserInfo, String>> directMessages = new ArrayList<>();
+
+    /**
+     * Direct messages object for synchronization
+     */
+    public final Object directMessagesLock = new Object();
+
+    /**
+     * List with group messages saved as a pair with the sender of the group message
+     * and the message itself
+     */
+    private List<Pair<UserInfo, String>> groupMessages = new ArrayList<>();
+
+    /**
+     * Group messages object for synchronization
+     */
+    public final Object groupMessagesLock = new Object();
+
+    /**
+     * SlimGameModel of the current match
+     */
+    private SlimGameModel slimGameModel;
+
+    /**
+     * Object to correctly synchronize when accessing the SlimGameModel
+     */
+    public final Object slimGameModelLock = new Object();
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -207,6 +245,7 @@ public class CLI implements UI {
         sceneManager.registerScene(new TokenSelectionScene(sceneManager));
         sceneManager.registerScene(new StarterCardScene(sceneManager));
         sceneManager.registerScene(new ObjectiveCardScene(sceneManager));
+        sceneManager.registerScene(new GameScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -259,7 +298,32 @@ public class CLI implements UI {
             tokenToUser = new HashMap<>();
         }
 
-        lastDrawnCardId.set(-1);
+        starterCard.set(null);
+
+        directMessages.clear();
+        groupMessages.clear();
+    }
+
+    /**
+     * Direct messages getter
+     * 
+     * @return a copy of the list of direct messages
+     */
+    public List<Pair<UserInfo, String>> getDirectMessages() {
+        synchronized (directMessagesLock) {
+            return new ArrayList<>(directMessages);
+        }
+    }
+
+    /**
+     * Group messages getter
+     * 
+     * @return a copy of the list of group messages
+     */
+    public List<Pair<UserInfo, String>> getGroupMessages() {
+        synchronized (groupMessagesLock) {
+            return new ArrayList<>(groupMessages);
+        }
     }
 
     /**
@@ -396,28 +460,33 @@ public class CLI implements UI {
         if (playerToken != this.token.get())
             return;
 
-        lastDrawnCardId.set(drawnCardId);
+        starterCard.set(new Pair<Integer, CardSide>(drawnCardId, null));
         waitingGameEvent.set(false);
     }
 
     @Override
     public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleChosenStarterCardSideEvent'");
+        if (playerToken != this.token.get())
+            return;
+
+        starterCard.set(new Pair<Integer, CardSide>(starterCard.get().first, cardSide));
+        waitingGameEvent.set(false);
     }
 
     @Override
     public void handleEndedStarterCardPhaseEvent() {
         waitingGameEvent.set(false);
 
-        sceneManager.transition(ObjectiveCardScene.class);
-        resetPrompt();
+        if (sceneManager.getCurrentScene() != StarterCardScene.class) {
+            sceneManager.transition(StarterCardScene.class);
+            resetPrompt();
+        }
     }
 
     @Override
     public void handleDrawnObjectiveCardsEvent(PlayerToken playerToken, int drawnCardId, int secondDrawnCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnObjectiveCardsEvent'");
+        secretObjectives.set(new Pair<Integer, Integer>(drawnCardId, secondDrawnCardId));
+        waitingGameEvent.set(false);
     }
 
     @Override
@@ -496,8 +565,13 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
+        synchronized(slimGameModelLock) {
+            this.slimGameModel = slimGameModel;
+        }
+
+        if(sceneManager.getCurrentScene() != GameScene.class) {
+            sceneManager.transition(GameScene.class);
+        }
     }
 
     @Override
@@ -572,14 +646,19 @@ public class CLI implements UI {
 
     @Override
     public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDirectMessageEvent'");
+        if (!sender.equals(getUserInfo()))
+            return;
+
+        synchronized (directMessagesLock) {
+            directMessages.add(new Pair<UserInfo, String>(sender, message));
+        }
     }
 
     @Override
     public void handleGroupMessageEvent(UserInfo sender, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
+        synchronized (groupMessagesLock) {
+            groupMessages.add(new Pair<UserInfo, String>(sender, message));
+        }
     }
 
     @Override

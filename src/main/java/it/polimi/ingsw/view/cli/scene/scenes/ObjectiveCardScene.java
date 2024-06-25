@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.DrawObjectiveCardsCommand;
+import it.polimi.ingsw.distributed.commands.game.SelectObjectiveCardCommand;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
@@ -56,7 +57,7 @@ public class ObjectiveCardScene extends Scene {
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
-                    connectionHandler.sendToGameServer(new DrawObjectiveCardsCommand(cli.token.get()));
+                    connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 0));
                     if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
                             connectionHandler.isConnected, null)) {
                         sceneManager.transition(ConnectionLostScene.class);
@@ -85,7 +86,7 @@ public class ObjectiveCardScene extends Scene {
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
-                    connectionHandler.sendToGameServer(new DrawObjectiveCardsCommand(cli.token.get()));
+                    connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 1));
                     if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
                             connectionHandler.isConnected, null)) {
                         sceneManager.transition(ConnectionLostScene.class);
