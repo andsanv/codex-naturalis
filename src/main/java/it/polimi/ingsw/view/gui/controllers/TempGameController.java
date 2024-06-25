@@ -766,7 +766,7 @@ public class TempGameController {
         // put a placeholder in the hand
         ImageView cardImageView = ((ImageView) tokenToHandHBox.get(playerToken).getChildren().get(handIndex));
         cardImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-        cardImageView.setDisable(true);
+        currentHandHBox.setDisable(true);
 
         // update model
         slimGameModel.tokenToHand.get(playerToken).set(handIndex, null);
@@ -793,7 +793,6 @@ public class TempGameController {
         // update view
         ImageView cardImageView = (ImageView) tokenToHandHBox.get(selfPlayerToken).getChildren().get(handIndex);
         cardImageView.setImage(getCardImage(cardId, CardSide.FRONT));
-        cardImageView.setDisable(false);
         if (!slimGameModel.tokenToHand.get(selfPlayerToken).contains(null)) disableDecks(); // disable decks if hand is full
     }
 
