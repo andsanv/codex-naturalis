@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Timer;
@@ -104,7 +105,7 @@ public class TokenSelectionState extends GameState {
                             .filter(u -> !userInfoToToken.containsKey(u))
                             .forEach(
                                     u -> userInfoToToken.put(u,
-                                            availableTokens.remove(random.nextInt(availableTokens.size()))));
+                                            availableTokens.get(random.nextInt(availableTokens.size()))));
 
                     break;
                 }
@@ -150,7 +151,10 @@ public class TokenSelectionState extends GameState {
 
             if (userInfoToToken.containsValue(playerToken)) {
                 Server.INSTANCE.sendGameEvent(player,
-                        new GameErrorEvent("The " + userInfoToToken.get(player).toString().toLowerCase()
+                        new GameErrorEvent("The " +
+                                (userInfoToToken.containsKey(player)
+                                        ? userInfoToToken.get(player).toString().toLowerCase()
+                                        : "")
                                 + " token has already been selected by another player"));
                 return false;
             }
