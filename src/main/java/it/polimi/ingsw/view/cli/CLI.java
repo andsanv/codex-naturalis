@@ -509,8 +509,6 @@ public class CLI implements UI {
 
     @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
-        System.out.println(userInfo + " " + assignedToken);
-
         synchronized (tokenToUserLock) {
             tokenToUser.put(assignedToken, player);
         }

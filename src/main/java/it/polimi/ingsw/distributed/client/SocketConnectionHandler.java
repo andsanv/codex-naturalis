@@ -78,8 +78,8 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 								this.lastKeepAliveTime = System.currentTimeMillis();
 
-								System.out.println(System.currentTimeMillis() - this.lastKeepAliveTime);
-								System.out.println(System.currentTimeMillis());
+								// System.out.println(System.currentTimeMillis() - this.lastKeepAliveTime);
+								// System.out.println(System.currentTimeMillis());
 
 							} else if (event instanceof GameEvent) {
 								GameEvent gameEvent = (GameEvent) event;
