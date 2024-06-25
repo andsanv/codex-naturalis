@@ -346,7 +346,7 @@ public enum Server {
                     GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
                     client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
                             gameFlowManager.userInfoToToken));
-                            
+
                     setUpClientsForGame(Arrays.asList(client), gameFlowManager);
 
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping
@@ -365,9 +365,13 @@ public enum Server {
                     client.setStatus(Status.DISCONNETED_FROM_GAME);
                 } else {
                     client.setStatus(Status.OFFLINE);
+                    Lobby.removeUserIfGameNotStarted(client.userInfo.get());
                 }
             }
-        } else {
+        }
+        if (!connectedPlayers.containsKey(userInfo)
+                || (connectedPlayers.contains(client) && (connectedPlayers.get(userInfo).getStatus() == Status.IN_MENU
+                        || connectedPlayers.get(userInfo).getStatus() == Status.IN_GAME))) {
             ServerPrinter.displayInfo(
                     "Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
             this.clientSignUp(userInfo.name, client);
@@ -391,6 +395,7 @@ public enum Server {
                 client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
             } catch (IOException e) {
                 client.setStatus(Status.OFFLINE);
+                Lobby.removeUserIfGameNotStarted(client.userInfo.get());
                 ServerPrinter.displayError("Couldn't send userInfo event to " + userInfo);
                 ServerPrinter.displayError("Setting " + userInfo + " disconnected");
                 e.printStackTrace();
@@ -442,6 +447,7 @@ public enum Server {
                     client.trasmitEvent(event);
                 } catch (IOException e) {
                     client.setStatus(Status.OFFLINE);
+                    Lobby.removeUserIfGameNotStarted(client.userInfo.get());
                     ServerPrinter.displayDebug("Could not send " + event.getClass().getName() + " to " + userInfo);
                 }
             }

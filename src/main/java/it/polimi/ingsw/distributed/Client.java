@@ -1,6 +1,10 @@
 package it.polimi.ingsw.distributed;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.controller.server.Lobby;
+import it.polimi.ingsw.controller.server.UserInfo;
 import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
@@ -17,6 +21,8 @@ public abstract class Client implements Observer, MainViewActions, GameViewActio
     
     /** This object is used to ensure thread safety */
     private final Object statusLock = new Object();
+
+    public final AtomicReference<UserInfo> userInfo = new AtomicReference<UserInfo>(null);
 
     /**
      * This method returns the status of the connection.
@@ -49,6 +55,7 @@ public abstract class Client implements Observer, MainViewActions, GameViewActio
             if (status == Status.IN_GAME) {
                 status = Status.DISCONNETED_FROM_GAME;
             } else if (status == Status.IN_MENU) {
+                Lobby.removeUserIfGameNotStarted(this.userInfo.get());
                 status = Status.OFFLINE;
             }
         }

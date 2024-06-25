@@ -8,6 +8,7 @@ import it.polimi.ingsw.distributed.client.GameViewActions;
 import it.polimi.ingsw.distributed.client.MainViewActions;
 import it.polimi.ingsw.distributed.client.Status;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
+import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.server.GameServerActions;
 
@@ -57,6 +58,8 @@ public class RMIHandler extends Client {
             return;
         }
         try {
+            if(event instanceof LoginEvent)
+                this.userInfo.set(((LoginEvent)event).getUserInfo());
             rmiMainView.trasmitEvent(event);
         } catch (IOException e) {
             setDisconnectionStatus();

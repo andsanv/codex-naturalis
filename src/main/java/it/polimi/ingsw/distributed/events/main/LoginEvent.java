@@ -32,6 +32,10 @@ public class LoginEvent extends MainEvent {
     this.error = error;
   }
 
+  public UserInfo getUserInfo() {
+    return new UserInfo(userInfo);
+  }
+
   /**
    * {@inheritDoc}
    */

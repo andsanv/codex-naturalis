@@ -81,7 +81,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 								mainEvent.execute(userInterface);
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
 							this.isConnected.set(false);
 							this.close();
 							break;

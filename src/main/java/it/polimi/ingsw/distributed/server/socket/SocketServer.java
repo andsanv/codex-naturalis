@@ -50,8 +50,24 @@ public class SocketServer {
 
   /**
    * This method keeps listening for new clients.
-   * Once a new client is accepted, object streams are configured and the client
-   * handler is created.
+   * Once a new client is accepted,
+   */
+  public void startAcceptingClients() {
+    while (true) {
+      try {
+        Socket socket = serverSocket.accept();
+
+        executorService.submit(()-> handleSingleClientConnection(socket));
+
+      } catch (Exception e) {
+        ServerPrinter.displayError("Error while accepting new client");
+      }
+    }
+  }
+
+  /**
+   * This function handles a single client connection setup.
+   * Object streams are configured and the client handler is created.
    * 
    * The first command received must be either a ConnectionCommand or a
    * ReconnectionCommand. If not request is ignored.
@@ -63,46 +79,45 @@ public class SocketServer {
    * 
    * In both cases, the UserInfo and the ClientHandler are added to the
    * connections map.
+   * 
+   * @throws IOException
+   * @throws ClassNotFoundException
    */
-  public void startAcceptingClients() {
-    while (true) {
-      try {
-        Socket socket = serverSocket.accept();
-        ServerPrinter.displayDebug("New connection from " + socket.getInetAddress() + ":" + socket.getPort());
+  public void handleSingleClientConnection(Socket socket) {
+    try {
+      ServerPrinter.displayDebug("New connection from " + socket.getInetAddress() + ":" + socket.getPort());
 
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.flush();
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+      ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+      out.flush();
+      ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-        SocketClientHandler connection = new SocketClientHandler(out, in);
+      SocketClientHandler connection = new SocketClientHandler(out, in);
 
-        Command command = (Command) in.readObject();
+      Command command = (Command) in.readObject();
 
-        if (command instanceof ConnectionCommand) {
-          ConnectionCommand connectionCommand = (ConnectionCommand) command;
-          String username = connectionCommand.username;
+      if (command instanceof ConnectionCommand) {
+        ConnectionCommand connectionCommand = (ConnectionCommand) command;
+        String username = connectionCommand.username;
 
-          ServerPrinter.displayDebug("Connection request from " + username);
+        ServerPrinter.displayDebug("Connection request from " + username);
 
-          UserInfo userInfo = Server.INSTANCE.clientSignUp(username, connection);
-          connections.put(userInfo, connection);
-        } else if (command instanceof ReconnectionCommand) {
-          ReconnectionCommand reconnectionCommand = (ReconnectionCommand) command;
-          UserInfo userInfo = reconnectionCommand.userInfo;
+        UserInfo userInfo = Server.INSTANCE.clientSignUp(username, connection);
+        connections.put(userInfo, connection);
+      } else if (command instanceof ReconnectionCommand) {
+        ReconnectionCommand reconnectionCommand = (ReconnectionCommand) command;
+        UserInfo userInfo = reconnectionCommand.userInfo;
 
-          ServerPrinter.displayDebug("Reconnection request from " + userInfo);
+        ServerPrinter.displayDebug("Reconnection request from " + userInfo);
 
-          Server.INSTANCE.clientLogin(userInfo, connection);
-          connections.put(userInfo, connection);
-        } else {
-          ServerPrinter.displayWarning("Invalid intial request");
-        }
-
-        executorService.submit(connection);
-
-      } catch (Exception e) {
-        ServerPrinter.displayError("Error while accepting new client");
+        Server.INSTANCE.clientLogin(userInfo, connection);
+        connections.put(userInfo, connection);
+      } else {
+        ServerPrinter.displayWarning("Invalid intial request");
       }
+
+      executorService.submit(connection);
+    } catch (Exception e) {
+      ServerPrinter.displayError("Error while accepting new client");
     }
   }
 
