@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,9 +26,11 @@ import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.UserInfoManager;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
+import it.polimi.ingsw.view.cli.scene.scenes.ConnectionLostScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
+import it.polimi.ingsw.view.cli.scene.scenes.StarterCardScene;
 import it.polimi.ingsw.view.cli.scene.scenes.TokenSelectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
@@ -176,9 +179,9 @@ public class CLI implements UI {
     public final Object tokenToUserLock = new Object();
 
     /**
-     * Token that the player is trying to select.
+     * Token that the player has selected.
      */
-    public final AtomicReference<PlayerToken> selectedToken = new AtomicReference<>(null);
+    public final AtomicReference<PlayerToken> token = new AtomicReference<>(null);
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -191,10 +194,12 @@ public class CLI implements UI {
          */
         sceneManager.registerScene(new HomeScene(sceneManager));
         sceneManager.registerScene(new ConnectionScene(sceneManager));
+        sceneManager.registerScene(new ConnectionLostScene(sceneManager));
         sceneManager.registerScene(new UserInfoLoginScene(sceneManager));
         sceneManager.registerScene(new AccountScene(sceneManager));
         sceneManager.registerScene(new LobbiesScene(sceneManager));
         sceneManager.registerScene(new TokenSelectionScene(sceneManager));
+        sceneManager.registerScene(new StarterCardScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -576,7 +581,20 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
+        synchronized (tokenToUserLock) {
+            tokenToUser = userInfoToToken.entrySet().stream()
+                    .peek(e -> {
+                        // Update player token with the selected one
+                        if (e.getKey().equals(getUserInfo())) {
+                            token.set(e.getValue());
+                        }
+                    })
+                    .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
+        }
+
+        waitingGameEvent.set(false);
+
+        sceneManager.transition(StarterCardScene.class);
+        resetPrompt();
     }
 }

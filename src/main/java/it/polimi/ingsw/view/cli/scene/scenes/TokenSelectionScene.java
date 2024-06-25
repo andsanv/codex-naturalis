@@ -16,6 +16,10 @@ import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.connection.ConnectionHandler;
 
+/**
+ * Scene where the player selects his token. If the time to select the token
+ * runs out the token is randomly selected.
+ */
 public class TokenSelectionScene extends Scene {
 
     public TokenSelectionScene(SceneManager sceneManager) {

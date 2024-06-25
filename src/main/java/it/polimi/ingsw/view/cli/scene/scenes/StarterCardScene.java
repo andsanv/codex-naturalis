@@ -1,19 +1,65 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
+import static org.fusesource.jansi.Ansi.Color.YELLOW;
+
 import java.util.Arrays;
 
+import it.polimi.ingsw.distributed.commands.game.DrawStarterCardCommand;
+import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
+import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
+import it.polimi.ingsw.view.connection.ConnectionHandler;
 
+/**
+ * Scene where the user can select the starter card.
+ */
 public class StarterCardScene extends Scene {
+    private boolean cardDrawn = false;
+
     public StarterCardScene(SceneManager sceneManager) {
         super(sceneManager);
 
         this.commands = Arrays.asList(
-            new CLICommand("draw", "to draw your starter card", null),
-            new CLICommand("front", "to play the front of the drawn card", null),
-            new CLICommand("back", "to play the back of the drawn card", null)
-        );
+                new CLICommand("draw", "to draw your starter card", () -> {
+                    if (args.length != 1)
+                        CLIPrinter.displayError("Invalid option");
+
+                    if (cardDrawn) {
+                        CLIPrinter.displayError("You have already drawn your card");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+                    cli.waitingGameEvent.set(true);
+                    connectionHandler.sendToGameServer(new DrawStarterCardCommand(cli.token.get()));
+                    if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
+                            connectionHandler.isConnected, null)) {
+                                sceneManager.transition(ConnectionLostScene.class);
+                    }
+
+                    
+                }),
+                new CLICommand("front", "to play the front of the drawn card", () -> {
+                    if (args.length != 1)
+                        CLIPrinter.displayError("Invalid option");
+
+                }),
+                new CLICommand("back", "to play the back of the drawn card", () -> {
+                    if (args.length != 1)
+                        CLIPrinter.displayError("Invalid option");
+
+                }));
+    }
+
+    @Override
+    public void onEntry() {
+        CLIPrinter.clear();
+        CLIPrinter.displaySceneTitle("Starter Card Selection", YELLOW);
+
+        System.out.println("Draw a starter card and decide how to place it on your board");
     }
 }

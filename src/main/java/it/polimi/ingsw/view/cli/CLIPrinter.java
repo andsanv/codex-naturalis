@@ -24,7 +24,7 @@ public class CLIPrinter {
      */
     public static void displaySceneTitle(String title, Ansi.Color color) {
         int padding = 80 - title.length();
-        System.out.println(ansi().reset().bg(color)
+        System.out.println(ansi().reset().bg(color!=null ? color : BLUE)
                 .a(" ".repeat(Math.floorDiv(padding, 2)) + title + " ".repeat(Math.ceilDiv(padding, 2))).reset()
                 .a("\n"));
     }
