@@ -360,18 +360,6 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleReceivedConnection() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleReceivedConnection'");
-    }
-
-    @Override
-    public void handleRefusedReconnection() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleRefusedReconnection'");
-    }
-
-    @Override
     public void handleScoreTrackEvent(PlayerToken senderToken, int score) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleScoreTrackEvent'");

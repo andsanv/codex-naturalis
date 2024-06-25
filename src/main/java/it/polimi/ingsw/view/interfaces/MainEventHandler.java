@@ -39,16 +39,6 @@ public interface MainEventHandler {
   public void handleLobbiesEvent(List<LobbyInfo> lobbies);
 
   /**
-   * This method handles the reception of the connection information
-   */
-  public void handleReceivedConnection();
-
-  /**
-   * This method handles the refused reconnection
-   */
-  public void handleRefusedReconnection();
-
-  /**
    * This method handles the reconnection to an active game
    * 
    * @param userToToken UserInfo to PlayerToken mapping

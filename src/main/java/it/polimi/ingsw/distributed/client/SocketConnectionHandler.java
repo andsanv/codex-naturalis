@@ -19,7 +19,6 @@ import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LobbiesEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.events.main.ReconnectToGameEvent;
-import it.polimi.ingsw.distributed.events.main.RefusedConnectionEvent;
 import it.polimi.ingsw.view.UI;
 
 /**

@@ -150,16 +150,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleReceivedConnection() {
-        return;
-    }
-
-    @Override
-    public void handleRefusedReconnection() {
-        return;
-    }
-
-    @Override
     public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
         return;
     }
