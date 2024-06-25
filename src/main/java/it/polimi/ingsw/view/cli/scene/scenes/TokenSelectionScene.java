@@ -44,8 +44,10 @@ public class TokenSelectionScene extends Scene {
         CLI cli = sceneManager.cli;
         ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
-        if (args.length != 1)
+        if (args.length != 1) {
             CLIPrinter.displayError("Invalid option");
+            return;
+        }
 
         if (args[0].equalsIgnoreCase("list")) {
             cli.getAvailableTokens().forEach(System.out::println);
@@ -54,8 +56,10 @@ public class TokenSelectionScene extends Scene {
 
         if (Arrays.asList(PlayerToken.values()).stream()
                 .map(PlayerToken::toString)
-                .noneMatch(t -> args[0].equalsIgnoreCase(t)))
+                .noneMatch(t -> args[0].equalsIgnoreCase(t))) {
             CLIPrinter.displayError("Invalid option");
+            return;
+        }
 
         PlayerToken token = PlayerToken.valueOf(args[0]);
 
@@ -65,13 +69,18 @@ public class TokenSelectionScene extends Scene {
         }
 
         if (!CLIPrinter.displayLoadingMessage("Selecting " + token.toString().toLowerCase() + " token",
-                cli.waitingGameEvent, connectionHandler.isConnected, cli.lastGameError)) {
+                cli.waitingGameEvent, connectionHandler.isConnected, null)) {
             sceneManager.transition(ConnectionLostScene.class);
             return;
         }
 
+        if (cli.lastGameError != null) {
+            CLIPrinter.displayError(cli.lastGameError.get());
+            return;
+        }
+
         if (!CLIPrinter.displayLoadingMessage("Waiting for all users to select their token",
-                cli.waitingGameEvent, connectionHandler.isConnected, cli.lastGameError)) {
+                cli.waitingGameEvent, connectionHandler.isConnected, null)) {
             sceneManager.transition(ConnectionLostScene.class);
             return;
         }
