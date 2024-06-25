@@ -33,7 +33,7 @@ import it.polimi.ingsw.model.player.PlayerToken;
  * Use this class for printing cards.
  * At most one thread can use this class at a time.
  */
-public class TUICardPrinter {
+public class CLICardUtils {
     public static void main(String[] args) {
         // Test to see the printed card
         init();

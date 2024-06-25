@@ -12,7 +12,7 @@ import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
-import it.polimi.ingsw.view.cli.TUICardPrinter;
+import it.polimi.ingsw.view.cli.CLICardUtils;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
@@ -51,8 +51,8 @@ public class StarterCardScene extends Scene {
                         return;
                     }
 
-                    TUICardPrinter.print(0, 0, cli.starterCard.get().first, CardSide.FRONT);
-                    TUICardPrinter.print(0, 10, cli.starterCard.get().first, CardSide.BACK);
+                    CLICardUtils.print(0, 0, cli.starterCard.get().first, CardSide.FRONT);
+                    CLICardUtils.print(0, 10, cli.starterCard.get().first, CardSide.BACK);
 
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
