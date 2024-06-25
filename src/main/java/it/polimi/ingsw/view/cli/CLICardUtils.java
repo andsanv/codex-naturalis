@@ -38,6 +38,7 @@ public class CLICardUtils {
         // Test to see the printed card
         AnsiConsole.systemInstall();
         System.out.println(ansi().eraseScreen());
+
         print(5, 0, 33, CardSide.BACK);
         print(5, 15, 22, CardSide.FRONT);
         print(10, 0, 51, CardSide.BACK);
@@ -73,9 +74,20 @@ public class CLICardUtils {
         print(20, 75, 101, CardSide.FRONT);
         print(25, 75, 102, CardSide.FRONT);
 
+        // Ansi[][] card = cardToMatrix(1, CardSide.FRONT);
+        Ansi[][] card = simpleCard(RED);
+        for (int i = 0; i < card.length; i++) {
+            for (int j = 0; j < card[0].length; j++) {
+                System.out.print(card[i][j]);
+            }
+            System.out.println();
+        }
         AnsiConsole.systemUninstall();
     }
 
+    /**
+     * Boolean for checking if the decks have been loaded or not.
+     */
     private static boolean init = false;
 
     /**
@@ -446,6 +458,201 @@ public class CLICardUtils {
         }
 
         System.out.flush();
+    }
+
+    public static Ansi[][] cardToMatrix(int id, CardSide side) {
+        if (!init)
+            init();
+
+        if (resourceCards.containsKey(id))
+            return side == CardSide.FRONT ? resourceCardFront(id) : resourceCardBack(id);
+
+        return null;
+    }
+
+    private static Ansi colorAndResetFg(String string, Ansi.Color color) {
+        return ansi().reset().fg(color).a(string).reset();
+    }
+
+    private static Ansi colorAndResetFg(char c, Ansi.Color color) {
+        return ansi().reset().fg(color).a(c).reset();
+    }
+
+    private static Ansi colorAndResetBg(String string, Ansi.Color color) {
+        return ansi().reset().bg(color).a(string).reset();
+    }
+
+    private static Ansi colorAndResetBg(char c, Ansi.Color color) {
+        return ansi().reset().bg(color).a(c).reset();
+    }
+
+    private static Ansi emptyAnsi() {
+        return ansi().reset().a(" ");
+    }
+
+    public static Ansi[][] resourceCardFront(int id) {
+        Ansi[][] result = new Ansi[3][11];
+
+        LightResourceCard card = resourceCards.get(id);
+        Ansi.Color borderColor = elementToColor(card.type);
+        Map<CornerPosition, String> corners = card.corners;
+
+        String UPPER_RES_GOLD_BORDER = "╭─┬─────┬─╮";
+        String LOWER_RES_GOLD_BORDER = "╰─┴─────┴─╯";
+
+        for (int i = 0; i < 11; i++) {
+            result[0][i] = colorAndResetFg(UPPER_RES_GOLD_BORDER.charAt(i), borderColor);
+            result[2][i] = colorAndResetFg(LOWER_RES_GOLD_BORDER.charAt(i), borderColor);
+        }
+
+        result[1][0] = colorAndResetFg("│", borderColor);
+        result[1][1] = colorAndResetFg(corners.get(CornerPosition.TOP_LEFT),
+                elementToColor(corners.get(CornerPosition.TOP_LEFT)));
+        result[1][2] = colorAndResetFg("│", borderColor);
+        result[1][3] = emptyAnsi();
+        result[1][4] = emptyAnsi();
+        result[1][5] = ansi().a(card.points != 0 ? card.points : " ");
+        result[1][6] = emptyAnsi();
+        result[1][7] = emptyAnsi();
+        result[1][8] = colorAndResetFg("│", borderColor);
+        result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
+                elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
+        result[1][10] = colorAndResetFg("│", borderColor);
+
+        result[2][0] = colorAndResetFg("├", borderColor);
+        result[2][1] = colorAndResetFg("─", borderColor);
+        result[2][2] = colorAndResetFg("┤", borderColor);
+        result[2][3] = emptyAnsi();
+        result[2][4] = emptyAnsi();
+        result[2][5] = colorAndResetFg(card.type, elementToColor(card.type));
+        result[2][6] = emptyAnsi();
+        result[2][7] = emptyAnsi();
+        result[2][8] = colorAndResetFg("├", borderColor);
+        result[2][9] = colorAndResetFg("─", borderColor);
+        result[2][10] = colorAndResetFg("┤", borderColor);
+
+        return result;
+    }
+
+    /**
+     * Creates a printable matrix with the border of the given color for a playable
+     * card. Can be used as helper for printing resource, gold and starter cards.
+     * 
+     * @param borderColor the color of the border
+     * @return the card as an Ansi matrix
+     */
+    private static Ansi[][] playableCard(Ansi.Color borderColor) {
+        Ansi[][] result = new Ansi[5][11];
+
+        String upperBorder = "╭─┬─────┬─╮";
+        String lowerBorder = "╰─┴─────┴─╯";
+
+        for (int i = 0; i < 11; i++) {
+            result[0][i] = colorAndResetFg(upperBorder.charAt(i), borderColor);
+            result[4][i] = colorAndResetFg(lowerBorder.charAt(i), borderColor);
+        }
+
+        result[1][0] = colorAndResetFg("│", borderColor);
+        result[1][1] = emptyAnsi();
+        result[1][2] = colorAndResetFg("│", borderColor);
+        result[1][3] = emptyAnsi();
+        result[1][4] = emptyAnsi();
+        result[1][5] = emptyAnsi();
+        result[1][6] = emptyAnsi();
+        result[1][7] = emptyAnsi();
+        result[1][8] = colorAndResetFg("│", borderColor);
+        result[1][9] = emptyAnsi();
+        result[1][10] = colorAndResetFg("│", borderColor);
+
+        result[2][0] = colorAndResetFg("├", borderColor);
+        result[2][1] = colorAndResetFg("─", borderColor);
+        result[2][2] = colorAndResetFg("┤", borderColor);
+        result[2][3] = emptyAnsi();
+        result[2][4] = emptyAnsi();
+        result[2][5] = emptyAnsi();
+        result[2][6] = emptyAnsi();
+        result[2][7] = emptyAnsi();
+        result[2][8] = colorAndResetFg("├", borderColor);
+        result[2][9] = colorAndResetFg("─", borderColor);
+        result[2][10] = colorAndResetFg("┤", borderColor);
+
+        result[3][0] = colorAndResetFg("│", borderColor);
+        result[3][1] = emptyAnsi();
+        result[3][2] = colorAndResetFg("│", borderColor);
+        result[3][3] = emptyAnsi();
+        result[3][4] = emptyAnsi();
+        result[3][5] = emptyAnsi();
+        result[3][6] = emptyAnsi();
+        result[3][7] = emptyAnsi();
+        result[3][8] = colorAndResetFg("│", borderColor);
+        result[3][9] = emptyAnsi();
+        result[3][10] = colorAndResetFg("│", borderColor);
+
+        return result;
+    }
+
+    /**
+     * Creates a printable matrix with the border of the given color for a simple
+     * card. Can be used as helper for printing objective cards or blank cards.
+     * 
+     * @param borderColor the color of the border
+     * @return the card as an Ansi matrix
+     */
+    private static Ansi[][] simpleCard(Ansi.Color borderColor) {
+        Ansi[][] result = new Ansi[5][11];
+
+        String upperBorder = "╭─────────╮";
+        String lowerBorder = "╰─────────╯";
+
+        for (int i = 0; i < 11; i++) {
+            result[0][i] = colorAndResetFg(upperBorder.charAt(i), borderColor);
+            result[4][i] = colorAndResetFg(lowerBorder.charAt(i), borderColor);
+        }
+
+        result[1][0] = colorAndResetFg("│", borderColor);
+        result[1][1] = emptyAnsi();
+        result[1][2] = emptyAnsi();
+        result[1][3] = emptyAnsi();
+        result[1][4] = emptyAnsi();
+        result[1][5] = emptyAnsi();
+        result[1][6] = emptyAnsi();
+        result[1][7] = emptyAnsi();
+        result[1][8] = emptyAnsi();
+        result[1][9] = emptyAnsi();
+        result[1][10] = colorAndResetFg("│", borderColor);
+
+        result[2][0] = colorAndResetFg("│", borderColor);
+        result[2][1] = emptyAnsi();
+        result[2][2] = emptyAnsi();
+        result[2][3] = emptyAnsi();
+        result[2][4] = emptyAnsi();
+        result[2][5] = emptyAnsi();
+        result[2][6] = emptyAnsi();
+        result[2][7] = emptyAnsi();
+        result[2][8] = emptyAnsi();
+        result[2][9] = emptyAnsi();
+        result[2][10] = colorAndResetFg("│", borderColor);
+
+        result[3][0] = colorAndResetFg("│", borderColor);
+        result[3][1] = emptyAnsi();
+        result[3][2] = emptyAnsi();
+        result[3][3] = emptyAnsi();
+        result[3][4] = emptyAnsi();
+        result[3][5] = emptyAnsi();
+        result[3][6] = emptyAnsi();
+        result[3][7] = emptyAnsi();
+        result[3][8] = emptyAnsi();
+        result[3][9] = emptyAnsi();
+        result[3][10] = colorAndResetFg("│", borderColor);
+
+        return result;
+    }
+
+    public static Ansi[][] resourceCardBack(int id) {
+
+        Ansi[][] result = new Ansi[5][11];
+
+        return result;
     }
 
     /**
