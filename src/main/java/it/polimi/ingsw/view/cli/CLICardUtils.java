@@ -75,7 +75,7 @@ public class CLICardUtils {
         print(20, 75, 101, CardSide.FRONT);
         print(25, 75, 102, CardSide.FRONT);
 
-        Ansi[][] card = cardToMatrix(91, CardSide.FRONT);
+        Ansi[][] card = cardToMatrix(99, CardSide.BACK);
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < card[0].length; j++) {
                 System.out.print(card[i][j]);
@@ -473,14 +473,14 @@ public class CLICardUtils {
         else if (id >= 87 && id <= 102) {
             if (side == CardSide.BACK) {
                 Ansi[][] res = simpleCard(YELLOW);
-                res[2][5] = colorAndResetFg("O", YELLOW);
-                res[2][6] = colorAndResetFg("B", YELLOW);
-                res[2][7] = colorAndResetFg("J", YELLOW);
+                res[2][4] = colorAndResetFg("O", YELLOW);
+                res[2][5] = colorAndResetFg("B", YELLOW);
+                res[2][6] = colorAndResetFg("J", YELLOW);
                 return res;
             } else if (id <= 94)
                 return objectivePatternCardFront(id);
             else
-                return null;
+                return elementsPatternCardFront(id);
         }
         return null;
     }
@@ -663,7 +663,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] resourceCardFront(int id) {
+    private static Ansi[][] resourceCardFront(int id) {
         LightResourceCard card = resourceCards.get(id);
         Map<CornerPosition, String> corners = card.corners;
 
@@ -694,7 +694,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] resourceCardBack(int id) {
+    private static Ansi[][] resourceCardBack(int id) {
         LightResourceCard card = resourceCards.get(id);
 
         Ansi.Color borderColor = elementToColor(card.type);
@@ -712,7 +712,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] goldCardFront(int id) {
+    private static Ansi[][] goldCardFront(int id) {
         LightGoldCard card = goldCards.get(id);
         Map<CornerPosition, String> corners = card.corners;
 
@@ -756,7 +756,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] goldCardBack(int id) {
+    private static Ansi[][] goldCardBack(int id) {
         LightGoldCard card = goldCards.get(id);
 
         Ansi.Color borderColor = elementToColor(card.type);
@@ -774,7 +774,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] starterCardFront(int id) {
+    private static Ansi[][] starterCardFront(int id) {
         LightStarterCard card = starterCards.get(id);
         Map<CornerPosition, String> corners = card.cornersFront;
 
@@ -810,7 +810,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] starterCardBack(int id) {
+    private static Ansi[][] starterCardBack(int id) {
         LightStarterCard card = starterCards.get(id);
         Map<CornerPosition, String> corners = card.cornersBack;
 
@@ -835,7 +835,7 @@ public class CLICardUtils {
      * @param id the id of the card
      * @return the card as an Ansi matrix
      */
-    public static Ansi[][] objectivePatternCardFront(int id) {
+    private static Ansi[][] objectivePatternCardFront(int id) {
         List<Ansi.Color[][]> patterns = Arrays.asList(
                 new Ansi.Color[][] { { DEFAULT, DEFAULT, RED }, { DEFAULT, RED, DEFAULT }, { RED, DEFAULT, DEFAULT } },
                 new Ansi.Color[][] { { GREEN, DEFAULT, DEFAULT }, { DEFAULT, GREEN, DEFAULT },
@@ -865,6 +865,39 @@ public class CLICardUtils {
             }
 
         return result;
+    }
+
+    /**
+     * Creates an Ansi matrix for printing the front of an objective card with
+     * required elements
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
+    private static Ansi[][] elementsPatternCardFront(int id) {
+        List<String[]> elements = Arrays.asList(
+                new String[] { "F", "F", "F" },
+                new String[] { "P", "P", "P" },
+                new String[] { "A", "A", "A" },
+                new String[] { "I", "I", "I" },
+                new String[] { "Q", "K", "M" },
+                new String[] { "M", "M", " " },
+                new String[] { "K", "K", " " },
+                new String[] { "Q", "Q", " " });
+
+        List<Integer> points = Arrays.asList(2, 2, 2, 2, 3, 2, 2, 2);
+
+        Ansi[][] result = simpleCard(YELLOW);
+
+        result[2][3] = colorAndResetFg(points.get(id - 94).toString(), DEFAULT);
+
+        for (int j = 5; j <= 7; j++) {
+            String element = elements.get(id - 94)[j - 5];
+            result[2][j] = !element.equals(" ") ? colorAndResetFg(element, elementToColor(element)) : emptyAnsi();
+        }
+
+        return result;
+
     }
 
     /**
