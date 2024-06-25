@@ -75,7 +75,7 @@ public class CLICardUtils {
         print(20, 75, 101, CardSide.FRONT);
         print(25, 75, 102, CardSide.FRONT);
 
-        Ansi[][] card = cardToMatrix(43, CardSide.FRONT);
+        Ansi[][] card = cardToMatrix(83, CardSide.FRONT);
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < card[0].length; j++) {
                 System.out.print(card[i][j]);
@@ -466,11 +466,12 @@ public class CLICardUtils {
 
         if (resourceCards.containsKey(id))
             return side == CardSide.FRONT ? resourceCardFront(id) : resourceCardBack(id);
-        else if (goldCards.containsKey(id)) {
+        else if (goldCards.containsKey(id))
             return side == CardSide.FRONT ? goldCardFront(id) : goldCardBack(id);
-        }
-
-        return null;
+        else if (starterCards.containsKey(id))
+            return side == CardSide.FRONT ? starterCardFront(id) : starterCardBack(id);
+        else
+            return null;
     }
 
     /**
@@ -752,6 +753,66 @@ public class CLICardUtils {
         Ansi[][] result = playableCard(borderColor);
 
         result[2][5] = colorAndResetBg(card.type, YELLOW);
+
+        return result;
+    }
+
+    /**
+     * Creates an Ansi matrix for printing the front of a starter card
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
+    public static Ansi[][] starterCardFront(int id) {
+        LightStarterCard card = starterCards.get(id);
+        Map<CornerPosition, String> corners = card.cornersFront;
+
+        Ansi[][] result = playableCard(DEFAULT);
+
+        result[1][1] = colorAndResetFg(corners.get(CornerPosition.TOP_LEFT),
+                elementToColor(corners.get(CornerPosition.TOP_LEFT)));
+        result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
+                elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
+
+        String paddedRequiredResources = addPadding(card.resources.stream().collect(Collectors.joining()), 3);
+
+        List<Ansi> requiredAsAnsi = IntStream.range(0, paddedRequiredResources.length())
+                .mapToObj(i -> Character.toString(paddedRequiredResources.charAt(i)))
+                .map(c -> c.equals(" ") ? emptyAnsi() : colorAndResetFg(c, elementToColor(c)))
+                .collect(Collectors.toList());
+
+        for (int i = 1; i <= 3; i++) {
+            result[i][5] = requiredAsAnsi.get(i - 1);
+        }
+
+        result[3][1] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_LEFT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_LEFT)));
+        result[3][9] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_RIGHT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_RIGHT)));
+
+        return result;
+    }
+
+    /**
+     * Creates an Ansi matrix for printing the back of a starter card
+     * 
+     * @param id the id of the card
+     * @return the card as an Ansi matrix
+     */
+    public static Ansi[][] starterCardBack(int id) {
+        LightStarterCard card = starterCards.get(id);
+        Map<CornerPosition, String> corners = card.cornersBack;
+
+        Ansi[][] result = playableCard(DEFAULT);
+
+        result[1][1] = colorAndResetFg(corners.get(CornerPosition.TOP_LEFT),
+                elementToColor(corners.get(CornerPosition.TOP_LEFT)));
+        result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
+                elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
+        result[3][1] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_LEFT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_LEFT)));
+        result[3][9] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_RIGHT),
+                elementToColor(corners.get(CornerPosition.BOTTOM_RIGHT)));
 
         return result;
     }
