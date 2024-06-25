@@ -690,4 +690,12 @@ public class CLI implements UI {
             resetPrompt();
         }
     }
+
+    @Override
+    public void handleDisconnection() {
+        if (sceneManager.isRunning.get() && sceneManager.getCurrentScene() != ConnectionLostScene.class) {
+            sceneManager.transition(ConnectionLostScene.class);
+            resetPrompt();
+        }
+    }
 }

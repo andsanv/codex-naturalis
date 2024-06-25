@@ -36,7 +36,6 @@ import it.polimi.ingsw.model.player.PlayerToken;
 public class CLICardUtils {
     public static void main(String[] args) {
         // Test to see the printed card
-        init();
         AnsiConsole.systemInstall();
         System.out.println(ansi().eraseScreen());
         print(5, 0, 33, CardSide.BACK);
@@ -78,11 +77,32 @@ public class CLICardUtils {
     }
 
     private static boolean init = false;
-    private static AtomicInteger atomicInt = new AtomicInteger(0);
-    private static List<Observer> observersList = new ArrayList<>();
 
+    /**
+     * Needed because the deck creator needs an atomic integer to know ids of the
+     * event that he generates on the server.
+     */
+    private static AtomicInteger fakeAtomicInt = new AtomicInteger(0);
+
+    /**
+     * Needed because the deck creator needs a list of observers for
+     * event that he generates on the server.
+     */
+    private static List<Observer> fakeObserversList = new ArrayList<>();
+
+    /**
+     * A map with the light resource card representation
+     */
     private static Map<Integer, LightResourceCard> resourceCards;
+
+    /**
+     * A map with the light gold card representation
+     */
     private static Map<Integer, LightGoldCard> goldCards;
+
+    /**
+     * A map with the light starter card representation
+     */
     private static Map<Integer, LightStarterCard> starterCards;
 
     /**
@@ -90,7 +110,7 @@ public class CLICardUtils {
      * The cards will be printed using the following shape or a similar one
      * ╭─┬─────┬─╮
      * │Q│ 3 C │X│
-     * ├─┤  F  ├─┤
+     * ├─┤ F ├─┤
      * │A│ FFA │ │
      * ╰─┴─────┴─╯
      * 
@@ -101,7 +121,7 @@ public class CLICardUtils {
      */
     public static void print(int r, int c, int id, CardSide side) {
         if (!init)
-            return;
+            init();
 
         if (resourceCards.containsKey(id)) {
             LightResourceCard card = resourceCards.get(id);
@@ -431,9 +451,9 @@ public class CLICardUtils {
     /**
      * Helper class to print a generic 3x3 pattern objective card as the following
      * ╭─────────╮
-     * │     █   │
-     * │  2   █  │
-     * │       █ │
+     * │ █ │
+     * │ 2 █ │
+     * │ █ │
      * ╰─────────╯
      * 
      * @param r      row of first character
@@ -485,9 +505,9 @@ public class CLICardUtils {
     /**
      * Helper class to print a generic elements objective card like this:
      * ╭─────────╮
-     * │         │
-     * │  2 FFF  │
-     * │         │
+     * │ │
+     * │ 2 FFF │
+     * │ │
      * ╰─────────╯
      * 
      * @param r        row of first character
@@ -537,9 +557,9 @@ public class CLICardUtils {
      * The cards will be printed using the following shape:
      * 
      * ╭─────────╮
-     * │         │
-     * │    4    │
-     * │         │
+     * │ │
+     * │ 4 │
+     * │ │
      * ╰─────────╯
      * 
      * This method can be used to show possible placement positions.
@@ -601,7 +621,7 @@ public class CLICardUtils {
         }
     }
 
-    public static void init() {
+    private static void init() {
         loadResourceCards();
         loadGoldCards();
         loadStarterCards();
@@ -611,7 +631,7 @@ public class CLICardUtils {
 
     private static void loadResourceCards() {
         resourceCards = new HashMap<>();
-        Deck<ResourceCard> deck = ResourceDeckCreator.createDeck(observersList, atomicInt);
+        Deck<ResourceCard> deck = ResourceDeckCreator.createDeck(fakeObserversList, fakeAtomicInt);
 
         while (!deck.isEmpty()) {
             ResourceCard card = deck.draw(PlayerToken.RED, 0).get();
@@ -635,7 +655,7 @@ public class CLICardUtils {
 
     private static void loadGoldCards() {
         goldCards = new HashMap<>();
-        Deck<GoldCard> deck = GoldDeckCreator.createDeck(observersList, atomicInt);
+        Deck<GoldCard> deck = GoldDeckCreator.createDeck(fakeObserversList, fakeAtomicInt);
 
         while (!deck.isEmpty()) {
             GoldCard card = deck.draw(PlayerToken.RED, 0).get();
@@ -690,7 +710,7 @@ public class CLICardUtils {
 
     private static void loadStarterCards() {
         starterCards = new HashMap<>();
-        Deck<StarterCard> deck = StarterDeckCreator.createDeck(observersList, atomicInt);
+        Deck<StarterCard> deck = StarterDeckCreator.createDeck(fakeObserversList, fakeAtomicInt);
 
         while (!deck.isEmpty()) {
             StarterCard card = deck.draw(PlayerToken.RED, 0).get();

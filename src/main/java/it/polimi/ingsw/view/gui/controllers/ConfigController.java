@@ -148,4 +148,10 @@ public class ConfigController extends Controller {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
     }
+
+    @Override
+    public void handleDisconnection() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleDisconnection'");
+    }
 }
