@@ -31,7 +31,7 @@ public class AccountScene extends Scene {
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitinLogin.set(true);
-                    connectionHandler.sendToMainServer(new ConnectionCommand(args[1]));
+                    connectionHandler.connect(new ConnectionCommand(args[1]));
 
                     if (CLIPrinter.displayLoadingMessage("Creating an account", cli.waitinLogin,
                             connectionHandler.isConnected, cli.waitingLoginError))

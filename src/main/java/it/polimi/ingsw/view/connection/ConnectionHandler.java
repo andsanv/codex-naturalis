@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.connection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.view.UI;
 
@@ -38,8 +39,16 @@ public abstract class ConnectionHandler {
   public abstract boolean sendToGameServer(GameCommand gameCommand);
 
   /**
+   * This method is used to connect the client to the server.
+   * 
+   * @param connectionCommand the command containing the user information.
+   * @return true if the connection was successful, false otherwise.
+   */
+  public abstract boolean connect(ConnectionCommand connectionCommand);
+
+  /**
    * This method must be called when the client wants to try to reconnect to the server.
-   * @return true if the reconnection was successful, false otherwise
+   * @return true if the reconnection was successful, false otherwise.
    */
   public abstract boolean reconnect();
 

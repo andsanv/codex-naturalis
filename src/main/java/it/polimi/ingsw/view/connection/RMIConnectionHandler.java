@@ -179,6 +179,17 @@ public class RMIConnectionHandler extends ConnectionHandler {
   }
 
   /**
+   * This method tries to connect to the main server.
+   * It simply forwards the command to the method sendToMainServer that will handle it properly.ù
+   * 
+   * @return true if the the reconnection request is sent, false otherwise
+   */
+  @Override
+  public boolean connect(ConnectionCommand connectionCommand) {
+    return sendToMainServer(connectionCommand);
+  }
+
+  /**
    * This method tries to reconnect to the main server.
    * It creates a new ReconnectionCommand with the user info and sends it to the
    * server.
