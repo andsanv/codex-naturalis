@@ -1,5 +1,8 @@
 package it.polimi.ingsw.view.cli;
 
+import static org.fusesource.jansi.Ansi.ansi;
+import static org.fusesource.jansi.Ansi.Color.YELLOW;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,11 +37,6 @@ public class CLI implements UI {
     public static void main(String[] args) {
         new CLI();
     }
-
-    /**
-     * Volatile boolean to use when reading input
-     */
-    private volatile boolean readingInput = false;
 
     /**
      * Thread for handling user input
@@ -209,26 +207,6 @@ public class CLI implements UI {
          * Start the user input thread
          */
         startUserInputHandler();
-
-        /*
-         * Thread for stopping user input if conditions are met
-         */
-        new Thread(() -> {
-            while (sceneManager.isRunning.get()) {
-                if (readingInput && inGame.get()) {
-                    inGame.set(false);
-                    userInputThread.interrupt();
-                    scanner.close();
-                    sceneManager.transition(TokenSelectionScene.class);
-                    startUserInputHandler();
-                }
-
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-            }
-        }).start();
     }
 
     /**
@@ -242,13 +220,11 @@ public class CLI implements UI {
                 while (sceneManager.isRunning.get()) {
                     System.out.print("> ");
                     System.out.flush();
-                    readingInput = true;
                     String input = scanner.nextLine();
-                    readingInput = false;
                     sceneManager.handleInput(input);
                 }
             } catch (Exception e) {
-                // Thread is volountarily stopped
+                // Thread is volountarily stopped so we don't have to do anything
             }
             scanner.close();
         });
@@ -589,7 +565,8 @@ public class CLI implements UI {
     @Override
     public void handleGameStartedEvent(List<UserInfo> users) {
         this.startingGame.set(false);
-        this.inGame.set(true);
         this.usersInGame.set(users);
+
+        sceneManager.transition(TokenSelectionScene.class);
     }
 }
