@@ -1,8 +1,5 @@
 package it.polimi.ingsw.view.cli;
 
-import static org.fusesource.jansi.Ansi.ansi;
-import static org.fusesource.jansi.Ansi.Color.YELLOW;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +10,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static org.fusesource.jansi.Ansi.ansi;
 
 import it.polimi.ingsw.controller.server.LobbyInfo;
 import it.polimi.ingsw.controller.server.UserInfo;
@@ -233,6 +232,14 @@ public class CLI implements UI {
     }
 
     /**
+     * Resets the prompt on the current line.
+     */
+    private void resetPrompt() {
+        System.out.print(ansi().reset().eraseLine().cursorToColumn(0).a("> "));
+        System.out.flush();
+    }
+
+    /**
      * Method called when the game ends.
      */
     public void resetAttributesAfterMatch() {
@@ -416,6 +423,8 @@ public class CLI implements UI {
 
     @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
+        System.out.println(userInfo + " " + assignedToken);
+
         synchronized (tokenToUserLock) {
             tokenToUser.put(assignedToken, player);
         }
@@ -568,5 +577,6 @@ public class CLI implements UI {
         this.usersInGame.set(users);
 
         sceneManager.transition(TokenSelectionScene.class);
+        resetPrompt();
     }
 }

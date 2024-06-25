@@ -4,7 +4,10 @@ import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import it.polimi.ingsw.distributed.commands.game.SelectTokenCommand;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICommand;
@@ -54,19 +57,23 @@ public class TokenSelectionScene extends Scene {
             return;
         }
 
-        if (Arrays.asList(PlayerToken.values()).stream()
-                .map(PlayerToken::toString)
-                .noneMatch(t -> args[0].equalsIgnoreCase(t))) {
-            CLIPrinter.displayError("Invalid option");
+        List<String> tokensAsStrings = Arrays.asList(PlayerToken.values()).stream()
+                .map(PlayerToken::toString).collect(Collectors.toList());
+
+        if (tokensAsStrings.stream().noneMatch(t -> t.equalsIgnoreCase(args[0]))) {
+            CLIPrinter.displayError("Invalid option " + args[0]);
             return;
         }
 
-        PlayerToken token = PlayerToken.valueOf(args[0]);
+        PlayerToken token = PlayerToken.valueOf(args[0].toUpperCase());
 
         if (!sceneManager.cli.isTokenAvailable(token)) {
             CLIPrinter.displayError(token + " token already selected by another player.");
             return;
         }
+
+        cli.waitingGameEvent.set(true);
+        connectionHandler.sendToGameServer(new SelectTokenCommand(cli.getUserInfo(), token));
 
         if (!CLIPrinter.displayLoadingMessage("Selecting " + token.toString().toLowerCase() + " token",
                 cli.waitingGameEvent, connectionHandler.isConnected, null)) {
@@ -78,6 +85,8 @@ public class TokenSelectionScene extends Scene {
             CLIPrinter.displayError(cli.lastGameError.get());
             return;
         }
+
+        cli.waitingGameEvent.set(true);
 
         if (!CLIPrinter.displayLoadingMessage("Waiting for all users to select their token",
                 cli.waitingGameEvent, connectionHandler.isConnected, null)) {
