@@ -214,7 +214,7 @@ public class CLI implements UI {
          * Thread for stopping user input if conditions are met
          */
         new Thread(() -> {
-            while (true) {
+            while (sceneManager.isRunning.get()) {
                 if (readingInput && inGame.get()) {
                     inGame.set(false);
                     userInputThread.interrupt();
