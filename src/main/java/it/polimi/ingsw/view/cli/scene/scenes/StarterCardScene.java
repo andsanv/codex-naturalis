@@ -51,8 +51,8 @@ public class StarterCardScene extends Scene {
                         return;
                     }
 
-                    CLICardUtils.print(0, 0, cli.starterCard.get().first, CardSide.FRONT);
-                    CLICardUtils.print(0, 10, cli.starterCard.get().first, CardSide.BACK);
+                    CLIPrinter.printAnsiGrid(CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT));
+                    CLIPrinter.printAnsiGrid(CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK));
 
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {

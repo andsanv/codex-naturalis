@@ -24,7 +24,7 @@ public class CLIPrinter {
      */
     public static void displaySceneTitle(String title, Ansi.Color color) {
         int padding = 80 - title.length();
-        System.out.println(ansi().reset().bg(color!=null ? color : BLUE)
+        System.out.println(ansi().reset().bg(color != null ? color : BLUE)
                 .a(" ".repeat(Math.floorDiv(padding, 2)) + title + " ".repeat(Math.ceilDiv(padding, 2))).reset()
                 .a("\n"));
     }
@@ -156,5 +156,19 @@ public class CLIPrinter {
                                 .a(" ".repeat(length - 11) + "│"));
                 System.out.println("╘" + "═".repeat(length) + "╛");
             }
+    }
+
+    /**
+     * Method that, given a grid of Ansi sequences, prints it.
+     * 
+     * @param grid the grid of Ansi sequences
+     */
+    public static void printAnsiGrid(Ansi[][] grid) {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                System.out.print(grid[i][j]);
+            }
+            System.out.println();
+        }
     }
 }
