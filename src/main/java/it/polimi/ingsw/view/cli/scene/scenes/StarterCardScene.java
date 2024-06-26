@@ -85,12 +85,12 @@ public class StarterCardScene extends Scene {
                         return;
                     }
 
-                    cli.waitingGameEvent.set(true);
-                    if (!CLIPrinter.displayLoadingMessage(
-                            "Waiting for all users to draw and choose the side of their starter card",
-                            cli.waitingGameEvent, connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                        return;
+                    System.out.println("Waiting for all users to draw and choose the side of their starter card");
+
+                    try {
+                        cli.starterCardPhaseLatch.await();
+                    } catch (InterruptedException e) {
+                        sceneManager.stop();
                     }
 
                     if (sceneManager.getCurrentScene() != ObjectiveCardScene.class)
@@ -122,12 +122,12 @@ public class StarterCardScene extends Scene {
                         return;
                     }
 
-                    cli.waitingGameEvent.set(true);
-                    if (!CLIPrinter.displayLoadingMessage(
-                            "Waiting for all users to draw and choose the side of their starter card",
-                            cli.waitingGameEvent, connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                        return;
+                    System.out.println("Waiting for all users to draw and choose the side of their starter card");
+
+                    try {
+                        cli.starterCardPhaseLatch.await();
+                    } catch (InterruptedException e) {
+                        sceneManager.stop();
                     }
 
                     if (sceneManager.getCurrentScene() != ObjectiveCardScene.class)

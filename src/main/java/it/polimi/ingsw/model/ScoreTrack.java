@@ -2,7 +2,6 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.controller.observer.Observable;
 import it.polimi.ingsw.controller.observer.Observer;
-import it.polimi.ingsw.distributed.events.game.LimitPointsReachedEvent;
 import it.polimi.ingsw.distributed.events.game.UpdatedScoreTrackEvent;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.PlayerToken;
@@ -29,11 +28,6 @@ public class ScoreTrack extends Observable {
   private final int limitScore = 20;
 
   /**
-   * Used to check whether someone reaching limitScore was already notified to players.
-   */
-  private boolean alreadyNotified = false;
-
-  /**
    * @param scores initial scores of the players (all zero)
    * @param observers list of observers
    * @param lastEventId integer used to uniquely identify events
@@ -52,11 +46,6 @@ public class ScoreTrack extends Observable {
   public void updatePlayerScore(PlayerToken playerToken, Integer incrementPoints) {
     int newScore = scores.get(playerToken) + incrementPoints;
     scores.put(playerToken, newScore);
-
-    if(limitPointsReached() && !alreadyNotified) {
-      notify(new LimitPointsReachedEvent(playerToken, newScore, limitScore));
-      alreadyNotified = true;
-    }
 
     notify(new UpdatedScoreTrackEvent(playerToken, newScore));
   }

@@ -51,7 +51,7 @@ public class ObjectiveCardScene extends Scene {
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
                             CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 0);
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
-                            CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 12);
+                            CLICardUtils.cardToMatrix(cli.secretObjectives.get().second, CardSide.FRONT), 0, 12);
                     CLIPrinter.printAnsiGrid(starterCardAsAnsi);
                     System.out.println("   First      Second   ");
 
@@ -79,11 +79,12 @@ public class ObjectiveCardScene extends Scene {
                         return;
                     }
 
-                    cli.waitingGameEvent.set(true);
-                    if (!CLIPrinter.displayLoadingMessage("Waiting for all players to pick the secret objective card",
-                            cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
+                    System.out.println("Waiting for all players to pick the secret objective card");
+
+                    try {
+                        cli.objectivePhaseLatch.await();
+                    } catch (InterruptedException e) {
+                        sceneManager.stop();
                     }
                 }),
                 new CLICommand("second", "to select the second objective card", () -> {
@@ -109,11 +110,12 @@ public class ObjectiveCardScene extends Scene {
                         return;
                     }
 
-                    cli.waitingGameEvent.set(true);
-                    if (!CLIPrinter.displayLoadingMessage("Waiting for all players to pick the secret objective card",
-                            cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
+                    System.out.println("Waiting for all players to pick the secret objective card");
+
+                    try {
+                        cli.objectivePhaseLatch.await();
+                    } catch (InterruptedException e) {
+                        sceneManager.stop();
                     }
                 }));
     }

@@ -1,19 +1,19 @@
 package it.polimi.ingsw.view.cli;
 
+import static org.fusesource.jansi.Ansi.ansi;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
-import static org.fusesource.jansi.Ansi.ansi;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
@@ -33,6 +33,8 @@ import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.EndingGameInitScene;
 import it.polimi.ingsw.view.cli.scene.scenes.GameScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
+import it.polimi.ingsw.view.cli.scene.scenes.LastPlayerScene;
+import it.polimi.ingsw.view.cli.scene.scenes.LastPlayerWonScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ObjectiveCardScene;
 import it.polimi.ingsw.view.cli.scene.scenes.StarterCardScene;
@@ -180,6 +182,11 @@ public class CLI implements UI {
     /**
      * CountDownLatch for waiting for the token phase to end.
      */
+    public CountDownLatch starterCardPhaseLatch = new CountDownLatch(1);
+
+    /**
+     * CountDownLatch for waiting for the token phase to end.
+     */
     public CountDownLatch objectivePhaseLatch = new CountDownLatch(1);
 
     /**
@@ -191,6 +198,11 @@ public class CLI implements UI {
      * CountDownLatch for waiting reconnection.
      */
     public CountDownLatch gameReconnectionLatch = new CountDownLatch(1);
+
+    /**
+     * CountDownLatch for waiting reconnection of at least one other player.
+     */
+    public CountDownLatch lastPlayerConnectedLatch = new CountDownLatch(1);
 
     /**
      * Mapping between players and tokens
@@ -216,6 +228,11 @@ public class CLI implements UI {
      * Atomic refererce for the drawn secret objectives.
      */
     public final AtomicReference<Pair<Integer, Integer>> secretObjectives = new AtomicReference<>(null);
+
+    /**
+     * Atomic integer for secret objective after the server confirms it.
+     */
+    public final AtomicInteger secretObjective = new AtomicInteger();
 
     /**
      * List with direct messages saved as a pair with the sender of the direct
@@ -248,6 +265,11 @@ public class CLI implements UI {
      * Object to correctly synchronize when accessing the SlimGameModel
      */
     public final Object slimGameModelLock = new Object();
+
+    /**
+     * Holds who's turn is.
+     */
+    public final AtomicReference<PlayerToken> playerTurn = new AtomicReference<>(null);
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -329,8 +351,12 @@ public class CLI implements UI {
         lastGameError.set(null);
 
         tokenPhaseLatch = new CountDownLatch(1);
+        starterCardPhaseLatch = new CountDownLatch(1);
         objectivePhaseLatch = new CountDownLatch(1);
         endInitPhaseLatch = new CountDownLatch(1);
+        lastPlayerConnectedLatch = new CountDownLatch(1);
+
+        playerTurn.set(null);
     }
 
     /**
@@ -505,9 +531,10 @@ public class CLI implements UI {
     @Override
     public void handleEndedStarterCardPhaseEvent() {
         waitingGameEvent.set(false);
+        starterCardPhaseLatch.countDown();
 
-        if (sceneManager.getCurrentScene() != StarterCardScene.class) {
-            sceneManager.transition(StarterCardScene.class);
+        if (sceneManager.getCurrentScene() != ObjectiveCardScene.class) {
+            sceneManager.transition(ObjectiveCardScene.class);
             resetPrompt();
         }
     }
@@ -527,13 +554,20 @@ public class CLI implements UI {
 
     @Override
     public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleChosenObjectiveCardEvent'");
+        if (playerToken.equals(token.get())) {
+            secretObjective.set(chosenCardId);
+        }
     }
 
     @Override
     public void handleEndedObjectiveCardPhaseEvent() {
-        sceneManager.transition(EndingGameInitScene.class);
+        waitingGameEvent.set(false);
+        objectivePhaseLatch.countDown();
+
+        if (sceneManager.getCurrentScene() != EndingGameInitScene.class) {
+            sceneManager.transition(EndingGameInitScene.class);
+            resetPrompt();
+        }
     }
 
     @Override
@@ -579,8 +613,7 @@ public class CLI implements UI {
     @Override
     public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
             Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCardsPlayabilityEvent'");
+        slimGameModel.applyCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability);
     }
 
     @Override
@@ -743,13 +776,15 @@ public class CLI implements UI {
 
     @Override
     public void handleLastConnectedPlayerEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLastConnectedPlayerEvent'");
+        waitingGameEvent.set(false);
+
+        sceneManager.transition(LastPlayerScene.class);
     }
 
     @Override
     public void handleLastConnectedPlayerWonEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLastConnectedPlayerWonEvent'");
+        lastPlayerConnectedLatch.countDown();
+
+        sceneManager.transition(LastPlayerWonScene.class);
     }
 }
