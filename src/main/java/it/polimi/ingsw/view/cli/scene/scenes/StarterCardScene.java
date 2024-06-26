@@ -22,8 +22,6 @@ import it.polimi.ingsw.view.cli.scene.SceneManager;
  * Scene where the user can select the starter card.
  */
 public class StarterCardScene extends Scene {
-    private boolean cardDrawn;
-
     public StarterCardScene(SceneManager sceneManager) {
         super(sceneManager);
 
@@ -32,12 +30,13 @@ public class StarterCardScene extends Scene {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
-                    if (cardDrawn) {
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.starterCard.get() != null) {
                         CLIPrinter.displayError("You have already drawn your card");
                         return;
                     }
 
-                    CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
@@ -57,17 +56,18 @@ public class StarterCardScene extends Scene {
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
                             CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 0);
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
-                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 11);
+                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK), 0, 11);
                     CLIPrinter.printAnsiGrid(starterCardAsAnsi);
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
-                    if (!cardDrawn)
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.starterCard.get() == null)
                         CLIPrinter.displayError("Draw a card first");
 
-                    CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
@@ -100,10 +100,11 @@ public class StarterCardScene extends Scene {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
-                    if (!cardDrawn)
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.starterCard.get() == null)
                         CLIPrinter.displayError("Draw a card first");
 
-                    CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
@@ -135,8 +136,6 @@ public class StarterCardScene extends Scene {
 
     @Override
     public void onEntry() {
-        cardDrawn = false;
-
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Starter Card Selection", YELLOW);
 

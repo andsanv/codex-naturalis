@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -337,12 +338,13 @@ public enum Server {
     public void clientLogin(UserInfo userInfo, Client client) {
 
         Client owldClient = connectedPlayers.get(userInfo);
-        if(owldClient != null)
+        if (owldClient != null)
             ServerPrinter.displayInfo("Client status: " + owldClient.getStatus());
-        
+
         if (!connectedPlayers.containsKey(userInfo)
-                || (connectedPlayers.containsKey(userInfo) && (connectedPlayers.get(userInfo).getStatus() == Status.IN_MENU
-                        || connectedPlayers.get(userInfo).getStatus() == Status.IN_GAME))) {
+                || (connectedPlayers.containsKey(userInfo)
+                        && (connectedPlayers.get(userInfo).getStatus() == Status.IN_MENU
+                                || connectedPlayers.get(userInfo).getStatus() == Status.IN_GAME))) {
             ServerPrinter.displayInfo(
                     "Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
             if (connectedPlayers.containsKey(userInfo)) {
@@ -373,15 +375,25 @@ public enum Server {
                     GameFlowManager gameFlowManager = lobby.getGameFlowManager();
                     client.setStatus(Status.IN_GAME);
 
-                    client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
-                            gameFlowManager.userInfoToToken));
+                    if (gameFlowManager.gameModelUpdater != null && gameFlowManager.userInfoToToken != null)
+                        client.trasmitEvent(
+                                new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
+                                        gameFlowManager.userInfoToToken));
+                    else if (gameFlowManager.gameModelUpdater != null)
+                        client.trasmitEvent(
+                                new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
+                                        new HashMap<>()));
+                    else
+                        client.trasmitEvent(
+                                new ReconnectToGameEvent(null,
+                                        new HashMap<>()));
 
                     updateKeepAlive(userInfo);
                     connectedPlayers.put(userInfo, client);
                     setUpClientsForGame(Arrays.asList(client), gameFlowManager);
 
-                    lobby.getGameFlowManager().gameModelUpdater.computeCardsPlayability(gameFlowManager.userInfoToToken.get(userInfo));
-
+                    lobby.getGameFlowManager().gameModelUpdater
+                            .computeCardsPlayability(gameFlowManager.userInfoToToken.get(userInfo));
 
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping
                     // <UserInfo, Token>
@@ -518,7 +530,7 @@ public enum Server {
     private void setUpClientsForGame(List<Client> clients, GameFlowManager gameFlowManager) {
         for (Client c : clients) {
             // Set the status of the client to IN_GAME
-                c.setStatus(Status.IN_GAME);
+            c.setStatus(Status.IN_GAME);
 
             // Init connection to the game
             try {
