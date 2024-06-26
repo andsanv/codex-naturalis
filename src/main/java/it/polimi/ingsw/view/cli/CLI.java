@@ -177,6 +177,11 @@ public class CLI implements UI {
     public CountDownLatch tokenPhaseLatch = new CountDownLatch(1);
 
     /**
+     * CountDownLatch for waiting for the token phase to end.
+     */
+    public CountDownLatch objectivePhaseLatch = new CountDownLatch(1);
+
+    /**
      * CountDownLatch for waiting reconnection.
      */
     public CountDownLatch gameReconnectionLatch = new CountDownLatch(1);
@@ -317,6 +322,7 @@ public class CLI implements UI {
         lastGameError.set(null);
 
         tokenPhaseLatch = new CountDownLatch(1);
+        objectivePhaseLatch = new CountDownLatch(1);
     }
 
     /**
@@ -501,7 +507,14 @@ public class CLI implements UI {
     @Override
     public void handleDrawnObjectiveCardsEvent(PlayerToken playerToken, int drawnCardId, int secondDrawnCardId) {
         secretObjectives.set(new Pair<Integer, Integer>(drawnCardId, secondDrawnCardId));
+
         waitingGameEvent.set(false);
+        tokenPhaseLatch.countDown();
+
+        if (sceneManager.getCurrentScene() != StarterCardScene.class) {
+            sceneManager.transition(StarterCardScene.class);
+            resetPrompt();
+        }
     }
 
     @Override

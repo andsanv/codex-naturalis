@@ -392,8 +392,9 @@ public enum Server {
                     connectedPlayers.put(userInfo, client);
                     setUpClientsForGame(Arrays.asList(client), gameFlowManager);
 
-                    lobby.getGameFlowManager().gameModelUpdater
-                            .computeCardsPlayability(gameFlowManager.userInfoToToken.get(userInfo));
+                    if (lobby.getGameFlowManager().gameModelUpdater != null)
+                        lobby.getGameFlowManager().gameModelUpdater
+                                .computeCardsPlayability(gameFlowManager.userInfoToToken.get(userInfo));
 
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping
                     // <UserInfo, Token>

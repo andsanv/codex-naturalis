@@ -4,18 +4,20 @@ import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
 
+import org.fusesource.jansi.Ansi;
+
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.DrawObjectiveCardsCommand;
 import it.polimi.ingsw.distributed.commands.game.SelectObjectiveCardCommand;
+import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.view.cli.CLI;
+import it.polimi.ingsw.view.cli.CLICardUtils;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
 public class ObjectiveCardScene extends Scene {
-    private boolean cardDrawn;
-
     public ObjectiveCardScene(SceneManager sceneManager) {
         super(sceneManager);
 
@@ -24,12 +26,13 @@ public class ObjectiveCardScene extends Scene {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
-                    if (cardDrawn) {
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.secretObjectives.get() == null) {
                         CLIPrinter.displayError("You have already drawn your objective cards");
                         return;
                     }
 
-                    CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
@@ -44,16 +47,22 @@ public class ObjectiveCardScene extends Scene {
                         return;
                     }
 
-                    cardDrawn = true;
+                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 22);
+                    CLICardUtils.addCardToMatrix(starterCardAsAnsi,
+                            CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 0);
+                    CLICardUtils.addCardToMatrix(starterCardAsAnsi,
+                            CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 11);
+                    CLIPrinter.printAnsiGrid(starterCardAsAnsi);
                 }),
                 new CLICommand("first", "to select the first objective card", () -> {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
-                    if (!cardDrawn)
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.secretObjectives.get() == null)
                         CLIPrinter.displayError("Draw the objective cards first");
 
-                    CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
@@ -79,10 +88,11 @@ public class ObjectiveCardScene extends Scene {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid option");
 
-                    if (!cardDrawn)
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.secretObjectives.get() == null)
                         CLIPrinter.displayError("Draw the objective cards first");
 
-                    CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
                     cli.waitingGameEvent.set(true);
@@ -108,8 +118,6 @@ public class ObjectiveCardScene extends Scene {
 
     @Override
     public void onEntry() {
-        cardDrawn = false;
-
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Secret objective card selection", YELLOW);
 
