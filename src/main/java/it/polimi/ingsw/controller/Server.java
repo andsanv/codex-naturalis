@@ -369,7 +369,8 @@ public enum Server {
                     ServerPrinter.displayInfo("User " + userInfo + " reconnected to menu");
 
                 } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
-                    GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
+                    Lobby lobby = Lobby.getLobby(userInfo);
+                    GameFlowManager gameFlowManager = lobby.getGameFlowManager();
                     client.setStatus(Status.IN_GAME);
 
                     client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
@@ -379,9 +380,11 @@ public enum Server {
                     connectedPlayers.put(userInfo, client);
                     setUpClientsForGame(Arrays.asList(client), gameFlowManager);
 
+                    lobby.getGameFlowManager().gameModelUpdater.computeCardsPlayability(gameFlowManager.userInfoToToken.get(userInfo));
+
+
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping
                     // <UserInfo, Token>
-
                     gameFlowManager.observers.remove(oldClient);
                     gameFlowManager.observers.add(client);
 
@@ -514,8 +517,8 @@ public enum Server {
      */
     private void setUpClientsForGame(List<Client> clients, GameFlowManager gameFlowManager) {
         for (Client c : clients) {
-            // Set in game status
-            c.setStatus(Status.IN_GAME);
+            // Set the status of the client to IN_GAME
+                c.setStatus(Status.IN_GAME);
 
             // Init connection to the game
             try {
