@@ -92,12 +92,10 @@ public class TokenSelectionScene extends Scene {
             return;
         }
 
-        cli.waitingGameEvent.set(true);
-
-        if (!CLIPrinter.displayLoadingMessage("Waiting for all users to select their token",
-                cli.waitingGameEvent, connectionHandler.isConnected, null)) {
-            sceneManager.transition(ConnectionLostScene.class);
-            return;
+        try {
+            cli.tokenPhaseLatch.await();
+        } catch (InterruptedException e) {
+            sceneManager.stop();
         }
 
         if (sceneManager.getCurrentScene() != StarterCardScene.class)

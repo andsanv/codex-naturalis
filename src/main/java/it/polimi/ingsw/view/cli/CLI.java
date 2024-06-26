@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -171,6 +172,16 @@ public class CLI implements UI {
     public final AtomicBoolean waitingGameEvent = new AtomicBoolean(false);
 
     /**
+     * CountDownLatch for waiting for the token phase to end.
+     */
+    public CountDownLatch tokenPhaseLatch = new CountDownLatch(1);
+
+    /**
+     * CountDownLatch for waiting reconnection.
+     */
+    public CountDownLatch gameReconnectionLatch = new CountDownLatch(1);
+
+    /**
      * Mapping between players and tokens
      */
     private Map<PlayerToken, UserInfo> tokenToUser = new HashMap<>();
@@ -304,6 +315,8 @@ public class CLI implements UI {
         groupMessages.clear();
 
         lastGameError.set(null);
+
+        tokenPhaseLatch = new CountDownLatch(1);
     }
 
     /**
@@ -628,8 +641,20 @@ public class CLI implements UI {
 
     @Override
     public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleReconnetionToGame'");
+        synchronized (slimGameModelLock) {
+            this.slimGameModel = slimModel;
+        }
+
+        synchronized (tokenToUserLock) {
+            tokenToUser = userToToken.entrySet().stream()
+                    .peek(e -> {
+                        // Update player token with the selected one
+                        if (e.getKey().equals(getUserInfo())) {
+                            token.set(e.getValue());
+                        }
+                    })
+                    .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
+        }
     }
 
     @Override
@@ -684,6 +709,7 @@ public class CLI implements UI {
         }
 
         waitingGameEvent.set(false);
+        tokenPhaseLatch.countDown();
 
         if (sceneManager.getCurrentScene() != StarterCardScene.class) {
             sceneManager.transition(StarterCardScene.class);

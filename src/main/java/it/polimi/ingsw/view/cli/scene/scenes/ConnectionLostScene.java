@@ -27,7 +27,10 @@ public class ConnectionLostScene extends Scene {
                     if (connectionHandler.reconnect()) {
                         System.out.println("Successfully reconnected");
 
-                        // TODO check if the player was in the main menu or in a game
+                        if (cli.inGame.get()) {
+                            sceneManager.transition(GameScene.class);
+                        } else
+                            sceneManager.transition(LobbiesScene.class);
                     } else {
                         CLIPrinter.displayError("Reconnection failed");
                     }
