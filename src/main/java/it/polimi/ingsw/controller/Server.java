@@ -390,6 +390,7 @@ public enum Server {
         }
 
         UserInfo userInfo = user.toUserInfo();
+        client.setStatus(Status.IN_MENU);
 
         executorService.submit(() -> {
             try {
