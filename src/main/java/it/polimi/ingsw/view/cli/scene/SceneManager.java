@@ -2,13 +2,21 @@ package it.polimi.ingsw.view.cli.scene;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.fusesource.jansi.AnsiConsole;
 
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.commands.game.DirectMessageCommand;
+import it.polimi.ingsw.distributed.commands.game.GroupMessageCommand;
+import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.cli.CLI;
+import it.polimi.ingsw.view.cli.CLIPrinter;
 
 /**
  * The SceneManager is used for handling transitions between scenes of the CLI.
@@ -135,8 +143,53 @@ public class SceneManager {
             this.currentScene.availableCommands();
         } else if (args[0].equalsIgnoreCase("quit")) {
             this.isRunning.set(false);
-        } else if (cli.inGame.get() && args[0].equalsIgnoreCase("send")) {
-            // TODO handle chat message
+        } else if (cli.inGame.get() && args[0].equalsIgnoreCase("dm")) {
+            // Handle direct message
+
+            if (args.length != 3) {
+                CLIPrinter.displayError("Invalid formatting for send direct message command");
+                return;
+            }
+
+            UserInfo receiver;
+
+            try {
+                receiver = UserInfo.fromString(args[1]);
+            } catch (IllegalArgumentException e) {
+                CLIPrinter.displayError("Invalid user");
+                return;
+            }
+
+            if (cli.getUserInfo().equals(receiver)) {
+                CLIPrinter.displayError("Can't send a message to yourself");
+                return;
+            }
+
+            if (!cli.usersInGame.get().contains(receiver)) {
+                CLIPrinter.displayError("No user in game matches the given receiver");
+                return;
+            }
+
+            if (args[2].isEmpty()) {
+                CLIPrinter.displayError("Can't send an empty message");
+                return;
+            }
+
+            cli.getConnectionHandler().sendToGameServer(new DirectMessageCommand(cli.getUserInfo(), receiver, args[2]));
+        } else if (cli.inGame.get() && args[0].equalsIgnoreCase("gm")) {
+            // Handle group message
+
+            if (args.length != 2) {
+                CLIPrinter.displayError("Invalid formatting for send group message command");
+                return;
+            }
+
+            if (args[1].isEmpty()) {
+                CLIPrinter.displayError("Can't send an empty message");
+                return;
+            }
+
+            cli.getConnectionHandler().sendToGameServer(new GroupMessageCommand(cli.getUserInfo(), args[1]));
         } else {
             this.currentScene.handleCommand(args);
         }
