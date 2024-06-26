@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.gui.SetupView">
+   <children>
+      <StackPane fx:id="mainStackPane" prefHeight="187.0" prefWidth="260.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <StackPane fx:id="objectiveCardsPane" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: yellow;">
+               <StackPane.margin>
+                  <Insets bottom="175.0" left="300.0" right="300.0" top="175.0" />
+               </StackPane.margin>
+               <children>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="central-pane">
+                     <children>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Text fx:id="objectiveText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-top" text="Choose your objective card!" textAlignment="CENTER" wrappingWidth="422.0">
+                                 <font>
+                                    <Font size="17.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </StackPane>
+                        <HBox prefHeight="100.0" prefWidth="840.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <StackPane prefHeight="150.0" prefWidth="420.0">
+                                 <children>
+                                    <ImageView fx:id="firstObjectiveCardImageView" fitHeight="150.0" fitWidth="225.0" pickOnBounds="true" preserveRatio="true">
+                                       <StackPane.margin>
+                                          <Insets left="75.0" />
+                                       </StackPane.margin>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane prefHeight="150.0" prefWidth="420.0">
+                                 <children>
+                                    <ImageView fx:id="secondObjectiveCardImageView" fitHeight="150.0" fitWidth="225.0" pickOnBounds="true" preserveRatio="true">
+                                       <StackPane.margin>
+                                          <Insets right="75.0" />
+                                       </StackPane.margin>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </HBox>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="objectiveNextButton" mnemonicParsing="false" text="Next" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

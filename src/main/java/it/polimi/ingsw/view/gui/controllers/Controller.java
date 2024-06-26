@@ -12,7 +12,14 @@ import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +29,11 @@ public abstract class Controller implements UI {
 
     public Controller() {
         this.gui = null;
+    }
+
+    public void changeScene(Parent root, Window window) {
+        Stage stage = (Stage) window;
+        stage.setScene(new Scene(root));
     }
 
     @Override

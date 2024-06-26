@@ -155,7 +155,7 @@ public class TempGameController extends Controller {
      * @param gui the main application
      * @throws InterruptedException if initialization is interrupted
      */
-    public void initialize(GUI gui) throws InterruptedException {
+    public void initialize(GUI gui, SlimGameModel temp) throws InterruptedException {
         // simulating pre-game phase
         UserInfo firstUserInfo = new UserInfo(new User("Andrea"));
         UserInfo secondUserInfo = new UserInfo(new User("Maradona"));

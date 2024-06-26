@@ -1,12 +1,16 @@
 package it.polimi.ingsw.view.gui;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.gui.controllers.Controller;
 import it.polimi.ingsw.view.gui.controllers.GameController;
+import it.polimi.ingsw.view.gui.controllers.SetupPhaseController;
 import it.polimi.ingsw.view.gui.controllers.TempGameController;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -56,14 +60,14 @@ public class GUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/setupPhaseView.fxml"));
             Parent root = fxmlLoader.load();
 
-            TempGameController controller = fxmlLoader.getController();
-            controller.initialize(this);
+            SetupPhaseController controller = fxmlLoader.getController();
+            controller.initialize(this, new UserInfo(new User("test")));
             Scene scene = new Scene(root);
-            String url = Objects.requireNonNull(getClass().getResource("/css/gameView.css")).toExternalForm();
-            scene.getStylesheets().add(url);
+            // String url = Objects.requireNonNull(getClass().getResource("/css/gameView.css")).toExternalForm();
+            // scene.getStylesheets().add(url);
 
             // primaryStage.setResizable(false);
             primaryStage.setScene(scene);
