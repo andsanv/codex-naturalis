@@ -47,12 +47,14 @@ public class ObjectiveCardScene extends Scene {
                         return;
                     }
 
-                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 22);
+                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 23);
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
                             CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 0);
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
-                            CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 11);
+                            CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT), 0, 12);
                     CLIPrinter.printAnsiGrid(starterCardAsAnsi);
+                    System.out.println("   First      Second   ");
+
                 }),
                 new CLICommand("first", "to select the first objective card", () -> {
                     if (args.length != 1)

@@ -133,7 +133,7 @@ public class Lobby {
      * @return true if successfull, false otherwise
      */
     public synchronized boolean addUser(User user) {
-        if (this.isFull() || Lobby.anyLobbyContains(user))
+        if (this.isFull() || Lobby.anyLobbyContains(user) || gameStarted)
             return false;
 
         users.add(user);

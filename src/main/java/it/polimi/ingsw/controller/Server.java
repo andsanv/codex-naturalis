@@ -157,6 +157,8 @@ public enum Server {
         else if (!lobby.addUser(User.userInfoToUser(userInfo))) {
             if (lobby.isFull()) {
                 error = "The lobby " + lobbyId + " is full";
+            } else if (lobby.gameStarted()) {
+                error = "Game already started in lobby " + lobbyId;
             } else {
                 error = "You are already in another lobby";
             }
