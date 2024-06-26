@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.Server;
+import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.EndedTokenPhaseEvent;
@@ -126,6 +127,7 @@ public class TokenSelectionState extends GameState {
 
         userInfoToToken.forEach((id, playerToken) -> playerTokens.add(playerToken));
         gameFlowManager.setState(gameFlowManager.starterCardSelectionState);
+        ServerPrinter.displayInfo("Token phase ended for lobby " + gameFlowManager.lobbyId);
         gameFlowManager.notify(new EndedTokenPhaseEvent(new HashMap<>(userInfoToToken), timeLimitReached.get()));
         return new HashMap<>(userInfoToToken);
     }

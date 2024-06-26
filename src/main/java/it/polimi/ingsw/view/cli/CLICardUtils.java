@@ -27,12 +27,23 @@ import it.polimi.ingsw.model.deck.Deck;
 import it.polimi.ingsw.model.deck.GoldDeckCreator;
 import it.polimi.ingsw.model.deck.ResourceDeckCreator;
 import it.polimi.ingsw.model.deck.StarterDeckCreator;
+import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Trio;
 
 /**
  * Use this class for printing cards.
  */
 public class CLICardUtils {
+    public static void main(String[] args) {
+        CLIPrinter.printAnsiGrid(CLICardUtils.playableCard(DEFAULT));
+
+        Ansi[][] grid = emptyAnsiMatrix(20, 20);
+        addCardToMatrix(grid, cardToMatrix(20, CardSide.FRONT), 0, 0);
+        addCardToMatrix(grid, cardToMatrix(21, CardSide.BACK), 3, 8);
+        CLIPrinter.printAnsiGrid(grid);
+    }
+
     /**
      * Boolean for checking if the decks have been loaded or not.
      */
@@ -511,6 +522,51 @@ public class CLICardUtils {
 
         return result;
 
+    }
+
+    /**
+     * Returns a matrix of Ansi sequences that represents the board of a player.
+     * 
+     * @param playerCards the cards of the player
+     * @return an Ansi sequence matrix
+     */
+    public static Ansi[][] printBoard(Map<Integer, Trio<Integer, CardSide, Coords>> playerCards) {
+        // Find how big is the matrix to return
+        int x_max = Integer.MIN_VALUE;
+        int x_min = Integer.MAX_VALUE;
+        int y_max = Integer.MIN_VALUE;
+        int y_min = Integer.MAX_VALUE;
+
+        List<Coords> coords = playerCards.values().stream().map(trio -> trio.third).collect(Collectors.toList());
+
+        for (Coords c : coords) {
+            if (c.x > x_max)
+                x_max = c.x;
+            if (c.x < x_min)
+                x_min = c.x;
+            if (c.y > y_max)
+                y_max = c.y;
+            if (c.y < y_min)
+                y_min = c.y;
+        }
+
+        return null;
+    }
+
+    private static void addCardToMatrix(Ansi[][] matrix, Ansi[][] card, int iMatrix, int jMatrix) {
+        for (int i = 0; i < card.length; i++)
+            for (int j = 0; j < card[0].length; j++)
+                matrix[iMatrix + i][jMatrix + j] = card[i][j];
+    }
+
+    private static Ansi[][] emptyAnsiMatrix(int rows, int columns) {
+        Ansi[][] matrix = new Ansi[rows][columns];
+
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < columns; j++)
+                matrix[i][j] = emptyAnsi();
+
+        return matrix;
     }
 
     /**
