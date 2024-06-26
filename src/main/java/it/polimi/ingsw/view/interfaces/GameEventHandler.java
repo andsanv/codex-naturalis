@@ -133,15 +133,6 @@ public interface GameEventHandler {
         public void handleEndedObjectiveCardPhaseEvent();
 
         /**
-         * This method handles the received update about the drawn common objective
-         * cards
-         * 
-         * @param firstCommonObjectiveId  the id of the first common objective card
-         * @param secondCommonObjectiveId the id of the second common objective card
-         */
-        public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId);
-
-        /**
          * This method handles the received update about a direct player to player
          * message
          * 

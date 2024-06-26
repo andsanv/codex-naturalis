@@ -545,15 +545,16 @@ public class CLI implements UI {
             return;
 
         secretObjectives.set(new Pair<Integer, Integer>(drawnCardId, secondDrawnCardId));
-
         waitingGameEvent.set(false);
     }
 
     @Override
     public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId) {
-        if (playerToken.equals(token.get())) {
-            secretObjective.set(chosenCardId);
-        }
+        if (!playerToken.equals(token.get()))
+            return;
+
+        secretObjective.set(chosenCardId);
+        waitingGameEvent.set(false);
     }
 
     @Override
@@ -565,12 +566,6 @@ public class CLI implements UI {
             sceneManager.transition(EndingGameInitScene.class);
             resetPrompt();
         }
-    }
-
-    @Override
-    public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCommonObjectiveEvent'");
     }
 
     @Override
