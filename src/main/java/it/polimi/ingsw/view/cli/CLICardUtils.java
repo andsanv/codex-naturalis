@@ -504,6 +504,24 @@ public class CLICardUtils {
     }
 
     /**
+     * Creates a card that is a placeholder for another one.
+     * 
+     * @param n the number associated to the placeholder
+     * @return the card as an Ansi matrix
+     */
+    public static Ansi[][] placeholderCard(int n) {
+        Ansi[][] placeholder = simpleCard(WHITE);
+
+        String paddedNumber = addPadding(Integer.toString(n), 5);
+
+        for (int i = 0; i <= 4; i++) {
+            placeholder[2][3 + i] = colorAndResetFg(paddedNumber.charAt(i), WHITE);
+        }
+
+        return placeholder;
+    }
+
+    /**
      * Returns a matrix of Ansi sequences that represents the board of a player.
      * 
      * @param playerCards the cards of the player
@@ -561,6 +579,16 @@ public class CLICardUtils {
         }
 
         return board;
+    }
+
+    /**
+     * Creates a player board with a placeholder on each possible card placement.
+     * 
+     * @param playerCards the cards of the player
+     * @return the player board as an Ansi matrix
+     */
+    public static Ansi[][] createBoardWithPlaceholders(Map<Integer, Trio<Integer, CardSide, Coords>> playerCards) {
+        return null;
     }
 
     private static void addCardToMatrix(Ansi[][] matrix, Ansi[][] card, int startingRow, int startingColumn) {
