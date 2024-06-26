@@ -70,4 +70,9 @@ public abstract class ConnectionHandler {
    */
   public abstract boolean reconnect();
 
+  /**
+   * This method is used to check the connection.
+   */
+  protected abstract void checkConnection();
+
 }

@@ -59,10 +59,12 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	}
 
 	/**
+	 * {@inheritDoc}
 	 * This function checks if the timeout was exceeded, if true the method quits
 	 * the loop setting the state as disconnected.
 	 */
-	private void checkConnection() {
+	@Override
+	protected void checkConnection() {
 		new Thread(
 				() -> {
 					while (true) {
