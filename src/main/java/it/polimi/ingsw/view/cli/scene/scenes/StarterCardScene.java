@@ -5,6 +5,8 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.Arrays;
 
+import org.fusesource.jansi.Ansi;
+
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.DrawStarterCardCommand;
 import it.polimi.ingsw.distributed.commands.game.SelectStarterCardSideCommand;
@@ -51,9 +53,12 @@ public class StarterCardScene extends Scene {
                         return;
                     }
 
-                    CLIPrinter.printAnsiGrid(CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT));
-                    CLIPrinter.printAnsiGrid(CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK));
-
+                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 22);
+                    CLICardUtils.addCardToMatrix(starterCardAsAnsi,
+                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 0);
+                    CLICardUtils.addCardToMatrix(starterCardAsAnsi,
+                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 11);
+                    CLIPrinter.printAnsiGrid(starterCardAsAnsi);
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
                     if (args.length != 1)

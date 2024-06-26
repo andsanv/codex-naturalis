@@ -591,13 +591,29 @@ public class CLICardUtils {
         return null;
     }
 
-    private static void addCardToMatrix(Ansi[][] matrix, Ansi[][] card, int startingRow, int startingColumn) {
+    /**
+     * Adds the give card to an Ansi matrix.
+     * 
+     * @param matrix         the Ansi matrix
+     * @param card           the card as an Ansi matrix
+     * @param startingRow    the row where to start adding the card
+     * @param startingColumn the column where to start adding the card
+     */
+    public static void addCardToMatrix(Ansi[][] matrix, Ansi[][] card, int startingRow, int startingColumn) {
         for (int i = 0; i < card.length; i++)
             for (int j = 0; j < card[0].length; j++)
                 matrix[startingRow + i][startingColumn + j] = card[i][j];
     }
 
-    private static Ansi[][] emptyAnsiMatrix(int rows, int columns) {
+    /**
+     * Returns an empty ansi matrix of the given size
+     * 
+     * @param rows    number of rows
+     * @param columns number of columns
+     * 
+     * @return the Ansi matrix
+     */
+    public static Ansi[][] emptyAnsiMatrix(int rows, int columns) {
         Ansi[][] matrix = new Ansi[rows][columns];
 
         for (int i = 0; i < rows; i++)
@@ -800,10 +816,28 @@ public class CLICardUtils {
  * Simple resource card representation
  */
 class LightResourceCard {
+    /**
+     * The card's resource
+     */
     final String type;
+
+    /**
+     * The elements in the corners
+     */
     final Map<CornerPosition, String> corners;
+
+    /**
+     * The awarded points
+     */
     final int points;
 
+    /**
+     * Constructor of the light resource card
+     * 
+     * @param type    the card resources
+     * @param corners the corners
+     * @param points  the awarded points
+     */
     public LightResourceCard(String type, Map<CornerPosition, String> corners, int points) {
         this.type = type;
         this.corners = corners;
@@ -815,11 +849,34 @@ class LightResourceCard {
  * Simple gold card representation
  */
 class LightGoldCard {
+    /**
+     * The card's resource
+     */
     final String type;
+
+    /**
+     * The elements in the corners
+     */
     final Map<CornerPosition, String> corners;
+
+    /**
+     * The awarded points
+     */
     final String points;
+
+    /**
+     * The required elements to place the card
+     */
     final List<String> required;
 
+    /**
+     * Constructor of the light gold card
+     * 
+     * @param type     the card resources
+     * @param corners  the corners
+     * @param points   the awarded points
+     * @param required required elements to place the card
+     */
     public LightGoldCard(String type, Map<CornerPosition, String> corners, String points, List<String> required) {
         this.type = type;
         this.corners = corners;
@@ -832,10 +889,28 @@ class LightGoldCard {
  * Simple starter card representation
  */
 class LightStarterCard {
+    /**
+     * The card's center resources
+     */
     final List<String> resources;
+
+    /**
+     * The front corners
+     */
     final Map<CornerPosition, String> cornersFront;
+
+    /**
+     * The back corners
+     */
     final Map<CornerPosition, String> cornersBack;
 
+    /**
+     * Constructor of the light starter card
+     * 
+     * @param resources    the central resources
+     * @param cornersFront the front corners
+     * @param cornersBack  the back corners
+     */
     public LightStarterCard(List<String> resources, Map<CornerPosition, String> cornersFront,
             Map<CornerPosition, String> cornersBack) {
         this.resources = resources;
