@@ -52,12 +52,13 @@ public class StarterCardScene extends Scene {
                         return;
                     }
 
-                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 22);
+                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 23);
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
                             CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 0);
                     CLICardUtils.addCardToMatrix(starterCardAsAnsi,
-                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK), 0, 11);
+                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK), 0, 12);
                     CLIPrinter.printAnsiGrid(starterCardAsAnsi);
+                    System.out.println("   Front       Back    ");
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
                     if (args.length != 1)

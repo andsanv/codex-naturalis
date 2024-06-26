@@ -30,6 +30,7 @@ import it.polimi.ingsw.view.cli.scene.SceneManager;
 import it.polimi.ingsw.view.cli.scene.scenes.AccountScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionLostScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ConnectionScene;
+import it.polimi.ingsw.view.cli.scene.scenes.EndingGameInitScene;
 import it.polimi.ingsw.view.cli.scene.scenes.GameScene;
 import it.polimi.ingsw.view.cli.scene.scenes.HomeScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
@@ -182,6 +183,11 @@ public class CLI implements UI {
     public CountDownLatch objectivePhaseLatch = new CountDownLatch(1);
 
     /**
+     * CountDownLatch for waiting for the token phase to end.
+     */
+    public CountDownLatch endInitPhaseLatch = new CountDownLatch(1);
+
+    /**
      * CountDownLatch for waiting reconnection.
      */
     public CountDownLatch gameReconnectionLatch = new CountDownLatch(1);
@@ -261,6 +267,7 @@ public class CLI implements UI {
         sceneManager.registerScene(new TokenSelectionScene(sceneManager));
         sceneManager.registerScene(new StarterCardScene(sceneManager));
         sceneManager.registerScene(new ObjectiveCardScene(sceneManager));
+        sceneManager.registerScene(new EndingGameInitScene(sceneManager));
         sceneManager.registerScene(new GameScene(sceneManager));
 
         /*
@@ -323,6 +330,7 @@ public class CLI implements UI {
 
         tokenPhaseLatch = new CountDownLatch(1);
         objectivePhaseLatch = new CountDownLatch(1);
+        endInitPhaseLatch = new CountDownLatch(1);
     }
 
     /**
@@ -525,8 +533,7 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedObjectiveCardPhaseEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedObjectiveCardPhaseEvent'");
+        sceneManager.transition(EndingGameInitScene.class);
     }
 
     @Override
@@ -577,12 +584,6 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLimitPointsReachedEvent'");
-    }
-
-    @Override
     public UserInfo getUserInfo() {
         synchronized (userInfoLock) {
             return userInfo != null ? new UserInfo(userInfo) : null;
@@ -595,7 +596,7 @@ public class CLI implements UI {
             this.slimGameModel = slimGameModel;
         }
 
-        
+        endInitPhaseLatch.countDown();
 
         if (sceneManager.getCurrentScene() != GameScene.class) {
             sceneManager.transition(GameScene.class);
@@ -738,5 +739,17 @@ public class CLI implements UI {
             sceneManager.transition(ConnectionLostScene.class);
             resetPrompt();
         }
+    }
+
+    @Override
+    public void handleLastConnectedPlayerEvent() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleLastConnectedPlayerEvent'");
+    }
+
+    @Override
+    public void handleLastConnectedPlayerWonEvent() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleLastConnectedPlayerWonEvent'");
     }
 }
