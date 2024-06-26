@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.ChosenObjectiveCardEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnObjectiveCardsEvent;
@@ -14,7 +15,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * The state represents the game phase where players choose their objective card between two given
+ * The state represents the game phase where players choose their objective card
+ * between two given
  */
 public class ObjectiveCardSelectionState extends GameState {
   /**
@@ -47,9 +49,8 @@ public class ObjectiveCardSelectionState extends GameState {
    */
   private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
 
-
   public ObjectiveCardSelectionState(
-          GameFlowManager gameFlowManager, Decks decks, List<PlayerToken> playerTokens, long timeLimit) {
+      GameFlowManager gameFlowManager, Decks decks, List<PlayerToken> playerTokens, long timeLimit) {
     super(gameFlowManager);
 
     this.decks = decks;
@@ -61,9 +62,12 @@ public class ObjectiveCardSelectionState extends GameState {
   }
 
   /**
-   * Waits for DrawObjectiveCardsCommands and SelectObjectiveCardCommand by the players.
-   * Players need to draw the cards and choose one within a certain time limit, otherwise a random card is chosen for them.
-   * If time limit is reached, or if all players chose a card, breaks from loop and returns the map.
+   * Waits for DrawObjectiveCardsCommands and SelectObjectiveCardCommand by the
+   * players.
+   * Players need to draw the cards and choose one within a certain time limit,
+   * otherwise a random card is chosen for them.
+   * If time limit is reached, or if all players chose a card, breaks from loop
+   * and returns the map.
    * Throws a EndedObjectiveCardPhaseEvent, so that clients can update their UIs
    *
    * @return The map containing information on what card each player chose
@@ -74,24 +78,23 @@ public class ObjectiveCardSelectionState extends GameState {
 
     Queue<GameCommand> commands = gameFlowManager.commands;
 
-    TimerTask timeElapsedTask =
-        new TimerTask() {
-          @Override
-          public void run() {
-            synchronized (timeLimitReached) {
-              timeLimitReached.set(true);
-              
-              synchronized(commands) {
-                commands.notifyAll();
-              }
-            }
+    TimerTask timeElapsedTask = new TimerTask() {
+      @Override
+      public void run() {
+        synchronized (timeLimitReached) {
+          timeLimitReached.set(true);
+
+          synchronized (commands) {
+            commands.notifyAll();
           }
-        };
+        }
+      }
+    };
     timer.schedule(timeElapsedTask, timeLimit * 1000);
 
     while (true) {
       synchronized (commands) {
-        if(commands.isEmpty()) {
+        if (commands.isEmpty()) {
           try {
             commands.wait();
           } catch (InterruptedException e) {
@@ -104,10 +107,10 @@ public class ObjectiveCardSelectionState extends GameState {
           Random random = new Random();
 
           playerTokens.stream()
-            .filter(playerToken -> !tokenToDrawnObjectiveCards.containsKey(playerToken))
-            .forEach(playerToken -> {
-              ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
-              ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
+              .filter(playerToken -> !tokenToDrawnObjectiveCards.containsKey(playerToken))
+              .forEach(playerToken -> {
+                ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
+                ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
 
                 decks.objectiveCardsDeck.notify(new DrawnObjectiveCardsEvent(playerToken, firstCard.id, secondCard.id));
 
@@ -115,33 +118,34 @@ public class ObjectiveCardSelectionState extends GameState {
               });
 
           playerTokens.stream()
-            .filter(pt -> !tokenToChosenObjectiveCard.containsKey(pt))
-            .forEach(
-              pt ->
-                tokenToChosenObjectiveCard.put(
-                  pt,
-                  random.nextInt(2) == 0
-                    ? tokenToDrawnObjectiveCards.get(pt).first
-                    : tokenToDrawnObjectiveCards.get(pt).second));
+              .filter(pt -> !tokenToChosenObjectiveCard.containsKey(pt))
+              .forEach(
+                  pt -> tokenToChosenObjectiveCard.put(
+                      pt,
+                      random.nextInt(2) == 0
+                          ? tokenToDrawnObjectiveCards.get(pt).first
+                          : tokenToDrawnObjectiveCards.get(pt).second));
 
           break;
         }
-        
-        if(commands.isEmpty()) continue;
+
+        if (commands.isEmpty())
+          continue;
 
         if (commands.poll().execute(gameFlowManager)) {
-          if (tokenToDrawnObjectiveCards.keySet().size() == playerTokens.size() && tokenToChosenObjectiveCard.keySet().size() == playerTokens.size()) {
+          if (tokenToDrawnObjectiveCards.keySet().size() == playerTokens.size()
+              && tokenToChosenObjectiveCard.keySet().size() == playerTokens.size()) {
             timer.cancel();
             break;
           }
-        }
-        else {
+        } else {
           // cannot execute command event
         }
       }
     }
 
     gameFlowManager.setState(gameFlowManager.initializationState);
+    ServerPrinter.displayInfo("Objective phase ended for lobby " + gameFlowManager.lobbyId);
     gameFlowManager.notify(new EndedObjectiveCardPhaseEvent());
     return new HashMap<>(tokenToChosenObjectiveCard);
   }
@@ -151,11 +155,13 @@ public class ObjectiveCardSelectionState extends GameState {
    * Updates the tokenToDrawnObjectiveCards map with the drawn cards
    *
    * @param playerToken player drawing the cards
-   * @return false if a player already drew his cards or there was an error, true otherwise
+   * @return false if a player already drew his cards or there was an error, true
+   *         otherwise
    */
   @Override
   public boolean drawObjectiveCards(PlayerToken playerToken) {
-    if (tokenToDrawnObjectiveCards.containsKey(playerToken)) return false;
+    if (tokenToDrawnObjectiveCards.containsKey(playerToken))
+      return false;
 
     ObjectiveCard firstCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
     ObjectiveCard secondCard = decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow();
@@ -170,18 +176,18 @@ public class ObjectiveCardSelectionState extends GameState {
    * Updates the tokenToChosenObjectiveCard map with the chosen card.
    *
    * @param playerToken player choosing the card
-   * @param choice integer representing the choice
+   * @param choice      integer representing the choice
    * @return false if the player already chose his card, true otherwise
    */
   @Override
   public boolean selectObjectiveCard(PlayerToken playerToken, int choice) {
     if (!tokenToDrawnObjectiveCards.containsKey(playerToken)
-        || tokenToChosenObjectiveCard.containsKey(playerToken)) return false;
+        || tokenToChosenObjectiveCard.containsKey(playerToken))
+      return false;
 
-    ObjectiveCard chosenCard =
-        (choice == 0)
-            ? tokenToDrawnObjectiveCards.get(playerToken).first
-            : tokenToDrawnObjectiveCards.get(playerToken).second;
+    ObjectiveCard chosenCard = (choice == 0)
+        ? tokenToDrawnObjectiveCards.get(playerToken).first
+        : tokenToDrawnObjectiveCards.get(playerToken).second;
     tokenToChosenObjectiveCard.put(playerToken, chosenCard);
 
     decks.objectiveCardsDeck.notify(new ChosenObjectiveCardEvent(playerToken, chosenCard.id));

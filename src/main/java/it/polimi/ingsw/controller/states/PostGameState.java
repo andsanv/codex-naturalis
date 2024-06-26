@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.Server;
+import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.controller.usermanagement.Lobby;
 import it.polimi.ingsw.distributed.events.game.GameResultsEvent;
 import it.polimi.ingsw.model.player.PlayerToken;
@@ -33,8 +34,8 @@ public class PostGameState extends GameState {
         .map(entry -> new Pair<>(entry.getKey(), entry.getValue()))
         .collect(Collectors.toList());
 
+    ServerPrinter.displayInfo("Game ended for lobby " + gameFlowManager.lobbyId);
     gameFlowManager.notify(new GameResultsEvent(results));
-
     Lobby.deleteLobby(gameFlowManager.lobbyId);
     Server.INSTANCE.broadcastLobbies();
 

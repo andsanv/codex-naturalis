@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller.states;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.events.game.ChosenStarterCardSideEvent;
 import it.polimi.ingsw.distributed.events.game.DrawnStarterCardEvent;
@@ -79,24 +80,23 @@ public class StarterCardSelectionState extends GameState {
 
     Queue<GameCommand> commands = gameFlowManager.commands;
 
-    TimerTask timeElapsedTask =
-        new TimerTask() {
-          @Override
-          public void run() {
-            synchronized (timeLimitReached) {
-              timeLimitReached.set(true);
-              
-              synchronized(commands) {
-                commands.notifyAll();
-              }
-            }
+    TimerTask timeElapsedTask = new TimerTask() {
+      @Override
+      public void run() {
+        synchronized (timeLimitReached) {
+          timeLimitReached.set(true);
+
+          synchronized (commands) {
+            commands.notifyAll();
           }
-        };
+        }
+      }
+    };
     timer.schedule(timeElapsedTask, timeLimit * 1000);
 
     while (true) {
       synchronized (commands) {
-        if(commands.isEmpty()) {
+        if (commands.isEmpty()) {
           try {
             commands.wait();
           } catch (InterruptedException e) {
@@ -111,33 +111,34 @@ public class StarterCardSelectionState extends GameState {
           List<CardSide> sides = new ArrayList<>(Arrays.asList(CardSide.FRONT, CardSide.BACK));
 
           playerTokens.stream()
-            .filter(pt -> !tokenToStarterCard.containsKey(pt))
-            .forEach(
+              .filter(pt -> !tokenToStarterCard.containsKey(pt))
+              .forEach(
                   pt -> tokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt, 0).orElseThrow()));
           playerTokens.stream()
-            .filter(pt -> !tokenToCardSide.containsKey(pt))
-            .forEach(pt -> tokenToCardSide.put(pt, sides.get(random.nextInt(sides.size()))));
+              .filter(pt -> !tokenToCardSide.containsKey(pt))
+              .forEach(pt -> tokenToCardSide.put(pt, sides.get(random.nextInt(sides.size()))));
 
           break;
         }
-        
-        if(commands.isEmpty()) continue;
+
+        if (commands.isEmpty())
+          continue;
 
         if (commands.poll().execute(gameFlowManager)) {
-          if (tokenToStarterCard.keySet().size() == playerTokens.size() && tokenToCardSide.keySet().size() == playerTokens.size()) {
+          if (tokenToStarterCard.keySet().size() == playerTokens.size()
+              && tokenToCardSide.keySet().size() == playerTokens.size()) {
             timer.cancel();
             break;
           }
-        }
-        else {
+        } else {
           // cannot execute command event
         }
       }
     }
 
     gameFlowManager.setState(gameFlowManager.objectiveCardSelectionState);
+    ServerPrinter.displayInfo("Starter card phase ended for lobby " + gameFlowManager.lobbyId);
     gameFlowManager.notify(new EndedStarterCardPhaseEvent());
-
     return new Pair<>(new HashMap<>(tokenToStarterCard), new HashMap<>(tokenToCardSide));
   }
 
