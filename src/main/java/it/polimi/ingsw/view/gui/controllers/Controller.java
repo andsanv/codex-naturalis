@@ -11,6 +11,7 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.gui.GUI;
+import javafx.application.Platform;
 
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,18 @@ import java.util.Optional;
 public abstract class Controller implements UI {
     public final GUI gui;
 
-    public Controller(GUI gui) {
-        this.gui = gui;
+    public Controller() {
+        this.gui = null;
     }
 
     @Override
     public UserInfo getUserInfo() {
         return null;
+    }
+
+    @Override
+    public void handleDisconnection() {
+
     }
 
     @Override

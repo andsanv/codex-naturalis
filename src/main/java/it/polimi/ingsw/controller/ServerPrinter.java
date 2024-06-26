@@ -48,7 +48,7 @@ public class ServerPrinter {
     /**
      * Prints a formatted debug message.
      * 
-     * @param info the debug message
+     * @param debug the debug message
      */
     public static void displayDebug(String debug) {
         if (SHOW_DEBUG)

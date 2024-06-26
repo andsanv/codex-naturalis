@@ -11,21 +11,21 @@ import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.gui.GUI;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 
-public class TempGameController {
+public class TempGameController extends Controller {
     /* DIMENSIONS AND CONSTANTS */
     // screen
     public final Pair<Integer, Integer> screenResolution = new Pair<>(1440, 900);
@@ -60,14 +60,19 @@ public class TempGameController {
     @FXML public AnchorPane mainAnchorPane;
     @FXML public StackPane mainStackPane;
     @FXML public TabPane leftTabPane;
+    @FXML public Tab decksTab;
+    @FXML public AnchorPane decksAnchorPane;
     @FXML public TabPane rightTabPane;
     @FXML public Button leftPanelButton;
     @FXML public Button rightPanelButton;
+    @FXML public ScrollPane defaultScrollPane;
+    @FXML public GridPane defaultGridPane;
+    @FXML public HBox defaultHandHBox;
 
     // dynamic
-    @FXML public ScrollPane currentScrollPane;
-    @FXML public GridPane currentGridPane;
-    @FXML public HBox currentHandHBox;
+    public ScrollPane currentScrollPane;
+    public GridPane currentGridPane;
+    public HBox currentHandHBox;
 
     // in-game objects
     @FXML public VBox playersList;
@@ -102,16 +107,17 @@ public class TempGameController {
     /* GAME FLOW */
     public PlayerToken selfPlayerToken;
     public PlayerToken currentPlayerToken;
+    public PlayerToken currentTurn = null;
+    public boolean isPlayCardState = false;
     public Map<PlayerToken, ScrollPane> tokenToScrollPane = new HashMap<>();
     public Map<PlayerToken, HBox> tokenToHandHBox = new HashMap<>();
-
+    @FXML public StackPane eventPane;
+    @FXML public Text eventText;
+    @FXML public Text eventTitle;
+    @FXML public StackPane importantEventPane;
+    @FXML public Text importantEventText;
 
     /* HELPERS */
-    // card click
-    public Timer cardClickTimer;
-    public boolean cardClickTimerExpired;
-    public long cardClickDelay = 500;
-
     // mouse drag
     private double dragStartX;
     private double dragStartY;
@@ -132,8 +138,14 @@ public class TempGameController {
     Map<ImageView, Pair<ImageView, List<Integer>>> visibleSlotToDeck;
     Map<ImageView, Consumer<Integer>> visibleSlotToVisibleListSetter;
 
+    public List<StackPane> playersPanes = new ArrayList<>();
+
     public List<CardSide> visibleHandCardsSides;
 
+
+    public TempGameController() {
+        super();
+    }
 
 
     /**
@@ -144,16 +156,17 @@ public class TempGameController {
      * @throws InterruptedException if initialization is interrupted
      */
     public void initialize(GUI gui) throws InterruptedException {
-        // build default view
-
-
-        // simulating game setup phase
+        // simulating pre-game phase
         UserInfo firstUserInfo = new UserInfo(new User("Andrea"));
         UserInfo secondUserInfo = new UserInfo(new User("Maradona"));
-        UserInfo thirdUserInfo = new UserInfo(new User("John"));
+        UserInfo thirdUserInfo = new UserInfo(new User("Kennedy"));
 
         players = new ArrayList<>(Arrays.asList(firstUserInfo, secondUserInfo, thirdUserInfo));
 
+        // build default view
+        initializePlayersList(players);
+
+        // simulate game setup phase
         userInfoToToken = new HashMap<>() {{
             put(firstUserInfo, PlayerToken.RED);
             put(secondUserInfo, PlayerToken.BLUE);
@@ -223,6 +236,8 @@ public class TempGameController {
                 }}
         );
 
+        currentTurn = PlayerToken.RED;
+
         resourceDeck = new Pair<>(resourceDeckImageView, slimGameModel.resourceDeck);
         goldDeck = new Pair<>(goldDeckImageView, slimGameModel.goldDeck);
 
@@ -252,108 +267,97 @@ public class TempGameController {
             put(secondGoldImageView, goldDeck);
         }};
 
-        firstObjectiveSlot.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-        secondObjectiveSlot.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-        secretObjectiveSlot.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-
-        initializeGridPane(currentGridPane);
-        initializeScrollPane(currentScrollPane);
-        initializePlayersList(players);
+        initializeTabs();
         initializeDecks();
+        initializeEventPanes();
 
-
-        ImageView defaultStarterCardView = new ImageView(new Image("images/miscellaneous/default_starter_card.png"));
-        defaultStarterCardView.setEffect(new DropShadow());
-
-        StackPane stackPane = new StackPane(defaultStarterCardView);
-        GridPane.setHgrow(stackPane, Priority.NEVER);
-        GridPane.setVgrow(stackPane, Priority.NEVER);
-        GridPane.setHalignment(stackPane, HPos.CENTER);
-        GridPane.setValignment(stackPane, VPos.CENTER);
-
-        defaultStarterCardView.setFitWidth(rawCardDimensions.first * cardCompressionFactor);
-        defaultStarterCardView.setFitHeight(rawCardDimensions.second * cardCompressionFactor);
-
-        currentGridPane.add(stackPane, 40, 40);
-
-        initializeAllPlayers();
+        players.forEach(this::initializePlayer);    // sets up structures for each player, such as scroll and grid pane
 
         selfPlayerToken = PlayerToken.RED;
+        currentPlayerToken = selfPlayerToken;
+        switchPlayerView(selfPlayerToken);
+
+        visibleHandCardsSides = new ArrayList<>(Arrays.asList(CardSide.BACK, CardSide.BACK, CardSide.BACK));
 
         // simulate some turns
-
         cardsPlayability = new HashMap<>() {{
             put(0, new ArrayList<>(Arrays.asList(new Pair<>(CardSide.FRONT, true), new Pair<>(CardSide.BACK, false))));
             put(1, new ArrayList<>(Arrays.asList(new Pair<>(CardSide.FRONT, false), new Pair<>(CardSide.BACK, true))));
             put(7, new ArrayList<>(Arrays.asList(new Pair<>(CardSide.FRONT, false), new Pair<>(CardSide.BACK, false))));
         }};
-
-        handlePlayedCardEvent(PlayerToken.RED, 45, CardSide.FRONT, new Coords(1,1));
-        handlePlayedCardEvent(PlayerToken.BLUE, 45, CardSide.FRONT, new Coords(-1,1));
-
-        visibleHandCardsSides = new ArrayList<>(Arrays.asList(CardSide.BACK, CardSide.BACK, CardSide.BACK));
         availableSlots = new ArrayList<>(Arrays.asList(new Coords(1,1), new Coords(-1,-1)));
 
-        switchPlayerView(PlayerToken.RED);
-
-        System.out.println(slimGameModel.tokenToHand.get(currentPlayerToken));
+        handleCardsPlayabilityEvent(PlayerToken.RED, new ArrayList<>(availableSlots), new HashMap<>(cardsPlayability));
+        isPlayCardState = false;
     }
 
-    public void initializeGridPane(GridPane gridPane) {
-        // gridPane.setPadding(new Insets(adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second, adjustedCellDimensions.second));
+    /**
+     * Sets up the event panes for in-game notifications.
+     */
+    public void initializeEventPanes() {
+        eventPane.setMouseTransparent(true);
+        eventPane.setVisible(false);
 
-        for(int i = 0; i < gridCellsCount.first; i++) {
-            RowConstraints row = new RowConstraints();
-            row.setPrefHeight(adjustedCellDimensions.second);
-            row.setMinHeight(adjustedCellDimensions.second);
-            row.setMaxHeight(adjustedCellDimensions.second);
-            row.setVgrow(javafx.scene.layout.Priority.NEVER);
-            gridPane.getRowConstraints().add(row);
+        eventText.setMouseTransparent(true);
+        eventText.setVisible(false);
 
-            ColumnConstraints column = new ColumnConstraints();
-            column.setPrefWidth(adjustedCellDimensions.first);
-            column.setMinWidth(adjustedCellDimensions.first);
-            column.setMaxWidth(adjustedCellDimensions.first);
-            column.setHgrow(javafx.scene.layout.Priority.NEVER);
-            gridPane.getColumnConstraints().add(column);
-        }
+        importantEventPane.getStyleClass().add("important-event-pane");
+        importantEventPane.setMouseTransparent(true);
+        importantEventPane.setVisible(false);
+
+        importantEventText.getStyleClass().add("important-text");
+        importantEventText.setMouseTransparent(true);
+        importantEventText.setVisible(false);
     }
 
-    public void initializeScrollPane(ScrollPane scrollPane) {
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setHvalue(0.5);
-        scrollPane.setVvalue(0.5);
+    /**
+     * Allows to enable side panes after initialization phase is finished.
+     */
+    public void initializeTabs() {
+        // enable side tab panes
+        leftTabPane.setDisable(false);
+        leftPanelButton.setDisable(false);
+
+        rightTabPane.setDisable(false);
+        rightPanelButton.setDisable(false);
     }
 
+    /**
+     * Sets first imageViews of cards on deck, based on the SlimGameModel.
+     */
     public void initializeDecks() {
-        int cardId;
-
         // resource deck
         resourceDeckImageView.setImage(getCardImage(
                 !slimGameModel.resourceDeck.isEmpty() ? slimGameModel.resourceDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
-        resourceDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // gold deck
         goldDeckImageView.setImage(getCardImage(
                 !slimGameModel.goldDeck.isEmpty() ? slimGameModel.goldDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
-        goldDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // resource visible
         firstResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.get(0), CardSide.FRONT));
-        firstResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
         secondResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.get(1), CardSide.FRONT));
-        secondResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
 
         // gold visible
         firstGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.get(0), CardSide.FRONT));
-        firstGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
         secondGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.get(1), CardSide.FRONT));
+
+        // TODO MOVE TO EVENT
+        resourceDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
+        goldDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
+        firstResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        secondResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        firstGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
         secondGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
     }
 
+    /**
+     * Dynamically builds the player list in the bottom right pane.
+     *
+     * @param players list of players playing
+     */
     public void initializePlayersList(List<UserInfo> players) {
         int playersCount = players.size();
 
@@ -376,101 +380,180 @@ public class TempGameController {
 
         boolean first = true;
         for(int i = 0; i < playersCount; i++) {
-            HBox playerEntry = new HBox();
+            // setup entry
+            StackPane mainPlayerPane = new StackPane();
+            mainPlayerPane.setPrefWidth(playerImageViewDimensions.first);
+            mainPlayerPane.setPrefHeight(playerImageViewDimensions.second);
+            mainPlayerPane.setOnMouseClicked(this::handlePlayerPaneMouseClick);
+            mainPlayerPane.getStyleClass().add("player-pane");
+
+            HBox playerHBox = new HBox();
+            playerHBox.setMouseTransparent(true);
+
+            // setup avatar
+            StackPane playerAvatarPane = new StackPane();
+            playerAvatarPane.setMouseTransparent(true);
+            HBox.setMargin(playerAvatarPane, new Insets(5, 0, 5, 15));
 
             ImageView playerAvatar = new ImageView(playersImages.get(i));
+            playerAvatar.setMouseTransparent(true);
             playerAvatar.setPreserveRatio(true);
             playerAvatar.setFitHeight(playerImageViewDimensions.second - 10);
-            HBox.setMargin(playerAvatar, new Insets(5, 0, 0, 5));
+            playerAvatar.setFitWidth(playerImageViewDimensions.second - 10);
+
+            playerAvatarPane.getChildren().add(playerAvatar);
+
+            // setup name
+            StackPane playerNamePane = new StackPane();
+            playerNamePane.setMouseTransparent(true);
+            HBox.setMargin(playerNamePane, new Insets(5, 0, 5, 5));
+            playerNamePane.setPrefWidth(135);
 
             Label playerName = new Label(players.get(i).name);
-            HBox.setMargin(playerName, new Insets(5, 0, 0, 5));
+            playerName.setMouseTransparent(true);
+            StackPane.setMargin(playerName, new Insets(0, 0, 5, 0));
+            playerName.getStyleClass().add("player-name");
+            playerName.setStyle("-fx-font-size: 18");
 
-            playerEntry.getChildren().add(playerAvatar);
-            playerEntry.getChildren().add(playerName);
+            playerNamePane.getChildren().add(playerName);
 
-            playersList.getChildren().add(playerEntry);
-            if(!first) VBox.setMargin(playerEntry, new Insets(5.0, 0.0, 0.0, 0.0));
+            // setup view icon
+            StackPane viewIconPane = new StackPane();
+            viewIconPane.setMouseTransparent(true);
+            viewIconPane.setPrefHeight(playerImageViewDimensions.second - 10);
+            viewIconPane.setPrefWidth(40);
+            HBox.setMargin(viewIconPane, new Insets(5, 0, 5, 0));
+
+            ImageView viewIcon = new ImageView(new Image("images/icons/view_icon.png"));
+            viewIcon.setMouseTransparent(true);
+            viewIcon.setPreserveRatio(true);
+            viewIcon.setFitHeight(20);
+            viewIcon.setFitWidth(20);
+
+            viewIconPane.getChildren().add(viewIcon);
+
+            // end setup
+            playerHBox.getChildren().add(playerAvatarPane);
+            playerHBox.getChildren().add(playerNamePane);
+            playerHBox.getChildren().add(viewIconPane);
+            mainPlayerPane.getChildren().add(playerHBox);
+
+            playersList.getChildren().add(mainPlayerPane);
+            playersPanes.add(mainPlayerPane);
+
+            if(!first) VBox.setMargin(mainPlayerPane, new Insets(5.0, 0.0, 0.0, 0.0));
             first = false;
         }
     }
 
-    public void initializeAllPlayers() {
-        userInfoToToken.values().forEach(token -> {
-            // set up scroll pane and grid pane
-            ScrollPane scrollPane = new ScrollPane();
-            scrollPane.setOnKeyPressed(this::handleKeyPressedEvent);
-            initializeScrollPane(scrollPane);
+    /**
+     * Allows to initialize a single player's structures and panes.
+     *
+     * @param player player being initialized
+     */
+    public void initializePlayer(UserInfo player) {
+        // get player token
+        PlayerToken playerToken = userInfoToToken.get(player);
 
-            GridPane gridPane = new GridPane();
-            gridPane.setOnMouseDragged(this::handleMouseDragged);
-            gridPane.setOnMousePressed(this::handleOnMousePressed);
-            initializeGridPane(gridPane);
-            gridPane.setOnDragOver(this::handleDragOver);
-            gridPane.setOnDragDropped(this::handleHandDragDropped);
-            gridPane.setGridLinesVisible(false);
+        // set up scroll pane and grid pane
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setHvalue(0.5);
+        scrollPane.setVvalue(0.5);
 
-            scrollPane.setContent(gridPane);
+        scrollPane.setOnKeyPressed(this::handleKeyPressedEvent);
 
-            tokenToScrollPane.put(token, scrollPane);
+        GridPane gridPane = new GridPane();
+        for(int i = 0; i < gridCellsCount.first; i++) {
+            RowConstraints row = new RowConstraints();
+            row.setPrefHeight(adjustedCellDimensions.second);
+            row.setMinHeight(adjustedCellDimensions.second);
+            row.setMaxHeight(adjustedCellDimensions.second);
+            row.setVgrow(javafx.scene.layout.Priority.NEVER);
+            gridPane.getRowConstraints().add(row);
 
-            placeCard(token, slimGameModel.tokenToPlayedCards.get(token).get(0).first, slimGameModel.tokenToPlayedCards.get(token).get(0).second, slimGameModel.tokenToPlayedCards.get(token).get(0).third.x, slimGameModel.tokenToPlayedCards.get(token).get(0).third.y);
+            ColumnConstraints column = new ColumnConstraints();
+            column.setPrefWidth(adjustedCellDimensions.first);
+            column.setMinWidth(adjustedCellDimensions.first);
+            column.setMaxWidth(adjustedCellDimensions.first);
+            column.setHgrow(javafx.scene.layout.Priority.NEVER);
+            gridPane.getColumnConstraints().add(column);
+        }
 
-            // set up hand hbox
-            HBox hbox = new HBox();
+        gridPane.setGridLinesVisible(false);
 
-            AnchorPane.setLeftAnchor(hbox, 407.5);
-            AnchorPane.setRightAnchor(hbox, 407.5);
-            AnchorPane.setBottomAnchor(hbox, 20.0);
+        gridPane.setOnMouseDragged(this::handleMouseDragged);
+        gridPane.setOnMousePressed(this::handleOnMousePressed);
 
-            Integer firstCardId = slimGameModel.tokenToHand.get(token).get(0);
-            Integer secondCardId = slimGameModel.tokenToHand.get(token).get(1);
-            Integer thirdCardId = slimGameModel.tokenToHand.get(token).get(2);
+        scrollPane.setContent(gridPane);
+        tokenToScrollPane.put(playerToken, scrollPane);
 
-            ImageView firstCardImageView = new ImageView(new Image("images/cards/backs/" + firstCardId + ".png"));
+        // place starter card
+        setCard(
+                playerToken,
+                slimGameModel.tokenToPlayedCards.get(playerToken).get(0).first,
+                slimGameModel.tokenToPlayedCards.get(playerToken).get(0).second,
+                new Coords(0,0)
+        );
+
+        // set up hand hbox
+        HBox handHBox = new HBox();
+
+        AnchorPane.setLeftAnchor(handHBox, 407.5);
+        AnchorPane.setRightAnchor(handHBox, 407.5);
+        AnchorPane.setBottomAnchor(handHBox, 20.0);
+
+        ImageView firstCardImageView = new ImageView(getCardImage(slimGameModel.tokenToHand.get(playerToken).get(0), CardSide.BACK));
+        firstCardImageView.setPreserveRatio(true);
+        firstCardImageView.setFitWidth(195);
+        firstCardImageView.setFitHeight(130);
+
+        ImageView secondCardImageView = new ImageView(getCardImage(slimGameModel.tokenToHand.get(playerToken).get(1), CardSide.BACK));
+        secondCardImageView.setPreserveRatio(true);
+        secondCardImageView.setFitWidth(195);
+        secondCardImageView.setFitHeight(130);
+
+        ImageView thirdCardImageView = new ImageView(getCardImage(slimGameModel.tokenToHand.get(playerToken).get(2), CardSide.BACK));
+        thirdCardImageView.setPreserveRatio(true);
+        thirdCardImageView.setFitWidth(195);
+        thirdCardImageView.setFitHeight(130);
+
+        handHBox.getChildren().addAll(firstCardImageView, secondCardImageView, thirdCardImageView);
+        HBox.setMargin(firstCardImageView, new Insets(10.0, 0.0, 10.0, 10.0));
+        HBox.setMargin(secondCardImageView, new Insets(10.0, 0.0, 10.0, 10.0));
+        HBox.setMargin(thirdCardImageView, new Insets(10.0, 10.0, 10.0, 10.0));
+
+        tokenToHandHBox.put(playerToken, handHBox);
+
+        // enable structures if the player being initialized is self
+        if (playerToken == selfPlayerToken) {
             firstCardImageView.setOnMouseClicked(this::handleHandMouseClicked);
             firstCardImageView.setOnMouseEntered(this::handleHandMouseEntered);
             firstCardImageView.setOnMouseExited(this::handleHandMouseExited);
-            firstCardImageView.setOnDragDetected(this::handleHandDragDetected);
-            firstCardImageView.setOnDragDone(this::handleDragDone);
-            firstCardImageView.setPreserveRatio(true);
-            firstCardImageView.setFitWidth(195);
-            firstCardImageView.setFitHeight(130);
 
-            ImageView secondCardImageView = new ImageView(new Image("images/cards/backs/" + secondCardId + ".png"));
             secondCardImageView.setOnMouseClicked(this::handleHandMouseClicked);
             secondCardImageView.setOnMouseEntered(this::handleHandMouseEntered);
             secondCardImageView.setOnMouseExited(this::handleHandMouseExited);
-            secondCardImageView.setOnDragDetected(this::handleHandDragDetected);
-            secondCardImageView.setOnDragDone(this::handleDragDone);
-            secondCardImageView.setPreserveRatio(true);
-            secondCardImageView.setFitWidth(195);
-            secondCardImageView.setFitHeight(130);
 
-            ImageView thirdCardImageView = new ImageView(new Image("images/cards/backs/" + thirdCardId + ".png"));
             thirdCardImageView.setOnMouseClicked(this::handleHandMouseClicked);
             thirdCardImageView.setOnMouseEntered(this::handleHandMouseEntered);
             thirdCardImageView.setOnMouseExited(this::handleHandMouseExited);
-            thirdCardImageView.setOnDragDetected(this::handleHandDragDetected);
-            thirdCardImageView.setOnDragDone(this::handleDragDone);
-            thirdCardImageView.setPreserveRatio(true);
-            thirdCardImageView.setFitWidth(195);
-            thirdCardImageView.setFitHeight(130);
-
-            hbox.getChildren().addAll(firstCardImageView, secondCardImageView, thirdCardImageView);
-            HBox.setMargin(firstCardImageView, new Insets(10.0, 0.0, 10.0, 10.0));
-            HBox.setMargin(secondCardImageView, new Insets(10.0, 0.0, 10.0, 10.0));
-            HBox.setMargin(thirdCardImageView, new Insets(10.0, 10.0, 10.0, 10.0));
-
-            tokenToHandHBox.put(token, hbox);
-        });
+        }
     }
 
     public Coords getIndexesFromCoords(Coords coords) {
         int x = coords.x + (gridCellsCount.first - 1) / 2;
-        int y = coords.y + (gridCellsCount.first - 1) / 2;
+        int y = - coords.y + (gridCellsCount.first - 1) / 2;
 
         if(x < 0 || x > gridCellsCount.first || y < 0 || y > gridCellsCount.second) return null;
+
+        return new Coords(x, y);
+    }
+
+    public Coords getCoordsFromIndexes(Coords indexes) {
+        int x = indexes.x - (gridCellsCount.first - 1) / 2;
+        int y = (gridCellsCount.first - 1) / 2 - indexes.y;
 
         return new Coords(x, y);
     }
@@ -527,21 +610,13 @@ public class TempGameController {
     private void zoom(double zoomIncrement) {
         // TODO
         if(currentZoomScale + zoomIncrement < 0 || currentZoomScale + zoomIncrement > 2) return;
-
         currentZoomScale += zoomIncrement;
 
-        currentGridPane.setScaleX(currentZoomScale);
-        currentGridPane.setScaleY(currentZoomScale);
+        tokenToScrollPane.values().forEach(scrollPane -> {
+            scrollPane.getContent().setScaleX(currentZoomScale);
+            scrollPane.getContent().setScaleY(currentZoomScale);
+        });
     }
-
-    public void handlePlayedCardEvent(PlayerToken playerToken, Integer cardId, CardSide cardSide, Coords coords) {
-        if(playerToken != selfPlayerToken)
-            placeCard(playerToken, cardId, cardSide, coords.x + (gridCellsCount.first - 1) / 2, - coords.y + (gridCellsCount.second - 1) /  2);
-
-        // update data structures
-
-    }
-
 
     /**
      * Allows to see other player's board, by switching the second to last element of the mainStackPane.
@@ -550,19 +625,17 @@ public class TempGameController {
      */
     public void switchPlayerView(PlayerToken playerToken) {
         // switch grid pane
-        if(!tokenToScrollPane.containsKey(playerToken)) throw new RuntimeException("player not found");
+        if(!tokenToScrollPane.containsKey(playerToken)) throw new RuntimeException("Player not found");
 
         ScrollPane nextScrollPane = tokenToScrollPane.get(playerToken);
-
         mainStackPane.getChildren().set(0, nextScrollPane);
-
         currentScrollPane = nextScrollPane;
         currentGridPane = (GridPane) currentScrollPane.getContent();
 
-        mainAnchorPane.getChildren().set(2, tokenToHandHBox.get(playerToken));
 
         // switch hand
         currentHandHBox = tokenToHandHBox.get(playerToken);
+        mainAnchorPane.getChildren().set(2, currentHandHBox);
 
         // update elements
         animalResourcesCounter.setText(slimGameModel.tokenToElements.get(playerToken).get(Resources.ANIMAL).toString());
@@ -572,6 +645,10 @@ public class TempGameController {
         quillItemsCounter.setText(slimGameModel.tokenToElements.get(playerToken).get(Items.QUILL).toString());
         inkwellItemsCounter.setText(slimGameModel.tokenToElements.get(playerToken).get(Items.INKWELL).toString());
         manuscriptItemsCounter.setText(slimGameModel.tokenToElements.get(playerToken).get(Items.MANUSCRIPT).toString());
+
+        // enable / disable decks
+        if (playerToken == selfPlayerToken) enableDecksPane();
+        else disableDecksPane();
 
         // switch token
         currentPlayerToken = playerToken;
@@ -589,6 +666,7 @@ public class TempGameController {
         event.consume();
     }
 
+
     public void handleHandMouseClicked(MouseEvent event) {
         int handIndex = currentHandHBox.getChildren().indexOf((ImageView) event.getTarget());
         if (handIndex < 0 || handIndex > 2) throw new RuntimeException("Illegal index: " + handIndex);
@@ -597,22 +675,39 @@ public class TempGameController {
         CardSide oppositeCardSide = visibleHandCardsSides.get(handIndex) == CardSide.FRONT ? CardSide.BACK : CardSide.FRONT;
         visibleHandCardsSides.set(handIndex, oppositeCardSide);
 
-        ((ImageView) currentHandHBox.getChildren().get(handIndex)).setImage(getCardImage(cardId, oppositeCardSide));
+        ImageView cardImageView = ((ImageView) currentHandHBox.getChildren().get(handIndex));
+        cardImageView.setImage(getCardImage(cardId, oppositeCardSide));
 
-        if (isPlayable(slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex), visibleHandCardsSides.get(handIndex))) showCardsPlayability();
-        else hideCardsPlayability();
+        if (isPlayable(slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex), visibleHandCardsSides.get(handIndex))) {
+            if (currentTurn == selfPlayerToken && isPlayCardState) enableCardDragAndDrop(cardImageView);
+
+            enableCardHover(cardImageView);
+            showCardsPlayability();
+        }
+        else {
+            disableCardDragAndDrop(cardImageView);
+            disableCardHover(cardImageView);
+            hideCardsPlayability();
+        }
     }
 
+
+    /**
+     * Allows to show the slots where the card can be placed.
+     *
+     * @param event the MouseEvent event
+     */
     public void handleHandMouseEntered(MouseEvent event) {
-        int handIndex = currentHandHBox.getChildren().indexOf((ImageView) event.getTarget());
-
-        if (isPlayable(slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex), visibleHandCardsSides.get(handIndex))) showCardsPlayability();
+        showCardsPlayability();
     }
 
+    /**
+     * Hides the slots where the card can be placed.
+     *
+     * @param event the MouseEvent event
+     */
     public void handleHandMouseExited(MouseEvent event) {
-        int handIndex = currentHandHBox.getChildren().indexOf((ImageView) event.getTarget());
-
-        if (isPlayable(slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex), visibleHandCardsSides.get(handIndex))) hideCardsPlayability();
+        hideCardsPlayability();
     }
 
     public boolean isPlayable(int cardId, CardSide cardSide) {
@@ -625,6 +720,11 @@ public class TempGameController {
          return result.second;
     }
 
+    /**
+     * Handles the start of the event of dragging the card around on a board (grid pane).
+     *
+     * @param event the DragEvent event
+     */
     public void handleHandDragDetected(MouseEvent event) {
         ImageView targetCard = (ImageView) event.getTarget();
         int handIndex = currentHandHBox.getChildren().indexOf(targetCard);
@@ -644,30 +744,41 @@ public class TempGameController {
             for(int x = 0; x < (int) (currentZoomScale * adjustedCardDimensions.first); x++)
                 writer.setArgb(x, y, reader.getArgb((int) (x / (cardCompressionFactor * currentZoomScale)), (int) (y / (cardCompressionFactor * currentZoomScale))));
 
-        if (isPlayable(slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex), visibleHandCardsSides.get(handIndex))) showCardsPlayability();
+        showCardsPlayability();
 
         content.putImage(resizedImage);
         dragboard.setContent(content);
         event.consume();
     }
 
+    /**
+     * Handles the event of dropping the drag event on a board (grid pane).
+     * Allows to place a card in the dropped position.
+     *
+     * @param event the DragEvent event
+     */
     public void handleHandDragDropped(DragEvent event) {
         Dragboard dragboard = event.getDragboard();
         double dropX = event.getX();
         double dropY = event.getY();
 
-        Pair<Integer, Integer> cellIndexes = getCellIndexes(currentScrollPane, currentGridPane, dropX, dropY);
-        if(cellIndexes == null) return;
+        Coords indexes = getCellIndexes(currentGridPane, dropX, dropY);
+        if (indexes == null) return;
+
+        Coords coords = getCoordsFromIndexes(indexes);
 
         int handIndex = Integer.parseInt(dragboard.getString());
         if (handIndex < 0 || handIndex > 2) throw new RuntimeException("Illegal index: " + handIndex);
 
-        int cardId = slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex);
+        int cardId = slimGameModel.tokenToHand.get(currentPlayerToken).get(handIndex);
         CardSide cardSide = visibleHandCardsSides.get(handIndex);
 
-        placeCard(selfPlayerToken, cardId, cardSide, cellIndexes.first, cellIndexes.second);
+        if (availableSlots.contains(coords)) {
+            playCard(currentPlayerToken, cardId, cardSide, coords);
+            clearList = true;
+            hideCardsPlayability();
+        }
 
-        clearList = true;
     }
 
     public void handleDragOver(DragEvent event) {
@@ -697,7 +808,7 @@ public class TempGameController {
                     Platform.runLater(() -> {
                         if (getCell(currentGridPane, cellIndexes.x, cellIndexes.y).isPresent()) return;
 
-                        currentGridPane.add(pane, cellIndexes.x, cellIndexes.y);
+                        currentGridPane.add(pane, cellIndexes.y, cellIndexes.x);
                     });
                 });
     }
@@ -707,93 +818,142 @@ public class TempGameController {
                 .map(this::getIndexesFromCoords)
                 .filter(Objects::nonNull)
                 .forEach(cellIndexes -> {
-                    getCell(currentGridPane, cellIndexes.x, cellIndexes.y).ifPresent(value -> currentGridPane.getChildren().remove(value));
+                    getCell(currentGridPane, cellIndexes.x, cellIndexes.y).ifPresent(value -> {
+                        if(value.getClass().equals(Pane.class)) currentGridPane.getChildren().remove(value);
+                    });
                 });
 
         if(clearList) availableSlots.clear();
     }
 
-    private Pair<Integer, Integer> getCellIndexes(ScrollPane scrollPane, GridPane gridPane, double x, double y) {
+    /**
+     * Allows to retrieve indexes inside a grid pane, given the coordinates of a point
+     *
+     * @param gridPane the grid pane
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return a Pair containing the two indexes, null if coordinates are not valid
+     */
+    private Coords getCellIndexes(GridPane gridPane, double x, double y) {
         int col = (int) (x / (currentGridPane.getWidth() / gridCellsCount.first));
         int row = (int) (y / (currentGridPane.getHeight() / gridCellsCount.second));
 
         if (row < 0 || row > gridPane.getRowConstraints().size() || col < 0 || col > gridPane.getColumnConstraints().size())
             return null;
 
-        return new Pair<>(row, col);
+        return new Coords(row, col);
     }
 
-    public Optional<Node> getCell(GridPane gridPane, int x, int y) {
+    /**
+     * Allows to retrieve a node in a grid pane, given the indexes
+     *
+     * @param gridPane the grid pane
+     * @param i row index
+     * @param j column index
+     * @return the node if present, Optional.isEmpty() otherwise
+     */
+    public Optional<Node> getCell(GridPane gridPane, int i, int j) {
         return gridPane.getChildren().stream()
-                .filter(cell -> GridPane.getRowIndex(cell) == x && GridPane.getColumnIndex(cell) == y)
+                .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
                 .findFirst();
     }
 
+    /**
+     * Allows to build an image of the card resource having the specified id and card side
+     *
+     * @param id id of the card
+     * @param cardSide side of the card
+     * @return the image of the card resource
+     */
     public Image getCardImage(int id, CardSide cardSide) {
         return new Image("images/cards/" + (cardSide == CardSide.FRONT ? "fronts/" : "backs/") + id + ".png");
     }
 
     /**
-     * Allows to place a card into a player's board.
+     * Represents the action of playing a card on a board, GUI side.
+     * Places the card and removes it from the hand.
      *
      * @param playerToken token of the player
-     * @param cardId id of the card to place
-     * @param cardSide side of the card to place
-     * @param x x coordinate of the grid
-     * @param y y coordinate of the grid
+     * @param cardId id of the card
+     * @param cardSide side of the card played
+     * @param coords coordinates where the card is played
      */
-    public void placeCard(PlayerToken playerToken, int cardId, CardSide cardSide, int x, int y) {
-        // get hand index
-        int handIndex = slimGameModel.tokenToHand.get(playerToken).indexOf(cardId);
-        if (handIndex == -1) return;
+    public void playCard(PlayerToken playerToken, int cardId, CardSide cardSide, Coords coords) {
+        setCard(playerToken, cardId, cardSide, coords);     // updates the board
+        removeCardFromHand(playerToken, cardId);
 
-        // setup up the grid for the card placement
-        ImageView cardImage = new ImageView(getCardImage(cardId, cardSide));
-        cardImage.setEffect(new DropShadow());
+        if (playerToken == selfPlayerToken) playCardDisable();
 
-        StackPane stackPane = new StackPane(cardImage);
+        isPlayCardState = false;
+    }
+
+    /**
+     * Places a card in a player's board, GUI side.
+     *
+     * @param playerToken token of the player
+     * @param cardId id of the card
+     * @param cardSide side of the card played
+     * @param coords coordinates where the card is played
+     */
+    public void setCard(PlayerToken playerToken, int cardId, CardSide cardSide, Coords coords) {
+        GridPane gridPane = ((GridPane) tokenToScrollPane.get(playerToken).getContent());
+
+        ImageView cardImageView = new ImageView(getCardImage(cardId, cardSide));
+        cardImageView.setEffect(new DropShadow());
+        cardImageView.setFitWidth(adjustedCardDimensions.first);
+        cardImageView.setFitHeight(adjustedCardDimensions.second);
+
+        StackPane stackPane = new StackPane(cardImageView);
         GridPane.setHalignment(stackPane, HPos.CENTER);
         GridPane.setValignment(stackPane, VPos.CENTER);
         GridPane.setHgrow(stackPane, Priority.NEVER);
         GridPane.setVgrow(stackPane, Priority.NEVER);
 
-        cardImage.setFitWidth(rawCardDimensions.first * cardCompressionFactor);
-        cardImage.setFitHeight(rawCardDimensions.second * cardCompressionFactor);
-
-        // place the card
-        ((GridPane) tokenToScrollPane.get(playerToken).getContent()).add(stackPane, y, x);
-
-        // put a placeholder in the hand
-        ImageView cardImageView = ((ImageView) tokenToHandHBox.get(playerToken).getChildren().get(handIndex));
-        cardImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-        currentHandHBox.setDisable(true);
-
-        // update model
-        slimGameModel.tokenToHand.get(playerToken).set(handIndex, null);
-        visibleHandCardsSides.set(handIndex, null);
-
-        // update view
-        enableDecks();
+        Coords indexes = getIndexesFromCoords(coords);
+        gridPane.add(stackPane, indexes.y, indexes.x);
     }
 
     /**
-     * Allows to place a card into the player's hand.
+     * Allows to place a card into the player's hand, GUI side.
      *
-     * @param cardId id of the card to add to the hand
+     * @param playerToken token of the player
+     * @param cardId id of the card to add
      */
-    public void addCardToHand(int cardId) {
-        // get first free index
-        int handIndex = slimGameModel.tokenToHand.get(selfPlayerToken).indexOf(null);
-        if(handIndex == -1) throw new RuntimeException("Hand is full");
+    public void addCardToHand(PlayerToken playerToken, int cardId) {
+        int handIndex = slimGameModel.tokenToHand.get(playerToken).indexOf(null);
+        if (handIndex == -1) throw new RuntimeException("Hand is full");
 
-        // update model
-        slimGameModel.tokenToHand.get(selfPlayerToken).set(handIndex, cardId);
-        visibleHandCardsSides.set(handIndex, CardSide.FRONT);
-
-        // update view
-        ImageView cardImageView = (ImageView) tokenToHandHBox.get(selfPlayerToken).getChildren().get(handIndex);
+        ImageView cardImageView = (ImageView) tokenToHandHBox.get(playerToken).getChildren().get(handIndex);
         cardImageView.setImage(getCardImage(cardId, CardSide.FRONT));
-        if (!slimGameModel.tokenToHand.get(selfPlayerToken).contains(null)) disableDecks(); // disable decks if hand is full
+
+        if (playerToken == selfPlayerToken) {
+            visibleHandCardsSides.set(handIndex, CardSide.FRONT);
+
+            enableCardClick(cardImageView);
+        }
+    }
+
+    /**
+     * Allows to remove a card from a player's hand, GUI side.
+     * Sets a placeholder in the slot emptied, and disables all functionalities of the slot, if needed.
+     *
+     * @param playerToken token of the player
+     * @param cardId id of the card to remove
+     */
+    public void removeCardFromHand(PlayerToken playerToken, int cardId) {
+        int handIndex = slimGameModel.tokenToHand.get(selfPlayerToken).indexOf(cardId);
+        if (handIndex == -1) throw new RuntimeException("Card is not in player's hand");
+
+        ImageView cardImageView = (ImageView) tokenToHandHBox.get(playerToken).getChildren().get(handIndex);
+        cardImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+
+        if (playerToken == selfPlayerToken) {
+            visibleHandCardsSides.set(handIndex, null);
+
+            disableCardClick(cardImageView);
+            disableCardHover(cardImageView);
+            disableCardDragAndDrop(cardImageView);
+        }
     }
 
     /**
@@ -813,7 +973,8 @@ public class TempGameController {
         Integer drawnCardId = popCardFromDeck(deck);
         if (drawnCardId == null) throw new RuntimeException("No card in deck found");
 
-        addCardToHand(drawnCardId);
+        addCardToHand(currentPlayerToken, drawnCardId);
+        drawCardDisable();
     }
 
     /**
@@ -831,10 +992,10 @@ public class TempGameController {
 
         Pair<ImageView, List<Integer>> deck = visibleSlotToDeck.get(visibleSlotImageView);
 
-        addCardToHand(visibleSlotToCardId.get(visibleSlotImageView).get());
+        addCardToHand(currentPlayerToken, visibleSlotToCardId.get(visibleSlotImageView).get());
 
         if (deck.second.isEmpty()) {
-            visibleSlotToVisibleListSetter.get(visibleSlotImageView).accept(null);
+            // TODO in event visibleSlotToVisibleListSetter.get(visibleSlotImageView).accept(null);
             visibleSlotImageView.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
             visibleSlotImageView.setDisable(true);
 
@@ -844,7 +1005,9 @@ public class TempGameController {
         Integer nextCard = popCardFromDeck(deck);
         if (nextCard == null) throw new RuntimeException("Deck is empty: should be disabled");
         visibleSlotImageView.setImage(getCardImage(nextCard, CardSide.FRONT));
-        visibleSlotToVisibleListSetter.get(visibleSlotImageView).accept(nextCard);
+        // TODO in event visibleSlotToVisibleListSetter.get(visibleSlotImageView).accept(nextCard);
+
+        drawCardDisable();
     }
 
     /**
@@ -857,8 +1020,8 @@ public class TempGameController {
     public Integer popCardFromDeck(Pair<ImageView, List<Integer>> deck) {
         if (deck.second.isEmpty()) return null;
 
-        int drawnCardId = deck.second.removeLast();
-        if (deck.second.isEmpty()) {
+        int drawnCardId = deck.second.getLast();
+        if (deck.second.size() == 1) {
             deck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
             deck.first.setDisable(true);
         }
@@ -891,5 +1054,356 @@ public class TempGameController {
         if(visibleSlotToCardId.get(secondResourceImageView).get() != null) secondResourceImageView.setDisable(false);
         if(visibleSlotToCardId.get(firstGoldImageView).get() != null) firstGoldImageView.setDisable(false);
         if(visibleSlotToCardId.get(secondGoldImageView).get() != null) secondGoldImageView.setDisable(false);
+    }
+
+    public void handlePlayerPaneMouseClick(MouseEvent mouseEvent) {
+        int playerIndex = playersPanes.indexOf((StackPane) mouseEvent.getTarget());
+
+        switchPlayerView(userInfoToToken.get(players.get(playerIndex)));
+    }
+
+    public void enableDecksPane() {
+        decksAnchorPane.setDisable(false);
+    }
+
+    public void disableDecksPane() {
+        decksAnchorPane.setDisable(true);
+    }
+
+    public void showError() {
+
+    }
+
+    public void showInfo(boolean important) {
+
+    }
+
+//    @Override
+//    public void handlePlayedCardEvent(PlayerToken playerToken, int playedCardId, CardSide playedCardSide, Coords playedCardCoordinates) {
+//        Platform.runLater(() -> {
+//            slimGameModel.applyPlayedCardEvent(PlayerToken playerToken, int playedCardId, CardSide playedCardSide, Coords playedCardCoordinates);
+//
+//            if (playerToken != selfPlayerToken) {
+//                setCard(playerToken, playedCardId, playedCardSide, playedCardCoordinates.x, playedCardCoordinates.y);
+//                removeCardFromHand(playerToken, playedCardId);
+//
+//                return;
+//            }
+
+//            drawCardEnable();
+//        });
+//    }
+//
+//    @Override
+//    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+//        Platform.runLater(() -> {
+//            slimGameModel.applyDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex);
+//
+//            if (playerToken != selfPlayerToken) {
+//                if (deckEmptied) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+//                else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+//
+//                setCardToHand(playerToken, drawnCardId, handIndex);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+//        Platform.runLater(() -> {
+//            slimGameModel.applyDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex);
+//
+//            if (playerToken != selfPlayerToken) {
+//                if (deckEmptied) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+//                else resourceDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+//
+//                setCardToHand(playerToken, drawnCardId, handIndex);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+//        Platform.runLater(() -> {
+//            slimGameModel.applyDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex);
+//
+//            if(playerToken != selfPlayerToken) {
+//                if (deckEmptied) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+//                else resourceDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+//
+//                switch (drawnCardPosition) {
+//                    case 0 -> firstResourceImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
+//                    case 1 -> secondResourceImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
+//                }
+//
+//                setCardToHand(playerToken, drawnCardId, handIndex);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+//        Platform.runLater(() -> {
+//            slimGameModel.applyDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex);
+//
+//            if(playerToken != selfPlayerToken) {
+//                if (deckEmptied) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+//                else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+//
+//                switch (drawnCardPosition) {
+//                    case 0 -> firstGoldImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
+//                    case 1 -> secondGoldImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
+//                }
+//
+//                setCardToHand(playerToken, drawnCardId, handIndex);
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
+//        Platform.runLater(() -> {
+//            slimGameModel.applyPlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources);
+//
+//            if (playerToken == currentPlayerToken) {
+//                animalResourcesCounter.setText(resources.get(Resources.ANIMAL).toString());
+//                plantResourcesCounter.setText(resources.get(Resources.PLANT).toString());
+//                fungiResourcesCounter.setText(resources.get(Resources.FUNGI).toString());
+//                insectResourcesCounter.setText(resources.get(Resources.INSECT).toString());
+//                quillItemsCounter.setText(resources.get(Items.QUILL).toString());
+//                inkwellItemsCounter.setText(resources.get(Items.INKWELL).toString());
+//                manuscriptItemsCounter.setText(resources.get(Items.MANUSCRIPT).toString());
+//            }
+//        });
+//    }
+//
+    /**
+     * Allows the player to retrieve data on where his cards can be placed.
+     * Event is only read by the intended receiver.
+     */
+    @Override
+    public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+        Platform.runLater(() -> {
+            if (playerToken != selfPlayerToken) return;     // don't care about events not related to self
+
+            // update structures
+            this.availableSlots.clear();
+            this.availableSlots.addAll(availableSlots);
+            this.cardsPlayability.clear();
+            this.cardsPlayability.putAll(cardsPlayability);
+
+            cardsPlayabilityEnable();
+        });
+    }
+
+    /**
+     * Enables needed panes and nodes for a player to see where his cards can be placed.
+     * Enables mouse clicking for all cards, and hovering only for playable cards.
+     */
+    public void cardsPlayabilityEnable() {
+        tokenToHandHBox.get(selfPlayerToken).getChildren().forEach(imageView -> {
+            int handIndex = tokenToHandHBox.get(selfPlayerToken).getChildren().indexOf(imageView);
+
+            Integer cardId = slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex);
+            CardSide currentCardSide = visibleHandCardsSides.get(handIndex);
+
+            if (cardId == null) return;     // enable nothing for empty slots
+
+            if (cardsPlayability.get(cardId).stream().filter(x -> x.first == currentCardSide).anyMatch(x -> x.second))
+                enableCardHover((ImageView) imageView);   // enable hover if card is playable
+
+            enableCardClick((ImageView) imageView);     // enable mouse click if card is not null
+        });
+    }
+
+    public void showImportantMessage(String text, boolean isError) {
+        Platform.runLater(() -> {
+            importantEventPane.getStyleClass().add(isError ? "important-error-msg" : "important-info-msg");
+            importantEventText.setText(text);
+
+            importantEventPane.setVisible(true);
+            importantEventText.setVisible(true);
+
+            FadeTransition fadePaneTransition = new FadeTransition(Duration.seconds(2), importantEventPane);
+            fadePaneTransition.setDelay(Duration.seconds(3));
+            fadePaneTransition.setFromValue(1);
+            fadePaneTransition.setToValue(0);
+
+            fadePaneTransition.setOnFinished(event -> {
+                importantEventPane.setVisible(false);
+                importantEventPane.setMouseTransparent(true);
+                importantEventText.setVisible(false);
+                importantEventText.setMouseTransparent(true);
+            });
+
+            fadePaneTransition.play();
+        });
+    }
+
+    public void showMessage(String title, String text, boolean isError) {
+
+    }
+
+    @Override
+    public void handleLastRoundEvent() {
+        showImportantMessage("Last round started!", false);
+    }
+
+    /**
+     * Handles a player turn event.
+     * Notifies the player of the turn event, and if the current turn is the player's, enables his hand.
+     *
+     * @param turn the new turn
+     */
+    @Override
+    public void handlePlayerTurnEvent(PlayerToken turn) {
+        Platform.runLater(() -> {
+            currentTurn = turn;
+            isPlayCardState = true;
+
+            UserInfo player = userInfoToToken.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(turn))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Cannot find player."));
+
+            showMessage("Turn changed!", player.name + "'s turn.", false);
+
+            if (turn != selfPlayerToken) return;
+
+            showImportantMessage("It's your turn! Play a card.", false);
+            playCardEnable();
+        });
+    }
+
+    /**
+     * Enables needed panes and nodes for the player to play his card.
+     * As cardHover and cardClick are already enabled by CardsPlayabilityEvent, the PlayCardEvent only enables the drag & drop.
+     */
+    public void playCardEnable() {
+        // enable hand
+        tokenToHandHBox.get(selfPlayerToken).getChildren().forEach(imageView -> {
+            int handIndex = tokenToHandHBox.get(selfPlayerToken).getChildren().indexOf(imageView);
+
+            Integer cardId = slimGameModel.tokenToHand.get(selfPlayerToken).get(handIndex);
+            CardSide currentCardSide = visibleHandCardsSides.get(handIndex);
+
+            if (cardId == null || cardsPlayability.get(cardId).stream().filter(x -> x.first == currentCardSide).anyMatch(x -> !x.second)) return;
+
+            enableCardDragAndDrop((ImageView) imageView);
+            enableGridDrop((GridPane) tokenToScrollPane.get(selfPlayerToken).getContent()); // enable the grid only if any card was enabled
+        });
+    }
+
+    /**
+     * Disables the structures after the player played the card.
+     */
+    public void playCardDisable() {
+        disableGridDrop((GridPane) tokenToScrollPane.get(selfPlayerToken).getContent());    // disable grid drop
+
+        tokenToHandHBox.get(selfPlayerToken).getChildren().forEach(cardImageView -> {   // disable cards
+            disableCardHover((ImageView) cardImageView);
+            disableCardDragAndDrop((ImageView) cardImageView);
+        });
+    }
+
+    /**
+     * Enables non-empty decks when it's self's turn.
+     */
+    public void drawCardEnable() {
+        decksAnchorPane.setDisable(false);
+
+        if(!resourceDeck.second.isEmpty()) resourceDeckImageView.setDisable(false);
+        if(!goldDeck.second.isEmpty()) goldDeckImageView.setDisable(false);
+
+        if(visibleSlotToCardId.get(firstResourceImageView).get() != null) firstResourceImageView.setDisable(false);
+        if(visibleSlotToCardId.get(secondResourceImageView).get() != null) secondResourceImageView.setDisable(false);
+        if(visibleSlotToCardId.get(firstGoldImageView).get() != null) firstGoldImageView.setDisable(false);
+        if(visibleSlotToCardId.get(secondGoldImageView).get() != null) secondGoldImageView.setDisable(false);
+    }
+
+    /**
+     *
+     */
+    public void drawCardDisable() {
+        decksAnchorPane.setDisable(true);
+    }
+
+    /**
+     * Enables drag & drop of a card's image view.
+     *
+     * @param cardImageView the image view of interest
+     */
+    public void enableCardDragAndDrop(ImageView cardImageView) {
+        cardImageView.setOnDragDetected(this::handleHandDragDetected);
+        cardImageView.setOnDragDone(this::handleDragDone);
+    }
+
+    /**
+     * Disables drag & drop of a card's image view.
+     *
+     * @param cardImageView the image view of interest
+     */
+    public void disableCardDragAndDrop(ImageView cardImageView) {
+        cardImageView.setOnDragDetected(Event::consume);
+        cardImageView.setOnDragDone(Event::consume);
+    }
+
+    /**
+     * Enables hover of a card's image view.
+     *
+     * @param cardImageView the image view of interest
+     */
+    public void enableCardHover(ImageView cardImageView) {
+        cardImageView.setOnMouseEntered(this::handleHandMouseEntered);
+        cardImageView.setOnMouseExited(this::handleHandMouseExited);
+    }
+
+    /**
+     * Disables hover of a card's image view.
+     *
+     * @param cardImageView the image view of interest
+     */
+    public void disableCardHover(ImageView cardImageView) {
+        cardImageView.setOnMouseEntered(Event::consume);
+        cardImageView.setOnMouseExited(Event::consume);
+    }
+
+    /**
+     * Enables mouse click of a card's image view.
+     *
+     * @param cardImageView the image view of interest
+     */
+    public void enableCardClick(ImageView cardImageView) {
+        cardImageView.setOnMouseClicked(this::handleHandMouseClicked);
+    }
+
+    /**
+     * Disables mouse click of a card's image view.
+     *
+     * @param cardImageView the image view of interest
+     */
+    public void disableCardClick(ImageView cardImageView) {
+        cardImageView.setOnMouseClicked(Event::consume);
+    }
+
+    /**
+     * Enables drop actions on the grid pane.
+     *
+     * @param gridPane the grid pane
+     */
+    public void enableGridDrop(GridPane gridPane) {
+        gridPane.setOnDragDropped(this::handleHandDragDropped);
+        gridPane.setOnDragOver(this::handleDragOver);
+    }
+
+    /**
+     * Disables drop actions on the grid pane.
+     *
+     * @param gridPane the grid pane
+     */
+    public void disableGridDrop(GridPane gridPane) {
+        gridPane.setOnDragDropped(Event::consume);
+        gridPane.setOnDragOver(Event::consume);
     }
 }

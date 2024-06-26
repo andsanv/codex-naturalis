@@ -71,3 +71,28 @@
     -fx-scale-y: 1.667;
     -fx-opacity: 0.5;
 }
+
+.player-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+}
+
+.important-event-pane {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+}
+
+.important-text {
+    -fx-font-size: 28;
+}
+
+.important-error-msg {
+    -fx-background-color: rgb(255, 110, 110);
+    -fx-border-color: rgb(255, 50, 50);
+}
+
+.important-info-msg {
+    -fx-background-color: rgb(160, 160, 255);
+    -fx-border-color: rgb(90, 90, 255);
+}

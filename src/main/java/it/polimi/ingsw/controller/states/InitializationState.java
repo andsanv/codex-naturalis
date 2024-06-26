@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import it.polimi.ingsw.controller.GameFlowManager;
 import it.polimi.ingsw.controller.GameModelUpdater;
+import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.events.game.EndedInitializationPhaseEvent;
@@ -66,6 +67,10 @@ public class InitializationState extends GameState {
     // start the game
     gameFlowManager.setState(gameFlowManager.playCardState);
     gameFlowManager.notify(new EndedInitializationPhaseEvent(gameModelUpdater.getSlimGameModel()));
+
+    try { Thread.sleep(2000); } catch (InterruptedException e) {
+      ServerPrinter.displayError("GameFlowManager thread was interrupted.");  // allows clients to fetch data from slim model
+    }
     return true;
   }
 }

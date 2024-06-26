@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class ConfigController extends Controller {
     public ConfigController(GUI gui) {
-        super(gui);
+        super();
     }
 
     @FXML

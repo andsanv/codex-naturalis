@@ -2,29 +2,55 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.TempGameController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ScrollPane fx:id="currentScrollPane" hbarPolicy="NEVER" onDragDetected="#handleHandDragDetected" onDragDropped="#handleHandDragDropped" onKeyPressed="#handleKeyPressedEvent" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
+            <ScrollPane fx:id="defaultScrollPane" hbarPolicy="NEVER" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
                <content>
-                  <GridPane fx:id="currentGridPane" alignment="CENTER" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
-                  </GridPane>
+                  <GridPane fx:id="defaultGridPane" alignment="CENTER" disable="true" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
+                     <columnConstraints>
+                        <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="100.0" prefHeight="51.0" valignment="CENTER" vgrow="NEVER" />
+                     </rowConstraints>
+                     <children>
+                        <StackPane prefHeight="51.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../images/miscellaneous/default_starter_card.png" />
+                                 </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                              </ImageView>
+                           </children>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </StackPane>
+                     </children>
+                     <padding>
+                        <Insets left="670.0" top="425.0" />
+                     </padding></GridPane>
                </content>
             </ScrollPane>
             <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="70.0" stroke="#c9c18f" strokeType="INSIDE" width="1400.0" StackPane.alignment="TOP_LEFT">
@@ -217,17 +243,25 @@
                         </AnchorPane>
                      </children>
                   </HBox>
-                  <Pane layoutX="10.0" layoutY="10.0" prefHeight="70.0" prefWidth="300.0">
+                  <StackPane fx:id="eventPane" prefHeight="150.0" prefWidth="290.0">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
                      <children>
-                        <Label alignment="CENTER" layoutX="76.0" layoutY="29.0" text="player Name" />
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text fx:id="eventTitle" strokeType="OUTSIDE" strokeWidth="0.0" text="Played Card!" />
+                              <Text fx:id="eventText" strokeType="OUTSIDE" strokeWidth="0.0" text="RED has played in 0, 0" />
+                           </children>
+                        </VBox>
                      </children>
-                  </Pane>
+                  </StackPane>
                </children>
                <StackPane.margin>
                   <Insets bottom="810.0" left="20.0" right="20.0" top="20.0" />
                </StackPane.margin>
             </HBox>
-            <TabPane fx:id="leftTabPane" prefHeight="468.0" prefWidth="320.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="leftTabPane" disable="true" prefHeight="468.0" prefWidth="320.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab>
                   <content>
@@ -242,11 +276,17 @@
                                              <VBox.margin>
                                                 <Insets left="20.0" right="20.0" top="56.5" />
                                              </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
                                           </ImageView>
                                           <ImageView fx:id="secondObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true">
                                              <VBox.margin>
                                                 <Insets bottom="56.5" left="20.0" right="20.0" top="5.0" />
                                              </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
                                           </ImageView>
                                        </children>
                                     </VBox>
@@ -256,6 +296,9 @@
                                              <VBox.margin>
                                                 <Insets bottom="79.5" left="20.0" right="20.0" top="79.5" />
                                              </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
                                           </ImageView>
                                        </children>
                                     </VBox>
@@ -272,9 +315,9 @@
                         </ImageView>
                      </graphic>
                 </Tab>
-                <Tab>
+                <Tab fx:id="decksTab">
                   <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="169.0">
+                    <AnchorPane fx:id="decksAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="169.0">
                            <children>
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" />
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#f2f2f2" height="365.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="259.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
@@ -361,7 +404,7 @@
                   <Insets bottom="20.0" left="20.0" right="1090.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
-            <StackPane prefHeight="30.0" prefWidth="30.0">
+            <StackPane disable="true" prefHeight="30.0" prefWidth="30.0">
                <children>
                   <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
                      <graphic>
@@ -382,7 +425,7 @@
                   <Insets bottom="766.0" left="20.0" right="1388.0" top="105.0" />
                </StackPane.margin>
             </StackPane>
-            <TabPane fx:id="rightTabPane" prefHeight="608.0" prefWidth="232.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="rightTabPane" disable="true" prefHeight="608.0" prefWidth="232.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                <tabs>
                   <Tab>
                      <content>
@@ -441,7 +484,7 @@
                   <Insets bottom="20.0" left="1090.0" right="20.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
-            <StackPane fx:id="rightStackPane" prefHeight="150.0" prefWidth="400.0">
+            <StackPane fx:id="rightStackPane" disable="true" prefHeight="150.0" prefWidth="400.0">
                <children>
                   <Button fx:id="rightPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton">
                      <padding>
@@ -463,9 +506,9 @@
          </children>
       </StackPane>
       <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="150.0" stroke="#c9c18f" strokeType="INSIDE" width="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5" />
-      <HBox fx:id="currentHandPanel" layoutX="446.0" layoutY="659.0" prefHeight="136.0" prefWidth="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5">
+      <HBox fx:id="defaultHandHBox" disable="true" layoutX="446.0" layoutY="659.0" prefHeight="136.0" prefWidth="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5">
          <children>
-            <ImageView fitHeight="130.0" fitWidth="195.0" onDragDetected="#handleHandDragDetected" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </HBox.margin>
@@ -491,5 +534,10 @@
             </ImageView>
          </children>
       </HBox>
+      <StackPane fx:id="importantEventPane" disable="true" prefHeight="150.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="725.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="105.0">
+         <children>
+            <Text fx:id="importantEventText" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>
