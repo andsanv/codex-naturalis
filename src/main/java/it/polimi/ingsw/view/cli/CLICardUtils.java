@@ -35,15 +35,6 @@ import it.polimi.ingsw.util.Trio;
  * Use this class for printing cards.
  */
 public class CLICardUtils {
-    public static void main(String[] args) {
-        CLIPrinter.printAnsiGrid(CLICardUtils.playableCard(DEFAULT));
-
-        Ansi[][] grid = emptyAnsiMatrix(20, 20);
-        addCardToMatrix(grid, cardToMatrix(20, CardSide.FRONT), 0, 0);
-        addCardToMatrix(grid, cardToMatrix(21, CardSide.BACK), 3, 8);
-        CLIPrinter.printAnsiGrid(grid);
-    }
-
     /**
      * Boolean for checking if the decks have been loaded or not.
      */
@@ -144,18 +135,6 @@ public class CLICardUtils {
      */
     private static Ansi colorAndResetBg(String string, Ansi.Color color) {
         return ansi().reset().bg(color).a(string).reset();
-    }
-
-    /**
-     * Returns an Ansi sequence of the given char with the background colored with
-     * the given Ansi.Color
-     * 
-     * @param string the char to color
-     * @param color  the color as Ansi.Color
-     * @return the formatted Ansi sequence
-     */
-    private static Ansi colorAndResetBg(char c, Ansi.Color color) {
-        return ansi().reset().bg(color).a(c).reset();
     }
 
     /**
@@ -530,7 +509,10 @@ public class CLICardUtils {
      * @param playerCards the cards of the player
      * @return an Ansi sequence matrix
      */
-    public static Ansi[][] printBoard(Map<Integer, Trio<Integer, CardSide, Coords>> playerCards) {
+    public static Ansi[][] createBoard(Map<Integer, Trio<Integer, CardSide, Coords>> playerCards) {
+        if (playerCards.isEmpty())
+            return null;
+
         // Find how big is the matrix to return
         int x_max = Integer.MIN_VALUE;
         int x_min = Integer.MAX_VALUE;
@@ -550,13 +532,41 @@ public class CLICardUtils {
                 y_min = c.y;
         }
 
-        return null;
+        System.out.println(x_min + " " + x_max);
+        System.out.println(y_min + " " + y_max);
+
+        Ansi[][] board = emptyAnsiMatrix(5 + (y_max - y_min) * 3, 11 + (x_max - x_min) * 8);
+
+        int current = 0;
+
+        while (playerCards.containsKey(current)) {
+            Trio<Integer, CardSide, Coords> placement = playerCards.get(current);
+            Coords c = placement.third;
+            System.out.println(c);
+
+            int j_pos = 0;
+            int i_pos = 0;
+
+            if (c.x != x_min) {
+                i_pos = 8 * (c.x - x_min);
+            }
+
+            if (c.y != y_max) {
+                j_pos = 3 * (y_max - c.y);
+            }
+
+            addCardToMatrix(board, cardToMatrix(placement.first, placement.second), j_pos, i_pos);
+
+            current++;
+        }
+
+        return board;
     }
 
-    private static void addCardToMatrix(Ansi[][] matrix, Ansi[][] card, int iMatrix, int jMatrix) {
+    private static void addCardToMatrix(Ansi[][] matrix, Ansi[][] card, int startingRow, int startingColumn) {
         for (int i = 0; i < card.length; i++)
             for (int j = 0; j < card[0].length; j++)
-                matrix[iMatrix + i][jMatrix + j] = card[i][j];
+                matrix[startingRow + i][startingColumn + j] = card[i][j];
     }
 
     private static Ansi[][] emptyAnsiMatrix(int rows, int columns) {
