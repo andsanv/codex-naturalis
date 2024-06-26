@@ -9,6 +9,7 @@ import org.fusesource.jansi.Ansi;
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.DrawObjectiveCardsCommand;
 import it.polimi.ingsw.distributed.commands.game.SelectObjectiveCardCommand;
+import it.polimi.ingsw.distributed.events.game.EndedInitializationPhaseEvent;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICardUtils;
@@ -72,12 +73,10 @@ public class ObjectiveCardScene extends Scene {
 
                     cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 0));
-                    CLIPrinter.displayLoadingMessage("Selecting objective", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null);
-
-                    if (cli.lastGameError.get() != null) {
-                        CLIPrinter.displayError(cli.lastGameError.get());
-                        return;
+                    if (!CLIPrinter.displayLoadingMessage("Selecting objective",
+                            cli.waitingGameEvent,
+                            connectionHandler.isConnected, null)) {
+                        sceneManager.transition(ConnectionLostScene.class);
                     }
 
                     System.out.println("Waiting for all players to pick the secret objective card");
@@ -90,7 +89,6 @@ public class ObjectiveCardScene extends Scene {
 
                     if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
                         sceneManager.transition(EndingGameInitScene.class);
-
                 }),
                 new CLICommand("second", "to select the second objective card", () -> {
                     if (args.length != 1)
@@ -105,15 +103,10 @@ public class ObjectiveCardScene extends Scene {
 
                     cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 1));
-                    if (!CLIPrinter.displayLoadingMessage("Selecting objective", cli.waitingGameEvent,
+                    if (!CLIPrinter.displayLoadingMessage("Selecting objective",
+                            cli.waitingGameEvent,
                             connectionHandler.isConnected, null)) {
                         sceneManager.transition(ConnectionLostScene.class);
-                    }
-
-                    if (cli.lastGameError.get() != null) {
-                        CLIPrinter.displayError(cli.lastGameError.get());
-                        cli.lastGameError.set(null);
-                        return;
                     }
 
                     System.out.println("Waiting for all players to pick the secret objective card");

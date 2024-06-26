@@ -210,7 +210,7 @@ public class CLICardUtils {
      * @param borderColor the color of the border
      * @return the card as an Ansi matrix
      */
-    private static Ansi[][] simpleCard(Ansi.Color borderColor) {
+    public static Ansi[][] simpleCard(Ansi.Color borderColor) {
         Ansi[][] result = new Ansi[5][11];
 
         String upperBorder = "╭─────────╮";

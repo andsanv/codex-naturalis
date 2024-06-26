@@ -190,19 +190,9 @@ public class CLI implements UI {
     public CountDownLatch objectivePhaseLatch = new CountDownLatch(1);
 
     /**
-     * CountDownLatch for waiting for the token phase to end.
-     */
-    public CountDownLatch endInitPhaseLatch = new CountDownLatch(1);
-
-    /**
      * CountDownLatch for waiting reconnection.
      */
     public CountDownLatch gameReconnectionLatch = new CountDownLatch(1);
-
-    /**
-     * CountDownLatch for waiting reconnection of at least one other player.
-     */
-    public CountDownLatch lastPlayerConnectedLatch = new CountDownLatch(1);
 
     /**
      * Mapping between players and tokens
@@ -291,6 +281,8 @@ public class CLI implements UI {
         sceneManager.registerScene(new ObjectiveCardScene(sceneManager));
         sceneManager.registerScene(new EndingGameInitScene(sceneManager));
         sceneManager.registerScene(new GameScene(sceneManager));
+        sceneManager.registerScene(new LastPlayerScene(sceneManager));
+        sceneManager.registerScene(new LastPlayerWonScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -353,8 +345,6 @@ public class CLI implements UI {
         tokenPhaseLatch = new CountDownLatch(1);
         starterCardPhaseLatch = new CountDownLatch(1);
         objectivePhaseLatch = new CountDownLatch(1);
-        endInitPhaseLatch = new CountDownLatch(1);
-        lastPlayerConnectedLatch = new CountDownLatch(1);
 
         playerTurn.set(null);
     }
@@ -451,6 +441,16 @@ public class CLI implements UI {
     public List<LobbyInfo> getLobbies() {
         synchronized (lobbiesLock) {
             return lobbies != null ? new ArrayList<>(lobbies) : null;
+        }
+    }
+
+    /**
+     * Returns the player hand
+     * @return the player hand as list of ids
+     */
+    public List<Integer> getPlayerHand() {
+        synchronized (slimGameModel) {
+            return new ArrayList<>(slimGameModel.tokenToHand.get(token.get()));
         }
     }
 
@@ -559,8 +559,8 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedObjectiveCardPhaseEvent() {
-        waitingGameEvent.set(false);
         objectivePhaseLatch.countDown();
+        waitingGameEvent.set(false);
 
         if (sceneManager.getCurrentScene() != EndingGameInitScene.class) {
             sceneManager.transition(EndingGameInitScene.class);
@@ -620,8 +620,6 @@ public class CLI implements UI {
         synchronized (slimGameModelLock) {
             this.slimGameModel = slimGameModel;
         }
-
-        endInitPhaseLatch.countDown();
 
         if (sceneManager.getCurrentScene() != GameScene.class) {
             sceneManager.transition(GameScene.class);
@@ -715,6 +713,7 @@ public class CLI implements UI {
         if (!sender.equals(getUserInfo()))
             return;
 
+        System.out.println("Direct message from " + sender + ": " + message);
         synchronized (directMessagesLock) {
             directMessages.add(new Pair<UserInfo, String>(sender, message));
         }
@@ -722,6 +721,7 @@ public class CLI implements UI {
 
     @Override
     public void handleGroupMessageEvent(UserInfo sender, String message) {
+        System.out.println("Group message from " + sender + ": " + message);
         synchronized (groupMessagesLock) {
             groupMessages.add(new Pair<UserInfo, String>(sender, message));
         }
@@ -775,8 +775,6 @@ public class CLI implements UI {
 
     @Override
     public void handleLastConnectedPlayerWonEvent() {
-        lastPlayerConnectedLatch.countDown();
-
         sceneManager.transition(LastPlayerWonScene.class);
     }
 }

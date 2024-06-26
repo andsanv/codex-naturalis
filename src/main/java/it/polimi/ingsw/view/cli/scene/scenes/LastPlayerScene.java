@@ -20,12 +20,6 @@ public class LastPlayerScene extends Scene {
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("You are the last player connected", MAGENTA);
         System.out.println("Waiting for players to reconnect, if they don't you will be declared the winner.");
-
-        try {
-            sceneManager.cli.lastPlayerConnectedLatch.await();
-        } catch (InterruptedException e) {
-            CLIPrinter.displayError("Thread interrupted");
-        }
     }
 
 }

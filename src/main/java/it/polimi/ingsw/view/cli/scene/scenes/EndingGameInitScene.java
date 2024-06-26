@@ -27,15 +27,5 @@ public class EndingGameInitScene extends GameScene {
         CLIPrinter.printAnsiGrid(CLICardUtils.cardToMatrix(cli.starterCard.get().first, cli.starterCard.get().second));
         System.out.println("\nSecret objective");
         CLIPrinter.printAnsiGrid(CLICardUtils.cardToMatrix(cli.secretObjectives.get().first, CardSide.FRONT));
-
-        try {
-            cli.endInitPhaseLatch.await();
-        } catch (InterruptedException e) {
-            CLIPrinter.displayError("Thread Interrupted");
-        }
-
-        if(sceneManager.getCurrentScene()!=GameScene.class)
-            sceneManager.transition(GameScene.class);
     }
-
 }

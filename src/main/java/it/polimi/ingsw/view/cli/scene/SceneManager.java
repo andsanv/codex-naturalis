@@ -2,19 +2,15 @@ package it.polimi.ingsw.view.cli.scene;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.fusesource.jansi.AnsiConsole;
 
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.DirectMessageCommand;
 import it.polimi.ingsw.distributed.commands.game.GroupMessageCommand;
-import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 
