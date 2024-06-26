@@ -6,6 +6,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.client.RMIConnectionHandler;
+import it.polimi.ingsw.distributed.commands.main.KeepAliveCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
@@ -47,8 +48,10 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    */
   @Override
   public void trasmitEvent(MainEvent serverEvent) throws RemoteException, IOException {   
-    if(serverEvent instanceof KeepAliveEvent) 
+    if(serverEvent instanceof KeepAliveEvent) {
       connectionHandler.lastKeepAliveTime = System.currentTimeMillis();
+      connectionHandler.sendToMainServer(new KeepAliveCommand(connectionHandler.userInterface.getUserInfo()));
+    }
       
     serverEvent.execute(mainEventHandler);
   }

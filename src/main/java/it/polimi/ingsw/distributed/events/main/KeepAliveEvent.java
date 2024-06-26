@@ -1,3 +1,4 @@
+
 package it.polimi.ingsw.distributed.events.main;
 
 import it.polimi.ingsw.view.interfaces.MainEventHandler;

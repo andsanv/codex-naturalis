@@ -46,11 +46,18 @@ import it.polimi.ingsw.distributed.server.socket.SocketServer;
 public enum Server {
     INSTANCE;
 
+    public static final long MILLISEC_TIME_OUT = 2000;
+
     /**
      * Links the UserInfo to their respective client.
      * From the Client instance, the server can get their status.
      */
     private final ConcurrentHashMap<UserInfo, Client> connectedPlayers = new ConcurrentHashMap<>();
+
+    /**
+     * This map keeps track of the last time a user sent a keep alive command.
+     */
+    private final ConcurrentHashMap<UserInfo, Long> lastKeepAliveMap = new ConcurrentHashMap<>();
 
     /**
      * ExecutorService for all Runnables created by the server.
@@ -93,9 +100,10 @@ public enum Server {
             ServerPrinter.displayInfo("Check connection thread started");
             while (true) {
                 checkConnections();
+                checkKeepAlive();
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     ServerPrinter.displayError("Check connection thread was interrupted.");
                 }
@@ -117,7 +125,7 @@ public enum Server {
                         entry -> {
                             try {
                                 entry.getValue().trasmitEvent(new KeepAliveEvent());
-                                //ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
+                                // ServerPrinter.displayDebug("Sent keep alive to " + entry.getKey());
                             } catch (IOException e) {
                                 entry.getValue().setDisconnectionStatus();
                                 ServerPrinter
@@ -327,33 +335,52 @@ public enum Server {
     }
 
     public void clientLogin(UserInfo userInfo, Client client) {
-        if (connectedPlayers.containsKey(userInfo)) {
+
+        Client owldClient = connectedPlayers.get(userInfo);
+        if(owldClient != null)
+            ServerPrinter.displayInfo("Client status: " + owldClient.getStatus());
+        
+        if (!connectedPlayers.containsKey(userInfo)
+                || (connectedPlayers.containsKey(userInfo) && (connectedPlayers.get(userInfo).getStatus() == Status.IN_MENU
+                        || connectedPlayers.get(userInfo).getStatus() == Status.IN_GAME))) {
+            ServerPrinter.displayInfo(
+                    "Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
+            if (connectedPlayers.containsKey(userInfo)) {
+                ServerPrinter
+                        .displayInfo("User " + userInfo + " status: " + connectedPlayers.get(userInfo).getStatus());
+            }
+
+            this.clientSignUp(userInfo.name, client);
+        } else if (connectedPlayers.containsKey(userInfo)) {
             ServerPrinter.displayInfo("User " + userInfo + " reconnecting");
             Client oldClient = connectedPlayers.get(userInfo);
-
-            connectedPlayers.put(userInfo, client);
-
-            client.setStatus(Status.IN_MENU);
+            ServerPrinter.displayInfo("Old client status: " + oldClient.getStatus());
 
             try {
                 if (oldClient.getStatus() == Status.OFFLINE) {
+                    client.setStatus(Status.IN_MENU);
+
                     client.trasmitEvent(new LoginEvent(userInfo, null));
                     client.trasmitEvent(new LobbiesEvent(Lobby.getLobbies()));
 
-                    client.setStatus(Status.IN_MENU);
+                    updateKeepAlive(userInfo);
+                    connectedPlayers.put(userInfo, client);
 
                     ServerPrinter.displayInfo("User " + userInfo + " reconnected to menu");
 
                 } else if (oldClient.getStatus() == Status.DISCONNETED_FROM_GAME) {
                     GameFlowManager gameFlowManager = Lobby.getLobby(userInfo).getGameFlowManager();
+                    client.setStatus(Status.IN_GAME);
+
                     client.trasmitEvent(new ReconnectToGameEvent(gameFlowManager.gameModelUpdater.getSlimGameModel(),
                             gameFlowManager.userInfoToToken));
 
+                    updateKeepAlive(userInfo);
+                    connectedPlayers.put(userInfo, client);
                     setUpClientsForGame(Arrays.asList(client), gameFlowManager);
 
                     // TODO: when reconnecting add to the reconnectToGameEvent the mapping
                     // <UserInfo, Token>
-                    client.setStatus(Status.IN_GAME);
 
                     gameFlowManager.observers.remove(oldClient);
                     gameFlowManager.observers.add(client);
@@ -370,13 +397,6 @@ public enum Server {
                     Lobby.removeUserIfGameNotStarted(client.userInfo.get());
                 }
             }
-        }
-        if (!connectedPlayers.containsKey(userInfo)
-                || (connectedPlayers.contains(client) && (connectedPlayers.get(userInfo).getStatus() == Status.IN_MENU
-                        || connectedPlayers.get(userInfo).getStatus() == Status.IN_GAME))) {
-            ServerPrinter.displayInfo(
-                    "Error: User was not found in recent sessions or another user has the same user id. Assignign a new user id.");
-            this.clientSignUp(userInfo.name, client);
         }
     }
 
@@ -512,6 +532,33 @@ public enum Server {
                 c.setDisconnectionStatus();
             }
         }
+    }
+
+    /**
+     * 
+     * @param userInfo
+     */
+    private void checkKeepAlive() {
+        lastKeepAliveMap.entrySet().stream()
+                .filter(entry -> connectedPlayers.get(entry.getKey()).getStatus() == Status.IN_MENU
+                        || connectedPlayers.get(entry.getKey()).getStatus() == Status.IN_GAME)
+                .filter(entry -> System.currentTimeMillis() - entry.getValue() > Server.MILLISEC_TIME_OUT)
+                .filter(entry -> lastKeepAliveMap.containsKey(entry.getKey()))
+                .forEach(entry -> {
+                    ServerPrinter.displayInfo("User " + entry.getKey() + " disconnected for inactivity");
+                    connectedPlayers.get(entry.getKey()).setDisconnectionStatus();
+                });
+
+    }
+
+    /**
+     * This function is used by the handler to update the last keep alive time of a
+     * client.
+     * 
+     * @param userInfo the user who sent the keep alive
+     */
+    public void updateKeepAlive(UserInfo userInfo) {
+        lastKeepAliveMap.put(userInfo, System.currentTimeMillis());
     }
 
 }

@@ -109,7 +109,6 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
    */
   @Override
   public void transmitCommand(MainCommand command) throws RemoteException {
-    ServerPrinter.displayDebug("Received command: " + command);
     executorService.submit(command::execute);
   }
 }

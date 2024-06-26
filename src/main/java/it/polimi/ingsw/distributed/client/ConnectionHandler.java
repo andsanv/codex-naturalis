@@ -20,7 +20,7 @@ public abstract class ConnectionHandler {
   /**
    * This represents the user interface of the client.
    */
-  protected final UI userInterface;
+  public final UI userInterface;
 
   /**
    * This field is used to check if the next KeepAliveEvent has come after the

@@ -117,6 +117,7 @@ public class SocketServer {
 
       executorService.submit(connection);
     } catch (Exception e) {
+      e.printStackTrace();
       ServerPrinter.displayError("Error while accepting new client");
     }
   }

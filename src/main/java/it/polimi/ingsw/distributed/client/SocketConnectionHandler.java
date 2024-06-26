@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
+import it.polimi.ingsw.distributed.commands.main.KeepAliveCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.distributed.events.Event;
@@ -66,7 +67,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 				() -> {
 					while (true) {
 						if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
-							System.out.println("Imposto a falso");
 							this.isConnected.set(false);
 							this.userInterface.handleDisconnection();
 							this.close();
@@ -101,9 +101,8 @@ public class SocketConnectionHandler extends ConnectionHandler {
 							Event event = (Event) inputStream.readObject();
 
 							if (event instanceof KeepAliveEvent) {
-
 								this.lastKeepAliveTime = System.currentTimeMillis();
-
+								this.sendToMainServer(new KeepAliveCommand(this.userInterface.getUserInfo()));
 							} else if (event instanceof GameEvent) {
 								GameEvent gameEvent = (GameEvent) event;
 								gameEvent.execute(userInterface);

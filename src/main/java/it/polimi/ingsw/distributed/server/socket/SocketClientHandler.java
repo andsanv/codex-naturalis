@@ -1,11 +1,13 @@
 package it.polimi.ingsw.distributed.server.socket;
 
 import it.polimi.ingsw.controller.GameFlowManager;
+import it.polimi.ingsw.controller.Server;
 import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.Command;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
 import it.polimi.ingsw.distributed.commands.game.MessageCommand;
+import it.polimi.ingsw.distributed.commands.main.KeepAliveCommand;
 import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.LoginEvent;
@@ -65,8 +67,6 @@ public class SocketClientHandler extends Client implements Runnable {
       try {
         Command command = (Command) in.readObject();
 
-        ServerPrinter.displayDebug("Received command: " + command.getClass() + " from client " + this.userInfo.get());
-
         if (command instanceof GameCommand) {
           if (gameFlowManager == null) {
             ServerPrinter.displayError("GameFlowManager not set");
@@ -74,7 +74,7 @@ public class SocketClientHandler extends Client implements Runnable {
 
           GameCommand gameCommand = (GameCommand) command;
 
-          if(gameCommand instanceof MessageCommand)
+          if (gameCommand instanceof MessageCommand)
             gameCommand.execute(gameFlowManager);
           else
             gameFlowManager.addCommand(gameCommand);
@@ -103,7 +103,7 @@ public class SocketClientHandler extends Client implements Runnable {
    */
   @Override
   public void trasmitEvent(MainEvent event) throws IOException {
-    if(event instanceof LoginEvent)
+    if (event instanceof LoginEvent)
       this.userInfo.set(((LoginEvent) event).getUserInfo());
     out.writeObject(event);
     out.reset();
