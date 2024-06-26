@@ -595,6 +595,8 @@ public class CLI implements UI {
             this.slimGameModel = slimGameModel;
         }
 
+        
+
         if (sceneManager.getCurrentScene() != GameScene.class) {
             sceneManager.transition(GameScene.class);
         }

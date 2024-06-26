@@ -65,7 +65,12 @@ public class SocketClientHandler extends Client implements Runnable {
   public void run() {
     while (true) {
       try {
-        Command command = (Command) in.readObject();
+        Object object = in.readObject();
+
+        if (object == null)
+          continue;
+
+        Command command = (Command) object;
 
         if (command instanceof GameCommand) {
           if (gameFlowManager == null) {
@@ -84,7 +89,6 @@ public class SocketClientHandler extends Client implements Runnable {
           ServerPrinter.displayWarning("Unrecognized command: " + command);
         }
       } catch (EOFException e) {
-        e.printStackTrace();
         ServerPrinter.displayError("Error while reading command from " + this.userInfo.get());
         ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         setDisconnectionStatus();

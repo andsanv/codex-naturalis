@@ -98,7 +98,12 @@ public class SocketConnectionHandler extends ConnectionHandler {
 				() -> {
 					while (true) {
 						try {
-							Event event = (Event) inputStream.readObject();
+							Object object = inputStream.readObject();
+
+							if (object == null)
+								continue;
+
+							Event event = (Event) object;
 
 							if (event instanceof KeepAliveEvent) {
 								this.lastKeepAliveTime = System.currentTimeMillis();
