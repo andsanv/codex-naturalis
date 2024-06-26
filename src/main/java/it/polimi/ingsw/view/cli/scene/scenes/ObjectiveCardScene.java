@@ -17,6 +17,9 @@ import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Scene for objective card selection
+ */
 public class ObjectiveCardScene extends Scene {
     public ObjectiveCardScene(SceneManager sceneManager) {
         super(sceneManager);
@@ -28,7 +31,7 @@ public class ObjectiveCardScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    if (cli.secretObjectives.get() == null) {
+                    if (cli.secretObjectives.get() != null) {
                         CLIPrinter.displayError("You have already drawn your objective cards");
                         return;
                     }
@@ -37,13 +40,13 @@ public class ObjectiveCardScene extends Scene {
 
                     cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new DrawObjectiveCardsCommand(cli.token.get()));
-                    if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                    }
+
+                    CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
+                            connectionHandler.isConnected, null);
 
                     if (cli.lastGameError.get() != null) {
                         CLIPrinter.displayError(cli.lastGameError.get());
+                        cli.lastGameError.set(null);
                         return;
                     }
 
@@ -69,10 +72,8 @@ public class ObjectiveCardScene extends Scene {
 
                     cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 0));
-                    if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                    }
+                    CLIPrinter.displayLoadingMessage("Selecting objective", cli.waitingGameEvent,
+                            connectionHandler.isConnected, null);
 
                     if (cli.lastGameError.get() != null) {
                         CLIPrinter.displayError(cli.lastGameError.get());
@@ -86,6 +87,10 @@ public class ObjectiveCardScene extends Scene {
                     } catch (InterruptedException e) {
                         sceneManager.stop();
                     }
+
+                    if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
+                        sceneManager.transition(EndingGameInitScene.class);
+
                 }),
                 new CLICommand("second", "to select the second objective card", () -> {
                     if (args.length != 1)
@@ -100,13 +105,14 @@ public class ObjectiveCardScene extends Scene {
 
                     cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 1));
-                    if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
+                    if (!CLIPrinter.displayLoadingMessage("Selecting objective", cli.waitingGameEvent,
                             connectionHandler.isConnected, null)) {
                         sceneManager.transition(ConnectionLostScene.class);
                     }
 
                     if (cli.lastGameError.get() != null) {
                         CLIPrinter.displayError(cli.lastGameError.get());
+                        cli.lastGameError.set(null);
                         return;
                     }
 
@@ -117,6 +123,9 @@ public class ObjectiveCardScene extends Scene {
                     } catch (InterruptedException e) {
                         sceneManager.stop();
                     }
+
+                    if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
+                        sceneManager.transition(EndingGameInitScene.class);
                 }));
     }
 

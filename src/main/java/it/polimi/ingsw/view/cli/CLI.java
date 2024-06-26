@@ -541,15 +541,12 @@ public class CLI implements UI {
 
     @Override
     public void handleDrawnObjectiveCardsEvent(PlayerToken playerToken, int drawnCardId, int secondDrawnCardId) {
+        if (!playerToken.equals(token.get()))
+            return;
+
         secretObjectives.set(new Pair<Integer, Integer>(drawnCardId, secondDrawnCardId));
 
         waitingGameEvent.set(false);
-        tokenPhaseLatch.countDown();
-
-        if (sceneManager.getCurrentScene() != StarterCardScene.class) {
-            sceneManager.transition(StarterCardScene.class);
-            resetPrompt();
-        }
     }
 
     @Override
