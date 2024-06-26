@@ -23,7 +23,8 @@ import it.polimi.ingsw.util.Trio;
 
 /**
  * One of the tree main classes that manage a game.
- * It receives instructions by the GameFlowManager, and acts on the GameModel, updating it.
+ * It receives instructions by the GameFlowManager, and acts on the GameModel,
+ * updating it.
  *
  * @see GameFlowManager
  * @see GameModel
@@ -46,10 +47,11 @@ public class GameModelUpdater {
    * It updates player elements in case the card placement was successful.
    *
    * @param playerToken token of the player playing the card
-   * @param coords coords at which to play the card
-   * @param cardId id of the card to play
-   * @param cardSide side of the card to play
-   * @return false if the card cannot be played at that coordinates, true otherwise
+   * @param coords      coords at which to play the card
+   * @param cardId      id of the card to play
+   * @param cardSide    side of the card to play
+   * @return false if the card cannot be played at that coordinates, true
+   *         otherwise
    */
   public boolean playCard(PlayerToken playerToken, Coords coords, int cardId, CardSide cardSide) {
     Player player = gameModel.tokenToPlayer.get(playerToken);
@@ -57,7 +59,8 @@ public class GameModelUpdater {
     PlayerHand playerHand = player.playerHand;
     PlayableCard card = playerHand.get(cardId);
 
-    if (card == null || !playerBoard.canPlaceCardAt(coords, card, cardSide)) return false;
+    if (card == null || !playerBoard.canPlaceCardAt(coords, card, cardSide))
+      return false;
 
     playerHand.remove(card);
     playerBoard.placeCard(playerToken, coords, card, cardSide);
@@ -65,14 +68,14 @@ public class GameModelUpdater {
     playerBoard.updatePlayerElements(playerToken, coords);
 
     int points = switch (card.pointsType) {
-        case ONE -> 1;
-        case THREE -> 3;
-        case FIVE -> 5;
-        case ONE_PER_QUILL -> playerBoard.playerElements.get(Items.QUILL);
-        case ONE_PER_INKWELL -> playerBoard.playerElements.get(Items.INKWELL);
-        case ONE_PER_MANUSCRIPT -> playerBoard.playerElements.get(Items.MANUSCRIPT);
-        case TWO_PER_COVERED_CORNER -> 2 * playerBoard.adjacentCards(coords).keySet().size();
-        default -> 0;
+      case ONE -> 1;
+      case THREE -> 3;
+      case FIVE -> 5;
+      case ONE_PER_QUILL -> playerBoard.playerElements.get(Items.QUILL);
+      case ONE_PER_INKWELL -> playerBoard.playerElements.get(Items.INKWELL);
+      case ONE_PER_MANUSCRIPT -> playerBoard.playerElements.get(Items.MANUSCRIPT);
+      case TWO_PER_COVERED_CORNER -> 2 * playerBoard.adjacentCards(coords).keySet().size();
+      default -> 0;
     };
 
     gameModel.scoreTrack.updatePlayerScore(playerToken, points);
@@ -81,7 +84,8 @@ public class GameModelUpdater {
   }
 
   /**
-   * Checks at which coordinates each card in the hand of the player can be placed, and sends him an event with the results.
+   * Checks at which coordinates each card in the hand of the player can be
+   * placed, and sends him an event with the results.
    *
    * @param playerToken token representing the player
    * @return true
@@ -92,10 +96,12 @@ public class GameModelUpdater {
     List<Coords> availableSlots = playerBoard.availableCoords();
 
     Map<Integer, List<Pair<CardSide, Boolean>>> enoughResources = new HashMap<>();
-    for(PlayableCard card : handCards) {
+    for (PlayableCard card : handCards) {
       ArrayList<Pair<CardSide, Boolean>> enoughResourcesByCardSide = new ArrayList<>();
-      enoughResourcesByCardSide.add(new Pair<>(CardSide.FRONT, card.enoughResources(playerBoard.playerElements, CardSide.FRONT)));
-      enoughResourcesByCardSide.add(new Pair<>(CardSide.BACK, card.enoughResources(playerBoard.playerElements, CardSide.BACK)));
+      enoughResourcesByCardSide
+          .add(new Pair<>(CardSide.FRONT, card.enoughResources(playerBoard.playerElements, CardSide.FRONT)));
+      enoughResourcesByCardSide
+          .add(new Pair<>(CardSide.BACK, card.enoughResources(playerBoard.playerElements, CardSide.BACK)));
 
       enoughResources.put(card.id, enoughResourcesByCardSide);
     }
@@ -115,11 +121,13 @@ public class GameModelUpdater {
   public boolean drawResourceDeckCard(PlayerToken playerToken) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1) return false;
+    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1)
+      return false;
 
     Optional<ResourceCard> card = gameModel.resourceCardsDeck.draw(playerToken, playerHand.getFirstFree());
 
-    if (card.isEmpty()) return false;
+    if (card.isEmpty())
+      return false;
 
     playerHand.add(card.get());
     return true;
@@ -135,11 +143,13 @@ public class GameModelUpdater {
   public boolean drawGoldDeckCard(PlayerToken playerToken) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1) return false;
+    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1)
+      return false;
 
     Optional<GoldCard> card = gameModel.goldCardsDeck.draw(playerToken, playerHand.getFirstFree());
 
-    if (card.isEmpty()) return false;
+    if (card.isEmpty())
+      return false;
 
     playerHand.add(card.get());
     return true;
@@ -147,20 +157,23 @@ public class GameModelUpdater {
 
   /**
    * Allows a player to draw a ResourceCard card.
-   * Draws a card from the ResourceCard visible list, and adds it to player's hand.
+   * Draws a card from the ResourceCard visible list, and adds it to player's
+   * hand.
    *
    * @param playerToken the token of the player
-   * @param chosen list index of the card chosen
+   * @param chosen      list index of the card chosen
    * @return false if player's hand is full or deck is empty, true otherwise
    */
   public boolean drawVisibleResourceCard(PlayerToken playerToken, int chosen) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1) return false;
+    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1)
+      return false;
 
     Optional<ResourceCard> card = gameModel.visibleResourceCards.draw(playerToken, chosen, playerHand.getFirstFree());
 
-    if (card.isEmpty()) return false;
+    if (card.isEmpty())
+      return false;
 
     playerHand.add(card.get());
     return true;
@@ -171,17 +184,19 @@ public class GameModelUpdater {
    * Draws a card from the GoldCard visible list, and adds it to player's hand.
    *
    * @param playerToken the token of the player
-   * @param chosen the card to draw from visible gold cards (0 or 1)
+   * @param chosen      the card to draw from visible gold cards (0 or 1)
    * @return true if the action has been completed successfully, false otherwise
    */
   public boolean drawVisibleGoldCard(PlayerToken playerToken, int chosen) {
     PlayerHand playerHand = gameModel.tokenToPlayer.get(playerToken).playerHand;
 
-    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1) return false;
+    if (playerHand.size() >= 3 || playerHand.getFirstFree() == -1)
+      return false;
 
     Optional<GoldCard> card = gameModel.visibleGoldCards.draw(playerToken, chosen, playerHand.getFirstFree());
 
-    if (card.isEmpty()) return false;
+    if (card.isEmpty())
+      return false;
 
     playerHand.add(card.get());
     return true;
@@ -193,41 +208,36 @@ public class GameModelUpdater {
    * @return the SlimGameModel
    */
   public SlimGameModel getSlimGameModel() {
-    Map<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> tokenToPlayedCards = gameModel.tokenToPlayer.entrySet().stream()
-      .collect(Collectors.toMap(
-        Map.Entry::getKey,
-        x -> x.getValue().playerBoard.cardsPlacementOrder.entrySet().stream().collect(Collectors.toMap(
-          Map.Entry::getKey,
-          y -> new Trio<>(
-            y.getValue().first.id,
-            y.getValue().first.getPlayedSide(),
-            new Coords(y.getValue().second.x, y.getValue().second.y)
-          )
-        ))
-      ));
+    Map<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> tokenToPlayedCards = gameModel.tokenToPlayer
+        .entrySet().stream()
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            x -> x.getValue().playerBoard.cardsPlacementOrder.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                y -> new Trio<>(
+                    y.getValue().first.id,
+                    y.getValue().first.getPlayedSide(),
+                    new Coords(y.getValue().second.x, y.getValue().second.y))))));
 
     Map<PlayerToken, List<Integer>> tokenToHand = gameModel.tokenToPlayer.entrySet().stream()
-      .collect(Collectors.toMap(
-        Map.Entry::getKey,
-        x -> new ArrayList<>(Arrays.asList(
-          x.getValue().playerHand.getCards().get(0) != null ? x.getValue().playerHand.getCards().get(0).id : null,
-          x.getValue().playerHand.getCards().get(1) != null ? x.getValue().playerHand.getCards().get(1).id : null,
-          x.getValue().playerHand.getCards().get(2) != null ? x.getValue().playerHand.getCards().get(2).id : null
-        ))
-      ));
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            x -> new ArrayList<>(Arrays.asList(
+                x.getValue().playerHand.getCards().get(0) != null ? x.getValue().playerHand.getCards().get(0).id : null,
+                x.getValue().playerHand.getCards().get(1) != null ? x.getValue().playerHand.getCards().get(1).id : null,
+                x.getValue().playerHand.getCards().get(2) != null ? x.getValue().playerHand.getCards().get(2).id
+                    : null))));
 
     Map<PlayerToken, Map<Elements, Integer>> tokenToElements = gameModel.tokenToPlayer.entrySet().stream()
-      .collect(Collectors.toMap(
-        Map.Entry::getKey,
-        x -> new HashMap<>(x.getValue().playerBoard.playerElements)
-      ));
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            x -> new HashMap<>(x.getValue().playerBoard.playerElements)));
 
     Map<PlayerToken, Integer> tokenToSecretObjective = gameModel.tokenToPlayer.entrySet().stream()
-      .collect(Collectors.toMap(
-        Map.Entry::getKey,
-        x -> x.getValue().secretObjective.id
-      ));
-    
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            x -> x.getValue().secretObjective.id));
+
     List<Integer> commonObjectives = gameModel.commonObjectives.stream().map(x -> x.id).collect(Collectors.toList());
 
     List<Integer> resourceDeck = gameModel.resourceCardsDeck.asListOfIds();
@@ -235,29 +245,30 @@ public class GameModelUpdater {
     List<Integer> goldDeck = gameModel.goldCardsDeck.asListOfIds();
 
     List<Integer> visibleResourceCardsList = new ArrayList<>(Arrays.asList(
-      gameModel.visibleResourceCards.getCards().get(0) != null ? gameModel.visibleResourceCards.getCards().get(0).id : null,
-      gameModel.visibleResourceCards.getCards().get(1) != null ? gameModel.visibleResourceCards.getCards().get(1).id : null
-    ));
+        gameModel.visibleResourceCards.getCards().get(0) != null ? gameModel.visibleResourceCards.getCards().get(0).id
+            : null,
+        gameModel.visibleResourceCards.getCards().get(1) != null ? gameModel.visibleResourceCards.getCards().get(1).id
+            : null));
 
     List<Integer> visibleGoldCardsList = new ArrayList<>(Arrays.asList(
-      gameModel.visibleGoldCards.getCards().get(0) != null ? gameModel.visibleGoldCards.getCards().get(0).id : null,
-      gameModel.visibleGoldCards.getCards().get(1) != null ? gameModel.visibleGoldCards.getCards().get(1).id : null
-    ));
+        gameModel.visibleGoldCards.getCards().get(0) != null ? gameModel.visibleGoldCards.getCards().get(0).id : null,
+        gameModel.visibleGoldCards.getCards().get(1) != null ? gameModel.visibleGoldCards.getCards().get(1).id : null));
 
     Map<PlayerToken, Integer> scores = gameModel.scoreTrack.getScores();
 
     return new SlimGameModel(
-      tokenToPlayedCards,
-      tokenToHand,
-      tokenToElements,
-      tokenToSecretObjective,
-      commonObjectives,
-      resourceDeck,
-      goldDeck,
-      visibleResourceCardsList,
-      visibleGoldCardsList,
-      scores
-    );
+        tokenToPlayedCards,
+        tokenToHand,
+        tokenToElements,
+        tokenToSecretObjective,
+        commonObjectives,
+        resourceDeck,
+        goldDeck,
+        visibleResourceCardsList,
+        visibleGoldCardsList,
+        scores,
+        new HashMap<>(),
+        new HashMap<>());
   }
 
   /**
