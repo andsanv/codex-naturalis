@@ -101,8 +101,6 @@ public class GUI extends Application {
 
         mainController.setSubController(controller);
 
-        System.out.println("");
-
         stage.setScene(new Scene(root));
     }
 

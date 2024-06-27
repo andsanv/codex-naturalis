@@ -62,7 +62,8 @@ public class ConfigController extends Controller {
 
         gui.connectionHandler = connectionHandler;
 
-        connectionHandler.sendToMainServer(id == -1 ? new ConnectionCommand(nickname) : new ReconnectionCommand(new UserInfo(nickname, id)));
+        if (id == -1) connectionHandler.connect(new ConnectionCommand(nickname));
+        else connectionHandler.reconnect();
 
         return true;
     }

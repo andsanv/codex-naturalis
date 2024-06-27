@@ -143,4 +143,119 @@ public class SlimGameModel implements Serializable {
         this.availableSlots.put(playerToken, availableSlots);
         this.cardsPlayability.put(playerToken, cardsPlayability);
     }
+
+    /**
+     * Applies the PlayedCardEvent.
+     *
+     * @param playerToken the token of the player
+     * @param cardId id of the card played
+     * @param cardSide side of the card played
+     * @param coords coordinates where the card was placed
+     */
+    public void applyPlayedCardEvent(PlayerToken playerToken, int cardId, CardSide cardSide, Coords coords) {
+        Map<Integer, Trio<Integer, CardSide, Coords>> playedCards = tokenToPlayedCards.get(playerToken);
+
+        Integer lastId = playedCards.keySet().stream()
+                .max(Integer::compare)
+                .orElse(0);
+
+        playedCards.put(lastId + 1, new Trio<>(cardId, cardSide, coords));
+    }
+
+    /**
+     * Applies the DrawnGoldDeckCardEvent
+     *
+     * @param playerToken token of the player
+     * @param drawnCardId id of the drawn card
+     * @param deckEmptied boolean that represents whether the deck was emptied or not
+     * @param nextCardId id of the next card at the top of the deck
+     * @param handIndex index of the hand where card was drawn
+     */
+    public void applyDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+        tokenToHand.get(playerToken).set(handIndex, drawnCardId);
+
+        goldDeck.remove(goldDeck.indexOf(drawnCardId));
+    }
+
+    /**
+     * Applies the DrawnResourceDeckCardEvent
+     *
+     * @param playerToken token of the player
+     * @param drawnCardId id of the drawn card
+     * @param deckEmptied boolean that represents whether the deck was emptied or not
+     * @param nextCardId id of the next card at the top of the deck
+     * @param handIndex index of the hand where card was drawn
+     */
+    public void applyDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+        tokenToHand.get(playerToken).set(handIndex, drawnCardId);
+
+        resourceDeck.remove(resourceDeck.indexOf(drawnCardId));
+    }
+
+    /**
+     * Applies the DrawnVisibleGoldCardEvent
+     *
+     * @param playerToken       the token of the player that draws the card.
+     * @param drawnCardPosition the drawn card position in the visible resource
+     *                          cards.
+     * @param drawnCardId       the id of the drawn card.
+     * @param replacementCardId the id of the replacement card.
+     * @param deckEmptied       true if deck was emptied drawing the replacement
+     *                          card, false otherwise.
+     * @param nextCardId        id of the next card.
+     * @param handIndex         index of the playerHand where drawn card will be
+     *                          placed.
+     */
+    public void applyDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+        tokenToHand.get(playerToken).set(handIndex, drawnCardId);
+
+        visibleGoldCardsList.remove(visibleGoldCardsList.indexOf(drawnCardId));
+        visibleGoldCardsList.set(drawnCardPosition, replacementCardId);
+
+        goldDeck.remove((Integer) replacementCardId);
+    }
+
+    /**
+     * Applies the DrawnVisibleResourceCardEvent
+     *
+     * @param playerToken       the token of the player that draws the card.
+     * @param drawnCardPosition the drawn card position in the visible resource
+     *                          cards.
+     * @param drawnCardId       the id of the drawn card.
+     * @param replacementCardId the id of the replacement card.
+     * @param deckEmptied       true if deck was emptied drawing the replacement
+     *                          card, false otherwise.
+     * @param nextCardId        id of the next card.
+     * @param handIndex         index of the playerHand where drawn card will be
+     *                          placed.
+     */
+    public void applyDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+        tokenToHand.get(playerToken).set(handIndex, drawnCardId);
+
+        visibleResourceCardsList.remove(visibleResourceCardsList.indexOf(drawnCardId));
+        visibleResourceCardsList.set(drawnCardPosition, replacementCardId);
+
+        goldDeck.remove((Integer) replacementCardId);
+    }
+
+    /**
+     * Applies the UpdatedScoreTrackEvent.
+     *
+     * @param playerToken token of the player
+     * @param score the new player score
+     */
+    public void applyUpdatedScoreTrackEvent(PlayerToken playerToken, int score) {
+        scores.put(playerToken, score);
+    }
+
+    /**
+     * Applies the PlayerElementsEvent
+     *
+     * @param playerToken token of the player
+     * @param resources the updated resources map
+     */
+    public void applyPlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
+        tokenToElements.get(playerToken).clear();
+        tokenToElements.get(playerToken).putAll(resources);
+    }
 }

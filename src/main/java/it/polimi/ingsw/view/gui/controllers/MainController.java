@@ -70,9 +70,7 @@ public class MainController extends Controller {
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
         System.out.println("received login event");
-        Platform.runLater(() ->  {
-            System.out.println("done");
-        });
+        Platform.runLater(() ->  {});
         System.out.println("tested outside");
     }
 
