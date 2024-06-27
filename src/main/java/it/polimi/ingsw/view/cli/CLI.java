@@ -38,6 +38,7 @@ import it.polimi.ingsw.view.cli.scene.scenes.LastPlayerScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LastPlayerWonScene;
 import it.polimi.ingsw.view.cli.scene.scenes.LobbiesScene;
 import it.polimi.ingsw.view.cli.scene.scenes.ObjectiveCardScene;
+import it.polimi.ingsw.view.cli.scene.scenes.ResultsScene;
 import it.polimi.ingsw.view.cli.scene.scenes.StarterCardScene;
 import it.polimi.ingsw.view.cli.scene.scenes.TokenSelectionScene;
 import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
@@ -279,6 +280,11 @@ public class CLI implements UI {
     public final AtomicBoolean canDrawCard = new AtomicBoolean(false);
 
     /**
+     * The final scores of each player
+     */
+    public final AtomicReference<List<Pair<PlayerToken, Integer>>> gameResults = new AtomicReference<>(null);
+
+    /**
      * Cli private constructor, can only be called by the main static method in this
      * class.
      * Inits helper threads and creates the needed scenes.
@@ -300,6 +306,7 @@ public class CLI implements UI {
         sceneManager.registerScene(new GameScene(sceneManager));
         sceneManager.registerScene(new LastPlayerScene(sceneManager));
         sceneManager.registerScene(new LastPlayerWonScene(sceneManager));
+        sceneManager.registerScene(new ResultsScene(sceneManager));
 
         /*
          * Init and start the SceneManager
@@ -628,8 +635,9 @@ public class CLI implements UI {
 
     @Override
     public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGameResultsEvent'");
+        this.gameResults.set(gameResults);
+
+        sceneManager.transition(ResultsScene.class);
     }
 
     @Override
@@ -745,14 +753,19 @@ public class CLI implements UI {
 
     @Override
     public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePlayerTurnEvent'");
+        synchronized (tokenToUserLock) {
+            System.out.println("It's " + tokenToUser.get(currentPlayer) + "'s turn " + "(" + currentPlayer + ")");
+
+            if (currentPlayer.equals(token.get())) {
+                canPlayCard.set(true);
+                canDrawCard.set(false);
+            }
+        }
     }
 
     @Override
     public void handleLastRoundEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLastRoundEvent'");
+        System.out.println("Last round starting!");
     }
 
     @Override

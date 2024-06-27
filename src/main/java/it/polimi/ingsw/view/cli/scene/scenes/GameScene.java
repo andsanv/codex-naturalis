@@ -40,6 +40,11 @@ public class GameScene extends Scene {
                             CLI cli = sceneManager.cli;
                             ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
+                            if (!cli.canPlayCard.get()) {
+                                CLIPrinter.displayError("You can't play a card now");
+                                return;
+                            }
+
                             int card;
 
                             try {
@@ -99,6 +104,8 @@ public class GameScene extends Scene {
                                     .sendToGameServer(new PlayCardCommand(cli.token.get(),
                                             cli.availablePositionsPlaceholders.get(placeholderPosition), cardId,
                                             cardSide));
+
+                            cli.canDrawCard.set(true);
                         }),
                 new CLICommand("hand", "to show your hand", () -> {
                     if (args.length != 1) {

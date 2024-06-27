@@ -1,0 +1,40 @@
+package it.polimi.ingsw.view.cli.scene.scenes;
+
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+
+import java.util.Arrays;
+
+import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.view.cli.CLICommand;
+import it.polimi.ingsw.view.cli.CLIPrinter;
+import it.polimi.ingsw.view.cli.scene.Scene;
+import it.polimi.ingsw.view.cli.scene.SceneManager;
+
+public class ResultsScene extends Scene {
+
+    public ResultsScene(SceneManager sceneManager) {
+        super(sceneManager);
+        this.commands = Arrays.asList(
+                new CLICommand("x", "to go back to the main menu", () -> {
+                    if (args.length != 1)
+                        CLIPrinter.displayError("Invalid command");
+
+                    sceneManager.transition(LobbiesScene.class);
+                }));
+    }
+
+    @Override
+    public void onEntry() {
+        CLIPrinter.clear();
+        CLIPrinter.displaySceneTitle("Game Results", BLUE);
+        System.out.println("Enter x to go back to the main menu");
+        System.out.println("\nThis is the final ranking:");
+        int i = 1;
+        for (Pair<PlayerToken, Integer> result : sceneManager.cli.gameResults.get()) {
+            System.out.println(i + ": " + sceneManager.cli.getTokenToPlayerMap().get(result.first) + " as "
+                    + result.first + " (" + result.second + " points)");
+            i++;
+        }
+    }
+}
