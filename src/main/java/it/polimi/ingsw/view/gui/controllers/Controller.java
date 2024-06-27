@@ -31,8 +31,9 @@ public abstract class Controller implements UI {
         this.gui = null;
     }
 
-    public void initialize(GUI gui) {
+    public void initialize() {}
 
+    public void initialize(GUI gui) {
     }
 
     @Override

@@ -56,6 +56,7 @@ public class LobbyController extends Controller {
     /**
      * Initializer for testing.
      */
+    @Override
     public void initialize() {
         this.gui = new GUI();
         User self = new User("Andrea");
