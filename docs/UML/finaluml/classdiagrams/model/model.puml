@@ -219,25 +219,22 @@ class ScoreTrack {
 }
 
 
-GameModel                "1" *--> "\n1" Deck
-GameModel                "1" *--> "\n*" ObjectiveCard
-GameModel                "1" *--> "\n*" Player
-GameModel                "1" *--> "\n*" PlayerToken
-GameModel                "1" *--> "\n1" ScoreTrack
-GameModel                "1" *--> "\n1" VisibleCardsList
-
-ScoreTrack               "1" *--> "\n*" PlayerToken
+GameModel                "1" <--> "\n*" ObjectiveCard
+GameModel                "1" <--> "\n*" Player
+GameModel                "1" <--> "\n*" PlayerToken
+GameModel                "1" <--> "\n1" ScoreTrack
+GameModel                "1" <--> "\n1" VisibleCardsList
 
 ResourceCard              --^  PlayableCard
 PlayableCard              --^  Card
-PlayableCard             "1" *--> "\n1" CardSide
-PlayableCard             "1" *--> "\n*" Corner
-PlayableCard             "1" *--> "\n*" CornerPosition
-PlayableCard             "1" *--> "\n1" PointsType
+PlayableCard             "1" <--> "\n1" CardSide
+PlayableCard             "1" <--> "\n*" Corner
+PlayableCard             "1" <--> "\n*" CornerPosition
+PlayableCard             "1" <--> "\n1" PointsType
 GoldCard                  --^  PlayableCard
 StarterCard               --^  PlayableCard
 ObjectiveCard             --^  Card
-ObjectiveCard            "1" *--> "\n1" ObjectiveStrategy
+ObjectiveCard            "1" <--> "\n1" ObjectiveStrategy
 
 PlayableCard -[hidden]u- Card
 ObjectiveCard -[hidden]u- Card
@@ -254,27 +251,29 @@ Resources                 --^  Elements
 Items                  <-[hidden]u- Elements
 Resources              <-[hidden]u- Elements
 
-ObjectiveDeckCreator      -->  Deck                     : "«create»"
-GoldDeckCreator           -->  Deck                     : "«create»"
-ResourceDeckCreator       -->  Deck                     : "«create»"
-StarterDeckCreator        -->  Deck                     : "«create»"
+ObjectiveDeckCreator      -->  Deck
+GoldDeckCreator           -->  Deck
+ResourceDeckCreator       -->  Deck
+StarterDeckCreator        -->  Deck
+
 Deck                      --d>  Card
-Decks                    "1" *--l> "\n1" Deck
-VisibleCardsList         "1" *--> "\n1" Deck
+Decks                    "1" <--l> "\n1" Deck
+VisibleCardsList         "1" <--> "\n1" Deck
 
 ItemsObjectiveStrategy    --^  ObjectiveStrategy
 PatternObjectiveStrategy  --^  ObjectiveStrategy
-PatternObjectiveStrategy "1" *--> "\n*" Coords
-PatternObjectiveStrategy "1" *--> "\n*" Resources
+PatternObjectiveStrategy "1" <--> "\n*" Coords
+PatternObjectiveStrategy "1" <--> "\n*" Resources
 
-Corner                   "1" *--> "\n1" CornerTypes
+Corner                   "1" <--> "\n1" CornerTypes
 
-Player                   "1" *--> "\n1" ObjectiveCard
-Player                   "1" *--> "\n1" PlayerBoard
-Player                   "1" *--> "\n1" PlayerHand
-PlayerBoard              "1" *--> "\n*" Coords
-PlayerBoard              "1" *--> "\n*" PlayableCard
-PlayerHand               "1" *--> "\n*" PlayableCard
+Player                   "1" <--> "\n1" ObjectiveCard
+Player                   "1" <--> "\n1" PlayerBoard
+Player                   "1" <--> "\n1" PlayerHand
+
+PlayerBoard              "1" <--> "\n*" Coords
+PlayerBoard              "1" <--> "\n*" PlayableCard
+PlayerHand               "1" <--> "\n*" PlayableCard
 
 
 @enduml
