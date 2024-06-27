@@ -8,10 +8,50 @@
 }
 
 .buttons-pane {
-    -fx-border-width: 2;
-    -fx-border-color: #A49E23;
-    -fx-border-radius: 20;
+    -fx-background-color: #ede4bc;
+    -fx-background-repeat: repeat;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-width: 8;
+    -fx-border-color: #c5a641;
+    -fx-background-insets: 30;
+    -fx-border-insets: 28;
+    -fx-alignment: center;
+    -fx-effect: dropShadow(one-pass-box, rgba(0,0,0,0.3), 7.0, 0.0, 0.0, 7.0);
+}
 
-    -fx-background-color: #DCD6A0;
-    -fx-background-radius: 20;
+.button-central {
+    -fx-background-color: #F7F5E1;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-width: 4;
+    -fx-background-insets: 2;
+    -fx-border-color: #c5a641;
+    -fx-font-family: 'Fraktur No2';
+    -fx-font-size: 20px;
+    -fx-alignment: center center;
+    -fx-effect: dropShadow(one-pass-box, rgba(0,0,0,0.3), 5.0, 0.0, 0.0, 5.0);
+}
+
+.button-back {
+    -fx-background-color: #ede4bc;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-width: 4 4 4 4;
+    -fx-border-color: #c5a641;
+    -fx-alignment: center;
+    -fx-background-insets: 2;
+    -fx-effect: dropShadow(one-pass-box, rgba(0,0,0,0.3), 5.0, 0.0, 0.0, 5.0);
+}
+
+.button:hover {
+    -fx-background-color: #e4dcb6;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.button-central:hover {
+    -fx-background-color: #dedcca;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }

@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,7 +21,7 @@ public class MenuController extends Controller {
     public GUI gui;
 
     @FXML private StackPane mainStackPane;
-
+    @FXML private VBox buttonsPane;
     @FXML private Button createLobbyButton;
     @FXML private Button joinLobbyButton;
     @FXML private Button backButton;
@@ -31,7 +32,6 @@ public class MenuController extends Controller {
 
     public void initialize() {
         this.gui = new GUI();
-        this.connectionHandler = null;
 
         createLobbyButton.setOnAction(this::createLobby);
         joinLobbyButton.setOnAction(this::joinLobby);
@@ -122,6 +122,10 @@ public class MenuController extends Controller {
 
     public void applyCss() {
         mainStackPane.getStyleClass().add("main-pane");
+        backButton.getStyleClass().add("button-back");
+        joinLobbyButton.getStyleClass().add("button-central");
+        createLobbyButton.getStyleClass().add("button-central");
+        buttonsPane.getStyleClass().add("buttons-pane");
     }
 
     /**
