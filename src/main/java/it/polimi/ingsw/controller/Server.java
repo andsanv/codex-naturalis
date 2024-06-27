@@ -103,8 +103,6 @@ public enum Server {
                 checkConnections();
                 checkKeepAlive();
 
-                lastKeepAliveMap.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " " + e.getValue()));
-
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

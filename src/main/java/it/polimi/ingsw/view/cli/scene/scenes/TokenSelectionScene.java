@@ -36,12 +36,15 @@ public class TokenSelectionScene extends Scene {
     @Override
     public void onEntry() {
         CLIPrinter.clear();
-        CLIPrinter.displaySceneTitle("Match Started - Token Selection", YELLOW);
+        CLIPrinter.displaySceneTitle("Match Started", YELLOW);
 
-        System.out.println("Welcome to the match! You are playing with:");
-        System.out.println(ansi().fg(YELLOW));
-        sceneManager.cli.usersInGame.get().stream().forEach(System.out::println);
-        System.out.println(ansi().reset());
+        System.out.println("Welcome to the match! The players in the game are:");
+        sceneManager.cli.usersInGame.get().stream().forEach(p -> {
+            if (!p.equals(sceneManager.cli.getUserInfo()))
+                System.out.println(p);
+            else
+                System.out.println(p + " (YOU)");
+        });
 
         System.out.println("You have to pick a token to play:");
     }

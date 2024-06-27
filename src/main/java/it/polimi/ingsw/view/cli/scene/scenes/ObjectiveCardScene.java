@@ -59,7 +59,6 @@ public class ObjectiveCardScene extends Scene {
                             CLICardUtils.cardToMatrix(cli.secretObjectives.get().second, CardSide.FRONT), 0, 12);
                     CLIPrinter.printAnsiGrid(starterCardAsAnsi);
                     System.out.println("   First      Second   ");
-
                 }),
                 new CLICommand("first", "to select the first objective card", () -> {
                     if (args.length != 1)
@@ -85,9 +84,6 @@ public class ObjectiveCardScene extends Scene {
                     } catch (InterruptedException e) {
                         sceneManager.stop();
                     }
-
-                    // if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
-                    //     sceneManager.transition(EndingGameInitScene.class);
                 }),
                 new CLICommand("second", "to select the second objective card", () -> {
                     if (args.length != 1)
@@ -115,9 +111,6 @@ public class ObjectiveCardScene extends Scene {
                     } catch (InterruptedException e) {
                         sceneManager.stop();
                     }
-
-                    // if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
-                    //     sceneManager.transition(EndingGameInitScene.class);
                 }));
     }
 

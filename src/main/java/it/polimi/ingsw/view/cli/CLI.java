@@ -665,15 +665,14 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
-        System.out.println("Pre");
+
         synchronized (slimGameModelLock) {
             this.slimGameModel = slimGameModel;
         }
-        System.out.println("Post");
         if (sceneManager.getCurrentScene() != GameScene.class) {
             sceneManager.transition(GameScene.class);
+            resetPrompt();
         }
-        System.out.println("Transitioned");
     }
 
     @Override
@@ -756,18 +755,22 @@ public class CLI implements UI {
     @Override
     public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
         synchronized (tokenToUserLock) {
-            System.out.println("It's " + tokenToUser.get(currentPlayer) + "'s turn " + "(" + currentPlayer + ")");
 
             if (currentPlayer.equals(token.get())) {
+                System.out.println("It's your turn " + "(" + currentPlayer + ")");
                 canPlayCard.set(true);
                 canDrawCard.set(false);
+            } else {
+                System.out.println("It's " + tokenToUser.get(currentPlayer) + "'s turn " + "(" + currentPlayer + ")");
             }
+            resetPrompt();
         }
     }
 
     @Override
     public void handleLastRoundEvent() {
         System.out.println("Last round starting!");
+        resetPrompt();
     }
 
     @Override
@@ -775,8 +778,10 @@ public class CLI implements UI {
         if (!sender.equals(getUserInfo()) || !receiver.equals(getUserInfo()))
             return;
 
-        if (receiver.equals(getUserInfo()))
+        if (receiver.equals(getUserInfo())) {
             System.out.println("Direct message from " + sender + ": " + message);
+            resetPrompt();
+        }
 
         synchronized (directMessagesLock) {
             directMessages.add(new Pair<UserInfo, String>(sender, message));
@@ -786,6 +791,8 @@ public class CLI implements UI {
     @Override
     public void handleGroupMessageEvent(UserInfo sender, String message) {
         System.out.println("Group message from " + sender + ": " + message);
+        resetPrompt();
+
         synchronized (groupMessagesLock) {
             groupMessages.add(new Pair<UserInfo, String>(sender, message));
         }
@@ -816,10 +823,8 @@ public class CLI implements UI {
         waitingGameEvent.set(false);
         tokenPhaseLatch.countDown();
 
-        if (sceneManager.getCurrentScene() != StarterCardScene.class) {
-            sceneManager.transition(StarterCardScene.class);
-            resetPrompt();
-        }
+        sceneManager.transition(StarterCardScene.class);
+        resetPrompt();
     }
 
     @Override
@@ -835,10 +840,12 @@ public class CLI implements UI {
         waitingGameEvent.set(false);
 
         sceneManager.transition(LastPlayerScene.class);
+        resetPrompt();
     }
 
     @Override
     public void handleLastConnectedPlayerWonEvent() {
         sceneManager.transition(LastPlayerWonScene.class);
+        resetPrompt();
     }
 }

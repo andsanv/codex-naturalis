@@ -95,7 +95,7 @@ public class GameScene extends Scene {
                                         .findAny()
                                         .map(p -> p.second)
                                         .orElseThrow()) {
-                                    CLIPrinter.displayError("You can't play this card on this card");
+                                    CLIPrinter.displayError("You can't play this side of the card here");
                                     return;
                                 }
                             }
@@ -131,6 +131,7 @@ public class GameScene extends Scene {
                                     : CLICardUtils.simpleCard(DEFAULT)),
                             0, 12);
                     CLIPrinter.printAnsiGrid(grid);
+                    System.out.println("     1           2           3     ");
                 }),
                 new CLICommand("board", Arrays.asList("token"), "to show a player board", () -> {
                     if (args.length != 2) {
@@ -405,5 +406,8 @@ public class GameScene extends Scene {
     public void onEntry() {
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Playing", YELLOW);
+
+        CLI cli = sceneManager.cli;
+        System.out.println("You (" + cli.getUserInfo() + ") are playing as " + cli.token.get());
     }
 }
