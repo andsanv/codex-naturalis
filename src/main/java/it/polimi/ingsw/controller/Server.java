@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -72,7 +73,13 @@ public enum Server {
      */
     public static void main(String[] args) {
         AnsiConsole.systemInstall();
-        // System.setProperty("java.rmi.server.hostname", "192.168.20.88");
+
+        if(!Config.setUp(args)) {
+            System.out.println("Invalid arguments");
+            return;
+        }
+
+        System.setProperty("java.rmi.server.hostname", Config.ServerIP);
 
         try {
             new SocketServer(Config.MainSocketPort);

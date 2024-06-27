@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.application.Platform;
@@ -144,7 +145,7 @@ public class Controller implements UI {
     }
 
     @Override
-    public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults) {
+    public void handleGameResultsEvent(List<Trio<PlayerToken, Integer, Integer>> gameResults) {
         return;
     }
 
