@@ -114,8 +114,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 							Event event = (Event) object;
 
-							System.out.println(event.getClass().getSimpleName());
-
 							if (event instanceof KeepAliveEvent) {
 								this.lastKeepAliveTime = System.currentTimeMillis();
 								executorService.submit(() -> {
