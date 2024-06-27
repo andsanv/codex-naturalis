@@ -276,6 +276,11 @@ public class CLI implements UI {
     public final AtomicBoolean canDrawCard = new AtomicBoolean(false);
 
     /**
+     * AtomicBoolean for checking if the match initialization phase has ended
+     */
+    public final AtomicBoolean midGameStarted = new AtomicBoolean(false);
+
+    /**
      * The final scores of each player
      */
     public final AtomicReference<List<Trio<PlayerToken, Integer, Integer>>> gameResults = new AtomicReference<>(null);
@@ -658,9 +663,9 @@ public class CLI implements UI {
             this.slimGameModel = slimGameModel;
         }
 
+        midGameStarted.set(true);
+
         waitingGameEvent.set(false);
-        sceneManager.transition(GameScene.class);
-        resetPrompt();
     }
 
     @Override
@@ -742,6 +747,12 @@ public class CLI implements UI {
 
     @Override
     public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
+        if (midGameStarted.get()) {
+            midGameStarted.set(false);
+            sceneManager.transition(GameScene.class);
+            resetPrompt();
+        }
+
         synchronized (tokenToUserLock) {
             if (currentPlayer.equals(token.get())) {
                 System.out.println("It's your turn " + "(" + currentPlayer + ")");

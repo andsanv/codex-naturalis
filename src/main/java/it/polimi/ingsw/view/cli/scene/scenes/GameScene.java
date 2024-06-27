@@ -109,6 +109,7 @@ public class GameScene extends Scene {
                                             cli.availablePositionsPlaceholders.get(placeholderPosition), cardId,
                                             cardSide));
 
+                            cli.canPlayCard.set(false);
                             cli.canDrawCard.set(true);
                         }),
                 new CLICommand("hand", "to show your hand", () -> {
@@ -218,7 +219,7 @@ public class GameScene extends Scene {
                         });
                     }
                 }),
-                new CLICommand("drawable", "to show the decks and the drawable cards", () -> {
+                new CLICommand("drawable", "to show the drawable cards (decks and visible cards)", () -> {
                     if (args.length != 1) {
                         CLIPrinter.displayError("Too many arguments");
                         return;
@@ -226,11 +227,10 @@ public class GameScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 21);
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(16, 23);
 
                     synchronized (cli.slimGameModelLock) {
                         SlimGameModel slim = cli.slimGameModel;
-
                         CLICardUtils.addCardToMatrix(grid,
                                 !slim.resourceDeck.isEmpty()
                                         ? CLICardUtils.cardToMatrix(slim.resourceDeck.getLast(), CardSide.BACK)
@@ -247,25 +247,25 @@ public class GameScene extends Scene {
                                 slim.visibleResourceCardsList.get(0) != null ? CLICardUtils
                                         .cardToMatrix(slim.visibleResourceCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                6,
+                                7,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleResourceCardsList.get(1) != null ? CLICardUtils
                                         .cardToMatrix(slim.visibleResourceCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                6,
+                                7,
                                 12);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(0) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                12,
+                                13,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(1) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                12,
+                                13,
                                 12);
                     }
                     CLIPrinter.printAnsiGrid(grid);
