@@ -186,13 +186,10 @@ public class GameScene extends Scene {
                     }
                     CLIPrinter.printAnsiGrid(grid);
                     System.out.println("\nSecret objective:");
-                    grid = CLICardUtils.emptyAnsiMatrix(5, 11);
                     synchronized (cli.slimGameModelLock) {
-                        CLICardUtils.addCardToMatrix(grid,
+                        CLIPrinter.printAnsiGrid(
                                 CLICardUtils.cardToMatrix(cli.slimGameModel.tokenToSecretObjective.get(cli.token.get()),
-                                        CardSide.FRONT),
-                                0,
-                                0);
+                                        CardSide.FRONT));
                     }
                 }),
                 new CLICommand("scores", "to show the points of each player", () -> {

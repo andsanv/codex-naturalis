@@ -282,7 +282,7 @@ public class CLI implements UI {
     /**
      * The final scores of each player
      */
-    public final AtomicReference<List<Pair<PlayerToken, Integer>>> gameResults = new AtomicReference<>(null);
+    public final AtomicReference<List<Trio<PlayerToken, Integer, Integer>>> gameResults = new AtomicReference<>(null);
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -634,7 +634,7 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults) {
+    public void handleGameResultsEvent(List<Trio<PlayerToken, Integer, Integer>> gameResults) {
         this.gameResults.set(gameResults);
 
         sceneManager.transition(ResultsScene.class);

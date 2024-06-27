@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
@@ -31,7 +32,7 @@ public class ResultsScene extends Scene {
         System.out.println("Enter x to go back to the main menu");
         System.out.println("\nThis is the final ranking:");
         int i = 1;
-        for (Pair<PlayerToken, Integer> result : sceneManager.cli.gameResults.get()) {
+        for (Trio<PlayerToken, Integer, Integer> result : sceneManager.cli.gameResults.get()) {
             System.out.println(i + ": " + sceneManager.cli.getTokenToPlayerMap().get(result.first) + " as "
                     + result.first + " (" + result.second + " points)");
             i++;

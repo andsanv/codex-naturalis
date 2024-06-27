@@ -10,6 +10,7 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 
 /**
  * This interface represents the game event handler, which is used to handle the
@@ -172,7 +173,7 @@ public interface GameEventHandler {
          * This method handles the update of a player's elements
          * 
          * @param playerToken the token of the player
-         * @param elements the new elements
+         * @param elements    the new elements
          */
         public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> elements);
 
@@ -188,7 +189,7 @@ public interface GameEventHandler {
          * 
          * @param gameResults this list constains the information about the game
          */
-        public void handleGameResultsEvent(List<Pair<PlayerToken, Integer>> gameResults);
+        public void handleGameResultsEvent(List<Trio<PlayerToken, Integer, Integer>> gameResults);
 
         /**
          * This method handles the received event about the possible coordinates where a
