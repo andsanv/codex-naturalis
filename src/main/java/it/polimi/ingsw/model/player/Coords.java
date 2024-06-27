@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.card.StarterCard;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Objects;
  * @see PlayerBoard
  * @see StarterCard
  */
-public final class Coords {
+public final class Coords implements Serializable {
   /**
    * Coordinate on the x-axis
    */
