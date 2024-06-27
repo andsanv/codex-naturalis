@@ -748,6 +748,8 @@ public class CLI implements UI {
                 canDrawCard.set(false);
             } else {
                 System.out.println("It's " + tokenToUser.get(currentPlayer) + "'s turn " + "(" + currentPlayer + ")");
+                canPlayCard.set(false);
+                canDrawCard.set(false);
             }
         }
         resetPrompt();

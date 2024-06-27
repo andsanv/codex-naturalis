@@ -1,31 +1,5 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.observer.Observer;
-import it.polimi.ingsw.controller.states.DrawCardState;
-import it.polimi.ingsw.controller.states.GameState;
-import it.polimi.ingsw.controller.states.InitializationState;
-import it.polimi.ingsw.controller.states.ObjectiveCardSelectionState;
-import it.polimi.ingsw.controller.states.PlayCardState;
-import it.polimi.ingsw.controller.states.PostGameState;
-import it.polimi.ingsw.controller.states.StarterCardSelectionState;
-import it.polimi.ingsw.controller.states.TokenSelectionState;
-import it.polimi.ingsw.controller.usermanagement.Lobby;
-import it.polimi.ingsw.controller.usermanagement.User;
-import it.polimi.ingsw.controller.usermanagement.UserInfo;
-import it.polimi.ingsw.distributed.commands.game.GameCommand;
-import it.polimi.ingsw.distributed.commands.game.MessageCommand;
-import it.polimi.ingsw.distributed.events.game.GameEvent;
-import it.polimi.ingsw.distributed.events.game.LastRoundEvent;
-import it.polimi.ingsw.distributed.events.game.MessageEvent;
-import it.polimi.ingsw.distributed.events.game.PlayerTurnEvent;
-import it.polimi.ingsw.model.card.CardSide;
-import it.polimi.ingsw.model.card.ObjectiveCard;
-import it.polimi.ingsw.model.card.StarterCard;
-import it.polimi.ingsw.model.deck.Decks;
-import it.polimi.ingsw.model.player.PlayerToken;
-import it.polimi.ingsw.util.Pair;
-import it.polimi.ingsw.view.cli.CLIPrinter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +14,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import it.polimi.ingsw.controller.observer.Observer;
+import it.polimi.ingsw.controller.states.DrawCardState;
+import it.polimi.ingsw.controller.states.GameState;
+import it.polimi.ingsw.controller.states.InitializationState;
+import it.polimi.ingsw.controller.states.ObjectiveCardSelectionState;
+import it.polimi.ingsw.controller.states.PlayCardState;
+import it.polimi.ingsw.controller.states.PostGameState;
+import it.polimi.ingsw.controller.states.StarterCardSelectionState;
+import it.polimi.ingsw.controller.states.TokenSelectionState;
+import it.polimi.ingsw.controller.usermanagement.Lobby;
+import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.commands.game.GameCommand;
+import it.polimi.ingsw.distributed.events.game.GameEvent;
+import it.polimi.ingsw.distributed.events.game.LastRoundEvent;
+import it.polimi.ingsw.distributed.events.game.MessageEvent;
+import it.polimi.ingsw.distributed.events.game.PlayerTurnEvent;
+import it.polimi.ingsw.model.card.CardSide;
+import it.polimi.ingsw.model.card.ObjectiveCard;
+import it.polimi.ingsw.model.card.StarterCard;
+import it.polimi.ingsw.model.deck.Decks;
+import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.util.Pair;
 
 /**
  * This class allows to manage a single game.

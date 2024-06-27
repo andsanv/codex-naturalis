@@ -3,7 +3,6 @@ package it.polimi.ingsw.view.cli.scene.scenes;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.fusesource.jansi.Ansi;
 

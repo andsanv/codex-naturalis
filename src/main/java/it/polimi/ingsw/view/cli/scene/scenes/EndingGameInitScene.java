@@ -10,6 +10,9 @@ import it.polimi.ingsw.view.cli.CLICardUtils;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Scene where the game is about to start with player turns (after setup phase)
+ */
 public class EndingGameInitScene extends GameScene {
 
     public EndingGameInitScene(SceneManager sceneManager) {

@@ -8,6 +8,9 @@ import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Scene where the player is the last one connected
+ */
 public class LastPlayerScene extends Scene {
 
     public LastPlayerScene(SceneManager sceneManager) {

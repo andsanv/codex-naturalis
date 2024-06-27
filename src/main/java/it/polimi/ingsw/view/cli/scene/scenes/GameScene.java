@@ -24,16 +24,19 @@ import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * The scene with the core game logic
+ */
 public class GameScene extends Scene {
 
     public GameScene(SceneManager sceneManager) {
         super(sceneManager);
 
         this.commands = Arrays.asList(
-                new CLICommand("play", Arrays.asList("card 1, 2 or 3 in hand", "placeholder", "f or b (side)"),
+                new CLICommand("play", Arrays.asList("card 1, 2 or 3 of hand", "placeholder number", "f or b (front or back)"),
                         "to play a card", () -> {
                             if (args.length != 4) {
-                                CLIPrinter.displayError("Too many arguments");
+                                CLIPrinter.displayError("Invalid arguments");
                                 return;
                             }
 
@@ -135,7 +138,7 @@ public class GameScene extends Scene {
                 }),
                 new CLICommand("board", Arrays.asList("token"), "to show a player board", () -> {
                     if (args.length != 2) {
-                        CLIPrinter.displayError("Too many arguments");
+                        CLIPrinter.displayError("Invalid arguments");
                         return;
                     }
 
@@ -222,7 +225,7 @@ public class GameScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 23);
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 21);
 
                     synchronized (cli.slimGameModelLock) {
                         SlimGameModel slim = cli.slimGameModel;
@@ -243,25 +246,25 @@ public class GameScene extends Scene {
                                 slim.visibleResourceCardsList.get(0) != null ? CLICardUtils
                                         .cardToMatrix(slim.visibleResourceCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                7,
+                                6,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleResourceCardsList.get(1) != null ? CLICardUtils
                                         .cardToMatrix(slim.visibleResourceCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                7,
+                                6,
                                 12);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(0) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                13,
+                                12,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(1) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                13,
+                                12,
                                 12);
                     }
                     CLIPrinter.printAnsiGrid(grid);
@@ -318,10 +321,10 @@ public class GameScene extends Scene {
 
                     cli.getConnectionHandler().sendToGameServer(new DrawGoldDeckCardCommand(cli.token.get()));
                 }),
-                new CLICommand("visibleres", Arrays.asList("position (0 or 1)"),
+                new CLICommand("visres", Arrays.asList("position (0 or 1)"),
                         "to draw a resource card from the visible cards", () -> {
                             if (args.length != 2) {
-                                CLIPrinter.displayError("Too many arguments");
+                                CLIPrinter.displayError("Invalid arguments");
                                 return;
                             }
 
@@ -360,11 +363,11 @@ public class GameScene extends Scene {
                             cli.getConnectionHandler()
                                     .sendToGameServer(new DrawVisibleResourceCardCommand(cli.token.get(), position));
                         }),
-                new CLICommand("visiblegold", Arrays.asList("position (0 or 1)"),
+                new CLICommand("visgold", Arrays.asList("position (0 or 1)"),
                         "to draw a gold card from the visible cards",
                         () -> {
                             if (args.length != 2) {
-                                CLIPrinter.displayError("Too many arguments");
+                                CLIPrinter.displayError("Invalid arguments");
                                 return;
                             }
 

@@ -9,6 +9,9 @@ import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Scene where the player was the last one connected and won after the timer ended
+ */
 public class LastPlayerWonScene extends Scene {
 
     public LastPlayerWonScene(SceneManager sceneManager) {

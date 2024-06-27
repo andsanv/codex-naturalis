@@ -5,13 +5,15 @@ import static org.fusesource.jansi.Ansi.Color.BLUE;
 import java.util.Arrays;
 
 import it.polimi.ingsw.model.player.PlayerToken;
-import it.polimi.ingsw.util.Pair;
 import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.cli.CLICommand;
 import it.polimi.ingsw.view.cli.CLIPrinter;
 import it.polimi.ingsw.view.cli.scene.Scene;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
 
+/**
+ * Scene with game results (final scoreboard)
+ */
 public class ResultsScene extends Scene {
 
     public ResultsScene(SceneManager sceneManager) {
