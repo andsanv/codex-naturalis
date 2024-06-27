@@ -30,6 +30,7 @@ public class ConfigController extends Controller {
     public void initialize(GUI gui) {
         // setup gui
         this.gui = gui;
+        this.executorService = gui.executorService;
 
         // initialize toggle group for radio buttons
         ToggleGroup toggleGroup = new ToggleGroup();
@@ -55,6 +56,8 @@ public class ConfigController extends Controller {
     public boolean connect(String nickname, Integer id, boolean isRmi) throws Exception {
         if (nickname.length() < 3) return false;
 
+        System.out.println(nickname);
+
         ConnectionHandler connectionHandler;
 
         if (isRmi) connectionHandler = new RMIConnectionHandler(gui.mainController);
@@ -62,8 +65,15 @@ public class ConfigController extends Controller {
 
         gui.connectionHandler = connectionHandler;
 
-        if (id == -1) connectionHandler.connect(new ConnectionCommand(nickname));
-        else connectionHandler.reconnect();
+        System.out.println("nickname: " + nickname + ", id: " + id);
+
+        executorService.submit(() -> {
+            if (id == -1) connectionHandler.connect(new ConnectionCommand(nickname));
+            else {
+                gui.selfUserInfo.set(new UserInfo(nickname, id));
+                connectionHandler.reconnect();
+            }
+        });
 
         return true;
     }
@@ -80,7 +90,7 @@ public class ConfigController extends Controller {
      */
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
-        gui.selfUserInfo = userInfo;
+        gui.selfUserInfo.set(userInfo);
 
         gui.changeToMenuScene();
     }

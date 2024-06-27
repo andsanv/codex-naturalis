@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
-public abstract class Controller implements UI {
+public class Controller implements UI {
     public GUI gui;
+    public ExecutorService executorService;
 
     public Controller() {
         this.gui = null;
@@ -132,11 +134,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId) {
-        return;
-    }
-
-    @Override
     public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
         return;
     }
@@ -184,8 +181,6 @@ public abstract class Controller implements UI {
 
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
-        System.out.println("received in upper class");
-        return;
     }
 
     @Override

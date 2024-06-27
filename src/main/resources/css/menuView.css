@@ -1,0 +1,17 @@
+@font-face {
+    src: url('../fonts/FrakturNo2.ttf');
+}
+
+.main-pane {
+    -fx-background-image: url("/images/miscellaneous/background-16-10.png");
+    -fx-background-size: cover;
+}
+
+.buttons-pane {
+    -fx-border-width: 2;
+    -fx-border-color: #A49E23;
+    -fx-border-radius: 20;
+
+    -fx-background-color: #DCD6A0;
+    -fx-background-radius: 20;
+}

@@ -3,42 +3,48 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../../css/mainMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MenuController">
+<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MenuController">
    <children>
-      <GridPane layoutX="-19.0" layoutY="-8.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <StackPane fx:id="mainStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox fx:id="menuPane" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <StackPane fx:id="buttonsStackPane" prefHeight="150.0" prefWidth="200.0">
+               <StackPane.margin>
+                  <Insets bottom="300.0" left="500.0" right="500.0" top="300.0" />
+               </StackPane.margin>
                <children>
-                  <Text fx:id="helloText" stroke="WHITE" strokeType="OUTSIDE" text="Benvenuto ">
-                     <font>
-                        <Font size="15.0" />
-                     </font></Text>
-                  <Button fx:id="createGame" mnemonicParsing="false" onMouseClicked="#handleCreateGameButtonClick" text="Create Game" />
-                  <Button fx:id="joinGame" mnemonicParsing="false" onMouseClicked="#handleJoinGameButtonClick" text="Join Game" />
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="createLobbyButton" mnemonicParsing="false" text="Create Lobby">
+                                 <StackPane.margin>
+                                    <Insets top="50.0" />
+                                 </StackPane.margin>
+                              </Button>
+                           </children>
+                        </StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Button fx:id="joinLobbyButton" mnemonicParsing="false" text="Join Lobby">
+                                 <StackPane.margin>
+                                    <Insets bottom="50.0" />
+                                 </StackPane.margin>
+                              </Button>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
-            <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleBackButtonClick" text="Back" GridPane.rowIndex="2">
-               <GridPane.margin>
-                  <Insets bottom="20.0" left="20.0" />
-               </GridPane.margin></Button>
+            </StackPane>
+            <Button fx:id="backButton" mnemonicParsing="false" text="Back" StackPane.alignment="TOP_LEFT">
+               <StackPane.margin>
+                  <Insets left="30.0" top="30.0" />
+               </StackPane.margin>
+            </Button>
          </children>
-      </GridPane>
+      </StackPane>
    </children>
 </AnchorPane>

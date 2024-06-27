@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.view.gui.GUI;
 import javafx.application.Platform;
 
 import java.util.List;
@@ -29,7 +30,8 @@ public class MainController extends Controller {
      */
     public Controller subController;
 
-    public MainController(ConfigController subController) {
+    public MainController(GUI gui, ConfigController subController) {
+        this.gui = gui;
         this.subController = subController;
     }
 
@@ -69,9 +71,8 @@ public class MainController extends Controller {
      */
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
-        System.out.println("received login event");
-        Platform.runLater(() ->  {});
-        System.out.println("tested outside");
+        System.out.println("HANDLE LOGIN CALLED ON CONTROLLER " + subController);
+        Platform.runLater(() -> subController.handleLoginEvent(userInfo, error));
     }
 
     /**
@@ -398,5 +399,10 @@ public class MainController extends Controller {
     @Override
     public void handleLastConnectedPlayerWonEvent() {
 
+    }
+
+    @Override
+    public UserInfo getUserInfo() {
+        return this.gui.getUserInfo();
     }
 }

@@ -1,17 +1,15 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
-import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.view.gui.GUI;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
+import javafx.scene.layout.StackPane;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Controller for the main menu view.
@@ -20,34 +18,53 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MenuController extends Controller {
     public GUI gui;
 
-    @FXML private Button createGameButton;
-    @FXML private Button joinGameButton;
+    @FXML private StackPane mainStackPane;
+
+    @FXML private Button createLobbyButton;
+    @FXML private Button joinLobbyButton;
     @FXML private Button backButton;
 
     private List<LobbyInfo> activeLobbies;
 
-    private final AtomicInteger lobbyId = new AtomicInteger(-1);
-
     private final AtomicBoolean creatingLobby = new AtomicBoolean(false);
-    private final AtomicBoolean inGame = new AtomicBoolean(false);
 
     public void initialize(GUI gui) {
         this.gui = gui;
 
-        createGameButton.setOnMouseClicked(this::handleCreateGame);
+        createLobbyButton.setOnAction(this::createLobby);
+        joinLobbyButton.setOnAction(this::joinLobby);
+        backButton.setOnAction(this::handleBackButtonAction);
+
+        applyCss();
     }
 
 
     /* EVENT HANDLING */
 
     /**
-     * Allows a user to create a game, in response to clicking the "createGame" button.
+     * Allows a user to create a lobby, in response to clicking the "createLobby" button.
      *
-     * @param mouseEvent the MouseEvent
+     * @param event the ActionEvent
      */
-    public void handleCreateGame(MouseEvent mouseEvent) {
+    public void createLobby(ActionEvent event) {
         creatingLobby.set(true);
-        gui.connectionHandler.sendToMainServer(new CreateLobbyCommand(gui.selfUserInfo));
+
+        executorService.submit(() -> {
+            gui.connectionHandler.sendToMainServer(new CreateLobbyCommand(gui.selfUserInfo.get()));
+        });
+    }
+
+    /**
+     * Allows a user to join a lobby, in response to clicking the "joinLobby" button.
+     *
+     * @param event the ActionEvent
+     */
+    public void joinLobby(ActionEvent event) {
+        gui.changeToLobbiesListScene(activeLobbies);
+    }
+
+    public void handleBackButtonAction(ActionEvent event) {
+        gui.changeToConfigScene();
     }
 
     /**
@@ -60,7 +77,7 @@ public class MenuController extends Controller {
         this.activeLobbies = lobbies;
 
         lobbies.stream()
-                .filter(lobby -> lobby.contains(gui.selfUserInfo))
+                .filter(lobby -> lobby.contains(gui.selfUserInfo.get()))
                 .findAny()
                 .ifPresent(
                         lobby -> {
@@ -89,8 +106,11 @@ public class MenuController extends Controller {
         showPopup(error);
     }
 
-
     /* HELPERS */
+
+    public void applyCss() {
+        mainStackPane.getStyleClass().add("main-pane");
+    }
 
     /**
      * Allows to show a message received by the server.
