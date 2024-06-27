@@ -30,6 +30,7 @@ public class LobbyController extends Controller {
     @FXML private StackPane listStackPane;
     @FXML private Rectangle darkOverlayRectangle;
     @FXML private Text lobbyText;
+    @FXML private StackPane textPane;
     @FXML private Button startButton;
     @FXML private Button backButton;
 
@@ -74,6 +75,7 @@ public class LobbyController extends Controller {
         firstPlayerImageView.setImage(new Image("/images/icons/crown.png"));
         secondPlayerImageView.setImage(new Image("/images/icons/user.png"));
         thirdPlayerImageView.setImage(new Image("/images/icons/user.png"));
+        applyCss();
     }
 
     /**
@@ -187,5 +189,10 @@ public class LobbyController extends Controller {
         secondPlayerPane.getStyleClass().add("player-pane");
         thirdPlayerPane.getStyleClass().add("player-pane");
         fourthPlayerPane.getStyleClass().add("player-pane");
+
+        backButton.getStyleClass().add("button-back");
+        startButton.getStyleClass().add("button-start");
+
+        textPane.getStyleClass().add("text-pane");
     }
 }
