@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import it.polimi.ingsw.Config;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
@@ -30,6 +32,11 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	 * This is the socket instance used for the communication.
 	 */
 	private Socket socket;
+
+	/**
+	 * Executor service to dispatch UI handle calls
+	 */
+	ExecutorService executorService = Executors.newCachedThreadPool();
 
 	/**
 	 * These are the input and output streams used to communicate.
@@ -65,7 +72,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	 */
 	@Override
 	protected void checkConnection() {
-		new Thread(
+		executorService.submit(
 				() -> {
 					while (true) {
 						if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
@@ -85,7 +92,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 							break;
 						}
 					}
-				}).start();
+				});
 	}
 
 	/**
@@ -96,7 +103,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 	 * If a problem occurs, the method quits the loop.
 	 */
 	private void createListenerThread() {
-		new Thread(
+		executorService.submit(
 				() -> {
 					while (true) {
 						try {
@@ -112,10 +119,14 @@ public class SocketConnectionHandler extends ConnectionHandler {
 								this.sendToMainServer(new KeepAliveCommand(this.userInterface.getUserInfo()));
 							} else if (event instanceof GameEvent) {
 								GameEvent gameEvent = (GameEvent) event;
-								gameEvent.execute(userInterface);
+								executorService.submit(() -> {
+									gameEvent.execute(userInterface);
+								});
 							} else if (event instanceof MainEvent) {
 								MainEvent mainEvent = (MainEvent) event;
-								mainEvent.execute(userInterface);
+								executorService.submit(() -> {
+									mainEvent.execute(userInterface);
+								});
 							}
 						} catch (IOException e) {
 							this.isConnected.set(false);
@@ -129,8 +140,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 							break;
 						}
 					}
-				})
-				.start();
+				});
 	}
 
 	/**
@@ -271,11 +281,15 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 						if (event instanceof ReconnectToGameEvent) {
 							ReconnectToGameEvent reconnectToGameEvent = (ReconnectToGameEvent) event;
-							reconnectToGameEvent.execute(userInterface);
+							executorService.submit(() -> {
+								reconnectToGameEvent.execute(userInterface);
+							});
 							break;
 						} else if (event instanceof LobbiesEvent) {
 							LobbiesEvent lobbiesEvent = (LobbiesEvent) event;
-							lobbiesEvent.execute(userInterface);
+							executorService.submit(() -> {
+								lobbiesEvent.execute(userInterface);
+							});
 							break;
 						} else {
 							events.add(event);
