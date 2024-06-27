@@ -70,7 +70,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
       mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
 
       this.clientMainView = new RMIMainView(userInterface, this);
-      this.clientGameView = new RMIGameView(userInterface, this);
+      this.clientGameView = new RMIGameView(userInterface);
 
       new Thread(new CommandConsumer<>(serverCommandQueue, this)).start();
       new Thread(new CommandConsumer<>(gameCommandQueue, this)).start();
@@ -242,18 +242,18 @@ public class RMIConnectionHandler extends ConnectionHandler {
           while (true) {
             if (ConnectionHandler.MILLISEC_TIME_OUT < System.currentTimeMillis() - this.lastKeepAliveTime) {
               this.isConnected.set(false);
-							this.userInterface.handleDisconnection();
+              this.userInterface.handleDisconnection();
               break;
             }
 
             try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
               this.isConnected.set(false);
-							this.userInterface.handleDisconnection();
+              this.userInterface.handleDisconnection();
               break;
-						}
+            }
           }
         }).start();
   }

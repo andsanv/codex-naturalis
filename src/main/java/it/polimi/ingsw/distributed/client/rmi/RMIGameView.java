@@ -22,16 +22,10 @@ public class RMIGameView extends UnicastRemoteObject implements GameViewActions 
   private final GameEventHandler gameEventHandler;
 
   /**
-   * This conncetion handler will be used to handle the communication with the
-   * server.
+   * This executor service is used to execute asynchronously the events received
+   * from the server.
    */
-  private final RMIConnectionHandler connectionHandler;
-
-
-  /**
-   * This executor service is used to execute asynchronously the events received from the server.
-   */
-   private final ExecutorService executorService = Executors.newCachedThreadPool();
+  private final ExecutorService executorService = Executors.newCachedThreadPool();
 
   /**
    * This constructor creates a new RMIGameView.
@@ -39,9 +33,9 @@ public class RMIGameView extends UnicastRemoteObject implements GameViewActions 
    * @param gameEventHandler the event handler for the game events.
    * @throws RemoteException thrown when a communication error occurs.
    */
-  public RMIGameView(GameEventHandler gameEventHandler, RMIConnectionHandler rmiConnectionHandler) throws RemoteException {
+  public RMIGameView(GameEventHandler gameEventHandler)
+      throws RemoteException {
     this.gameEventHandler = gameEventHandler;
-    this.connectionHandler = rmiConnectionHandler;
   }
 
   /**

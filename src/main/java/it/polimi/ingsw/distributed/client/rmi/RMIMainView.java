@@ -6,12 +6,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.client.RMIConnectionHandler;
 import it.polimi.ingsw.distributed.commands.main.KeepAliveCommand;
-import it.polimi.ingsw.distributed.events.game.GameEvent;
 import it.polimi.ingsw.distributed.events.main.KeepAliveEvent;
-import it.polimi.ingsw.distributed.events.main.LoginEvent;
 import it.polimi.ingsw.distributed.events.main.MainEvent;
 import it.polimi.ingsw.distributed.interfaces.GameServerActions;
 import it.polimi.ingsw.distributed.interfaces.MainViewActions;
