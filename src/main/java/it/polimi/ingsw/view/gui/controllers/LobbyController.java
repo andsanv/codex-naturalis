@@ -61,7 +61,7 @@ public class LobbyController extends Controller {
     public void initialize() {
         this.gui = new GUI();
         User self = new User("Andrea");
-        gui.selfUserInfo = new UserInfo(self);
+        gui.selfUserInfo.set(new UserInfo(self));
 
         Lobby tempLobby = new Lobby(self);
         lobby = new LobbyInfo(tempLobby);
@@ -106,7 +106,7 @@ public class LobbyController extends Controller {
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
         Optional<LobbyInfo> lobby = lobbies.stream()
-                .filter(l -> l.contains(gui.selfUserInfo))
+                .filter(l -> l.contains(gui.selfUserInfo.get()))
                 .findFirst();
 
         if (lobby.isPresent()) {
@@ -116,7 +116,7 @@ public class LobbyController extends Controller {
 
          lobby = lobbies.stream()
                 .filter(l -> l.id == this.lobby.id)
-                .filter(l -> !l.users.contains(gui.selfUserInfo))
+                .filter(l -> !l.users.contains(gui.selfUserInfo.get()))
                 .findFirst();
 
          if (lobby.isPresent()) {
@@ -139,7 +139,7 @@ public class LobbyController extends Controller {
      * @param actionEvent the ActionEvent event
      */
     public void startGame(ActionEvent actionEvent) {
-        gui.connectionHandler.sendToMainServer(new StartGameCommand(gui.selfUserInfo, lobby.id));
+        gui.connectionHandler.sendToMainServer(new StartGameCommand(gui.selfUserInfo.get(), lobby.id));
     }
 
     /**
@@ -148,7 +148,7 @@ public class LobbyController extends Controller {
      * @param event the ActionEvent event
      */
     public void handleBackButton(ActionEvent event) {
-        gui.connectionHandler.sendToMainServer(new LeaveLobbyCommand(gui.selfUserInfo, lobby.id));
+        gui.connectionHandler.sendToMainServer(new LeaveLobbyCommand(gui.selfUserInfo.get(), lobby.id));
     }
 
     /**

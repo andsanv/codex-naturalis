@@ -332,11 +332,6 @@ public class MainController extends Controller {
         Platform.runLater(() -> subController.handleEndedTokenPhaseEvent(userInfoToToken, timeLimitReached));
     }
 
-    // TODO: change name to the method. It is not clear what it does
-    public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId) {
-        Platform.runLater(() -> subController.handlePlayedCardEvent(playerToken, secretObjectiveCardId));
-    }
-
     // TODO: change method name
     public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
         Platform.runLater(() -> subController.handlePlayerElementsEvent(playerToken, resources));
