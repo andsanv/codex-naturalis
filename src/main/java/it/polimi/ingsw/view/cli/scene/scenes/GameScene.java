@@ -11,6 +11,7 @@ import org.fusesource.jansi.Ansi;
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.PlayCardCommand;
 import it.polimi.ingsw.model.card.CardSide;
+import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.CLICardUtils;
 import it.polimi.ingsw.view.cli.CLICommand;
@@ -48,11 +49,11 @@ public class GameScene extends Scene {
                                 return;
                             }
 
-                            int cardId = cli.getPlayerHand().get(card-1);
+                            int cardId = cli.getPlayerHand().get(card - 1);
 
                             CardSide cardSide;
 
-                            if(args[2].equals("f")) {
+                            if (args[2].equals("f")) {
                                 cardSide = CardSide.FRONT;
                             } else if (args[2].equals("b")) {
                                 cardSide = CardSide.BACK;
@@ -61,7 +62,8 @@ public class GameScene extends Scene {
                                 return;
                             }
 
-                            connectionHandler.sendToGameServer(new PlayCardCommand(cli.token.get(), null, cardId, cardSide));
+                            connectionHandler
+                                    .sendToGameServer(new PlayCardCommand(cli.token.get(), null, cardId, cardSide));
                         }),
                 new CLICommand("hand", "to show your hand", () -> {
                     if (args.length != 1) {
@@ -88,15 +90,38 @@ public class GameScene extends Scene {
                             0, 12);
                     CLIPrinter.printAnsiGrid(grid);
                 }),
-                new CLICommand("board", Arrays.asList("token"), "to show your board", () -> {
-                    if (args.length != 3) {
+                new CLICommand("board", Arrays.asList("token"), "to show a board", () -> {
+                    if (args.length != 2) {
                         CLIPrinter.displayError("Too many arguments");
                         return;
                     }
 
                     CLI cli = sceneManager.cli;
-                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
+                    if (cli.getTokenToPlayerMap().keySet().stream().map(t -> t.toString())
+                            .noneMatch(t -> t.equalsIgnoreCase(args[1]))) {
+                        CLIPrinter.displayError("Invalid token");
+                        return;
+                    }
+
+                    PlayerToken token = PlayerToken.valueOf(args[1].toUpperCase());
+
+                    if (token.equals(cli.token.get())) {
+                        Ansi[][] grid;
+                        synchronized (cli.availablePositionsPlaceholders) {
+                            if (cli.availablePositionsPlaceholders.isEmpty()) {
+                                grid = CLICardUtils.createBoard(cli.getBoard(cli.token.get()));
+                            } else {
+                                grid = CLICardUtils.createBoardWithPlayability(cli.getBoard(cli.token.get()),
+                                        cli.availablePositionsPlaceholders);
+                            }
+                        }
+                        CLIPrinter.printAnsiGrid(grid);
+                    } else {
+                        Ansi[][] grid;
+                        grid = CLICardUtils.createBoard(cli.getBoard(token));
+                        CLIPrinter.printAnsiGrid(grid);
+                    }
                 }));
     }
 

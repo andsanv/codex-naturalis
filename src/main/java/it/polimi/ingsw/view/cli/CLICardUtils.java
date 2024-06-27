@@ -665,16 +665,6 @@ public class CLICardUtils {
     }
 
     /**
-     * Creates a player board with a placeholder on each possible card placement.
-     * 
-     * @param playerCards the cards of the player
-     * @return the player board as an Ansi matrix
-     */
-    public static Ansi[][] createBoardWithPlaceholders(Map<Integer, Trio<Integer, CardSide, Coords>> playerCards) {
-        return null;
-    }
-
-    /**
      * Adds the give card to an Ansi matrix.
      * 
      * @param matrix         the Ansi matrix

@@ -24,6 +24,7 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.UI;
 import it.polimi.ingsw.view.UserInfoManager;
 import it.polimi.ingsw.view.cli.scene.SceneManager;
@@ -461,6 +462,18 @@ public class CLI implements UI {
         }
     }
 
+    /**
+     * Returns a player board as list of cards and order of placement
+     * 
+     * @param token the player token
+     * @return the cards map
+     */
+    public Map<Integer, Trio<Integer, CardSide, Coords>> getBoard(PlayerToken token) {
+        synchronized (slimGameModelLock) {
+            return new HashMap<>(slimGameModel.tokenToPlayedCards.get(token));
+        }
+    }
+
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
         synchronized (userInfoLock) {
@@ -612,7 +625,17 @@ public class CLI implements UI {
     @Override
     public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
             Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
-        slimGameModel.applyCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability);
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability);
+        }
+
+        synchronized (availablePositionsPlaceholders) {
+            availablePositionsPlaceholders.clear();
+
+            for (int i = 0; i < availableSlots.size(); i++) {
+                availablePositionsPlaceholders.put(i + 1, availableSlots.get(i));
+            }
+        }
     }
 
     @Override
