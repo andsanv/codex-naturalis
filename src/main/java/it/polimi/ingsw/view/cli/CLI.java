@@ -665,13 +665,15 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+        System.out.println("Pre");
         synchronized (slimGameModelLock) {
             this.slimGameModel = slimGameModel;
         }
-
+        System.out.println("Post");
         if (sceneManager.getCurrentScene() != GameScene.class) {
             sceneManager.transition(GameScene.class);
         }
+        System.out.println("Transitioned");
     }
 
     @Override

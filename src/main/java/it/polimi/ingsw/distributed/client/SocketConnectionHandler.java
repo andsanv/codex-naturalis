@@ -114,9 +114,13 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 							Event event = (Event) object;
 
+							System.out.println(event.getClass().getSimpleName());
+
 							if (event instanceof KeepAliveEvent) {
 								this.lastKeepAliveTime = System.currentTimeMillis();
-								this.sendToMainServer(new KeepAliveCommand(this.userInterface.getUserInfo()));
+								executorService.submit(() -> {
+									this.sendToMainServer(new KeepAliveCommand(this.userInterface.getUserInfo()));
+								});
 							} else if (event instanceof GameEvent) {
 								GameEvent gameEvent = (GameEvent) event;
 								executorService.submit(() -> {
@@ -271,7 +275,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 			sendToMainServer(reconnectionCommand);
 
-			new Thread(() -> {
+			executorService.submit(() -> {
 				Queue<Event> events = new ConcurrentLinkedQueue<>();
 				while (true) {
 					try {
@@ -335,7 +339,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 					checkConnection();
 				}
 
-			}).start();
+			});
 
 		} catch (IOException e) {
 			this.isConnected.set(false);

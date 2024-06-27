@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.cli.scene.scenes;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.fusesource.jansi.Ansi;
 
@@ -43,7 +44,7 @@ public class ObjectiveCardScene extends Scene {
                     connectionHandler.sendToGameServer(new DrawObjectiveCardsCommand(cli.token.get()));
 
                     CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null);
+                            new AtomicBoolean(true), null);
 
                     if (cli.lastGameError.get() != null) {
                         CLIPrinter.displayError(cli.lastGameError.get());
@@ -73,11 +74,9 @@ public class ObjectiveCardScene extends Scene {
 
                     cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new SelectObjectiveCardCommand(cli.token.get(), 0));
-                    if (!CLIPrinter.displayLoadingMessage("Selecting objective",
+                    CLIPrinter.displayLoadingMessage("Selecting objective",
                             cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                    }
+                            new AtomicBoolean(true), null);
 
                     System.out.println("Waiting for all players to pick the secret objective card");
 
@@ -87,8 +86,8 @@ public class ObjectiveCardScene extends Scene {
                         sceneManager.stop();
                     }
 
-                    if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
-                        sceneManager.transition(EndingGameInitScene.class);
+                    // if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
+                    //     sceneManager.transition(EndingGameInitScene.class);
                 }),
                 new CLICommand("second", "to select the second objective card", () -> {
                     if (args.length != 1)
@@ -117,8 +116,8 @@ public class ObjectiveCardScene extends Scene {
                         sceneManager.stop();
                     }
 
-                    if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
-                        sceneManager.transition(EndingGameInitScene.class);
+                    // if (sceneManager.getCurrentScene() != EndingGameInitScene.class)
+                    //     sceneManager.transition(EndingGameInitScene.class);
                 }));
     }
 

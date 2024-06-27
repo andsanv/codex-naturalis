@@ -32,7 +32,7 @@ public abstract class ConnectionHandler {
    * This field represents the maximum span between two KeepAliveEvent, if the
    * time is exceeded the connection is considered lost.
    */
-  public static long MILLISEC_TIME_OUT = 2000L;
+  public static long MILLISEC_TIME_OUT = 5000L;
 
   public ConnectionHandler(UI userInterface) {
     this.userInterface = userInterface;

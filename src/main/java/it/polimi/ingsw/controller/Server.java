@@ -47,7 +47,7 @@ import it.polimi.ingsw.distributed.server.socket.SocketServer;
 public enum Server {
     INSTANCE;
 
-    public static final long MILLISEC_TIME_OUT = 2000;
+    public static final long MILLISEC_TIME_OUT = 5000L;
 
     /**
      * Links the UserInfo to their respective client.
@@ -103,8 +103,10 @@ public enum Server {
                 checkConnections();
                 checkKeepAlive();
 
+                lastKeepAliveMap.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " " + e.getValue()));
+
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     ServerPrinter.displayError("Check connection thread was interrupted.");
                 }
