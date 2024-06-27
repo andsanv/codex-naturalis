@@ -250,7 +250,7 @@ public class CLI implements UI {
     /**
      * SlimGameModel of the current match
      */
-    private SlimGameModel slimGameModel;
+    public SlimGameModel slimGameModel;
 
     /**
      * Object to correctly synchronize when accessing the SlimGameModel
@@ -267,6 +267,16 @@ public class CLI implements UI {
      * (playable slots on the board)
      */
     public final Map<Integer, Coords> availablePositionsPlaceholders = new HashMap<>();
+
+    /**
+     * AtomicBoolean that is true if the player can play a card
+     */
+    public final AtomicBoolean canPlayCard = new AtomicBoolean(false);
+
+    /**
+     * AtomicBoolean that is true if the player can draw a card
+     */
+    public final AtomicBoolean canDrawCard = new AtomicBoolean(false);
 
     /**
      * Cli private constructor, can only be called by the main static method in this
@@ -354,6 +364,9 @@ public class CLI implements UI {
         objectivePhaseLatch = new CountDownLatch(1);
 
         playerTurn.set(null);
+
+        canDrawCard.set(false);
+        canPlayCard.set(false);
     }
 
     /**
@@ -519,15 +532,17 @@ public class CLI implements UI {
 
     @Override
     public void handleScoreTrackEvent(PlayerToken senderToken, int score) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleScoreTrackEvent'");
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyUpdatedScoreTrackEvent(senderToken, score);
+        }
     }
 
     @Override
     public void handlePlayedCardEvent(PlayerToken playerToken, int playedCardId, CardSide playedCardSide,
             Coords playedCardCoordinates) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePlayedCardEvent'");
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyPlayedCardEvent(playerToken, playedCardId, playedCardSide, playedCardCoordinates);
+        }
     }
 
     @Override
@@ -600,15 +615,10 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePlayedCardEvent'");
-    }
-
-    @Override
-    public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePlayerElementsEvent'");
+    public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> elements) {
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyPlayerElementsEvent(playerToken, elements);
+        }
     }
 
     @Override
@@ -683,29 +693,36 @@ public class CLI implements UI {
     @Override
     public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
             Integer nextCardId, int handIndex) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnGoldDeckCardEvent'");
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
+        }
     }
 
     @Override
     public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
             Integer nextCardId, int handIndex) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnResourceDeckCardEvent'");
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
+        }
     }
 
     @Override
     public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
             Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnVisibleResourceCardEvent'");
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId,
+                    replacementCardId, deckEmptied, nextCardId, handIndex);
+        }
     }
 
     @Override
     public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
             Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDrawnVisibleGoldCardEvent'");
+        synchronized (slimGameModelLock) {
+            slimGameModel.applyDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId,
+                    deckEmptied, nextCardId, handIndex);
+        }
+
     }
 
     @Override

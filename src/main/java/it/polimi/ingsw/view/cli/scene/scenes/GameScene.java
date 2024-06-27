@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
+import static org.fusesource.jansi.Ansi.Color.WHITE;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import org.fusesource.jansi.Ansi;
 
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.PlayCardCommand;
+import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.cli.CLI;
@@ -25,7 +27,7 @@ public class GameScene extends Scene {
         super(sceneManager);
 
         this.commands = Arrays.asList(
-                new CLICommand("play", Arrays.asList("card 1, 2 or 3 in hand", "position", "f or b (side)"),
+                new CLICommand("play", Arrays.asList("card 1, 2 or 3 in hand", "placeholder", "f or b (side)"),
                         "to play a card", () -> {
                             if (args.length != 4) {
                                 CLIPrinter.displayError("Too many arguments");
@@ -44,16 +46,30 @@ public class GameScene extends Scene {
                                 return;
                             }
 
-                            if (card < 1 || card > 3) {
+                            if (card < 1 || card > 3 || cli.getPlayerHand().get(card - 1) == null) {
                                 CLIPrinter.displayError("Invalid card from hand");
                                 return;
                             }
 
                             int cardId = cli.getPlayerHand().get(card - 1);
 
+                            int placeholderPosition;
+
+                            try {
+                                placeholderPosition = Integer.parseInt(args[2]);
+                            } catch (NumberFormatException e) {
+                                CLIPrinter.displayError("Invalid position");
+                                return;
+                            }
+
+                            if (cli.availablePositionsPlaceholders.get(placeholderPosition) == null) {
+                                CLIPrinter.displayError("Invalid position");
+                                return;
+                            }
+
                             CardSide cardSide;
 
-                            if (args[2].equals("f")) {
+                            if (args[3].equals("f")) {
                                 cardSide = CardSide.FRONT;
                             } else if (args[2].equals("b")) {
                                 cardSide = CardSide.BACK;
@@ -62,8 +78,24 @@ public class GameScene extends Scene {
                                 return;
                             }
 
+                            synchronized (cli.slimGameModelLock) {
+                                if (!cli.slimGameModel.cardsPlayability
+                                        .get(cli.token.get())
+                                        .get(cardId)
+                                        .stream()
+                                        .filter(p -> p.first.equals(cardSide))
+                                        .findAny()
+                                        .map(p -> p.second)
+                                        .orElseThrow()) {
+                                    CLIPrinter.displayError("You can't play this card on this card");
+                                    return;
+                                }
+                            }
+
                             connectionHandler
-                                    .sendToGameServer(new PlayCardCommand(cli.token.get(), null, cardId, cardSide));
+                                    .sendToGameServer(new PlayCardCommand(cli.token.get(),
+                                            cli.availablePositionsPlaceholders.get(placeholderPosition), cardId,
+                                            cardSide));
                         }),
                 new CLICommand("hand", "to show your hand", () -> {
                     if (args.length != 1) {
@@ -90,7 +122,7 @@ public class GameScene extends Scene {
                             0, 12);
                     CLIPrinter.printAnsiGrid(grid);
                 }),
-                new CLICommand("board", Arrays.asList("token"), "to show a board", () -> {
+                new CLICommand("board", Arrays.asList("token"), "to show a player board", () -> {
                     if (args.length != 2) {
                         CLIPrinter.displayError("Too many arguments");
                         return;
@@ -122,7 +154,130 @@ public class GameScene extends Scene {
                         grid = CLICardUtils.createBoard(cli.getBoard(token));
                         CLIPrinter.printAnsiGrid(grid);
                     }
-                }));
+                }),
+                new CLICommand("objectives", "to show the common objective and you secret one", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+
+                    System.out.println("Common objectives:");
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(5, 23);
+                    synchronized (cli.slimGameModelLock) {
+                        CLICardUtils.addCardToMatrix(grid,
+                                CLICardUtils.cardToMatrix(cli.slimGameModel.commonObjectives.get(0), CardSide.FRONT), 0,
+                                0);
+                        CLICardUtils.addCardToMatrix(grid,
+                                CLICardUtils.cardToMatrix(cli.slimGameModel.commonObjectives.get(1), CardSide.FRONT), 0,
+                                12);
+                    }
+                    CLIPrinter.printAnsiGrid(grid);
+                    System.out.println("\nSecret objective:");
+                    grid = CLICardUtils.emptyAnsiMatrix(5, 11);
+                    synchronized (cli.slimGameModelLock) {
+                        CLICardUtils.addCardToMatrix(grid,
+                                CLICardUtils.cardToMatrix(cli.slimGameModel.tokenToSecretObjective.get(cli.token.get()),
+                                        CardSide.FRONT),
+                                0,
+                                0);
+                    }
+                }),
+                new CLICommand("scores", "to show the points of each player", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+
+                    System.out.println("The current scores are:");
+                    synchronized (cli.slimGameModelLock) {
+                        cli.slimGameModel.scores.entrySet().forEach(e -> {
+                            System.out.println(e.getKey() + ": " + e.getValue());
+                        });
+                    }
+                }),
+                new CLICommand("drawable", "to show the decks and the drawable cards", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 23);
+
+                    synchronized (cli.slimGameModelLock) {
+                        SlimGameModel slim = cli.slimGameModel;
+
+                        CLICardUtils.addCardToMatrix(grid,
+                                !slim.resourceDeck.isEmpty()
+                                        ? CLICardUtils.cardToMatrix(slim.resourceDeck.getLast(), CardSide.BACK)
+                                        : CLICardUtils.simpleCard(DEFAULT),
+                                0,
+                                0);
+                        CLICardUtils.addCardToMatrix(grid,
+                                !slim.goldDeck.isEmpty()
+                                        ? CLICardUtils.cardToMatrix(slim.goldDeck.getLast(), CardSide.BACK)
+                                        : CLICardUtils.simpleCard(DEFAULT),
+                                0,
+                                12);
+                        CLICardUtils.addCardToMatrix(grid,
+                                slim.visibleResourceCardsList.get(0) != null ? CLICardUtils
+                                        .cardToMatrix(slim.visibleResourceCardsList.get(0), CardSide.FRONT)
+                                        : CLICardUtils.simpleCard(DEFAULT),
+                                7,
+                                0);
+                        CLICardUtils.addCardToMatrix(grid,
+                                slim.visibleResourceCardsList.get(1) != null ? CLICardUtils
+                                        .cardToMatrix(slim.visibleResourceCardsList.get(1), CardSide.FRONT)
+                                        : CLICardUtils.simpleCard(DEFAULT),
+                                7,
+                                12);
+                        CLICardUtils.addCardToMatrix(grid,
+                                slim.visibleGoldCardsList.get(0) != null
+                                        ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(0), CardSide.FRONT)
+                                        : CLICardUtils.simpleCard(DEFAULT),
+                                13,
+                                0);
+                        CLICardUtils.addCardToMatrix(grid,
+                                slim.visibleGoldCardsList.get(1) != null
+                                        ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(1), CardSide.FRONT)
+                                        : CLICardUtils.simpleCard(DEFAULT),
+                                13,
+                                12);
+                    }
+                    CLIPrinter.printAnsiGrid(grid);
+                }),
+                new CLICommand("drawres", "to draw a resource card from the deck", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+                    SlimGameModel slim = cli.slimGameModel;
+
+                    synchronized (cli.slimGameModelLock) {
+                        if (slim.resourceDeck.isEmpty()) {
+                            CLIPrinter.displayError("The resource deck is empty");
+                            return;
+                        }
+                    }
+                }),
+                new CLICommand("drawgold", "to draw a gold card from the deck", () -> {
+
+                }),
+                new CLICommand("visiblegold", Arrays.asList("position"),
+                        "to draw a resource card from the visible cards", () -> {
+
+                        }),
+                new CLICommand("visiblegold", Arrays.asList("position"), "to draw a gold card from visible cards",
+                        () -> {
+
+                        }));
     }
 
     @Override
@@ -130,5 +285,4 @@ public class GameScene extends Scene {
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Playing", YELLOW);
     }
-
 }

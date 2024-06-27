@@ -168,11 +168,13 @@ public interface GameEventHandler {
          */
         public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached);
 
-        // TODO: change name to the method. It is not clear what it does
-        public void handlePlayedCardEvent(PlayerToken playerToken, int secretObjectiveCardId);
-
-        // TODO: change method name
-        public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources);
+        /**
+         * This method handles the update of a player's elements
+         * 
+         * @param playerToken the token of the player
+         * @param elements the new elements
+         */
+        public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> elements);
 
         /**
          * This method handles the received update about a generic game error

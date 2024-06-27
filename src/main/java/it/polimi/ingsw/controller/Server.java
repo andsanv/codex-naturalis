@@ -63,7 +63,7 @@ public enum Server {
     /**
      * ExecutorService for all Runnables created by the server.
      */
-    private final ExecutorService executorService = Executors.newCachedThreadPool();;
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
      * Server entrypoint, must be called to start the Codex Naturalis server.

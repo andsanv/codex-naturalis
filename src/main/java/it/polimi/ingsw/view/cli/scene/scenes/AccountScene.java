@@ -59,9 +59,10 @@ public class AccountScene extends Scene {
                     }
 
                     cli.setUserInfo(new UserInfo(username, id));
-                    connectionHandler.reconnect();
 
                     cli.waitinLogin.set(true);
+                    connectionHandler.reconnect();
+
                     if (CLIPrinter.displayLoadingMessage("Logging in", cli.waitinLogin,
                             connectionHandler.isConnected, cli.waitingLoginError))
                         sceneManager.transition(LobbiesScene.class);
