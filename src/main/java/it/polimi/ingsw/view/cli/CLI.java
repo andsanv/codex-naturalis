@@ -262,6 +262,12 @@ public class CLI implements UI {
     public final AtomicReference<PlayerToken> playerTurn = new AtomicReference<>(null);
 
     /**
+     * Mapping positions to coordinates during the game for placeholder cards
+     * (playable slots on the board)
+     */
+    public final Map<Integer, Coords> availablePositionsPlaceholders = new HashMap<>();
+
+    /**
      * Cli private constructor, can only be called by the main static method in this
      * class.
      * Inits helper threads and creates the needed scenes.
@@ -446,6 +452,7 @@ public class CLI implements UI {
 
     /**
      * Returns the player hand
+     * 
      * @return the player hand as list of ids
      */
     public List<Integer> getPlayerHand() {

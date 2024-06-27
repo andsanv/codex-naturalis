@@ -24,17 +24,45 @@ public class GameScene extends Scene {
         super(sceneManager);
 
         this.commands = Arrays.asList(
-                new CLICommand("play", Arrays.asList(""), "to play a card", () -> {
-                    if (args.length != 3) {
-                        CLIPrinter.displayError("Too many arguments");
-                        return;
-                    }
+                new CLICommand("play", Arrays.asList("card 1, 2 or 3 in hand", "position", "f or b (side)"),
+                        "to play a card", () -> {
+                            if (args.length != 4) {
+                                CLIPrinter.displayError("Too many arguments");
+                                return;
+                            }
 
-                    CLI cli = sceneManager.cli;
-                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+                            CLI cli = sceneManager.cli;
+                            ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
-                    connectionHandler.sendToGameServer(new PlayCardCommand(cli.token.get(), null, 0, null));
-                }),
+                            int card;
+
+                            try {
+                                card = Integer.parseInt(args[1]);
+                            } catch (NumberFormatException e) {
+                                CLIPrinter.displayError("Invalid card");
+                                return;
+                            }
+
+                            if (card < 1 || card > 3) {
+                                CLIPrinter.displayError("Invalid card from hand");
+                                return;
+                            }
+
+                            int cardId = cli.getPlayerHand().get(card-1);
+
+                            CardSide cardSide;
+
+                            if(args[2].equals("f")) {
+                                cardSide = CardSide.FRONT;
+                            } else if (args[2].equals("b")) {
+                                cardSide = CardSide.BACK;
+                            } else {
+                                CLIPrinter.displayError("Invalid card side");
+                                return;
+                            }
+
+                            connectionHandler.sendToGameServer(new PlayCardCommand(cli.token.get(), null, cardId, cardSide));
+                        }),
                 new CLICommand("hand", "to show your hand", () -> {
                     if (args.length != 1) {
                         CLIPrinter.displayError("Too many arguments");
@@ -69,7 +97,6 @@ public class GameScene extends Scene {
                     CLI cli = sceneManager.cli;
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
-                    connectionHandler.sendToGameServer(new PlayCardCommand(cli.token.get(), null, 0, null));
                 }));
     }
 

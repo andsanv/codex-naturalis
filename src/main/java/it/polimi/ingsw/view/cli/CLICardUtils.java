@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -576,6 +577,88 @@ public class CLICardUtils {
             addCardToMatrix(board, cardToMatrix(placement.first, placement.second), j_pos, i_pos);
 
             current++;
+        }
+
+        return board;
+    }
+
+    /**
+     * Returns a matrix of Ansi sequences that represents the board of a player with
+     * the cards possible placements highlighted.
+     * 
+     * @param playerCards      the cards of the player
+     * @param placeholderSlots slots where the player can place the card
+     * @return an Ansi sequence matrix of the board with the available slots
+     *         highlighted
+     */
+    public static Ansi[][] createBoardWithPlayability(Map<Integer, Trio<Integer, CardSide, Coords>> playerCards,
+            Map<Integer, Coords> placeholderSlots) {
+        if (playerCards.isEmpty())
+            return null;
+
+        // Find how big is the matrix to return
+        int x_max = Integer.MIN_VALUE;
+        int x_min = Integer.MAX_VALUE;
+        int y_max = Integer.MIN_VALUE;
+        int y_min = Integer.MAX_VALUE;
+
+        List<Coords> coords = playerCards.values().stream().map(trio -> trio.third).collect(Collectors.toList());
+        placeholderSlots.values().stream().forEach(c -> coords.add(c));
+
+        for (Coords c : coords) {
+            if (c.x > x_max)
+                x_max = c.x;
+            if (c.x < x_min)
+                x_min = c.x;
+            if (c.y > y_max)
+                y_max = c.y;
+            if (c.y < y_min)
+                y_min = c.y;
+        }
+
+        System.out.println(x_min + " " + x_max);
+        System.out.println(y_min + " " + y_max);
+
+        Ansi[][] board = emptyAnsiMatrix(5 + (y_max - y_min) * 3, 11 + (x_max - x_min) * 8);
+
+        int current = 0;
+
+        while (playerCards.containsKey(current)) {
+            Trio<Integer, CardSide, Coords> placement = playerCards.get(current);
+            Coords c = placement.third;
+
+            int j_pos = 0;
+            int i_pos = 0;
+
+            if (c.x != x_min) {
+                i_pos = 8 * (c.x - x_min);
+            }
+
+            if (c.y != y_max) {
+                j_pos = 3 * (y_max - c.y);
+            }
+
+            addCardToMatrix(board, cardToMatrix(placement.first, placement.second), j_pos, i_pos);
+
+            current++;
+        }
+
+        for (Entry<Integer, Coords> placeholder : placeholderSlots.entrySet()) {
+            Coords c = placeholder.getValue();
+            
+            int j_pos = 0;
+            int i_pos = 0;
+
+            if (c.x != x_min) {
+                i_pos = 8 * (c.x - x_min);
+            }
+
+            if (c.y != y_max) {
+                j_pos = 3 * (y_max - c.y);
+            }
+
+            addCardToMatrix(board, CLICardUtils.placeholderCard(current), j_pos, i_pos);
+
         }
 
         return board;
