@@ -7,7 +7,11 @@ import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.*;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +30,7 @@ public class ResourceDeckCreator {
   /**
    * Path to json file containing all ResourceCard cards
    */
-  private static final Path path = Paths.get("src/main/resources/json/resourceCards.json");
+  private static final Path path = Paths.get("/json/resourceCards.json");
 
   /**
    * Creates and returns a ResourceCard cards deck.
@@ -35,7 +39,22 @@ public class ResourceDeckCreator {
    */
   public static Deck<ResourceCard> createDeck(List<Observer> observers, AtomicInteger lastEventId) {
     try {
-      String content = new String(Files.readAllBytes(path));
+      InputStream inputStream = ResourceDeckCreator.class.getResourceAsStream(path.toString());
+
+      if (inputStream == null) {
+        System.out.println("Resource deck file not found!!");
+        System.exit(1);
+      }
+
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+      StringBuilder stringBuilder = new StringBuilder();
+      String line;
+
+      while ((line = bufferedReader.readLine()) != null) {
+        stringBuilder.append(line);
+      }
+
+      String content = stringBuilder.toString();
 
       JsonArray jsonArray = JsonParser.parseString(content).getAsJsonArray();
 
@@ -102,6 +121,9 @@ public class ResourceDeckCreator {
               new ResourceCard(id, resourceType, resourceCardPoints, frontCorners, backCorner));
         }
       }
+
+      inputStream.close();
+      bufferedReader.close();
 
       return new Deck<>(cards, observers, lastEventId);
     } catch (IOException exception) {

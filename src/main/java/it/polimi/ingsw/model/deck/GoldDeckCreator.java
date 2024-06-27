@@ -8,8 +8,13 @@ import it.polimi.ingsw.model.card.PointsType;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.corner.*;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,7 +32,7 @@ public class GoldDeckCreator {
   /**
    * Path to json file containing all GoldCard cards
    */
-  private static final Path path = Paths.get("src/main/resources/json/goldCards.json");
+  private static final Path path = Paths.get("/json/goldCards.json");
 
   /**
    * Creates and returns a GoldCard cards deck.
@@ -36,7 +41,22 @@ public class GoldDeckCreator {
    */
   public static Deck<GoldCard> createDeck(List<Observer> observers, AtomicInteger lastEventId) {
     try {
-      String content = new String(Files.readAllBytes(path));
+      InputStream inputStream = GoldDeckCreator.class.getResourceAsStream(path.toString());
+
+      if (inputStream == null) {
+        System.out.println("Gold deck file not found!!");
+        System.exit(1);
+      }
+
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+      StringBuilder stringBuilder = new StringBuilder();
+      String line;
+
+      while ((line = bufferedReader.readLine()) != null) {
+        stringBuilder.append(line);
+      }
+
+      String content = stringBuilder.toString();
 
       JsonArray jsonArray = JsonParser.parseString(content).getAsJsonArray();
 
@@ -115,6 +135,9 @@ public class GoldDeckCreator {
               new GoldCard(id, resourceType, goldCardPoint, requiredResources, frontCorners, backCorners));
         }
       }
+
+      inputStream.close();
+      bufferedReader.close();
 
       return new Deck<>(cards, observers, lastEventId);
     } catch (IOException exception) {

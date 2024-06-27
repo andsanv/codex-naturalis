@@ -9,7 +9,11 @@ import it.polimi.ingsw.model.common.Elements;
 import it.polimi.ingsw.model.common.Items;
 import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,7 +30,7 @@ public class ObjectiveDeckCreator {
   /**
    * Path to json file containing all ObjectiveCard cards
    */
-  private static final Path path = Paths.get("src/main/resources/json/objectiveCards.json");
+  private static final Path path = Paths.get("/json/objectiveCards.json");
 
   /**
    * Creates and returns an ObjectiveCard cards deck.
@@ -35,7 +39,22 @@ public class ObjectiveDeckCreator {
    */
   public static Deck<ObjectiveCard> createDeck(List<Observer> observers, AtomicInteger lastEventId) {
     try {
-      String content = new String(Files.readAllBytes(path));
+      InputStream inputStream = ObjectiveDeckCreator.class.getResourceAsStream(path.toString());
+
+      if (inputStream == null) {
+        System.out.println("Objective deck file not found!!");
+        System.exit(1);
+      }
+
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+      StringBuilder stringBuilder = new StringBuilder();
+      String line;
+
+      while ((line = bufferedReader.readLine()) != null) {
+        stringBuilder.append(line);
+      }
+
+      String content = stringBuilder.toString();
 
       JsonArray jsonArray = JsonParser.parseString(content).getAsJsonArray();
 
@@ -150,6 +169,9 @@ public class ObjectiveDeckCreator {
           else cards.add(new ObjectiveCard(id, points, new ItemsObjectiveStrategy(requiredItems)));
         }
       }
+
+      inputStream.close();
+      bufferedReader.close();
 
       return new Deck<>(cards, observers, lastEventId);
     } catch (IOException exception) {
