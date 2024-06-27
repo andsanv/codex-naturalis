@@ -170,7 +170,7 @@ public class GameFlowManager implements Runnable {
 
   /**
    * Constructor of the class without specifying the time limit. Default time
-   * limit set to 60 seconds.
+   * limit set to 120 seconds.
    * 
    * @param lobby       lobby from which the game was started
    * @param isConnected map from user to a connection boolean, used to skip turn
@@ -178,7 +178,7 @@ public class GameFlowManager implements Runnable {
    * @param observers   list of observers
    */
   public GameFlowManager(Lobby lobby, Map<UserInfo, Supplier<Boolean>> isConnected, List<Observer> observers) {
-    this(lobby, isConnected, observers, 60);
+    this(lobby, isConnected, observers, 120);
   }
 
   /**

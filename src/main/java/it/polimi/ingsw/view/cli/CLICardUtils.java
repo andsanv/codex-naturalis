@@ -551,9 +551,6 @@ public class CLICardUtils {
                 y_min = c.y;
         }
 
-        System.out.println(x_min + " " + x_max);
-        System.out.println(y_min + " " + y_max);
-
         Ansi[][] board = emptyAnsiMatrix(5 + (y_max - y_min) * 3, 11 + (x_max - x_min) * 8);
 
         int current = 0;
@@ -561,7 +558,6 @@ public class CLICardUtils {
         while (playerCards.containsKey(current)) {
             Trio<Integer, CardSide, Coords> placement = playerCards.get(current);
             Coords c = placement.third;
-            System.out.println(c);
 
             int j_pos = 0;
             int i_pos = 0;
@@ -616,9 +612,6 @@ public class CLICardUtils {
                 y_min = c.y;
         }
 
-        System.out.println(x_min + " " + x_max);
-        System.out.println(y_min + " " + y_max);
-
         Ansi[][] board = emptyAnsiMatrix(5 + (y_max - y_min) * 3, 11 + (x_max - x_min) * 8);
 
         int current = 0;
@@ -645,7 +638,7 @@ public class CLICardUtils {
 
         for (Entry<Integer, Coords> placeholder : placeholderSlots.entrySet()) {
             Coords c = placeholder.getValue();
-            
+
             int j_pos = 0;
             int i_pos = 0;
 

@@ -46,7 +46,7 @@ import it.polimi.ingsw.view.cli.scene.scenes.UserInfoLoginScene;
 
 public class CLI implements UI {
     public static void main(String[] args) {
-        if(!Config.setUp(args)) {
+        if (!Config.setUp(args)) {
             System.out.println("Invalid arguments");
             return;
         }
@@ -635,13 +635,14 @@ public class CLI implements UI {
             slimGameModel.applyCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability);
         }
 
-        synchronized (availablePositionsPlaceholders) {
-            availablePositionsPlaceholders.clear();
+        if (playerToken.equals(token.get()))
+            synchronized (availablePositionsPlaceholders) {
+                availablePositionsPlaceholders.clear();
 
-            for (int i = 0; i < availableSlots.size(); i++) {
-                availablePositionsPlaceholders.put(i + 1, availableSlots.get(i));
+                for (int i = 0; i < availableSlots.size(); i++) {
+                    availablePositionsPlaceholders.put(i + 1, availableSlots.get(i));
+                }
             }
-        }
     }
 
     @Override

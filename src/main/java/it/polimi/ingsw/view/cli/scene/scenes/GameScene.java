@@ -129,7 +129,7 @@ public class GameScene extends Scene {
                     CLICardUtils.addCardToMatrix(grid,
                             (playerHand.get(2) != null ? CLICardUtils.cardToMatrix(playerHand.get(2), CardSide.FRONT)
                                     : CLICardUtils.simpleCard(DEFAULT)),
-                            0, 12);
+                            0, 23);
                     CLIPrinter.printAnsiGrid(grid);
                     System.out.println("     1           2           3     ");
                 }),
