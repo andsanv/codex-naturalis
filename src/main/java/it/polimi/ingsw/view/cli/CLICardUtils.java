@@ -657,7 +657,7 @@ public class CLICardUtils {
                 j_pos = 3 * (y_max - c.y);
             }
 
-            addCardToMatrix(board, CLICardUtils.placeholderCard(current), j_pos, i_pos);
+            addCardToMatrix(board, CLICardUtils.placeholderCard(placeholder.getKey()), j_pos, i_pos);
 
         }
 
