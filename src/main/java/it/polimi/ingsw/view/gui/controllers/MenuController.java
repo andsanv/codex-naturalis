@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.event.ActionEvent;
@@ -27,6 +28,17 @@ public class MenuController extends Controller {
     private List<LobbyInfo> activeLobbies;
 
     private final AtomicBoolean creatingLobby = new AtomicBoolean(false);
+
+    public void initialize() {
+        this.gui = new GUI();
+        this.connectionHandler = null;
+
+        createLobbyButton.setOnAction(this::createLobby);
+        joinLobbyButton.setOnAction(this::joinLobby);
+        backButton.setOnAction(this::handleBackButtonAction);
+
+        applyCss();
+    }
 
     public void initialize(GUI gui) {
         this.gui = gui;
