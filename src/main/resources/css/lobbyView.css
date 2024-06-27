@@ -1,0 +1,33 @@
+@font-face {
+    src: url('../fonts/FrakturNo2.ttf');
+}
+
+.main-pane {
+    -fx-background-image: url("/images/miscellaneous/background-16-10.png");
+    -fx-background-size: cover;
+}
+
+.dark-overlay-rectangle {
+    -fx-fill: rgba(0, 0, 0, 0.75);
+}
+
+.popup-pane {
+    -fx-border-width: 2;
+    -fx-border-color: #A49E23;
+    -fx-border-radius: 20;
+
+    -fx-background-color: #DCD6A0;
+    -fx-background-radius: 20;
+}
+
+.player-pane {
+    -fx-background-color: #F7F5E1;
+    -fx-border-radius: 20;
+
+    -fx-background-radius: 20;
+}
+
+.lobby-text {
+    -fx-font-family: 'Fraktur No2';
+    -fx-font-size: 30;
+}

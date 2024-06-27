@@ -1,157 +1,109 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
-import it.polimi.ingsw.model.SlimGameModel;
-import it.polimi.ingsw.model.player.PlayerToken;
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
+import it.polimi.ingsw.distributed.client.RMIConnectionHandler;
+import it.polimi.ingsw.distributed.client.SocketConnectionHandler;
+import it.polimi.ingsw.distributed.commands.main.ConnectionCommand;
+import it.polimi.ingsw.distributed.commands.main.ReconnectionCommand;
 import it.polimi.ingsw.view.gui.GUI;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import javafx.scene.control.ToggleGroup;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+/**
+ * Handles the initial configuration phase of the client.
+ */
 public class ConfigController extends Controller {
-    public ConfigController(GUI gui) {
-        super();
+
+    @FXML private TextField nicknameTextField;
+    @FXML private TextField idTextField;
+
+    @FXML private Button submitButton;
+    @FXML private RadioButton rmiButton;
+    @FXML private RadioButton socketButton;
+
+    public void initialize(GUI gui) {
+        // setup gui
+        this.gui = gui;
+
+        // initialize toggle group for radio buttons
+        ToggleGroup toggleGroup = new ToggleGroup();
+        rmiButton.setToggleGroup(toggleGroup);
+        rmiButton.setSelected(true);
+        socketButton.setToggleGroup(toggleGroup);
+
+        // initialize submit button
+        submitButton.setOnAction(this::handleSubmitClick);
     }
 
-    @FXML
-    private VBox VboxCentral;
 
-    @FXML
-    private GridPane gridPane;
+    /**
+     * Allows to connect to server, creating a ConnectionHandler object.
+     *
+     * @param nickname nickname chosen by player
+     * @param id eventual id for reconnection (null if first connection)
+     * @param isRmi true if user chose rmi connection, false for socket
+     * @return boolean on whether the operation was successful or not
+     */
+    public boolean connect(String nickname, Integer id, boolean isRmi) throws Exception {
+        if (nickname.length() < 3) return false;
 
-    @FXML
-    private Text nicknameText;
+        ConnectionHandler connectionHandler;
 
-    @FXML
-    private TextField nicknameTextField;
+        if (isRmi) connectionHandler = new RMIConnectionHandler(gui.mainController);
+        else connectionHandler = new SocketConnectionHandler(gui.mainController);
 
-    @FXML
-    private Button submitNickname;
+        gui.connectionHandler = connectionHandler;
 
-    @FXML
-    private void handleSubmitClick(MouseEvent event) {
+        connectionHandler.sendToMainServer(id == -1 ? new ConnectionCommand(nickname) : new ReconnectionCommand(new UserInfo(nickname, id)));
+
+        return true;
+    }
+
+
+
+    /* NETWORK */
+
+    /**
+     * Allows to handle a login event.
+     *
+     * @param userInfo the received UserInfo
+     * @param error an eventual error
+     */
+    @Override
+    public void handleLoginEvent(UserInfo userInfo, String error) {
+        gui.selfUserInfo = userInfo;
+
+        gui.changeToMenuScene();
+    }
+
+
+
+    /* GUI */
+
+    /**
+     * Handles the pressing of the submit button.
+     * If nickname is valid, based on the chosen protocol, it tries to connect to server.
+     *
+     * @param event the ActionEvent
+     */
+    private void handleSubmitClick(ActionEvent event) {
+        String nickname = nicknameTextField.getText();
+        if (nickname.length() < 3) return;
+
+        Integer id;
+
         try {
-            String nickname = nicknameTextField.getText();
-            if (!nickname.isEmpty()) {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
-                Parent root = fxmlLoader.load();
-                GameController gameController = (GameController) fxmlLoader.getController();
-                gameController.initialize();
-                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                // String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
-                // scene.getStylesheets().add(url);
-                stage.setScene(scene);
-                stage.show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+            id = Integer.parseInt(idTextField.getText());
+        } catch (NumberFormatException e) { id = -1; }
 
-    @FXML
-    private void handleEnterKeyPressed(KeyEvent event) throws IOException {
-        if (event.getCode() == KeyCode.ENTER) {
-            String nickname = nicknameTextField.getText();
-            if (!nickname.isEmpty()) {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
-                Parent root = fxmlLoader.load();
-                GameController mainMenu = fxmlLoader.getController();
-                //mainMenu.Setup(nickname);
-                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                //String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
-                //scene.getStylesheets().add(url);
-                stage.setScene(scene);
-                stage.show();
-            }
-            nicknameTextField.clear();
-        }
-    }
-
-    @Override
-    public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedInitializationPhaseEvent'");
-    }
-
-    @Override
-    public void handleJoinLobbyError(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleJoinLobbyError'");
-    }
-
-    @Override
-    public void handleStartGameError(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleStartGameError'");
-    }
-
-    @Override
-    public void handleCreateLobbyError(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCreateLobbyError'");
-    }
-
-    @Override
-    public void handleLeaveLobbyError(String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLeaveLobbyError'");
-    }
-
-    @Override
-    public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handlePlayerTurnEvent'");
-    }
-
-    @Override
-    public void handleLastRoundEvent() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleLastRoundEvent'");
-    }
-
-    @Override
-    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDirectMessageEvent'");
-    }
-
-    @Override
-    public void handleGroupMessageEvent(UserInfo sender, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGroupMessageEvent'");
-    }
-
-    @Override
-    public void handleGameStartedEvent(List<UserInfo> users) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleGameStarted'");
-    }
-
-    @Override
-    public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleEndedTokenPhaseEvent'");
-    }
-
-    @Override
-    public void handleDisconnection() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleDisconnection'");
+        try {
+            connect(nickname, id, rmiButton.isSelected());
+        } catch (Exception e) { throw new RuntimeException(e); }
     }
 }

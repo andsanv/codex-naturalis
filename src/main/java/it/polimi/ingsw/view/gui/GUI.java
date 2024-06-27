@@ -1,137 +1,127 @@
 package it.polimi.ingsw.view.gui;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
-import it.polimi.ingsw.util.Pair;
-import it.polimi.ingsw.view.gui.controllers.Controller;
-import it.polimi.ingsw.view.gui.controllers.GameController;
-import it.polimi.ingsw.view.gui.controllers.SetupPhaseController;
-import it.polimi.ingsw.view.gui.controllers.TempGameController;
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
+import it.polimi.ingsw.view.gui.controllers.*;
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
-import java.io.IOException;
+import java.util.List;
 
-
+/**
+ * Main GUI application.
+ * Also acts as a "repository" of common objects between controllers.
+ */
 public class GUI extends Application {
-    private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+    /**
+     * The main controller of the application, that forwards every event to its "subController".
+     */
+    public MainController mainController;
 
-    public Pair<Integer, Integer> screenResolution;
-    public double screenRatio;
+    /**
+     * Object that allows to connect to server, send commands and receive events.
+     */
+    public ConnectionHandler connectionHandler = null;
 
-    public Controller currentController;
+    /**
+     * As soon as the user connects to the server, he's assigned a UserInfo he will use to communicate with the server itself.
+     */
+    public UserInfo selfUserInfo = null;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    /**
+     * The stage of the GUI.
+     */
+    public Stage stage = null;
 
-    @FXML
-    private VBox VboxCentral;
-
-    @FXML
-    private GridPane gridPane;
-
-    @FXML
-    private Text nicknameText;
-
-    @FXML
-    private TextField nicknameTextField;
-
-    @FXML
-    private Button submitNickname;
-
+    /**
+     * Entry point for the GUI application.
+     *
+     * @param primaryStage the primary stage
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/setupPhaseView.fxml"));
-            Parent root = fxmlLoader.load();
+            this.stage = primaryStage;
 
-            SetupPhaseController controller = fxmlLoader.getController();
-            controller.initialize(this, new UserInfo(new User("test")));
-            Scene scene = new Scene(root);
-            // String url = Objects.requireNonNull(getClass().getResource("/css/gameView.css")).toExternalForm();
-            // scene.getStylesheets().add(url);
+            // load initial scene
+            changeToConfigScene();
 
-            // primaryStage.setResizable(false);
-            primaryStage.setScene(scene);
+            primaryStage.setResizable(false);
             primaryStage.setTitle("Codex Naturalis");
             primaryStage.show();
-
-
-            ServerEventHandlerTask serverEventHandlerTask = new ServerEventHandlerTask();
-            executorService.submit(serverEventHandlerTask);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void stop() throws Exception {
-        // shut down the executor service so that the application can exit
-        executorService.shutdownNow();
-
-        super.stop();
+    /**
+     * main that allows the GUI to run.
+     *
+     * @param args args
+     */
+    public static void main(String[] args) {
+        launch(args);
     }
 
-    @FXML
-    public void initialize() {
+    /**
+     * Allows the GUI application to update the scene, transitioning to the initial configuration scene.
+     */
+    public void changeToConfigScene() {
+        System.out.println("started");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/configView.fxml"));
+        Parent root = null;
+        try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
+
+        ConfigController controller = loader.getController();
+        controller.initialize(this);
+
+        if (mainController != null) mainController.setSubController(controller);
+        else mainController = new MainController(controller);
+
+        System.out.println("main controller: " + mainController);
+
+        stage.setScene(new Scene(root));
+        System.out.println("finished");
     }
 
-    @FXML
-    private void handleSubmitClick(MouseEvent event) {
-        try {
-            String nickname = nicknameTextField.getText();
-            if (!nickname.isEmpty()) {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
-                Parent root = fxmlLoader.load();
-                GameController gameController = (GameController) fxmlLoader.getController();
-                gameController.initialize();
-                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                // String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
-                // scene.getStylesheets().add(url);
-                stage.setScene(scene);
-                stage.show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    /**
+     * Allows the GUI application to update the scene, transitioning to the main menu scene.
+     */
+    public void changeToMenuScene() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/menuView.fxml"));
+        Parent root = null;
+        try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
+
+        MenuController controller = loader.getController();
+        controller.initialize(this);
+
+        mainController.setSubController(controller);
+
+        System.out.println("");
+
+        stage.setScene(new Scene(root));
     }
 
-    @FXML
-    private void handleEnterKeyPressed(KeyEvent event) throws IOException {
-        if (event.getCode() == KeyCode.ENTER) {
-            String nickname = nicknameTextField.getText();
-            if (!nickname.isEmpty()) {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
-                Parent root = fxmlLoader.load();
-                GameController mainMenu = fxmlLoader.getController();
-                //mainMenu.Setup(nickname);
-                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                //String url = Objects.requireNonNull(getClass().getResource("/css/menuPane.css")).toExternalForm();
-                //scene.getStylesheets().add(url);
-                stage.setScene(scene);
-                stage.show();
-            }
-            nicknameTextField.clear();
-        }
+    /**
+     * Allows the GUI application to update the scene, transitioning to the lobby scene.
+     */
+    public void changeToLobbyScene(List<UserInfo> users, LobbyInfo lobby) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/lobbyView.fxml"));
+        Parent root = null;
+        try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
+
+        LobbyController controller = loader.getController();
+        controller.initialize(this, lobby);
+
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("css/lobbyView.css");
+
+        mainController.setSubController(controller);
+
+        stage.setScene(scene);
     }
 }

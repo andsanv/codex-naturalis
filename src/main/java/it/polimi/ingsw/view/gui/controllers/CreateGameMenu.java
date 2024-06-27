@@ -38,7 +38,7 @@ public class CreateGameMenu {
     @FXML
     void handleBackButtonClick(MouseEvent event) throws IOException {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/mainMenu.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/menuView.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);

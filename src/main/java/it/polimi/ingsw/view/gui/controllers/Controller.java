@@ -25,15 +25,14 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class Controller implements UI {
-    public final GUI gui;
+    public GUI gui;
 
     public Controller() {
         this.gui = null;
     }
 
-    public void changeScene(Parent root, Window window) {
-        Stage stage = (Stage) window;
-        stage.setScene(new Scene(root));
+    public void initialize(GUI gui) {
+
     }
 
     @Override
@@ -184,6 +183,7 @@ public abstract class Controller implements UI {
 
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
+        System.out.println("received in upper class");
         return;
     }
 

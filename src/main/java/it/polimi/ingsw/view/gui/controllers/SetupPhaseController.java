@@ -378,13 +378,13 @@ public class SetupPhaseController extends Controller {
             }
             TempGameController controller = loader.getController();
 
-            try {
-                controller.initialize(gui, slimGameModel);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            changeScene(root, mainStackPane.getScene().getWindow());
+//            try {
+//                controller.initialize(gui, slimGameModel);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            changeScene(root, mainStackPane.getScene().getWindow());
         });
     }
 

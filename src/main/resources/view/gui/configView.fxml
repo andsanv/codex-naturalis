@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -14,9 +12,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.GUI">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.ConfigController">
    <children>
-      <GridPane fx:id="gridPane" onKeyPressed="#handleEnterKeyPressed" prefHeight="393.0" prefWidth="600.0">
+      <GridPane prefHeight="393.0" prefWidth="600.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="175.0" minWidth="10.0" prefWidth="154.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="394.0" minWidth="10.0" prefWidth="278.0" />
@@ -28,34 +26,32 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <VBox fx:id="VboxCentral" alignment="CENTER_LEFT" prefHeight="256.0" prefWidth="303.0" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+            <VBox alignment="CENTER_LEFT" prefHeight="256.0" prefWidth="303.0" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
-                  <Text fx:id="nicknameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Inserisci qui il tuo nickname:" />
-                  <TextField fx:id="nicknameTextField" promptText="Nickname" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Enter your nickname:" />
+                  <HBox prefHeight="6.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="nicknameTextField" prefHeight="26.0" prefWidth="307.0" promptText="Nickname" />
+                        <TextField fx:id="idTextField" prefHeight="26.0" prefWidth="152.0" promptText="ID" />
+                     </children>
+                  </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="278.0">
                      <children>
-                        <Button fx:id="submitNickname" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#handleSubmitClick" text="Submit" />
+                        <Button fx:id="submitButton" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="Submit" />
                      </children>
                   </HBox>
                </children>
             </VBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <children>
-                  <RadioButton mnemonicParsing="false" selected="true" text="RMI">
+                  <RadioButton fx:id="rmiButton" mnemonicParsing="false" selected="true" text="RMI">
                      <toggleGroup>
                         <ToggleGroup fx:id="toggleGroup" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton mnemonicParsing="false" text="Socket" toggleGroup="$toggleGroup" />
+                  <RadioButton fx:id="socketButton" mnemonicParsing="false" text="Socket" toggleGroup="$toggleGroup" />
                </children>
             </HBox>
-            <MenuButton alignment="CENTER" mnemonicParsing="false" text="Size" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-              <items>
-                <MenuItem text="1440x900" />
-                <MenuItem text="1680x1050" />
-                  <MenuItem text="2560x1600" />
-              </items>
-            </MenuButton>
          </children>
       </GridPane>
    </children>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="anchor-pane" prefHeight="900.0" prefWidth="1440.0" styleClass="anchor-pane" stylesheets="@../../css/mainMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MainMenuController">
+   <children>
+      <VBox id="central-pane" fx:id="menuPane" alignment="CENTER" layoutX="570.0" layoutY="250.0" maxHeight="400.0" maxWidth="300.0" minHeight="400.0" minWidth="300.0" prefHeight="400.0" prefWidth="300.0" spacing="10.0" styleClass="central-pane">
+         <children>
+            <Button id="button-central" fx:id="createGame" mnemonicParsing="false" onMouseClicked="#handleCreateGameButtonClick" styleClass="button-central" text="Create Game">
+               <font>
+                  <Font name="FrakturNo2" size="25.0" />
+               </font>
+            </Button>
+            <Button id="button-central" fx:id="joinGame" mnemonicParsing="false" onMouseClicked="#handleJoinGameButtonClick" styleClass="button-central" text="Join Game">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Button>
+            <Button id="button-central" fx:id="joinGame1" mnemonicParsing="false" onMouseClicked="#handleJoinGameButtonClick" styleClass="button-central" text="Exit">
+               <font>
+                  <Font size="25.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+      <StackPane id="text-pane" layoutX="480.0" layoutY="83.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="79.0" prefWidth="481.0" styleClass="text-pane">
+         <children>
+            <Text id="central-text" fx:id="helloText" styleClass="central-text" text="Benvenuto ">
+               <font>
+                  <Font size="34.0" />
+               </font>
+            </Text>
+         </children>
+      </StackPane>
+      <Button id="button-back" fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onMouseClicked="#handleBackButtonClick" styleClass="button-back" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+         <graphic>
+            <ImageView fitHeight="28.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/icons/arrow-small-left.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+   </children>
+</AnchorPane>
