@@ -30,7 +30,6 @@ package "distributed" {
         package "rmi" {
 
             class RMIGameView implements distributed.interfaces.GameViewActions {
-                - connectionHandler: RMIConnectionHandler
                 - gameEventHandler: GameEventHandler
                 + transmitEvent(GameEvent): void
             }
