@@ -1,0 +1,12 @@
+@font-face {
+    src: url('../fonts/FrakturNo2.ttf');
+}
+
+.main-pane {
+    -fx-background-image: url("/images/miscellaneous/background-16-10.png");
+    -fx-background-size: cover;
+}
+
+.dark-overlay-rectangle {
+    -fx-fill: rgba(0, 0, 0, 0.5);
+}

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
-import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.main.CreateLobbyCommand;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.event.ActionEvent;
@@ -12,26 +11,28 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Controller for the main menu view.
  * Allows to create a lobby or search for the already existing ones.
  */
 public class MenuController extends Controller {
-    public GUI gui;
-
     @FXML private StackPane mainStackPane;
     @FXML private VBox buttonsPane;
     @FXML private Button createLobbyButton;
     @FXML private Button joinLobbyButton;
     @FXML private Button backButton;
 
-    private List<LobbyInfo> activeLobbies;
+    private AtomicReference<List<LobbyInfo>> activeLobbies = new AtomicReference<>(null);
 
     private final AtomicBoolean creatingLobby = new AtomicBoolean(false);
 
     public void initialize() {
         this.gui = new GUI();
+
+        this.connectionHandler = null;
+        this.selfUserInfo = gui.selfUserInfo;
 
         createLobbyButton.setOnAction(this::createLobby);
         joinLobbyButton.setOnAction(this::joinLobby);
@@ -42,6 +43,9 @@ public class MenuController extends Controller {
 
     public void initialize(GUI gui) {
         this.gui = gui;
+        this.connectionHandler = gui.connectionHandler;
+        this.selfUserInfo = gui.selfUserInfo;
+        this.activeLobbies = gui.availableLobbies;
 
         createLobbyButton.setOnAction(this::createLobby);
         joinLobbyButton.setOnAction(this::joinLobby);
@@ -61,9 +65,11 @@ public class MenuController extends Controller {
     public void createLobby(ActionEvent event) {
         creatingLobby.set(true);
 
-        executorService.submit(() -> {
-            gui.connectionHandler.sendToMainServer(new CreateLobbyCommand(gui.selfUserInfo.get()));
+        gui.submitToExecutorService(() -> {
+            connectionHandler.get().sendToMainServer(new CreateLobbyCommand(selfUserInfo.get()));
+            System.out.println("[INFO] Submitted the CreateLobbyCommand");
         });
+
     }
 
     /**
@@ -72,9 +78,13 @@ public class MenuController extends Controller {
      * @param event the ActionEvent
      */
     public void joinLobby(ActionEvent event) {
-        gui.changeToLobbiesListScene(activeLobbies);
+        gui.changeToLobbiesListScene();
     }
 
+    /**
+     * Allows the user to go back to Menu scene
+     * @param event the ActionEvent event
+     */
     public void handleBackButtonAction(ActionEvent event) {
         gui.changeToConfigScene();
     }
@@ -86,10 +96,10 @@ public class MenuController extends Controller {
      */
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
-        this.activeLobbies = lobbies;
+        this.activeLobbies.set(lobbies);
 
         lobbies.stream()
-                .filter(lobby -> lobby.contains(gui.selfUserInfo.get()))
+                .filter(lobby -> lobby.contains(selfUserInfo.get()))
                 .findAny()
                 .ifPresent(
                         lobby -> {
@@ -106,6 +116,7 @@ public class MenuController extends Controller {
     @Override
     public void handleCreateLobbyError(String message) {
         creatingLobby.set(false);
+
         showPopup(message);
     }
 
@@ -133,5 +144,7 @@ public class MenuController extends Controller {
      *
      * @param message the message received
      */
-    public void showPopup(String message) {}
+    public void showPopup(String message) {
+        System.out.println("[ERROR] " + message);
+    }
 }

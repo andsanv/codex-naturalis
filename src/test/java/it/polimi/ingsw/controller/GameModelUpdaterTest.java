@@ -467,10 +467,11 @@ class GameModelUpdaterTest {
         int topCardId = gameModel.resourceCardsDeck.getNextCardId();
         int nextCardId = gameModel.resourceCardsDeck.asListOfIds().get(gameModel.resourceCardsDeck.size() - 2);
         int initialCardId = gameModel.visibleResourceCards.get(0).id;
-        slimGameModel.applyDrawnVisibleResourceCardEvent(PlayerToken.RED, 0, slimGameModel.visibleResourceCardsList.get(0), slimGameModel.resourceDeck.getLast(), false, slimGameModel.resourceDeck.get(slimGameModel.resourceDeck.size() - 2), 1);
+        slimGameModel.applyDrawnVisibleResourceCardEvent(PlayerToken.RED, 0, slimGameModel.visibleResourceCardsList.get(0), slimGameModel.resourceDeck.getLast(), false, nextCardId, 1);
 
         assertEquals(initialCardId, slimGameModel.tokenToHand.get(PlayerToken.RED).get(1));
         assertEquals(topCardId, slimGameModel.visibleResourceCardsList.get(0));
+
         assertEquals(nextCardId, slimGameModel.resourceDeck.get(gameModel.resourceCardsDeck.size() - 2));
 
         topCardId = gameModel.goldCardsDeck.getNextCardId();
@@ -481,5 +482,6 @@ class GameModelUpdaterTest {
         //assertEquals(initialCardId, slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(2));
         assertEquals(topCardId, slimGameModel.visibleGoldCardsList.get(1));
         //assertEquals(nextCardId, slimGameModel.resourceDeck.get(gameModel.resourceCardsDeck.size() - 2));
+
     }
 }

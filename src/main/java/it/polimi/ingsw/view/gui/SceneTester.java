@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 public class SceneTester extends Application {
     @Override
     public void start(Stage primaryStage) {
-        String sceneName = "lobby";
+        String sceneName = "menu";
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/" + sceneName + "View.fxml"));
 

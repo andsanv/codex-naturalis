@@ -21,10 +21,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 
+/**
+ * Allows to show the single lobby, after joining.
+ */
 public class LobbyController extends Controller {
-    /* STRUCTURE */
+    /* GUI STRUCTURE */
     @FXML private StackPane mainStackPane;
     @FXML private StackPane popupStackPane;
     @FXML private StackPane listStackPane;
@@ -51,6 +55,8 @@ public class LobbyController extends Controller {
     @FXML private ImageView fourthPlayerImageView;
 
     private List<StackPane> playerEntries;
+
+    private AtomicReference<List<LobbyInfo>> activeLobbies;
 
     private LobbyInfo lobby;
 
@@ -86,12 +92,10 @@ public class LobbyController extends Controller {
      */
     public void initialize(GUI gui, LobbyInfo lobby) {
         this.gui = gui;
-
+        this.activeLobbies = gui.availableLobbies;
+        this.connectionHandler = gui.connectionHandler;
+        this.selfUserInfo = gui.selfUserInfo;
         this.lobby = lobby;
-        playerEntries = new ArrayList<>(Arrays.asList(firstPlayerPane, secondPlayerPane, thirdPlayerPane, fourthPlayerPane));
-
-        // updatePlayers(lobby);
-        // lobbyText.setText("Lobby #" + lobby.id);
 
         setupGui();
         applyCss();
@@ -105,32 +109,40 @@ public class LobbyController extends Controller {
      */
     @Override
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
+        this.activeLobbies.set(lobbies);
+
         Optional<LobbyInfo> lobby = lobbies.stream()
-                .filter(l -> l.contains(gui.selfUserInfo.get()))
+                .filter(l -> l.contains(selfUserInfo.get()))
                 .findFirst();
 
         if (lobby.isPresent()) {
+            System.out.println("[DEBUG] Lobby with self user info found");
             updatePlayers(lobby.get());
             return;
         }
 
-         lobby = lobbies.stream()
-                .filter(l -> l.id == this.lobby.id)
-                .filter(l -> !l.users.contains(gui.selfUserInfo.get()))
+        lobby = lobbies.stream()
+                .filter(l -> l.users.contains(selfUserInfo.get()))
                 .findFirst();
 
-         if (lobby.isPresent()) {
+        if (lobby.isEmpty()) {
+            System.out.println("[DEBUG] Correctly exited from previous lobby");
              gui.changeToMenuScene();
              return;
-         }
+        }
 
         lobbies.stream()
                 .filter(l -> l.id == this.lobby.id)
                 .filter(l -> l.gameStarted)
                 .findFirst()
                 .ifPresent(l -> {
-                    //gui.changeToGameScene(lobby.users);
+                    // gui.changeToGameScene(lobby.users);
                 });
+    }
+
+    @Override
+    public void handleStartGameError(String error) {
+        System.out.println("[ERROR] " + error);
     }
 
     /**
@@ -139,7 +151,10 @@ public class LobbyController extends Controller {
      * @param actionEvent the ActionEvent event
      */
     public void startGame(ActionEvent actionEvent) {
-        gui.connectionHandler.sendToMainServer(new StartGameCommand(gui.selfUserInfo.get(), lobby.id));
+        gui.submitToExecutorService(() -> {
+            connectionHandler.get().sendToMainServer(new StartGameCommand(selfUserInfo.get(), lobby.id));
+            System.out.println("[INFO] Submitted StartGameCommand");
+        });
     }
 
     /**
@@ -148,7 +163,10 @@ public class LobbyController extends Controller {
      * @param event the ActionEvent event
      */
     public void handleBackButton(ActionEvent event) {
-        gui.connectionHandler.sendToMainServer(new LeaveLobbyCommand(gui.selfUserInfo.get(), lobby.id));
+        gui.submitToExecutorService(() -> {
+            connectionHandler.get().sendToMainServer(new LeaveLobbyCommand(gui.selfUserInfo.get(), lobby.id));
+            System.out.println("[INFO] Submitted LeaveLobbyCommand");
+        });
     }
 
     /**
@@ -167,9 +185,19 @@ public class LobbyController extends Controller {
             }
             else ((ImageView) ((StackPane) playerHBox.getChildren().get(1)).getChildren().getFirst()).setImage(new Image("/images/icons/user.png"));
         });
+
+        for (int i = lobby.users.size(); i < playerEntries.size(); i++) {
+            HBox playerHBox = (HBox) playerEntries.get(i).getChildren().getFirst();
+
+            ((Text) ((StackPane) playerHBox.getChildren().get(0)).getChildren().getFirst()).setText("-");
+            ((ImageView) (((StackPane) playerHBox.getChildren().get(1)).getChildren().getFirst())).setImage(null);
+        }
     }
 
+
     public void setupGui() {
+        playerEntries = new ArrayList<>(Arrays.asList(firstPlayerPane, secondPlayerPane, thirdPlayerPane, fourthPlayerPane));
+
         backButton.setOnAction(this::handleBackButton);
         startButton.setOnAction(this::startGame);
     }

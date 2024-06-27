@@ -33,6 +33,7 @@ public class MainController extends Controller {
 
     public MainController(GUI gui, ConfigController subController) {
         this.gui = gui;
+        this.selfUserInfo = gui.selfUserInfo;
         this.subController = subController;
     }
 
@@ -72,7 +73,7 @@ public class MainController extends Controller {
      */
     @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
-        System.out.println("HANDLE LOGIN CALLED ON CONTROLLER " + subController);
+        System.out.println("[INFO] Received LoginEvent. Forwarding to " + subController.getClass().getSimpleName());
         Platform.runLater(() -> subController.handleLoginEvent(userInfo, error));
     }
 
@@ -91,6 +92,7 @@ public class MainController extends Controller {
      * @param lobbies list of lobbies
      */
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
+        System.out.println("[INFO] Received LobbiesEvent. Forwarding to " + subController.getClass().getSimpleName());
         Platform.runLater(() -> subController.handleLobbiesEvent(lobbies));
     }
 
@@ -400,6 +402,6 @@ public class MainController extends Controller {
 
     @Override
     public UserInfo getUserInfo() {
-        return this.gui.getUserInfo();
+        return selfUserInfo.get();
     }
 }

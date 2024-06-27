@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,27 +24,32 @@ public class GUI extends Application {
     /**
      * The main controller of the application, that forwards every event to its "subController".
      */
-    public MainController mainController;
+    private MainController mainController;
 
     /**
      * Object that allows to connect to server, send commands and receive events.
      */
-    public ConnectionHandler connectionHandler = null;
+    public final AtomicReference<ConnectionHandler> connectionHandler = new AtomicReference<>(null);
 
     /**
      * As soon as the user connects to the server, he's assigned a UserInfo he will use to communicate with the server itself.
      */
-    public AtomicReference<UserInfo> selfUserInfo = new AtomicReference<>(null);
+    public final AtomicReference<UserInfo> selfUserInfo = new AtomicReference<>(null);
 
     /**
      * The stage of the GUI.
      */
-    public Stage stage = null;
+    public final AtomicReference<Stage> stage = new AtomicReference<>(null);
+
+    /**
+     * List that will be used by the controllers to keep all available lobbies.
+     */
+    public final AtomicReference<List<LobbyInfo>> availableLobbies = new AtomicReference<>(new ArrayList<>());
 
     /**
      * To handle network commands, allowing the java-fx thread ot continue managing the gui.
      */
-    public final ExecutorService executorService = Executors.newCachedThreadPool();
+    public final AtomicReference<ExecutorService> executorService = new AtomicReference<>(Executors.newCachedThreadPool());
 
     /**
      * Entry point for the GUI application.
@@ -53,7 +59,7 @@ public class GUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            this.stage = primaryStage;
+            stage.set(primaryStage);
 
             // load initial scene
             changeToConfigScene();
@@ -67,7 +73,7 @@ public class GUI extends Application {
     }
 
     /**
-     * main that allows the GUI to run.
+     * Main that allows the GUI to run.
      *
      * @param args args
      */
@@ -79,32 +85,27 @@ public class GUI extends Application {
      * Allows the GUI application to update the scene, transitioning to the initial configuration scene.
      */
     public void changeToConfigScene() {
-        if (mainController != null) this.mainController.subController = null;
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/configView.fxml"));
         Parent root = null;
         try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
 
         ConfigController controller = loader.getController();
-        controller.initialize(this);
 
         if (mainController != null) mainController.setSubController(controller);
         else mainController = new MainController(this, controller);
 
-        System.out.println("main controller: " + mainController);
+        controller.initialize(this, mainController);
 
-        System.out.println("root = " + root);
-        System.out.println("scene = " + root.getScene());
+        System.out.println("[INFO] Changed to scene: Config");
 
-        stage.setScene(new Scene(root));
+        stage.get().setScene(new Scene(root));
+        stage.get().centerOnScreen();
     }
 
     /**
      * Allows the GUI application to update the scene, transitioning to the main menu scene.
      */
     public void changeToMenuScene() {
-        this.mainController.subController = null;
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/menuView.fxml"));
         Parent root = null;
         try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
@@ -113,19 +114,18 @@ public class GUI extends Application {
         controller.initialize(this);
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("css/menuView.css");
 
         mainController.setSubController(controller);
 
-        stage.setScene(scene);
+        System.out.println("[INFO] Changed to scene: Menu");
+        stage.get().setScene(scene);
+        stage.get().centerOnScreen();
     }
 
     /**
      * Allows the GUI application to update the scene, transitioning to the lobby scene.
      */
     public void changeToLobbyScene(List<UserInfo> users, LobbyInfo lobby) {
-        this.mainController.subController = null;
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/lobbyView.fxml"));
         Parent root = null;
         try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
@@ -138,33 +138,46 @@ public class GUI extends Application {
 
         mainController.setSubController(controller);
 
-        stage.setScene(scene);
+        System.out.println("[INFO] Changed to scene: Lobby");
+
+        controller.updatePlayers(lobby);
+        stage.get().setScene(scene);
     }
 
     /**
-     * Allows to switch from menu to the lobbies list
-     *
-     * @param activeLobbies current active lobbies
+     * Allows the GUI application to update the scene, transitioning to the lobbies list scene.
      */
-    public void changeToLobbiesListScene(List<LobbyInfo> activeLobbies) {
-        this.mainController.subController = null;
-
+    public void changeToLobbiesListScene() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/lobbiesListView.fxml"));
         Parent root = null;
         try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
 
         LobbiesListController controller = loader.getController();
-        controller.initialize(this, activeLobbies);
+        controller.initialize(this);
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("css/lobbiesListView.css");
 
         mainController.setSubController(controller);
 
-        stage.setScene(scene);
+        System.out.println("[INFO] Changed to scene: LobbiesList");
+
+        stage.get().setScene(scene);
     }
 
-    public UserInfo getUserInfo() {
-        return this.selfUserInfo.get();
+    /**
+     * Allows the user to show the first part of the game, where the token and the initial cards are chosen.
+     */
+    public void changeToSetupPhaseScene() {
+
+    }
+
+    /**
+     * Allows to have a single method from which send commands to the server.
+     *
+     * @param runnable the runnable to submit
+     */
+    public void submitToExecutorService(Runnable runnable) {
+        this.executorService.get().submit(runnable);
     }
 }

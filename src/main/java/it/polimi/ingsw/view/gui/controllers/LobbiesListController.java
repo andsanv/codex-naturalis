@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
-import it.polimi.ingsw.controller.usermanagement.User;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.view.gui.GUI;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -14,31 +15,59 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * Allows a player to visualize all available lobbies.
+ */
 public class LobbiesListController extends Controller {
-    public List<LobbyInfo> activeLobbies = null;
+    public AtomicReference<List<LobbyInfo>> activeLobbies = null;
 
     @FXML private StackPane mainStackPane;
     @FXML private StackPane lobbiesStackPane;
     @FXML private StackPane headerStackPane;
+    @FXML private Button backButton;
 
     @FXML private VBox lobbiesListVBox;
+    @FXML private Button updateLobbiesButton;
 
-    @Override
-    public void initialize() {
-    }
+    private final Map<LobbyInfo, Button> lobbyToJoinButton = new HashMap<>();
 
-    public void initialize(GUI gui, List<LobbyInfo> activeLobbies) {
+    /**
+     * Atomic boolean that allows to understand whether a user was trying to join a lobby.
+     */
+    private final AtomicBoolean joiningLobby = new AtomicBoolean(false);
+
+    /**
+     * Controller initializer
+     *
+     * @param gui the GUI application
+     */
+    public void initialize(GUI gui) {
         this.gui = gui;
-        this.activeLobbies = activeLobbies;
+        this.selfUserInfo = gui.selfUserInfo;
+        this.activeLobbies = gui.availableLobbies;
+        this.connectionHandler = gui.connectionHandler;
+
+        backButton.setOnAction(this::handleBackButton);
+
+        updateLobbiesButton.setDisable(true);
+        updateLobbiesButton.setOnAction(this::updateLobbies);
 
         buildList();
     }
 
+    /**
+     * Allows to dynamically build the lobby lists.
+     */
     public void buildList() {
-        activeLobbies.stream().forEach(lobbyInfo -> {
+        for (int i = lobbiesListVBox.getChildren().size() - 1; i > 0; i++)
+            lobbiesListVBox.getChildren().remove(lobbiesListVBox.getChildren().get(i));
+
+        activeLobbies.get().forEach(lobbyInfo -> {
             StackPane lobbyStackPane = new StackPane();
             lobbiesListVBox.getChildren().add(lobbyStackPane);
 
@@ -89,22 +118,112 @@ public class LobbiesListController extends Controller {
             HBox.setMargin(joinStackPane, new Insets(0, 0, 0, 0));
             joinStackPane.setPrefWidth(80);
             joinStackPane.setPrefHeight(50);
-            joinStackPane.getChildren().add(new Button("Join"));
+            Button joinButton = new Button("Join");
+            joinStackPane.getChildren().add(joinButton);
+            joinButton.setOnAction(this::joinLobby);
             hbox.getChildren().add(joinStackPane);
 
             lobbyStackPane.getChildren().add(hbox);
+
+            lobbyToJoinButton.put(lobbyInfo, joinButton);
         });
     }
 
-//    /**
-//     * This method is called when the user tries to join a lobby or create one while
-//     * being in another.
-//     *
-//     * @param message the error message
-//     */
-//    @Override
-//    public void handleJoinLobbyError(String message) {
-//        joiningLobby.set(false);
-//        showPopup(message);
-//    }
+    /**
+     * Allows a user to join a lobby.
+     * Handler of the "Join" button.
+     *
+     * @param actionEvent the ActionEven event
+     */
+    public void joinLobby(ActionEvent actionEvent) {
+        System.out.println("[INFO] Registered user will to join a game");
+
+        Optional<LobbyInfo> lobbyToJoin = lobbyToJoinButton.entrySet().stream()
+                .filter(entry -> entry.getValue()
+                .equals(actionEvent.getSource()))
+                .findFirst()
+                .map(Map.Entry::getKey);
+
+        lobbyToJoin.ifPresent(lobbyInfo -> {
+            joiningLobby.set(true);
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToMainServer(new JoinLobbyCommand(selfUserInfo.get(), lobbyInfo.id));
+                System.out.println("[INFO] Submitted the JoinLobbyCommand");
+            });
+        });
+
+        if (lobbyToJoin.isEmpty()) {
+            System.out.println("[ERROR] Selected lobby does not exist");
+            showPopUp("Lobby does not exist.");
+        }
+    }
+
+    /**
+     * If player was joining a lobby, it allows him to join.
+     * Otherwise, it makes it possible for the player to update current view of lists, by enabling a button.
+     *
+     * @param lobbies list of lobbies
+     */
+    @Override
+    public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
+        activeLobbies.set(lobbies);
+
+        lobbies.stream()
+                .filter(lobby -> lobby.contains(gui.selfUserInfo.get()))
+                .findFirst()
+                .ifPresentOrElse(
+                        lobby -> {
+                            joiningLobby.set(false);
+
+                            gui.changeToLobbyScene(lobby.users, lobby);
+                        },
+                        () -> {
+                            updateLobbiesButton.setDisable(false);
+                        }
+                );
+    }
+
+    /**
+     * Allows to show a more recent version of the lobby list.
+     * Handler for the updateLobbiesButton.
+     *
+     * @param actionEvent the ActionEvent event
+     */
+    public void updateLobbies (ActionEvent actionEvent) {
+        updateLobbiesButton.setDisable(true);
+
+        buildList();
+    }
+
+    /**
+     * This method is called when the user tries to join a lobby or create one while
+     * being in another.
+     *
+     * @param message the error message
+     */
+    @Override
+    public void handleJoinLobbyError(String message) {
+        joiningLobby.set(false);
+
+        showPopUp(message);
+    }
+
+    /**
+     * Allows the user to go back to the menu.
+     *
+     * @param actionEvent the ActionEvent event
+     */
+    public void handleBackButton(ActionEvent actionEvent) {
+        gui.changeToMenuScene();
+    }
+
+    /**
+     * Allows to print messages (errors).
+     *
+     * @param message the error message
+     */
+    public void showPopUp(String message) {
+        System.out.println(message);
+    }
 }

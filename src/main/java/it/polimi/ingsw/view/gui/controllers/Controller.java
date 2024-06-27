@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.common.Elements;
@@ -25,13 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class Controller implements UI {
-    public GUI gui;
-    public ExecutorService executorService;
+public abstract class Controller implements UI {
+    protected GUI gui = null;
+    protected AtomicReference<ConnectionHandler> connectionHandler = null;
+    protected AtomicReference<UserInfo> selfUserInfo = null;
 
     public Controller() {
-        this.gui = null;
     }
 
     public void initialize() {}
