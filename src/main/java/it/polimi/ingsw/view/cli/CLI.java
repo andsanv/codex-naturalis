@@ -757,10 +757,12 @@ public class CLI implements UI {
 
     @Override
     public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
-        if (!sender.equals(getUserInfo()))
+        if (!sender.equals(getUserInfo()) || !receiver.equals(getUserInfo()))
             return;
 
-        System.out.println("Direct message from " + sender + ": " + message);
+        if (receiver.equals(getUserInfo()))
+            System.out.println("Direct message from " + sender + ": " + message);
+
         synchronized (directMessagesLock) {
             directMessages.add(new Pair<UserInfo, String>(sender, message));
         }

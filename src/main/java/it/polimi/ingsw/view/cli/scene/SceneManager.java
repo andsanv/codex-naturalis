@@ -186,6 +186,41 @@ public class SceneManager {
             }
 
             cli.getConnectionHandler().sendToGameServer(new GroupMessageCommand(cli.getUserInfo(), args[1]));
+        } else if (cli.inGame.get() && args[0].equalsIgnoreCase("printgm")) {
+            if (args.length != 1) {
+                CLIPrinter.displayError("Invalid formatting for send direct message command");
+                return;
+            }
+
+            System.out.println("Group messages:");
+            cli.getGroupMessages().stream().forEach(p -> System.out.println(p.first + ": " + p.second));
+        } else if (cli.inGame.get() && args[0].equalsIgnoreCase("printdm")) {
+            if (args.length != 2) {
+                CLIPrinter.displayError("Invalid formatting for send direct message command");
+                return;
+            }
+
+            UserInfo other;
+
+            try {
+                other = UserInfo.fromString(args[1]);
+            } catch (IllegalArgumentException e) {
+                CLIPrinter.displayError("Invalid user");
+                return;
+            }
+
+            if (cli.getUserInfo().equals(other)) {
+                CLIPrinter.displayError("Can't see messages with yourself");
+                return;
+            }
+
+            if (!cli.usersInGame.get().contains(other)) {
+                CLIPrinter.displayError("No user in game matches the given user");
+                return;
+            }
+
+            System.out.println("Messages with " + other);
+            cli.getGroupMessages().stream().forEach(p -> System.out.println(p.first + ": " + p.second));
         } else {
             this.currentScene.handleCommand(args);
         }

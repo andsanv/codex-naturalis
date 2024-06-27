@@ -1,7 +1,6 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
-import static org.fusesource.jansi.Ansi.Color.WHITE;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
@@ -10,6 +9,10 @@ import java.util.List;
 import org.fusesource.jansi.Ansi;
 
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
+import it.polimi.ingsw.distributed.commands.game.DrawGoldDeckCardCommand;
+import it.polimi.ingsw.distributed.commands.game.DrawResourceDeckCardCommand;
+import it.polimi.ingsw.distributed.commands.game.DrawVisibleGoldCardCommand;
+import it.polimi.ingsw.distributed.commands.game.DrawVisibleResourceCardCommand;
 import it.polimi.ingsw.distributed.commands.game.PlayCardCommand;
 import it.polimi.ingsw.model.SlimGameModel;
 import it.polimi.ingsw.model.card.CardSide;
@@ -258,6 +261,12 @@ public class GameScene extends Scene {
                     }
 
                     CLI cli = sceneManager.cli;
+
+                    if (!cli.canDrawCard.get()) {
+                        CLIPrinter.displayError("You can't draw a card now");
+                        return;
+                    }
+
                     SlimGameModel slim = cli.slimGameModel;
 
                     synchronized (cli.slimGameModelLock) {
@@ -266,16 +275,121 @@ public class GameScene extends Scene {
                             return;
                         }
                     }
+
+                    cli.canDrawCard.set(false);
+
+                    cli.getConnectionHandler().sendToGameServer(new DrawResourceDeckCardCommand(cli.token.get()));
                 }),
                 new CLICommand("drawgold", "to draw a gold card from the deck", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
+                    }
 
+                    CLI cli = sceneManager.cli;
+
+                    if (!cli.canDrawCard.get()) {
+                        CLIPrinter.displayError("You can't draw a card now");
+                        return;
+                    }
+
+                    SlimGameModel slim = cli.slimGameModel;
+
+                    synchronized (cli.slimGameModelLock) {
+                        if (slim.goldDeck.isEmpty()) {
+                            CLIPrinter.displayError("The resource deck is empty");
+                            return;
+                        }
+                    }
+
+                    cli.canDrawCard.set(false);
+
+                    cli.getConnectionHandler().sendToGameServer(new DrawGoldDeckCardCommand(cli.token.get()));
                 }),
-                new CLICommand("visiblegold", Arrays.asList("position"),
+                new CLICommand("visiblegold", Arrays.asList("position (0 or 1)"),
                         "to draw a resource card from the visible cards", () -> {
+                            if (args.length != 2) {
+                                CLIPrinter.displayError("Too many arguments");
+                                return;
+                            }
 
+                            CLI cli = sceneManager.cli;
+
+                            if (!cli.canDrawCard.get()) {
+                                CLIPrinter.displayError("You can't draw a card now");
+                                return;
+                            }
+
+                            SlimGameModel slim = cli.slimGameModel;
+
+                            int position;
+
+                            try {
+                                position = Integer.parseInt(args[1]);
+                            } catch (NumberFormatException e) {
+                                CLIPrinter.displayError("Invalid argument");
+                                return;
+                            }
+
+                            if (position != 0 && position != 1) {
+                                CLIPrinter.displayError("Invalid position of visible cards");
+                                return;
+                            }
+
+                            synchronized (cli.slimGameModelLock) {
+                                if (slim.visibleResourceCardsList.get(position) == null) {
+                                    CLIPrinter.displayError("There is no card at that position");
+                                    return;
+                                }
+                            }
+
+                            cli.canDrawCard.set(false);
+
+                            cli.getConnectionHandler()
+                                    .sendToGameServer(new DrawVisibleResourceCardCommand(cli.token.get(), position));
                         }),
-                new CLICommand("visiblegold", Arrays.asList("position"), "to draw a gold card from visible cards",
+                new CLICommand("visiblegold", Arrays.asList("position (0 or 1)"),
+                        "to draw a gold card from the visible cards",
                         () -> {
+                            if (args.length != 2) {
+                                CLIPrinter.displayError("Too many arguments");
+                                return;
+                            }
+
+                            CLI cli = sceneManager.cli;
+
+                            if (!cli.canDrawCard.get()) {
+                                CLIPrinter.displayError("You can't draw a card now");
+                                return;
+                            }
+
+                            SlimGameModel slim = cli.slimGameModel;
+
+                            int position;
+
+                            try {
+                                position = Integer.parseInt(args[1]);
+                            } catch (NumberFormatException e) {
+                                CLIPrinter.displayError("Invalid argument");
+                                return;
+                            }
+
+                            if (position != 0 && position != 1) {
+                                CLIPrinter.displayError("Invalid position of visible cards");
+                                return;
+                            }
+
+                            synchronized (cli.slimGameModelLock) {
+                                if (slim.visibleGoldCardsList.get(position) == null) {
+                                    CLIPrinter.displayError("There is no card at that position");
+                                    return;
+                                }
+                            }
+
+                            cli.canDrawCard.set(false);
+
+                            cli.getConnectionHandler()
+                                    .sendToGameServer(new DrawVisibleGoldCardCommand(cli.token.get(), position));
 
                         }));
     }
