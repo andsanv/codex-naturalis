@@ -37,6 +37,8 @@ public class ConfigController extends Controller {
         rmiButton.setSelected(true);
         socketButton.setToggleGroup(toggleGroup);
 
+        Platform.runLater(() -> System.out.println("hi"));
+
         // initialize submit button
         submitButton.setOnAction(this::handleSubmitClick);
     }

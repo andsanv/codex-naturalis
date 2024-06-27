@@ -111,11 +111,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId) {
-        return;
-    }
-
-    @Override
     public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
 
     }
@@ -162,11 +157,6 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
-        return;
-    }
-
-    @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
 
     }
@@ -178,6 +168,16 @@ public abstract class Controller implements UI {
 
     @Override
     public void handleLastRoundEvent() {
+
+    }
+
+    @Override
+    public void handleLastConnectedPlayerEvent() {
+
+    }
+
+    @Override
+    public void handleLastConnectedPlayerWonEvent() {
 
     }
 

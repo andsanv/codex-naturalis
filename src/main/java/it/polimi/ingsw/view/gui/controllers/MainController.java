@@ -67,6 +67,7 @@ public class MainController extends Controller {
      *
      * @param userInfo the userInfo
      */
+    @Override
     public void handleLoginEvent(UserInfo userInfo, String error) {
         System.out.println("received login event");
         Platform.runLater(() ->  {
@@ -289,17 +290,6 @@ public class MainController extends Controller {
     }
 
     /**
-     * This method handles the received update about the drawn common objective
-     * cards
-     *
-     * @param firstCommonObjectiveId  the id of the first common objective card
-     * @param secondCommonObjectiveId the id of the second common objective card
-     */
-    public void handleCommonObjectiveEvent(int firstCommonObjectiveId, int secondCommonObjectiveId) {
-        Platform.runLater(() -> subController.handleCommonObjectiveEvent(firstCommonObjectiveId, secondCommonObjectiveId));
-    }
-
-    /**
      * This method handles the received update about a direct player to player
      * message
      *
@@ -384,10 +374,6 @@ public class MainController extends Controller {
         Platform.runLater(() -> subController.handleCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability));
     }
 
-    public void handleLimitPointsReachedEvent(PlayerToken playerToken, int score, int limitPoints) {
-        Platform.runLater(() -> subController.handleLimitPointsReachedEvent(playerToken, score, limitPoints));
-    }
-
     /**
      * Handles the ending of the initialization phase of the game, receiving a slim
      * game model and setting up a client's internal model.
@@ -404,5 +390,15 @@ public class MainController extends Controller {
 
     public void handleLastRoundEvent() {
         Platform.runLater(() -> subController.handleLastRoundEvent());
+    }
+
+    @Override
+    public void handleLastConnectedPlayerEvent() {
+
+    }
+
+    @Override
+    public void handleLastConnectedPlayerWonEvent() {
+
     }
 }
