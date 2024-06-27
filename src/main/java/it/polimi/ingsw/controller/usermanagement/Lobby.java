@@ -265,7 +265,7 @@ public class Lobby {
     /**
      * Checks if the user is in one of the active lobbies.
      * 
-     * @param userInfo the user
+     * @param user the user
      * @return true if the user is in a lobby, false otherwise
      */
     public static boolean anyLobbyContains(User user) {
@@ -301,7 +301,7 @@ public class Lobby {
     /**
      * Setter of the GameFlowManager of the lobby
      * 
-     * @return the GameFlowManager reference if it was set, null otherwise
+     * @param gameFlowManager the gameflowmanager to set
      */
     public synchronized void setGameFlowManager(GameFlowManager gameFlowManager) {
         this.gameFlowManager = gameFlowManager;

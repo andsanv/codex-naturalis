@@ -40,8 +40,9 @@ public class CLIPrinter {
 
     /**
      * Prints all available commands.
-     * 
-     * @param msg the available commands
+     *
+     * @param description the description
+     * @param commands the available commands
      */
     public static void displayCommands(String description, List<CLICommand> commands) {
         if (description != null)

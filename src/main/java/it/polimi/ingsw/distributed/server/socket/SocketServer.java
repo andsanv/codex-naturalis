@@ -79,9 +79,6 @@ public class SocketServer {
    * 
    * In both cases, the UserInfo and the ClientHandler are added to the
    * connections map.
-   * 
-   * @throws IOException if there is an error while setting up the streams.
-   * @throws ClassNotFoundException if the command is not recognized.
    */
   public void handleSingleClientConnection(Socket socket) {
     try {

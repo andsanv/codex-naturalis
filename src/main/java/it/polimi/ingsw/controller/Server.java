@@ -235,7 +235,7 @@ public enum Server {
     /**
      * Starts the game by spawing the a game model and controller.
      *
-     * @param user    The UserInfo of the user who tries to start the game
+     * @param userInfo    The UserInfo of the user who tries to start the game
      * @param lobbyId The id of the lobby
      * @return True if the game is started successfully, false if the game doesn't
      *         exist, if the user is not the lobby manager of if the game was

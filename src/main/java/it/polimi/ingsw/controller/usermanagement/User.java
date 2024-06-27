@@ -123,8 +123,7 @@ public final class User {
 
     /**
      * Creates an UserInfo from the give user.
-     * 
-     * @param user the user
+     *
      * @return the UserInfo of the user
      */
     public synchronized UserInfo toUserInfo() {

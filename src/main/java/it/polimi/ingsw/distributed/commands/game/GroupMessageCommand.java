@@ -20,7 +20,6 @@ public class GroupMessageCommand extends MessageCommand {
 
     /**
      * @param sender   the sender of the message
-     * @param receiver the receiver of the message
      * @param message  the message as a string
      */
     public GroupMessageCommand(UserInfo sender, String message) {

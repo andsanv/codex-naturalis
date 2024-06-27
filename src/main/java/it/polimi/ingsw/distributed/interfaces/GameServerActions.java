@@ -24,7 +24,7 @@ public interface GameServerActions extends Remote {
    * This method must be called when connecting to the game server.
    *
    * @param userInfo       the user's information
-   * @param clientMainView the client's game view
+   * @param clientGameView the client's game view
    * @throws RemoteException thrown when a communication error occurs
    * @throws IOException     thrown when an I/O error occurs
    */
