@@ -241,7 +241,6 @@ public class GameFlowManager implements Runnable {
     };
 
     timer.schedule(timeElapsedTask, timeLimit * 1000);
-    notify(new PlayerTurnEvent(getTurn()));
 
     while (true) {
       synchronized (commands) {
@@ -379,6 +378,7 @@ public class GameFlowManager implements Runnable {
     }
 
     turn += 1;
+    notify(new PlayerTurnEvent(getTurn()));
     setState(playCardState);
   }
 

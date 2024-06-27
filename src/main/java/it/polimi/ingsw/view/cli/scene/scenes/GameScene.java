@@ -149,22 +149,29 @@ public class GameScene extends Scene {
 
                     PlayerToken token = PlayerToken.valueOf(args[1].toUpperCase());
 
-                    if (token.equals(cli.token.get())) {
-                        Ansi[][] grid;
-                        synchronized (cli.availablePositionsPlaceholders) {
-                            if (cli.availablePositionsPlaceholders.isEmpty()) {
-                                grid = CLICardUtils.createBoard(cli.getBoard(cli.token.get()));
-                            } else {
-                                grid = CLICardUtils.createBoardWithPlayability(cli.getBoard(cli.token.get()),
-                                        cli.availablePositionsPlaceholders);
-                            }
-                        }
-                        CLIPrinter.printAnsiGrid(grid);
-                    } else {
-                        Ansi[][] grid;
-                        grid = CLICardUtils.createBoard(cli.getBoard(token));
-                        CLIPrinter.printAnsiGrid(grid);
+                    Ansi[][] grid;
+                    grid = CLICardUtils.createBoard(cli.getBoard(token));
+                    CLIPrinter.printAnsiGrid(grid);
+
+                }),
+                new CLICommand("betterboard", "to draw your board with available slots for cards", () -> {
+                    if (args.length != 1) {
+                        CLIPrinter.displayError("Too many arguments");
+                        return;
                     }
+
+                    CLI cli = sceneManager.cli;
+
+                    Ansi[][] grid;
+                    synchronized (cli.availablePositionsPlaceholders) {
+                        if (cli.availablePositionsPlaceholders.isEmpty()) {
+                            grid = CLICardUtils.createBoard(cli.getBoard(cli.token.get()));
+                        } else {
+                            grid = CLICardUtils.createBoardWithPlayability(cli.getBoard(cli.token.get()),
+                                    cli.availablePositionsPlaceholders);
+                        }
+                    }
+                    CLIPrinter.printAnsiGrid(grid);
                 }),
                 new CLICommand("objectives", "to show the common objective and you secret one", () -> {
                     if (args.length != 1) {
@@ -311,7 +318,7 @@ public class GameScene extends Scene {
 
                     cli.getConnectionHandler().sendToGameServer(new DrawGoldDeckCardCommand(cli.token.get()));
                 }),
-                new CLICommand("visiblegold", Arrays.asList("position (0 or 1)"),
+                new CLICommand("visibleres", Arrays.asList("position (0 or 1)"),
                         "to draw a resource card from the visible cards", () -> {
                             if (args.length != 2) {
                                 CLIPrinter.displayError("Too many arguments");

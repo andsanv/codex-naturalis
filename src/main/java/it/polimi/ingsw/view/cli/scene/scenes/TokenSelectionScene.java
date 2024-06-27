@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
-import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;

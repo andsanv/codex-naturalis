@@ -12,6 +12,7 @@ import it.polimi.ingsw.controller.ServerPrinter;
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.events.game.EndedInitializationPhaseEvent;
+import it.polimi.ingsw.distributed.events.game.PlayerTurnEvent;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
@@ -80,6 +81,8 @@ public class InitializationState extends GameState {
                                                                                    // slim
                                                                                    // model
         }
+        gameFlowManager.notify(new PlayerTurnEvent(gameFlowManager.getTurn()));
+
         return true;
     }
 }

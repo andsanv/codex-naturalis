@@ -188,16 +188,6 @@ public class CLI implements UI {
     public CountDownLatch tokenPhaseLatch = new CountDownLatch(1);
 
     /**
-     * CountDownLatch for waiting for the token phase to end.
-     */
-    public CountDownLatch starterCardPhaseLatch = new CountDownLatch(1);
-
-    /**
-     * CountDownLatch for waiting for the token phase to end.
-     */
-    public CountDownLatch objectivePhaseLatch = new CountDownLatch(1);
-
-    /**
      * CountDownLatch for waiting reconnection.
      */
     public CountDownLatch gameReconnectionLatch = new CountDownLatch(1);
@@ -230,7 +220,7 @@ public class CLI implements UI {
     /**
      * Atomic integer for secret objective after the server confirms it.
      */
-    public final AtomicInteger secretObjective = new AtomicInteger();
+    public final AtomicInteger secretObjective = new AtomicInteger(-1);
 
     /**
      * List with direct messages saved as a pair with the sender of the direct
@@ -373,13 +363,13 @@ public class CLI implements UI {
         lastGameError.set(null);
 
         tokenPhaseLatch = new CountDownLatch(1);
-        starterCardPhaseLatch = new CountDownLatch(1);
-        objectivePhaseLatch = new CountDownLatch(1);
 
         playerTurn.set(null);
 
         canDrawCard.set(false);
         canPlayCard.set(false);
+
+        availablePositionsPlaceholders.clear();
     }
 
     /**
@@ -514,6 +504,7 @@ public class CLI implements UI {
     @Override
     public void handleServerError(String error) {
         CLIPrinter.displayError(error);
+        resetPrompt();
     }
 
     @Override
@@ -578,13 +569,8 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedStarterCardPhaseEvent() {
-        waitingGameEvent.set(false);
-        starterCardPhaseLatch.countDown();
-
-        if (sceneManager.getCurrentScene() != ObjectiveCardScene.class) {
-            sceneManager.transition(ObjectiveCardScene.class);
-            resetPrompt();
-        }
+        sceneManager.transition(ObjectiveCardScene.class);
+        resetPrompt();
     }
 
     @Override
@@ -607,13 +593,8 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedObjectiveCardPhaseEvent() {
-        objectivePhaseLatch.countDown();
-        waitingGameEvent.set(false);
-
-        if (sceneManager.getCurrentScene() != EndingGameInitScene.class) {
-            sceneManager.transition(EndingGameInitScene.class);
-            resetPrompt();
-        }
+        sceneManager.transition(EndingGameInitScene.class);
+        resetPrompt();
     }
 
     @Override
@@ -644,6 +625,7 @@ public class CLI implements UI {
         this.gameResults.set(gameResults);
 
         sceneManager.transition(ResultsScene.class);
+        resetPrompt();
     }
 
     @Override
@@ -671,14 +653,12 @@ public class CLI implements UI {
 
     @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
-
         synchronized (slimGameModelLock) {
             this.slimGameModel = slimGameModel;
         }
-        if (sceneManager.getCurrentScene() != GameScene.class) {
-            sceneManager.transition(GameScene.class);
-            resetPrompt();
-        }
+
+        sceneManager.transition(GameScene.class);
+        resetPrompt();
     }
 
     @Override
@@ -761,7 +741,6 @@ public class CLI implements UI {
     @Override
     public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
         synchronized (tokenToUserLock) {
-
             if (currentPlayer.equals(token.get())) {
                 System.out.println("It's your turn " + "(" + currentPlayer + ")");
                 canPlayCard.set(true);
@@ -769,8 +748,8 @@ public class CLI implements UI {
             } else {
                 System.out.println("It's " + tokenToUser.get(currentPlayer) + "'s turn " + "(" + currentPlayer + ")");
             }
-            resetPrompt();
         }
+        resetPrompt();
     }
 
     @Override
@@ -851,6 +830,8 @@ public class CLI implements UI {
 
     @Override
     public void handleLastConnectedPlayerWonEvent() {
+        waitingGameEvent.set(false);
+
         sceneManager.transition(LastPlayerWonScene.class);
         resetPrompt();
     }

@@ -39,26 +39,7 @@ public class StarterCardScene extends Scene {
 
                     ConnectionHandler connectionHandler = cli.getConnectionHandler();
 
-                    cli.waitingGameEvent.set(true);
                     connectionHandler.sendToGameServer(new DrawStarterCardCommand(cli.token.get()));
-                    if (!CLIPrinter.displayLoadingMessage("Drawing card", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                    }
-
-                    if (cli.lastGameError.get() != null) {
-                        CLIPrinter.displayError(cli.lastGameError.get());
-                        cli.lastGameError.set(null);
-                        return;
-                    }
-
-                    Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 23);
-                    CLICardUtils.addCardToMatrix(starterCardAsAnsi,
-                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 0);
-                    CLICardUtils.addCardToMatrix(starterCardAsAnsi,
-                            CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK), 0, 12);
-                    CLIPrinter.printAnsiGrid(starterCardAsAnsi);
-                    System.out.println("   Front       Back    ");
                 }),
                 new CLICommand("front", "to play the front of the drawn card", () -> {
                     if (args.length != 1)
@@ -66,36 +47,17 @@ public class StarterCardScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    if (cli.starterCard.get() == null)
+                    if (cli.starterCard.get() == null) {
                         CLIPrinter.displayError("Draw a card first");
-
-                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
-
-                    cli.waitingGameEvent.set(true);
-                    connectionHandler
-                            .sendToGameServer(new SelectStarterCardSideCommand(cli.token.get(), CardSide.FRONT));
-                    if (!CLIPrinter.displayLoadingMessage("Selecting side", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                    }
-
-                    if (cli.lastGameError.get() != null) {
-                        CLIPrinter.displayError(cli.lastGameError.get());
-                        cli.lastGameError.set(null);
                         return;
                     }
 
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+                    connectionHandler
+                            .sendToGameServer(new SelectStarterCardSideCommand(cli.token.get(), CardSide.FRONT));
+
                     System.out.println("Waiting for all users to draw and choose the side of their starter card");
-
-                    try {
-                        cli.starterCardPhaseLatch.await();
-                    } catch (InterruptedException e) {
-                        sceneManager.stop();
-                    }
-
-                    if (sceneManager.getCurrentScene() != ObjectiveCardScene.class)
-                        sceneManager.transition(ObjectiveCardScene.class);
-
                 }),
                 new CLICommand("back", "to play the back of the drawn card", () -> {
                     if (args.length != 1)
@@ -103,36 +65,39 @@ public class StarterCardScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    if (cli.starterCard.get() == null)
+                    if (cli.starterCard.get() == null) {
                         CLIPrinter.displayError("Draw a card first");
-
-                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
-
-                    cli.waitingGameEvent.set(true);
-                    connectionHandler
-                            .sendToGameServer(new SelectStarterCardSideCommand(cli.token.get(), CardSide.BACK));
-                    if (!CLIPrinter.displayLoadingMessage("Selecting side", cli.waitingGameEvent,
-                            connectionHandler.isConnected, null)) {
-                        sceneManager.transition(ConnectionLostScene.class);
-                    }
-
-                    if (cli.lastGameError.get() != null) {
-                        CLIPrinter.displayError(cli.lastGameError.get());
-                        cli.lastGameError.set(null);
                         return;
                     }
 
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+                    connectionHandler
+                            .sendToGameServer(new SelectStarterCardSideCommand(cli.token.get(), CardSide.BACK));
+
                     System.out.println("Waiting for all users to draw and choose the side of their starter card");
+                }),
+                new CLICommand("show", "to show the drawn starter card",
+                        () -> {
+                            if (args.length != 1)
+                                CLIPrinter.displayError("Invalid option");
 
-                    try {
-                        cli.starterCardPhaseLatch.await();
-                    } catch (InterruptedException e) {
-                        sceneManager.stop();
-                    }
+                            CLI cli = sceneManager.cli;
 
-                    if (sceneManager.getCurrentScene() != ObjectiveCardScene.class)
-                        sceneManager.transition(ObjectiveCardScene.class);
-                }));
+                            if (cli.starterCard.get() == null) {
+                                CLIPrinter.displayError("Draw the objective cards first");
+                                return;
+                            }
+
+                            Ansi[][] starterCardAsAnsi = CLICardUtils.emptyAnsiMatrix(5, 23);
+                            CLICardUtils.addCardToMatrix(starterCardAsAnsi,
+                                    CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.FRONT), 0, 0);
+                            CLICardUtils.addCardToMatrix(starterCardAsAnsi,
+                                    CLICardUtils.cardToMatrix(cli.starterCard.get().first, CardSide.BACK), 0, 12);
+                            CLIPrinter.printAnsiGrid(starterCardAsAnsi);
+                            System.out.println("   Front       Back    ");
+
+                        }));
     }
 
     @Override
