@@ -658,6 +658,7 @@ public class CLI implements UI {
             this.slimGameModel = slimGameModel;
         }
 
+        waitingGameEvent.set(false);
         sceneManager.transition(GameScene.class);
         resetPrompt();
     }

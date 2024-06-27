@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.DynamicTest.stream;
 
 import it.polimi.ingsw.controller.observer.Observer;
 import it.polimi.ingsw.model.GameModel;
@@ -16,6 +17,7 @@ import it.polimi.ingsw.model.corner.CornerTypes;
 import it.polimi.ingsw.model.deck.Decks;
 import it.polimi.ingsw.model.player.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,17 +50,23 @@ class GameModelUpdaterTest {
                 new HashMap<>() {
                     {
                         put(CornerPosition.TOP_LEFT, new Corner(null, CornerTypes.HIDDEN));
-                        put(CornerPosition.TOP_RIGHT, new Corner(Resources.PLANT, CornerTypes.VISIBLE));
+                        put(CornerPosition.TOP_RIGHT,
+                                new Corner(Resources.PLANT, CornerTypes.VISIBLE));
                         put(CornerPosition.BOTTOM_RIGHT, new Corner(null, CornerTypes.VISIBLE));
-                        put(CornerPosition.BOTTOM_LEFT, new Corner(Resources.INSECT, CornerTypes.VISIBLE));
+                        put(CornerPosition.BOTTOM_LEFT,
+                                new Corner(Resources.INSECT, CornerTypes.VISIBLE));
                     }
                 },
                 new HashMap<>() {
                     {
-                        put(CornerPosition.TOP_LEFT, new Corner(Resources.FUNGI, CornerTypes.VISIBLE));
-                        put(CornerPosition.TOP_RIGHT, new Corner(Resources.PLANT, CornerTypes.VISIBLE));
-                        put(CornerPosition.BOTTOM_RIGHT, new Corner(Resources.ANIMAL, CornerTypes.VISIBLE));
-                        put(CornerPosition.BOTTOM_LEFT, new Corner(Resources.INSECT, CornerTypes.VISIBLE));
+                        put(CornerPosition.TOP_LEFT,
+                                new Corner(Resources.FUNGI, CornerTypes.VISIBLE));
+                        put(CornerPosition.TOP_RIGHT,
+                                new Corner(Resources.PLANT, CornerTypes.VISIBLE));
+                        put(CornerPosition.BOTTOM_RIGHT,
+                                new Corner(Resources.ANIMAL, CornerTypes.VISIBLE));
+                        put(CornerPosition.BOTTOM_LEFT,
+                                new Corner(Resources.INSECT, CornerTypes.VISIBLE));
                     }
                 });
 
@@ -69,16 +77,21 @@ class GameModelUpdaterTest {
                     {
                         put(CornerPosition.TOP_LEFT, new Corner(null, CornerTypes.VISIBLE));
                         put(CornerPosition.TOP_RIGHT, new Corner(null, CornerTypes.VISIBLE));
-                        put(CornerPosition.BOTTOM_RIGHT, new Corner(Resources.INSECT, CornerTypes.VISIBLE));
+                        put(CornerPosition.BOTTOM_RIGHT,
+                                new Corner(Resources.INSECT, CornerTypes.VISIBLE));
                         put(CornerPosition.BOTTOM_LEFT, new Corner(null, CornerTypes.VISIBLE));
                     }
                 },
                 new HashMap<>() {
                     {
-                        put(CornerPosition.TOP_LEFT, new Corner(Resources.FUNGI, CornerTypes.VISIBLE));
-                        put(CornerPosition.TOP_RIGHT, new Corner(Resources.PLANT, CornerTypes.VISIBLE));
-                        put(CornerPosition.BOTTOM_RIGHT, new Corner(Resources.ANIMAL, CornerTypes.VISIBLE));
-                        put(CornerPosition.BOTTOM_LEFT, new Corner(Resources.INSECT, CornerTypes.VISIBLE));
+                        put(CornerPosition.TOP_LEFT,
+                                new Corner(Resources.FUNGI, CornerTypes.VISIBLE));
+                        put(CornerPosition.TOP_RIGHT,
+                                new Corner(Resources.PLANT, CornerTypes.VISIBLE));
+                        put(CornerPosition.BOTTOM_RIGHT,
+                                new Corner(Resources.ANIMAL, CornerTypes.VISIBLE));
+                        put(CornerPosition.BOTTOM_LEFT,
+                                new Corner(Resources.INSECT, CornerTypes.VISIBLE));
                     }
                 });
 
@@ -115,50 +128,65 @@ class GameModelUpdaterTest {
 
         int oldId = redPlayerHand.getCards().get(0).id;
         if (redPlayerHand.getCards().get(0).enoughResources(redPlayerBoard.playerElements, CardSide.FRONT)) {
-            assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), redPlayerHand.getCards().get(0).id,
+            assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1),
+                    redPlayerHand.getCards().get(0).id,
                     CardSide.FRONT));
             assertNotNull(redPlayerBoard.getCard(new Coords(1, 1)));
             assertEquals(oldId, redPlayerBoard.getCard(new Coords(1, 1)).id);
-            assertTrue(redPlayerHand.getCards().stream().filter(Objects::nonNull).noneMatch(x -> x.id == oldId));
+            assertTrue(redPlayerHand.getCards().stream().filter(Objects::nonNull)
+                    .noneMatch(x -> x.id == oldId));
         } else {
-            assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), redPlayerHand.getCards().get(0).id,
+            assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1),
+                    redPlayerHand.getCards().get(0).id,
                     CardSide.FRONT));
             assertNull(redPlayerBoard.getCard(new Coords(1, 1)));
-            assertFalse(redPlayerHand.getCards().stream().filter(Objects::nonNull).noneMatch(x -> x.id == oldId));
+            assertFalse(redPlayerHand.getCards().stream().filter(Objects::nonNull)
+                    .noneMatch(x -> x.id == oldId));
         }
 
         PlayableCard oldCard = redPlayerHand.getCards().get(2);
-        assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(-1, 1), redPlayerHand.getCards().get(2).id,
+        assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(-1, 1),
+                redPlayerHand.getCards().get(2).id,
                 CardSide.FRONT));
         assertTrue(redPlayerHand.getCards().contains(oldCard));
 
         PlayableCard resourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull)
                 .filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
 
-        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(-1, -1), resourceCard.id, CardSide.FRONT));
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(-1, -1), resourceCard.id,
+                CardSide.FRONT));
         assertNotNull(redPlayerBoard.getCard(new Coords(-1, -1)));
         assertEquals(resourceCard.id, redPlayerBoard.getCard(new Coords(-1, -1)).id);
-        assertTrue(redPlayerHand.getCards().stream().filter(Objects::nonNull).noneMatch(x -> x.id == resourceCard.id));
+        assertTrue(redPlayerHand.getCards().stream().filter(Objects::nonNull)
+                .noneMatch(x -> x.id == resourceCard.id));
 
-        PlayableCard lastCard = redPlayerHand.getCards().stream().filter(Objects::nonNull).findFirst().orElse(null);
+        PlayableCard lastCard = redPlayerHand.getCards().stream().filter(Objects::nonNull).findFirst()
+                .orElse(null);
         if (lastCard.enoughResources(redPlayerBoard.playerElements, CardSide.FRONT)) {
-            if (redPlayerBoard.getCard(new Coords(-1, -1)).getActiveCorners().get(CornerPosition.BOTTOM_RIGHT)
+            if (redPlayerBoard.getCard(new Coords(-1, -1)).getActiveCorners()
+                    .get(CornerPosition.BOTTOM_RIGHT)
                     .canPlaceCardAbove()) {
-                assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, -2), lastCard.id, CardSide.FRONT));
+                assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, -2), lastCard.id,
+                        CardSide.FRONT));
                 assertNotNull(redPlayerBoard.getCard(new Coords(0, -2)));
                 assertEquals(lastCard.id, redPlayerBoard.getCard(new Coords(0, -2)).id);
                 assertTrue(
-                        redPlayerHand.getCards().stream().filter(Objects::nonNull).noneMatch(x -> x.id == lastCard.id));
+                        redPlayerHand.getCards().stream().filter(Objects::nonNull)
+                                .noneMatch(x -> x.id == lastCard.id));
             } else {
-                assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, -2), lastCard.id, CardSide.FRONT));
+                assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, -2), lastCard.id,
+                        CardSide.FRONT));
                 assertNull(redPlayerBoard.getCard(new Coords(0, -2)));
                 assertFalse(
-                        redPlayerHand.getCards().stream().filter(Objects::nonNull).noneMatch(x -> x.id == lastCard.id));
+                        redPlayerHand.getCards().stream().filter(Objects::nonNull)
+                                .noneMatch(x -> x.id == lastCard.id));
             }
         } else {
-            assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, -2), lastCard.id, CardSide.FRONT));
+            assertFalse(gameModelUpdater.playCard(PlayerToken.RED, new Coords(0, -2), lastCard.id,
+                    CardSide.FRONT));
             assertNull(redPlayerBoard.getCard(new Coords(0, -2)));
-            assertFalse(redPlayerHand.getCards().stream().filter(Objects::nonNull).noneMatch(x -> x.id == lastCard.id));
+            assertFalse(redPlayerHand.getCards().stream().filter(Objects::nonNull)
+                    .noneMatch(x -> x.id == lastCard.id));
         }
     }
 
@@ -176,19 +204,23 @@ class GameModelUpdaterTest {
         gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id, CardSide.FRONT);
 
         assertEquals(
-                resourceCard.getActiveCorners().values().stream().map(x -> x.element).filter(Optional::isPresent)
+                resourceCard.getActiveCorners().values().stream().map(x -> x.element)
+                        .filter(Optional::isPresent)
                         .filter(x -> x.get() == Resources.PLANT).count(),
                 (long) redPlayerBoard.playerElements.get(Resources.PLANT));
         assertEquals(
-                1 + resourceCard.getActiveCorners().values().stream().map(x -> x.element).filter(Optional::isPresent)
+                1 + resourceCard.getActiveCorners().values().stream().map(x -> x.element)
+                        .filter(Optional::isPresent)
                         .filter(x -> x.get() == Resources.INSECT).count(),
                 (long) redPlayerBoard.playerElements.get(Resources.INSECT));
         assertEquals(
-                resourceCard.getActiveCorners().values().stream().map(x -> x.element).filter(Optional::isPresent)
+                resourceCard.getActiveCorners().values().stream().map(x -> x.element)
+                        .filter(Optional::isPresent)
                         .filter(x -> x.get() == Resources.ANIMAL).count(),
                 (long) redPlayerBoard.playerElements.get(Resources.ANIMAL));
         assertEquals(
-                resourceCard.getActiveCorners().values().stream().map(x -> x.element).filter(Optional::isPresent)
+                resourceCard.getActiveCorners().values().stream().map(x -> x.element)
+                        .filter(Optional::isPresent)
                         .filter(x -> x.get() == Resources.FUNGI).count(),
                 (long) redPlayerBoard.playerElements.get(Resources.FUNGI));
     }
@@ -208,7 +240,8 @@ class GameModelUpdaterTest {
 
         PlayableCard resourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull)
                 .filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id, CardSide.FRONT));
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id,
+                CardSide.FRONT));
         assertEquals(2, redPlayerHand.size());
 
         int oldDeckSize = decks.resourceCardsDeck.size();
@@ -234,7 +267,8 @@ class GameModelUpdaterTest {
 
         PlayableCard resourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull)
                 .filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id, CardSide.FRONT));
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id,
+                CardSide.FRONT));
         assertEquals(2, redPlayerHand.size());
 
         int oldDeckSize = decks.goldCardsDeck.size();
@@ -261,7 +295,8 @@ class GameModelUpdaterTest {
 
         PlayableCard resourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull)
                 .filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id, CardSide.FRONT));
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id,
+                CardSide.FRONT));
         assertEquals(2, redPlayerHand.size());
 
         int firstFreeIndex = redPlayerHand.getFirstFree();
@@ -290,7 +325,8 @@ class GameModelUpdaterTest {
 
         PlayableCard resourceCard = redPlayerHand.getCards().stream().filter(Objects::nonNull)
                 .filter(x -> x.getClass().equals(ResourceCard.class)).findFirst().orElse(null);
-        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id, CardSide.FRONT));
+        assertTrue(gameModelUpdater.playCard(PlayerToken.RED, new Coords(1, 1), resourceCard.id,
+                CardSide.FRONT));
         assertEquals(2, redPlayerHand.size());
 
         int firstFreeIndex = redPlayerHand.getFirstFree();
@@ -363,7 +399,8 @@ class GameModelUpdaterTest {
         assertEquals(gameModel.tokenToPlayer.get(PlayerToken.RED).playerBoard.board.get(new Coords(0, 0)).id,
                 slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).first);
         assertEquals(
-                gameModel.tokenToPlayer.get(PlayerToken.RED).playerBoard.board.get(new Coords(0, 0)).getPlayedSide(),
+                gameModel.tokenToPlayer.get(PlayerToken.RED).playerBoard.board.get(new Coords(0, 0))
+                        .getPlayedSide(),
                 slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).second);
         assertEquals(new Coords(0, 0), slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).third);
 
@@ -381,7 +418,8 @@ class GameModelUpdaterTest {
         assertEquals(gameModel.tokenToPlayer.get(PlayerToken.BLUE).playerBoard.board.get(new Coords(0, 0)).id,
                 slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).first);
         assertEquals(
-                gameModel.tokenToPlayer.get(PlayerToken.BLUE).playerBoard.board.get(new Coords(0, 0)).getPlayedSide(),
+                gameModel.tokenToPlayer.get(PlayerToken.BLUE).playerBoard.board.get(new Coords(0, 0))
+                        .getPlayedSide(),
                 slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).second);
         assertEquals(new Coords(0, 0), slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).third);
     }
@@ -390,17 +428,11 @@ class GameModelUpdaterTest {
     void slimGameModelTest() {
         SlimGameModel slimGameModel = gameModelUpdater.getSlimGameModel();
 
-        //TODO: Remove printline
-        slimGameModel.tokenToHand.entrySet().stream().forEach(e -> {System.out.print(e.getKey() + ": "); e.getValue().stream().forEach(a -> System.out.print(a + " ")); System.out.println(); });
-
         assertEquals(0, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(0).first);
         assertEquals(1, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(0).first);
 
-
-
         assertEquals(1, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).size());
         assertEquals(1, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).size());
-
 
         slimGameModel.applyUpdatedScoreTrackEvent(PlayerToken.RED, 5);
         assertEquals(5, slimGameModel.scores.get(PlayerToken.RED));
@@ -410,15 +442,17 @@ class GameModelUpdaterTest {
         assertEquals(15, slimGameModel.scores.get(PlayerToken.RED));
         assertEquals(2, slimGameModel.scores.get(PlayerToken.BLUE));
 
-        Map<Elements, Integer> elements = new HashMap<>() {{
-            put(Resources.ANIMAL, 3);
-            put(Resources.PLANT, 1);
-            put(Resources.INSECT, 5);
-            put(Resources.FUNGI, 0);
-            put(Items.MANUSCRIPT, 7);
-            put(Items.QUILL, 9);
-            put(Items.INKWELL, 1);
-        }};
+        Map<Elements, Integer> elements = new HashMap<>() {
+            {
+                put(Resources.ANIMAL, 3);
+                put(Resources.PLANT, 1);
+                put(Resources.INSECT, 5);
+                put(Resources.FUNGI, 0);
+                put(Items.MANUSCRIPT, 7);
+                put(Items.QUILL, 9);
+                put(Items.INKWELL, 1);
+            }
+        };
 
         slimGameModel.applyPlayerElementsEvent(PlayerToken.RED, elements);
         assertEquals(3, slimGameModel.tokenToElements.get(PlayerToken.RED).get(Resources.ANIMAL));
@@ -430,58 +464,69 @@ class GameModelUpdaterTest {
         assertEquals(1, slimGameModel.tokenToElements.get(PlayerToken.RED).get(Items.INKWELL));
         assertNotSame(elements, slimGameModel.tokenToElements.get(PlayerToken.RED));
 
-        //TODO: update apply card so it removes the card
-        slimGameModel.applyPlayedCardEvent(PlayerToken.RED, 7, CardSide.FRONT, new Coords(7,13));
-        slimGameModel.tokenToHand.entrySet().stream().forEach(e -> {System.out.print(e.getKey() + ": "); e.getValue().stream().forEach(a -> System.out.print(a + " ")); System.out.println(); });
+        int cardIdRed = slimGameModel.tokenToHand.get(PlayerToken.RED).get(1);
+        slimGameModel.applyPlayedCardEvent(PlayerToken.RED, slimGameModel.tokenToHand.get(PlayerToken.RED).get(1), CardSide.FRONT, new Coords(7, 13));
 
-        assertEquals(slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).first, 7);
+        assertEquals(slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).first, cardIdRed);
         assertEquals(slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).second, CardSide.FRONT);
-        assertEquals(slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).third, new Coords(7,13));
+        assertEquals(slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).get(1).third, new Coords(7, 13));
 
         assertEquals(2, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).size());
         assertEquals(1, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).size());
 
-        slimGameModel.applyPlayedCardEvent(PlayerToken.BLUE, 6, CardSide.FRONT, new Coords(9, 15));
-        //TODO: Remove printline
-        slimGameModel.tokenToHand.entrySet().stream().forEach(e -> {System.out.print(e.getKey() + ": "); e.getValue().stream().forEach(a -> System.out.print(a + " ")); System.out.println(); });
+        int cardIdBlue = slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(0);
+        slimGameModel.applyPlayedCardEvent(PlayerToken.BLUE, slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(0), CardSide.FRONT, new Coords(9, 15));
 
-        assertEquals(6, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(1).first);
+        assertEquals(cardIdBlue, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(1).first);
         assertEquals(CardSide.FRONT, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(1).second);
         assertEquals(new Coords(9, 15), slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).get(1).third);
         assertEquals(2, slimGameModel.tokenToPlayedCards.get(PlayerToken.RED).size());
         assertEquals(2, slimGameModel.tokenToPlayedCards.get(PlayerToken.BLUE).size());
 
-//        int topCardId = gameModel.goldCardsDeck.getNextCardId();
-//        int nextCardId = gameModel.goldCardsDeck.asListOfIds().get(gameModel.goldCardsDeck.size() - 2);
-//        slimGameModel.applyDrawnGoldDeckCardEvent(PlayerToken.RED, topCardId, false, nextCardId, 2);
-//
-//        assertEquals(topCardId, slimGameModel.tokenToHand.get(PlayerToken.RED).get(2));
-//        assertEquals(nextCardId, slimGameModel.goldDeck.getLast());
-//
-//        topCardId = gameModel.resourceCardsDeck.getNextCardId();
-//        nextCardId = gameModel.resourceCardsDeck.asListOfIds().get(gameModel.resourceCardsDeck.size() - 2);
-//        slimGameModel.applyDrawnResourceDeckCardEvent(PlayerToken.BLUE, topCardId, false, nextCardId, 0);
-//        assertEquals(topCardId, slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(0));
-//        assertEquals(nextCardId, slimGameModel.resourceDeck.getLast());
-
-        int topCardId = gameModel.resourceCardsDeck.getNextCardId();
-        int nextCardId = gameModel.resourceCardsDeck.asListOfIds().get(gameModel.resourceCardsDeck.size() - 2);
+        int topCardId = gameModel.goldCardsDeck.getNextCardId();
+        int nextCardId =
+        gameModel.goldCardsDeck.asListOfIds().get(gameModel.goldCardsDeck.size() -
+        2);
+        slimGameModel.applyDrawnGoldDeckCardEvent(PlayerToken.RED, topCardId, false,
+        nextCardId, 2);
+        
+        assertEquals(topCardId,
+        slimGameModel.tokenToHand.get(PlayerToken.RED).get(2));
+        assertEquals(nextCardId, slimGameModel.goldDeck.getLast());
+        
+        topCardId = gameModel.resourceCardsDeck.getNextCardId();
+        nextCardId =
+        gameModel.resourceCardsDeck.asListOfIds().get(gameModel.resourceCardsDeck.size()
+        - 2);
+        gameModel.resourceCardsDeck.anonymousDraw();
+        slimGameModel.applyDrawnResourceDeckCardEvent(PlayerToken.BLUE, topCardId,
+        false, nextCardId, 0);
+        assertEquals(topCardId,
+        slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(0));
+        assertEquals(nextCardId, slimGameModel.resourceDeck.getLast());
+        topCardId = gameModel.resourceCardsDeck.getNextCardId();
+        nextCardId = gameModel.resourceCardsDeck.asListOfIds().get(gameModel.resourceCardsDeck.size() - 2);
         int initialCardId = gameModel.visibleResourceCards.get(0).id;
-        slimGameModel.applyDrawnVisibleResourceCardEvent(PlayerToken.RED, 0, slimGameModel.visibleResourceCardsList.get(0), slimGameModel.resourceDeck.getLast(), false, nextCardId, 1);
+        slimGameModel.applyDrawnVisibleResourceCardEvent(PlayerToken.RED, 0,
+                slimGameModel.visibleResourceCardsList.get(0), slimGameModel.resourceDeck.getLast(),
+                false, slimGameModel.resourceDeck.get(slimGameModel.resourceDeck.size() - 2), 1);
 
         assertEquals(initialCardId, slimGameModel.tokenToHand.get(PlayerToken.RED).get(1));
         assertEquals(topCardId, slimGameModel.visibleResourceCardsList.get(0));
 
         assertEquals(nextCardId, slimGameModel.resourceDeck.get(gameModel.resourceCardsDeck.size() - 2));
 
+
+        gameModel.goldCardsDeck.anonymousDraw();
         topCardId = gameModel.goldCardsDeck.getNextCardId();
         nextCardId = gameModel.goldCardsDeck.asListOfIds().get(gameModel.goldCardsDeck.size() - 2);
-        initialCardId = gameModel.visibleGoldCards.get(0).id;
+        initialCardId = gameModel.visibleGoldCards.get(1).id;
+        slimGameModel.applyDrawnVisibleGoldCardEvent(PlayerToken.BLUE, 1,
+                slimGameModel.visibleGoldCardsList.get(1), slimGameModel.goldDeck.getLast(), false,
+                slimGameModel.goldDeck.get(slimGameModel.goldDeck.size() - 2), 2);
 
-        slimGameModel.applyDrawnVisibleGoldCardEvent(PlayerToken.BLUE, 1, slimGameModel.visibleResourceCardsList.get(1), slimGameModel.goldDeck.getLast(), false, slimGameModel.goldDeck.get(slimGameModel.goldDeck.size() - 2), 2);
-        //assertEquals(initialCardId, slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(2));
+                assertEquals(initialCardId, slimGameModel.tokenToHand.get(PlayerToken.BLUE).get(2));
         assertEquals(topCardId, slimGameModel.visibleGoldCardsList.get(1));
-        //assertEquals(nextCardId, slimGameModel.resourceDeck.get(gameModel.resourceCardsDeck.size() - 2));
-
+        assertEquals(nextCardId, slimGameModel.goldDeck.get(gameModel.goldCardsDeck.size() - 2));
     }
 }

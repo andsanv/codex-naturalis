@@ -33,7 +33,8 @@ public class GameScene extends Scene {
         super(sceneManager);
 
         this.commands = Arrays.asList(
-                new CLICommand("play", Arrays.asList("card 1, 2 or 3 of hand", "placeholder number", "f or b (front or back)"),
+                new CLICommand("play",
+                        Arrays.asList("card 1, 2 or 3 of hand", "placeholder number", "f or b (front or back)"),
                         "to play a card", () -> {
                             if (args.length != 4) {
                                 CLIPrinter.displayError("Invalid arguments");
@@ -157,7 +158,7 @@ public class GameScene extends Scene {
                     CLIPrinter.printAnsiGrid(grid);
 
                 }),
-                new CLICommand("betterboard", "to draw your board with available slots for cards", () -> {
+                new CLICommand("myboard", "to draw your board with available slots for cards", () -> {
                     if (args.length != 1) {
                         CLIPrinter.displayError("Too many arguments");
                         return;
@@ -167,7 +168,7 @@ public class GameScene extends Scene {
 
                     Ansi[][] grid;
                     synchronized (cli.availablePositionsPlaceholders) {
-                        if (cli.availablePositionsPlaceholders.isEmpty()) {
+                        if (cli.availablePositionsPlaceholders.isEmpty() || !cli.canPlayCard.get()) {
                             grid = CLICardUtils.createBoard(cli.getBoard(cli.token.get()));
                         } else {
                             grid = CLICardUtils.createBoardWithPlayability(cli.getBoard(cli.token.get()),

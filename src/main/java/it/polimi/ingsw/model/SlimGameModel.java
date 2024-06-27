@@ -159,6 +159,8 @@ public class SlimGameModel implements Serializable {
                 .max(Integer::compare)
                 .orElse(0);
 
+        tokenToHand.get(playerToken).set(tokenToHand.get(playerToken).indexOf(Integer.valueOf(cardId)), null);
+
         playedCards.put(lastId + 1, new Trio<>(cardId, cardSide, coords));
     }
 
