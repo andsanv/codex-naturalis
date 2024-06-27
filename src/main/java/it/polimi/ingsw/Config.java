@@ -31,6 +31,7 @@ public final class Config {
         if (param.length == 2) {
           params.put(param[0], param[1]);
         } else {
+          System.out.println("Invalid parameter: " + arg);
           return false;
         }
       }
@@ -39,7 +40,7 @@ public final class Config {
     if (params.containsKey("server-ip"))
       Config.setServerIP(params.get("server-ip"));
     if (params.containsKey("socket-port"))
-      Config.setMainSocketPort(Integer.parseInt(params.get("main-socket-port")));
+      Config.setMainSocketPort(Integer.parseInt(params.get("socket-port")));
     if (params.containsKey("rmi-port"))
       Config.setRMIServerPort(Integer.parseInt(params.get("rmi-port")));
 

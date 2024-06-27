@@ -51,6 +51,8 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
     try {   
       registry = LocateRegistry.createRegistry(Config.RMIServerPort);
       registry.bind(Config.RMIServerName, this);
+
+      ServerPrinter.displayInfo("RMIServer started on port " + Config.RMIServerPort);
     } catch (RemoteException e) {
       ServerPrinter.displayError("Error: " + e.toString());
       e.printStackTrace();
