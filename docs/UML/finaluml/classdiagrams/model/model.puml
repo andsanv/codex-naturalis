@@ -1,0 +1,280 @@
+@startuml
+
+
+top to bottom direction
+skinparam linetype ortho
+
+package card {
+
+    package objective {
+
+        interface ObjectiveStrategy << interface >> {
+          + getCompletedOccurrences(PlayerBoard): int
+        }
+
+        class ItemsObjectiveStrategy {
+          - requiredElements: Map<Elements, Integer>
+        }
+
+        class PatternObjectiveStrategy {
+          - pattern: Map<Coords, Resources>
+        }
+    }
+
+    abstract class Card {
+      + id: int
+    }
+
+    enum CardSide << enumeration >> {
+      + FRONT
+      + BACK
+    }
+
+    class ObjectiveCard {
+      - objectiveStrategy: ObjectiveStrategy
+      - points: int
+      + computePoints(PlayerBoard): int
+    }
+
+    abstract class PlayableCard {
+      + PlayableCard(int, Map<CornerPosition, Corner>, Map<CornerPosition, Corner>, Resources, PointsType):
+      - backCorners: Map<CornerPosition, Corner>
+      + type: Optional<Resources>
+      + pointsType: PointsType
+      - frontCorners: Map<CornerPosition, Corner>
+      - activeCorners: Map<CornerPosition, Corner>
+      - playedSide: CardSide
+      + playSide(CardSide): void
+      + enoughResources(Map<Elements, Integer>, CardSide): boolean
+    }
+
+    enum PointsType << enumeration >> {
+      + ZERO
+      + ONE
+      + ONE_PER_MANUSCRIPT
+      + ONE_PER_INKWELL
+      + FIVE
+      + ONE_PER_QUILL
+      + TWO_PER_COVERED_CORNER
+      + THREE
+    }
+
+    class ResourceCard {
+    }
+
+    class GoldCard {
+      - requiredResources: Map<Resources, Integer>
+      + enoughResources(Map<Elements, Integer>, CardSide): boolean
+    }
+
+    class StarterCard {
+      - centralResources: Set<Resources>
+    }
+}
+
+package common {
+
+    interface Elements << interface >>
+
+    enum Items << enumeration >> {
+      + MANUSCRIPT
+      + QUILL
+      + INKWELL
+    }
+
+    enum Resources << enumeration >> {
+      + INSECT
+      + FUNGI
+      + ANIMAL
+      + PLANT
+    }
+}
+
+package corner {
+
+    class Corner {
+      + type: CornerTypes
+      + element: Optional<Elements>
+      + canPlaceCardAbove(): boolean
+    }
+
+    enum CornerPosition << enumeration >> {
+      + BOTTOM_RIGHT
+      + TOP_RIGHT
+      + BOTTOM_LEFT
+      + TOP_LEFT
+      + getOpposite(): CornerPosition
+    }
+
+    enum CornerTypes << enumeration >> {
+      + VISIBLE
+      + COVERED
+      + HIDDEN
+    }
+}
+
+package deck {
+
+    class Deck {
+      - deck: Stack<CardType>
+      + asListOfIds(): List<Integer>
+      + anonymousDraw(): Trio<Optional<CardType>, Boolean, Integer>
+      + getNextCardId(): Integer
+      + isEmpty(): boolean
+      + draw(PlayerToken, int): Optional<CardType>
+    }
+
+    class Decks {
+      + objectiveCardsDeck: Deck<ObjectiveCard>
+      + resourceCardsDeck: Deck<ResourceCard>
+      + starterCardsDeck: Deck<StarterCard>
+      + goldCardsDeck: Deck<GoldCard>
+    }
+
+    class GoldDeckCreator {
+      - path: Path
+    }
+
+    class ObjectiveDeckCreator {
+      - path: Path
+    }
+
+    class ResourceDeckCreator {
+      - path: Path
+    }
+
+    class StarterDeckCreator {
+      - path: Path
+    }
+
+    class VisibleCardsList {
+      - cards: List<CardType>
+      + deck: Deck<CardType>
+      + draw(PlayerToken, int, int): Optional<CardType>
+    }
+}
+
+package player {
+
+    class Coords {
+      + x: int
+      + y: int
+    }
+
+    class Player {
+      + playerHand: PlayerHand
+      + secretObjective: ObjectiveCard
+      + playerBoard: PlayerBoard
+    }
+
+    class PlayerBoard {
+      + playerElements: Map<Elements, Integer>
+      + cardsPlacementOrder: Map<Integer, Pair<PlayableCard, Coords>>
+      - STARTER_CARD_COORDINATES: Coords
+      + board: Map<Coords, PlayableCard>
+      + adjacentCorners(Coords): Map<CornerPosition, Corner>
+      + updatePlayerElements(PlayerToken, Coords): void
+      + getCard(Coords): PlayableCard
+      + adjacentCards(Coords): Map<CornerPosition, PlayableCard>
+      + canPlaceCardAt(Coords, PlayableCard, CardSide): boolean
+      + placeCard(PlayerToken, Coords, PlayableCard, CardSide): void
+      + availableCoords(): List<Coords>
+      + adjacentCoords(Coords): Map<CornerPosition, Coords>
+    }
+
+    class PlayerHand {
+      + HAND_SIZE: int
+      - cards: PlayableCard[]
+      + add(PlayableCard): int
+      + remove(PlayableCard): boolean
+      + getFirstFree(): int
+    }
+
+    enum PlayerToken << enumeration >> {
+      + GREEN
+      + YELLOW
+      + BLUE
+      + RED
+    }
+}
+
+class GameModel {
+  + resourceCardsDeck: Deck<ResourceCard>
+  + goldCardsDeck: Deck<GoldCard>
+  + starterCardsDeck: Deck<StarterCard>
+  + visibleResourceCards: VisibleCardsList<ResourceCard>
+  + tokenToPlayer: Map<PlayerToken, Player>
+  + visibleGoldCards: VisibleCardsList<GoldCard>
+  + commonObjectives: List<ObjectiveCard>
+  + objectiveCardsDeck: Deck<ObjectiveCard>
+  + scoreTrack: ScoreTrack
+}
+
+class ScoreTrack {
+  - alreadyNotified: boolean
+  - scores: Map<PlayerToken, Integer>
+  - limitScore: int
+  + updatePlayerScore(PlayerToken, Integer): void
+  + limitPointsReached(): boolean
+}
+
+
+GameModel                "1" *--> "\n1" Deck
+GameModel                "1" *--> "\n*" ObjectiveCard
+GameModel                "1" *--> "\n*" Player
+GameModel                "1" *--> "\n*" PlayerToken
+GameModel                "1" *--> "\n1" ScoreTrack
+GameModel                "1" *--> "\n1" VisibleCardsList
+
+ScoreTrack               "1" *--> "\n*" PlayerToken
+
+ResourceCard              --^  PlayableCard
+PlayableCard              --^  Card
+PlayableCard             "1" *--> "\n1" CardSide
+PlayableCard             "1" *--> "\n*" Corner
+PlayableCard             "1" *--> "\n*" CornerPosition
+PlayableCard             "1" *--> "\n1" PointsType
+GoldCard                  --^  PlayableCard
+StarterCard               --^  PlayableCard
+ObjectiveCard             --^  Card
+ObjectiveCard            "1" *--> "\n1" ObjectiveStrategy
+
+PlayableCard -[hidden]u- Card
+ObjectiveCard -[hidden]u- Card
+GoldCard  -[hidden]u- PlayableCard
+ResourceCard  -[hidden]u- PlayableCard
+StarterCard  -[hidden]u- PlayableCard
+PointsType -[hidden]r- PlayableCard
+CardSide -[hidden]u- PointsType
+ObjectiveCard -[hidden]r- objective
+
+
+Items                     --^  Elements
+Resources                 --^  Elements
+Items                  <-[hidden]u- Elements
+Resources              <-[hidden]u- Elements
+
+ObjectiveDeckCreator      -->  Deck                     : "«create»"
+GoldDeckCreator           -->  Deck                     : "«create»"
+ResourceDeckCreator       -->  Deck                     : "«create»"
+StarterDeckCreator        -->  Deck                     : "«create»"
+Deck                      --d>  Card
+Decks                    "1" *--l> "\n1" Deck
+VisibleCardsList         "1" *--> "\n1" Deck
+
+ItemsObjectiveStrategy    --^  ObjectiveStrategy
+PatternObjectiveStrategy  --^  ObjectiveStrategy
+PatternObjectiveStrategy "1" *--> "\n*" Coords
+PatternObjectiveStrategy "1" *--> "\n*" Resources
+
+Corner                   "1" *--> "\n1" CornerTypes
+
+Player                   "1" *--> "\n1" ObjectiveCard
+Player                   "1" *--> "\n1" PlayerBoard
+Player                   "1" *--> "\n1" PlayerHand
+PlayerBoard              "1" *--> "\n*" Coords
+PlayerBoard              "1" *--> "\n*" PlayableCard
+PlayerHand               "1" *--> "\n*" PlayableCard
+
+
+@enduml
