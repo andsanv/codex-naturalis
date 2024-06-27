@@ -65,7 +65,6 @@ public abstract class Scene {
      * Perfoms an action depending on the given input
      * 
      * @param args         the user input parsed as a list of strings
-     * @param sceneManager the sceneManager that is calling this method
      */
     public void handleCommand(String[] args) {
         this.args = args;

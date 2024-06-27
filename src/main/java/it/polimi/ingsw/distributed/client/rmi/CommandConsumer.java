@@ -6,7 +6,9 @@ import it.polimi.ingsw.distributed.commands.main.MainCommand;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * This class is a consumer of the command queues in the RMIConnectionHandler.
+ * This class is a consumer of the command queues in the RMIConnectionHandler
+ * 
+ * @param <Command> the type of the command to be consumed.
  */
 public class CommandConsumer<Command> implements Runnable {
 

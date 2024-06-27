@@ -11,4 +11,10 @@ import java.io.Serializable;
  * sent over the network.
  */
 public abstract class Event implements Serializable {
+    
+    /**
+     * Default constructor.
+     */
+    public Event() {
+    }
 }

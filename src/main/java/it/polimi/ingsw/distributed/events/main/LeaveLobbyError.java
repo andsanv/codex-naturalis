@@ -1,5 +1,6 @@
 package it.polimi.ingsw.distributed.events.main;
 
+import it.polimi.ingsw.distributed.commands.main.LeaveLobbyCommand;
 import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**

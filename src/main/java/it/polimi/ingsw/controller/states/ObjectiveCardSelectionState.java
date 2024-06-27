@@ -147,11 +147,6 @@ public class ObjectiveCardSelectionState extends GameState {
     gameFlowManager.setState(gameFlowManager.initializationState);
     ServerPrinter.displayInfo("Objective phase ended for lobby " + gameFlowManager.lobbyId);
 
-    try {
-      Thread.sleep(500);
-    } catch (InterruptedException e) {
-      ServerPrinter.displayError("FlowManager interrupted");
-    }
 
     gameFlowManager.notify(new EndedObjectiveCardPhaseEvent());
     return new HashMap<>(tokenToChosenObjectiveCard);

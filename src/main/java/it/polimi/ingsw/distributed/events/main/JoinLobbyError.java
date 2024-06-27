@@ -1,5 +1,6 @@
 package it.polimi.ingsw.distributed.events.main;
 
+import it.polimi.ingsw.distributed.commands.main.JoinLobbyCommand;
 import it.polimi.ingsw.view.interfaces.MainEventHandler;
 
 /**
@@ -7,6 +8,7 @@ import it.polimi.ingsw.view.interfaces.MainEventHandler;
  * 
  * @see JoinLobbyCommand
  */
+
 public class JoinLobbyError extends MainErrorEvent {
     /**
      * {@inheritDoc}
