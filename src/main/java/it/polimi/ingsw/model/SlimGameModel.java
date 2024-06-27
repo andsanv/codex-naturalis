@@ -100,9 +100,9 @@ public class SlimGameModel implements Serializable {
      *                                 cards list
      * @param visibleGoldCardsList     list of the two cards in the visible gold
      *                                 cards list
+     * @param scores                   map from token to his score
      * @param availableSlots           available cards slots for each player
      * @param cardsPlayability         cards playability for each player
-     * @param scores                   map from token to his score
      */
     public SlimGameModel(
             Map<PlayerToken, Map<Integer, Trio<Integer, CardSide, Coords>>> tokenToPlayedCards,
@@ -148,9 +148,9 @@ public class SlimGameModel implements Serializable {
      * Applies the PlayedCardEvent.
      *
      * @param playerToken the token of the player
-     * @param cardId id of the card played
-     * @param cardSide side of the card played
-     * @param coords coordinates where the card was placed
+     * @param cardId      id of the card played
+     * @param cardSide    side of the card played
+     * @param coords      coordinates where the card was placed
      */
     public void applyPlayedCardEvent(PlayerToken playerToken, int cardId, CardSide cardSide, Coords coords) {
         Map<Integer, Trio<Integer, CardSide, Coords>> playedCards = tokenToPlayedCards.get(playerToken);
@@ -167,11 +167,13 @@ public class SlimGameModel implements Serializable {
      *
      * @param playerToken token of the player
      * @param drawnCardId id of the drawn card
-     * @param deckEmptied boolean that represents whether the deck was emptied or not
-     * @param nextCardId id of the next card at the top of the deck
-     * @param handIndex index of the hand where card was drawn
+     * @param deckEmptied boolean that represents whether the deck was emptied or
+     *                    not
+     * @param nextCardId  id of the next card at the top of the deck
+     * @param handIndex   index of the hand where card was drawn
      */
-    public void applyDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void applyDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
         goldDeck.remove(goldDeck.indexOf(drawnCardId));
@@ -182,11 +184,13 @@ public class SlimGameModel implements Serializable {
      *
      * @param playerToken token of the player
      * @param drawnCardId id of the drawn card
-     * @param deckEmptied boolean that represents whether the deck was emptied or not
-     * @param nextCardId id of the next card at the top of the deck
-     * @param handIndex index of the hand where card was drawn
+     * @param deckEmptied boolean that represents whether the deck was emptied or
+     *                    not
+     * @param nextCardId  id of the next card at the top of the deck
+     * @param handIndex   index of the hand where card was drawn
      */
-    public void applyDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void applyDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+            Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
         resourceDeck.remove(resourceDeck.indexOf(drawnCardId));
@@ -206,10 +210,10 @@ public class SlimGameModel implements Serializable {
      * @param handIndex         index of the playerHand where drawn card will be
      *                          placed.
      */
-    public void applyDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void applyDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
-        visibleGoldCardsList.remove(visibleGoldCardsList.indexOf(drawnCardId));
         visibleGoldCardsList.set(drawnCardPosition, replacementCardId);
 
         goldDeck.remove((Integer) replacementCardId);
@@ -229,20 +233,20 @@ public class SlimGameModel implements Serializable {
      * @param handIndex         index of the playerHand where drawn card will be
      *                          placed.
      */
-    public void applyDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void applyDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
+            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
-        visibleResourceCardsList.remove(visibleResourceCardsList.indexOf(drawnCardId));
         visibleResourceCardsList.set(drawnCardPosition, replacementCardId);
 
-        goldDeck.remove((Integer) replacementCardId);
+        resourceDeck.remove((Integer) replacementCardId);
     }
 
     /**
      * Applies the UpdatedScoreTrackEvent.
      *
      * @param playerToken token of the player
-     * @param score the new player score
+     * @param score       the new player score
      */
     public void applyUpdatedScoreTrackEvent(PlayerToken playerToken, int score) {
         scores.put(playerToken, score);
@@ -252,7 +256,7 @@ public class SlimGameModel implements Serializable {
      * Applies the PlayerElementsEvent
      *
      * @param playerToken token of the player
-     * @param resources the updated resources map
+     * @param resources   the updated resources map
      */
     public void applyPlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
         tokenToElements.get(playerToken).clear();

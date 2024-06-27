@@ -251,7 +251,7 @@ class GameFlowManagerTest {
         gameFlowManager
                 .addCommand(new PlayCardCommand(firstPlayerToken, new Coords(1, 1), resourceCard.id, CardSide.FRONT));
         try {
-            Thread.sleep(50);
+            Thread.sleep(2050);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
