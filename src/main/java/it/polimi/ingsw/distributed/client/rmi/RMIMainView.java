@@ -3,6 +3,8 @@ package it.polimi.ingsw.distributed.client.rmi;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.client.RMIConnectionHandler;
@@ -32,6 +34,11 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
   private final RMIConnectionHandler connectionHandler;
 
   /**
+   * This executor service is used to execute asynchronously the events received from the server.
+   */
+   private final ExecutorService executorService = Executors.newCachedThreadPool();
+
+  /**
    * This constructor creates a new RMIMainView.
    * 
    * @param mainEventHandler the main event handler to propagate the updates (events) to.
@@ -53,7 +60,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
       connectionHandler.sendToMainServer(new KeepAliveCommand(connectionHandler.userInterface.getUserInfo()));
     }
       
-    serverEvent.execute(mainEventHandler);
+    executorService.submit(() -> serverEvent.execute(mainEventHandler));
   }
 
   /**
@@ -62,7 +69,7 @@ public class RMIMainView extends UnicastRemoteObject implements MainViewActions 
    */
   @Override
   public void setGameServer(GameServerActions gameServer) throws RemoteException, IOException {
-    connectionHandler.setGameServerActions(gameServer);
+    executorService.submit(() -> connectionHandler.setGameServerActions(gameServer));
   }
 
   

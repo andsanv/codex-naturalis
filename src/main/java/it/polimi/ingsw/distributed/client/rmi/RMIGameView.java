@@ -7,6 +7,8 @@ import it.polimi.ingsw.view.interfaces.GameEventHandler;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class is the RMI implementation of the GameViewActions interface.
@@ -24,6 +26,12 @@ public class RMIGameView extends UnicastRemoteObject implements GameViewActions 
    * server.
    */
   private final RMIConnectionHandler connectionHandler;
+
+
+  /**
+   * This executor service is used to execute asynchronously the events received from the server.
+   */
+   private final ExecutorService executorService = Executors.newCachedThreadPool();
 
   /**
    * This constructor creates a new RMIGameView.
@@ -43,7 +51,7 @@ public class RMIGameView extends UnicastRemoteObject implements GameViewActions 
    */
   @Override
   public void transmitEvent(GameEvent event) throws RemoteException {
-    event.execute(gameEventHandler);
+    executorService.submit(() -> event.execute(gameEventHandler));
   }
 
 }
