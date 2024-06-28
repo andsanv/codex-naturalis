@@ -18,7 +18,6 @@ import javafx.scene.text.Text;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Allows a player to visualize all available lobbies.
@@ -175,8 +174,9 @@ public class LobbiesListController extends Controller {
                 .ifPresentOrElse(
                         lobby -> {
                             joiningLobby.set(false);
+                            gui.currentLobby.set(lobby);
 
-                            gui.changeToLobbyScene(lobby.users, lobby);
+                            gui.changeToLobbyScene();
                         },
                         () -> {
                             updateLobbiesButton.setDisable(false);

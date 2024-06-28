@@ -157,6 +157,7 @@ public class StarterCardSelectionState extends GameState {
     StarterCard starterCard = decks.starterCardsDeck.draw(playerToken, 0).orElseThrow();
 
     tokenToStarterCard.put(playerToken, starterCard);
+    ServerPrinter.displayInfo("[DEBUG] Sending DrawnStarterCardEvent for player token: " + playerToken);
     decks.starterCardsDeck.notify(new DrawnStarterCardEvent(playerToken, starterCard.id));
     return true;
   }

@@ -103,7 +103,8 @@ public class MenuController extends Controller {
                 .findAny()
                 .ifPresent(
                         lobby -> {
-                            gui.changeToLobbyScene(lobby.users, lobby);
+                            gui.currentLobby.set(lobby);
+                            gui.changeToLobbyScene();
                         });
     }
 

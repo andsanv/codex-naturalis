@@ -1,9 +1,9 @@
 package it.polimi.ingsw.view.gui.controllers;
 
-import it.polimi.ingsw.controller.usermanagement.User;
+import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.distributed.commands.game.*;
 import it.polimi.ingsw.model.SlimGameModel;
-import it.polimi.ingsw.model.card.Card;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.gui.GUI;
@@ -22,15 +22,19 @@ import javafx.scene.control.Button;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Controller that manages the first part of the game.
+ */
 public class SetupPhaseController extends Controller {
+    public AtomicReference<LobbyInfo> currentLobby;
+
     private Map<UserInfo, PlayerToken> userInfoToToken = null;
-    private UserInfo selfUserInfo = null;
-    private GUI gui;
+    private PlayerToken selfPlayerToken = null;
 
     // general
     @FXML public StackPane mainStackPane;
-
 
     /* TOKEN SELECTION PHASE */
     @FXML public StackPane tokenPane;
@@ -77,13 +81,23 @@ public class SetupPhaseController extends Controller {
 
     public SetupPhaseController() {}
 
-    public void initialize(GUI gui, UserInfo selfUserInfo) {
+    /**
+     * Controller initializer.
+     *
+     * @param gui the GUI application
+     */
+    public void initialize(GUI gui) {
         this.gui = gui;
-        this.selfUserInfo = selfUserInfo;
+        this.connectionHandler = gui.connectionHandler;
+        this.selfUserInfo = gui.selfUserInfo;
+        this.currentLobby = gui.currentLobby;
 
         initializeTokens();
     }
 
+    /**
+     * Allows to handle the first part of the game, where tokens are chosen.
+     */
     public void initializeTokens() {
         userInfoToToken = new HashMap<>();
 
@@ -98,6 +112,14 @@ public class SetupPhaseController extends Controller {
 
         tokenNextButton.setOnAction(this::handleTokenNextButtonAction);
         tokenNextButton.setDisable(true);
+
+        tokenPane.setDisable(false);
+        starterCardPane.setDisable(true);
+        objectiveCardsPane.setDisable(true);
+
+        tokenPane.setVisible(true);
+        starterCardPane.setVisible(false);
+        objectiveCardsPane.setVisible(false);
     }
 
     public void initializeStarter(Integer starterCardId) {
@@ -114,6 +136,15 @@ public class SetupPhaseController extends Controller {
 
         starterNextButton.setOnAction(this::handleStarterNextButtonAction);
         starterNextButton.setDisable(true);
+
+        tokenPane.setDisable(true);
+        starterCardPane.setDisable(false);
+        objectiveCardsPane.setDisable(true);
+
+        tokenPane.setVisible(false);
+        starterCardPane.setVisible(true);
+        objectiveCardsPane.setVisible(false);
+
     }
 
     public void initializeObjective(List<Integer> availableObjectiveCards) {
@@ -132,11 +163,32 @@ public class SetupPhaseController extends Controller {
 
         objectiveNextButton.setOnAction(this::handleObjectiveNextButtonAction);
         objectiveNextButton.setDisable(true);
+
+        tokenPane.setDisable(true);
+        starterCardPane.setDisable(true);
+        objectiveCardsPane.setDisable(false);
+
+        tokenPane.setVisible(false);
+        starterCardPane.setVisible(false);
+        objectiveCardsPane.setVisible(true);
     }
 
 
 
     /* GUI EVENTS HANDLERS */
+
+    @Override
+    public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
+        lobbies.stream()
+                .filter(l -> l.id == currentLobby.get().id)
+                .filter(l -> l.gameStarted)
+                .findFirst()
+                .ifPresent(l -> {
+                    System.out.println("[INFO] Game started");;
+                    gui.changeToSetupPhaseScene();
+                });
+    }
+
 
     // token phase
     public void handleTokenImageViewMouseClicked(MouseEvent event) {
@@ -179,7 +231,11 @@ public class SetupPhaseController extends Controller {
             if (selectedToken == null) throw new RuntimeException("Button should be disabled as no token is selected.");
 
             tokenPane.setDisable(true);
-            // TODO send command with selected token
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new SelectTokenCommand(selfUserInfo.get(), selectedToken));
+                System.out.println("[INFO] Submitted SelectTokenCommand with token: " + selectedToken);
+            });
         });
     }
 
@@ -225,7 +281,11 @@ public class SetupPhaseController extends Controller {
             if (selectedStarterCardSide == null) throw new RuntimeException("Button should be disabled as no card is selected.");
 
             starterCardPane.setDisable(true);
-            // TODO send command with selected card
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new SelectStarterCardSideCommand(selfPlayerToken, selectedStarterCardSide));
+                System.out.println("[INFO] Submitted SelectStarterCardSide with card side: " + selectedStarterCardSide);
+            });
         });
     }
 
@@ -273,7 +333,11 @@ public class SetupPhaseController extends Controller {
             if (selectedCard == null) throw new RuntimeException("Button should be disabled as no card is selected.");
 
             objectiveCardsPane.setDisable(true);
-            // TODO send command with selected card
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new SelectObjectiveCardCommand(selfPlayerToken, selectedCard));
+                System.out.println("[INFO] Submitted SelectObjectiveCardCommand with card: " + selectedCard);
+            });
         });
     }
 
@@ -285,9 +349,11 @@ public class SetupPhaseController extends Controller {
     @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken playerToken) {
         Platform.runLater(() -> {
+            System.out.println("[INFO] Token " + playerToken + " assigned to " + player);
+
             userInfoToToken.put(player, playerToken);
 
-            if (playerToken == selectedToken && !player.equals(selfUserInfo)) {
+            if (playerToken == selectedToken && !player.equals(selfUserInfo.get())) {
                 selectedToken = null;
 
                 tokenPane.setDisable(false);
@@ -304,9 +370,14 @@ public class SetupPhaseController extends Controller {
     @Override
     public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
         Platform.runLater(() -> {
+            System.out.println("[INFO] Received EndedTokenPhaseEvent");
             this.userInfoToToken = userInfoToToken;
+            this.selfPlayerToken = userInfoToToken.get(selfUserInfo.get());
 
-            // TODO send draw card command
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new DrawStarterCardCommand(selfPlayerToken));
+                System.out.println("[INFO] Submitted DrawStarterCardCommand");
+            });
         });
     }
 
@@ -316,24 +387,35 @@ public class SetupPhaseController extends Controller {
     @Override
     public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId) {
         Platform.runLater(() -> {
-            if (playerToken != userInfoToToken.get(selfUserInfo)) return;
+            System.out.println("[INFO] Received DrawnStarterCardEvent from " + playerToken + " with card: " + drawnCardId);
+            if (playerToken != userInfoToToken.get(selfUserInfo.get())) return;
 
             initializeStarter(drawnCardId);
 
-            mainStackPane.getChildren().getFirst().setDisable(true);
-            mainStackPane.getChildren().removeFirst();
+            System.out.println("before: " + mainStackPane.getChildren());;
+            // mainStackPane.getChildren().removeLast();
+            System.out.println("starter card pane is visible: " + starterCardPane.isVisible());
+            System.out.println("starter card pane is disabled: " + starterCardPane.isDisable());
+            System.out.println("after: " + mainStackPane.getChildren());
         });
     }
 
     @Override
     public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide) {
-
+        Platform.runLater(() -> {
+            System.out.println("[INFO] Received ChosenStarterCardSide from " + playerToken + " with card side: " + cardSide);
+        });
     }
 
     @Override
     public void handleEndedStarterCardPhaseEvent() {
         Platform.runLater(() -> {
-            // TODO send draw objective cards command
+            System.out.println("[INFO] Received EndedStarterCardPhaseEvent");
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new DrawObjectiveCardsCommand(selfPlayerToken));
+                System.out.println("[INFO] Submitted DrawObjectiveCardsCommand");
+            });
         });
     }
 
@@ -343,48 +425,36 @@ public class SetupPhaseController extends Controller {
     @Override
     public void handleDrawnObjectiveCardsEvent(PlayerToken playerToken, int drawnCardId, int secondDrawnCardId) {
         Platform.runLater(() -> {
-           if (playerToken != userInfoToToken.get(selfUserInfo)) return;
+            System.out.println("[INFO] Received DrawnObjectiveCardsEvent from " + playerToken);
 
-           initializeObjective(new ArrayList<>(Arrays.asList(drawnCardId, secondDrawnCardId)));
+            if (playerToken != userInfoToToken.get(selfUserInfo.get())) return;
 
-            mainStackPane.getChildren().getFirst().setDisable(true);
-            mainStackPane.getChildren().removeFirst();
+            initializeObjective(new ArrayList<>(Arrays.asList(drawnCardId, secondDrawnCardId)));
+
+            // mainStackPane.getChildren().removeLast();
         });
     }
 
     @Override
     public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId) {
-
+        Platform.runLater(() -> {
+            System.out.println("[INFO] Received ChosenObjectiveCardEvent from " + playerToken);
+        });
     }
 
     @Override
     public void handleEndedObjectiveCardPhaseEvent() {
         Platform.runLater(() -> {
-            mainStackPane.getChildren().getFirst().setDisable(true);
-            mainStackPane.getChildren().removeFirst();
+            System.out.println("[INFO] Received EndedObjectiveCardPhaseEvent");
+
+            mainStackPane.getChildren().removeLast();
         });
     }
 
     @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
         Platform.runLater(() -> {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/tempGameView.fxml"));
-            Parent root;
-
-            try {
-                root = loader.load();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            TempGameController controller = loader.getController();
-
-//            try {
-//                controller.initialize(gui, slimGameModel);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//            changeScene(root, mainStackPane.getScene().getWindow());
+            gui.changeToGameScene(slimGameModel, userInfoToToken);
         });
     }
 

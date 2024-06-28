@@ -54,11 +54,11 @@ public class LobbyController extends Controller {
     @FXML private Text fourthPlayerText;
     @FXML private ImageView fourthPlayerImageView;
 
-    private List<StackPane> playerEntries;
 
+    /* HELPERS */
     private AtomicReference<List<LobbyInfo>> activeLobbies;
-
-    private LobbyInfo lobby;
+    private AtomicReference<LobbyInfo> currentLobby;
+    private List<StackPane> playerEntries;
 
     /**
      * Initializer for testing.
@@ -69,8 +69,8 @@ public class LobbyController extends Controller {
         User self = new User("Andrea");
         gui.selfUserInfo.set(new UserInfo(self));
 
-        Lobby tempLobby = new Lobby(self);
-        lobby = new LobbyInfo(tempLobby);
+//        Lobby tempLobby = new Lobby(self);
+//        lobby = new LobbyInfo(tempLobby);
 
         this.lobbyText.setText("Lobby #" + 5);
 
@@ -88,14 +88,13 @@ public class LobbyController extends Controller {
      * Actual initializer for the scene.
      *
      * @param gui the gui application
-     * @param lobby the lobby the user joined
      */
-    public void initialize(GUI gui, LobbyInfo lobby) {
+    public void initialize(GUI gui) {
         this.gui = gui;
         this.activeLobbies = gui.availableLobbies;
         this.connectionHandler = gui.connectionHandler;
         this.selfUserInfo = gui.selfUserInfo;
-        this.lobby = lobby;
+        this.currentLobby = gui.currentLobby;
 
         setupGui();
         applyCss();
@@ -111,13 +110,16 @@ public class LobbyController extends Controller {
     public void handleLobbiesEvent(List<LobbyInfo> lobbies) {
         this.activeLobbies.set(lobbies);
 
+        System.out.println("[DEBUG] Current saved lobby: " + currentLobby.get() + ", with lobby id: " + currentLobby.get().id);
+
         Optional<LobbyInfo> lobby = lobbies.stream()
                 .filter(l -> l.contains(selfUserInfo.get()))
                 .findFirst();
 
         if (lobby.isPresent()) {
             System.out.println("[DEBUG] Lobby with self user info found");
-            updatePlayers(lobby.get());
+            currentLobby.set(lobby.get());
+            updatePlayers();
             return;
         }
 
@@ -127,17 +129,20 @@ public class LobbyController extends Controller {
 
         if (lobby.isEmpty()) {
             System.out.println("[DEBUG] Correctly exited from previous lobby");
-             gui.changeToMenuScene();
-             return;
+            currentLobby.set(null);
+            gui.changeToMenuScene();
         }
+    }
 
-        lobbies.stream()
-                .filter(l -> l.id == this.lobby.id)
-                .filter(l -> l.gameStarted)
-                .findFirst()
-                .ifPresent(l -> {
-                    // gui.changeToGameScene(lobby.users);
-                });
+    /**
+     * Handles the start of the game, signaled by the receiving of the StartedGameEvent
+     *
+     * @param users the lobby started
+     */
+    @Override
+    public void handleGameStartedEvent(List<UserInfo> users) {
+        System.out.println("[INFO] Lobby correctly started");
+        gui.changeToSetupPhaseScene();
     }
 
     @Override
@@ -152,7 +157,7 @@ public class LobbyController extends Controller {
      */
     public void startGame(ActionEvent actionEvent) {
         gui.submitToExecutorService(() -> {
-            connectionHandler.get().sendToMainServer(new StartGameCommand(selfUserInfo.get(), lobby.id));
+            connectionHandler.get().sendToMainServer(new StartGameCommand(selfUserInfo.get(), currentLobby.get().id));
             System.out.println("[INFO] Submitted StartGameCommand");
         });
     }
@@ -164,29 +169,27 @@ public class LobbyController extends Controller {
      */
     public void handleBackButton(ActionEvent event) {
         gui.submitToExecutorService(() -> {
-            connectionHandler.get().sendToMainServer(new LeaveLobbyCommand(gui.selfUserInfo.get(), lobby.id));
+            connectionHandler.get().sendToMainServer(new LeaveLobbyCommand(gui.selfUserInfo.get(), currentLobby.get().id));
             System.out.println("[INFO] Submitted LeaveLobbyCommand");
         });
     }
 
     /**
      * Allows to update the players list, GUI side.
-     *
-     * @param lobby the lobby the user is in
      */
-    public void updatePlayers(LobbyInfo lobby) {
-        lobby.users.forEach(user -> {
-            HBox playerHBox = (HBox) playerEntries.get(lobby.users.indexOf(user)).getChildren().getFirst();
+    public void updatePlayers() {
+        currentLobby.get().users.forEach(user -> {
+            HBox playerHBox = (HBox) playerEntries.get(currentLobby.get().users.indexOf(user)).getChildren().getFirst();
 
             ((Text) ((StackPane) playerHBox.getChildren().get(0)).getChildren().getFirst()).setText(user.name);
-            if (lobby.manager.equals(user)) {
+            if (currentLobby.get().manager.equals(user)) {
                 ((ImageView) (((StackPane) playerHBox.getChildren().get(1)).getChildren().getFirst())).setImage(new Image("/images/icons/crown.png"));
                 startButton.setDisable(false);
             }
             else ((ImageView) ((StackPane) playerHBox.getChildren().get(1)).getChildren().getFirst()).setImage(new Image("/images/icons/user.png"));
         });
 
-        for (int i = lobby.users.size(); i < playerEntries.size(); i++) {
+        for (int i = currentLobby.get().users.size(); i < playerEntries.size(); i++) {
             HBox playerHBox = (HBox) playerEntries.get(i).getChildren().getFirst();
 
             ((Text) ((StackPane) playerHBox.getChildren().get(0)).getChildren().getFirst()).setText("-");
@@ -194,7 +197,9 @@ public class LobbyController extends Controller {
         }
     }
 
-
+    /**
+     * Allows to setup initial structures for the GUI.
+     */
     public void setupGui() {
         playerEntries = new ArrayList<>(Arrays.asList(firstPlayerPane, secondPlayerPane, thirdPlayerPane, fourthPlayerPane));
 

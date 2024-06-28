@@ -3,6 +3,8 @@ package it.polimi.ingsw.view.gui;
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
+import it.polimi.ingsw.model.SlimGameModel;
+import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.view.gui.controllers.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +14,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,6 +53,11 @@ public class GUI extends Application {
      * To handle network commands, allowing the java-fx thread ot continue managing the gui.
      */
     public final AtomicReference<ExecutorService> executorService = new AtomicReference<>(Executors.newCachedThreadPool());
+
+    /**
+     * Represents the lobby in which the user currently is.
+     */
+    public final AtomicReference<LobbyInfo> currentLobby = new AtomicReference<>(null);
 
     /**
      * Entry point for the GUI application.
@@ -125,13 +133,13 @@ public class GUI extends Application {
     /**
      * Allows the GUI application to update the scene, transitioning to the lobby scene.
      */
-    public void changeToLobbyScene(List<UserInfo> users, LobbyInfo lobby) {
+    public void changeToLobbyScene() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/lobbyView.fxml"));
         Parent root = null;
         try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
 
         LobbyController controller = loader.getController();
-        controller.initialize(this, lobby);
+        controller.initialize(this);
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("css/lobbyView.css");
@@ -140,7 +148,7 @@ public class GUI extends Application {
 
         System.out.println("[INFO] Changed to scene: Lobby");
 
-        controller.updatePlayers(lobby);
+        controller.updatePlayers();
         stage.get().setScene(scene);
     }
 
@@ -169,7 +177,42 @@ public class GUI extends Application {
      * Allows the user to show the first part of the game, where the token and the initial cards are chosen.
      */
     public void changeToSetupPhaseScene() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/setupPhaseView.fxml"));
+        Parent root = null;
+        try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
 
+        SetupPhaseController controller = loader.getController();
+        controller.initialize(this);
+
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("css/setupPhaseView.css");
+
+        mainController.setSubController(controller);
+
+        System.out.println("[INFO] Changed to scene: SetupPhase");
+
+        stage.get().setScene(scene);
+    }
+
+    /**
+     * Allows the user to enter the actual game scene.
+     */
+    public void changeToGameScene(SlimGameModel slimGameModel, Map<UserInfo, PlayerToken> userInfoToToken) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/gui/gameView.fxml"));
+        Parent root = null;
+        try { root = loader.load(); } catch (Exception e) { e.printStackTrace(); }
+
+        GameController controller = loader.getController();
+        controller.initialize(this, slimGameModel, userInfoToToken);
+
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("css/gameView.css");
+
+        mainController.setSubController(controller);
+
+        System.out.println("[INFO] Changed to scene: GameScene");
+
+        stage.get().setScene(scene);
     }
 
     /**

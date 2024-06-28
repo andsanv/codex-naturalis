@@ -83,6 +83,7 @@ public class MainController extends Controller {
      * @param error description of the error
      */
     public void handleServerError(String error) {
+        System.out.println("[INFO] Received ServerError");
         Platform.runLater(() -> subController.handleServerError(error));
     }
 
@@ -103,6 +104,7 @@ public class MainController extends Controller {
      * @param slimModel   the simplified game model
      */
     public void handleReconnetionToGame(SlimGameModel slimModel, Map<UserInfo, PlayerToken> userToToken) {
+        System.out.println("[INFO] Received ReconnectionToGame");
         Platform.runLater(() -> subController.handleReconnetionToGame(slimModel, userToToken));
     }
 
@@ -111,6 +113,7 @@ public class MainController extends Controller {
      * being in another.
      */
     public void handleJoinLobbyError(String message) {
+        System.out.println("[INFO] Received JoinLobbyError");
         Platform.runLater(() -> subController.handleJoinLobbyError(message));
     }
 
@@ -122,6 +125,7 @@ public class MainController extends Controller {
      * @param message the error message
      */
     public void handleStartGameError(String message) {
+        System.out.println("[INFO] Received StartGameError");
         Platform.runLater(() -> subController.handleStartGameError(message));
     }
 
@@ -132,6 +136,7 @@ public class MainController extends Controller {
      * @param message the error message
      */
     public void handleCreateLobbyError(String message) {
+        System.out.println("[INFO] Received CreateLobbyError");
         Platform.runLater(() -> subController.handleCreateLobbyError(message));
     }
 
@@ -142,10 +147,12 @@ public class MainController extends Controller {
      * @param message the error message
      */
     public void handleLeaveLobbyError(String message) {
+        System.out.println("[INFO] Received LeaveLobbyError");
         Platform.runLater(() -> subController.handleLeaveLobbyError(message));
     }
 
     public void handleGameStartedEvent(List<UserInfo> users) {
+        System.out.println("[INFO] Received GameStartedEvent. Forwarding to " + subController.getClass().getSimpleName());
         Platform.runLater(() -> subController.handleGameStartedEvent(users));
     }
 
@@ -159,6 +166,7 @@ public class MainController extends Controller {
      * @param score       the new score of the player
      */
     public void handleScoreTrackEvent(PlayerToken senderToken, int score) {
+        System.out.println("[INFO] Received ScoreTrackEvent");
         Platform.runLater(() -> subController.handleScoreTrackEvent(senderToken, score));
     }
 
@@ -175,6 +183,7 @@ public class MainController extends Controller {
             int playedCardId,
             CardSide playedCardSide,
             Coords playedCardCoordinates) {
+        System.out.println("[INFO] Received PlayedCardEvent");
         Platform.runLater(() -> subController.handlePlayedCardEvent(playerToken, playedCardId, playedCardSide, playedCardCoordinates));
     }
 
@@ -191,6 +200,7 @@ public class MainController extends Controller {
      */
     public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
                                              Integer nextCardId, int handIndex) {
+        System.out.println("[INFO] Received DrawnGoldDeckCardEvent");
         Platform.runLater(() -> subController.handleDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex));
     }
 
@@ -207,6 +217,7 @@ public class MainController extends Controller {
      */
     public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
                                                  Integer nextCardId, int handIndex) {
+        System.out.println("[INFO] Received DrawnResourceDeckCardEvent");
         Platform.runLater(() -> subController.handleDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex));
     }
 
@@ -222,12 +233,14 @@ public class MainController extends Controller {
     public void handleDrawnVisibleResourceCardEvent(
             PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId,
             boolean deckEmptied, Integer nextCardId, int handIndex) {
+        System.out.println("[INFO] Received DrawnVisibleResourceCardEvent");
         Platform.runLater(() -> subController.handleDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex));
     }
 
     public void handleDrawnVisibleGoldCardEvent(
             PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId,
             boolean deckEmptied, Integer nextCardId, int handIndex) {
+        System.out.println("[INFO] Received DrawnVisibleGoldCardEvent");
         Platform.runLater(() -> subController.handleDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex));
     }
 
@@ -238,6 +251,7 @@ public class MainController extends Controller {
      * @param drawnCardId the id of the drawn card
      */
     public void handleDrawnStarterCardEvent(PlayerToken playerToken, int drawnCardId) {
+        System.out.println("[DEBUG] Received DrawnStarterCardEvent (" + playerToken + ", " + drawnCardId + "). Forwarding to " + subController.getClass().getSimpleName());
         Platform.runLater(() -> subController.handleDrawnStarterCardEvent(playerToken, drawnCardId));
     }
 
@@ -247,16 +261,19 @@ public class MainController extends Controller {
      * @param playerToken the player token which chose the side
      * @param cardSide    the chosen side
      */
+    @Override
     public void handleChosenStarterCardSideEvent(PlayerToken playerToken, CardSide cardSide) {
+        System.out.println("[INFO] Received ChosenStarterCardSideEvent");
         Platform.runLater(() -> subController.handleChosenStarterCardSideEvent(playerToken, cardSide));
-
     }
 
     /**
      * This method handles the received update about the end of the starter card
      * drawn phase
      */
+    @Override
     public void handleEndedStarterCardPhaseEvent() {
+        System.out.println("[INFO] Received EndedStarterCardPhaseEvent");
         Platform.runLater(() -> subController.handleEndedStarterCardPhaseEvent());
     }
 
@@ -268,8 +285,10 @@ public class MainController extends Controller {
      * @param firstDrawnCardId  the id of the first drawn card
      * @param secondDrawnCardId the id of the second drawn card
      */
+    @Override
     public void handleDrawnObjectiveCardsEvent(
             PlayerToken playerToken, int firstDrawnCardId, int secondDrawnCardId) {
+        System.out.println("[INFO] Received DrawnObjectiveCardsEvent");
         Platform.runLater(() -> subController.handleDrawnObjectiveCardsEvent(playerToken, firstDrawnCardId, secondDrawnCardId));
     }
 
@@ -279,7 +298,9 @@ public class MainController extends Controller {
      * @param playerToken  the player token which chose the card
      * @param chosenCardId the id of the chosen card
      */
+    @Override
     public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId) {
+        System.out.println("[INFO] Received ChosenObjectiveCardEvent");
         Platform.runLater(() -> subController.handleChosenObjectiveCardEvent(playerToken, chosenCardId));
     }
 
@@ -287,7 +308,9 @@ public class MainController extends Controller {
      * This method handles the received update about the end of the objective card
      * drawn phase
      */
+    @Override
     public void handleEndedObjectiveCardPhaseEvent() {
+        System.out.println("[INFO] Received EndedObjectiveCardPhaseEvent");
         Platform.runLater(() -> subController.handleEndedObjectiveCardPhaseEvent());
     }
 
@@ -299,8 +322,10 @@ public class MainController extends Controller {
      * @param receiver the player which receive the message
      * @param message  the content of the message
      */
+    @Override
     public void handleDirectMessageEvent(
             UserInfo sender, UserInfo receiver, String message) {
+        System.out.println("[INFO] Received DirectMessageEvent");
         Platform.runLater(() -> subController.handleDirectMessageEvent(sender, receiver, message));
     }
 
@@ -310,7 +335,9 @@ public class MainController extends Controller {
      * @param sender  the player who sent the message
      * @param message the content of the message
      */
+    @Override
     public void handleGroupMessageEvent(UserInfo sender, String message) {
+        System.out.println("[INFO] Received GroupMessageEvent");
         Platform.runLater(() -> subController.handleGroupMessageEvent(sender, message));
     }
 
@@ -320,7 +347,9 @@ public class MainController extends Controller {
      * @param player        the player which chose the token
      * @param assignedToken the token assigned to the player
      */
+    @Override
     public void handleTokenAssignmentEvent(UserInfo player, PlayerToken assignedToken) {
+        System.out.println("[INFO] Received TokenAssignmentEvent");
         Platform.runLater(() -> subController.handleTokenAssignmentEvent(player, assignedToken));
     }
 
@@ -331,12 +360,21 @@ public class MainController extends Controller {
      * @param userInfoToToken  map from users to their tokens
      * @param timeLimitReached flag that is true if the time limit is reached
      */
+    @Override
     public void handleEndedTokenPhaseEvent(Map<UserInfo, PlayerToken> userInfoToToken, boolean timeLimitReached) {
+        System.out.println("[INFO] Received EndedTokenPhaseEvent");
         Platform.runLater(() -> subController.handleEndedTokenPhaseEvent(userInfoToToken, timeLimitReached));
     }
 
-    // TODO: change method name
+    /**
+     * Handles the update of the elements counts of a player
+     *
+     * @param playerToken the token of the player
+     * @param resources the new elements counts
+     */
+    @Override
     public void handlePlayerElementsEvent(PlayerToken playerToken, Map<Elements, Integer> resources) {
+        System.out.println("[INFO] Received PlayerElementsEvent");
         Platform.runLater(() -> subController.handlePlayerElementsEvent(playerToken, resources));
     }
 
@@ -345,7 +383,9 @@ public class MainController extends Controller {
      *
      * @param error the error
      */
+    @Override
     public void handleGameError(String error) {
+        System.out.println("[INFO] Received GameError");
         Platform.runLater(() -> subController.handleGameError(error));
     }
 
@@ -356,6 +396,7 @@ public class MainController extends Controller {
      */
     @Override
     public void handleGameResultsEvent(List<Trio<PlayerToken, Integer, Integer>> gameResults) {
+        System.out.println("[INFO] Received GameResultsEvent");
         Platform.runLater(() -> subController.handleGameResultsEvent(gameResults));
     }
 
@@ -367,8 +408,10 @@ public class MainController extends Controller {
      * @param availableSlots   the list of the available slots
      * @param cardsPlayability the map of the cards playability
      */
+    @Override
     public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots,
                                             Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+        System.out.println("[INFO] Received CardsPlayabilityEvent");
         Platform.runLater(() -> subController.handleCardsPlayabilityEvent(playerToken, availableSlots, cardsPlayability));
     }
 
@@ -378,28 +421,53 @@ public class MainController extends Controller {
      *
      * @param slimGameModel slimGameModel representing the initial collections
      */
+    @Override
     public void handleEndedInitializationPhaseEvent(SlimGameModel slimGameModel) {
+        System.out.println("[INFO] Received EndedInitializationPhaseEvent");
         Platform.runLater(() -> subController.handleEndedInitializationPhaseEvent(slimGameModel));
     }
 
+    /**
+     * Handles the change of the current turn.
+     *
+     * @param currentPlayer the player token of the player whose turn it is
+     */
+    @Override
     public void handlePlayerTurnEvent(PlayerToken currentPlayer) {
+        System.out.println("[INFO] Received PlayerTurnEvent");
         Platform.runLater(() -> subController.handlePlayerTurnEvent(currentPlayer));
     }
 
+    /**
+     * Handles the notification
+     */
+    @Override
     public void handleLastRoundEvent() {
         Platform.runLater(() -> subController.handleLastRoundEvent());
     }
 
+    /**
+     * Handles the event that signals that only one player is still in the lobby.
+     */
     @Override
     public void handleLastConnectedPlayerEvent() {
-
+        System.out.println("[INFO] Received LastConnectedPlayerEvent");
+        Platform.runLater(() -> subController.handleLastConnectedPlayerEvent());
     }
 
+    /**
+     * Handles the event that signals that the last player remained won (timer expired).
+     */
     @Override
     public void handleLastConnectedPlayerWonEvent() {
-
+        System.out.println("[INFO] Received LastConnectedPlayerWonEvent");
+        Platform.runLater(() -> subController.handleLastConnectedPlayerWonEvent());
     }
 
+    /**
+     * Allows connection handler to retrieve the selfUserInfo to establish a connection.
+     * @return the UserInfo
+     */
     @Override
     public UserInfo getUserInfo() {
         return selfUserInfo.get();
