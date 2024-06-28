@@ -1234,7 +1234,7 @@ public class GameController extends Controller {
 
     /**
      * Enables needed panes and nodes for the player to play his card.
-     * As cardHover and cardClick are already enabled by CardsPlayabilityEvent, the PlayCardEvent only enables the drag & drop.
+     * As card Hover and card Click are already enabled by CardsPlayabilityEvent, the PlayCardEvent only enables the drag and drop.
      */
     public void playCardEnable() {
         // enable hand
@@ -1298,7 +1298,7 @@ public class GameController extends Controller {
     }
 
     /**
-     * Enables drag & drop of a card's image view.
+     * Enables drag and and drop of a card's image view.
      *
      * @param cardImageView the image view of interest
      */
@@ -1308,7 +1308,7 @@ public class GameController extends Controller {
     }
 
     /**
-     * Disables drag & drop of a card's image view.
+     * Disables drag and drop of a card's image view.
      *
      * @param cardImageView the image view of interest
      */
