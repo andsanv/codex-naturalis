@@ -1,6 +1,6 @@
 # Codex Naturalis - Software Engineering Project
 
-<img src="" width=192px height=192px align="right"  alt="Codex Naturalis Logo"/>
+<img src="src/main/resources/images/bg_menu.png" width=192px height=192px align="right"  alt="Codex Naturalis Logo"/>
 
 Codex Naturalis project as final test of **"Software Engineering"** course of **"Computer Science Engineering"** at Politecnico di Milano (2023/2024). <br />
 
@@ -30,15 +30,14 @@ The project includes:
 
 | Functionality               | Status             |
 |-----------------------------|--------------------|
-| Basic Rules                 | [x] 
-| Complete Rules              | [x]  |
+| Basic Rules                 | :heavy_check_mark: |
+| Complete Rules              | :heavy_check_mark:  |
 | TUI                         | :heavy_check_mark: |
-| GUI                         | :heavy_check_mark: |
 | Socket                      | :heavy_check_mark: |
+| GUI                         | :heavy_check_mark: |
 | RMI                         | :heavy_check_mark: |
 | Multiple matches (FA 1)     | :heavy_check_mark: |
-| Chats (FA 2)                | :heavy_check_mark: |
-<!--| Multiple Matches (FA 3)     | :heavy_check_mark: |-->
+| Chats (FA 2)                | :heavy_check_mark: (TUI only)|
 
 ## Testing
 
@@ -73,7 +72,7 @@ To run the test and compile the software:
     ```
 
 ## Run using the JAR files
-Once installed all the requirements, open a terminal, go to the deliverable/ folder.
+Once installed all the requirements, open a terminal and run ```bash ./buildjar.sh```, then go to the deliverable/ older.
 Start the server and decide to start the cli or gu:
 
 ### Start the Server
@@ -81,19 +80,23 @@ Start the server and decide to start the cli or gu:
 java -jar server.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
 ```
 
-### Run the Client (GUI)
-```bash
-java -jar clientGUI.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
-```
-
 ### Run the Client (TUI)
 ```bash
 java -jar clientTUI.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
 ```
 
+### Run the Client (GUI)
+To run the GUI:
+```bash
+mvn javafx:run
+```
+If not playing on localhost the Config.java file should be changed manually to select the network options.
+
 The fields are optional:
-- SERVER_IP is the private ip of the server machine, 127.0.0.1 by default to play on the same machine (both client and server)
+- SERVER_IP is the private ip of the server machine, 127.0.0.1 by default to play on the same machine (both client and server). 
 - SOCKET_PORT is the port where the socket server listens, by deafult random
 - RMI_PORT is the port where the rmi server listens, by default random
 
 
+#### More:
+To play the client should support UTF-8 encoding and ANSI characters
