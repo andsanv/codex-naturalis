@@ -1,277 +1,543 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameController">
    <children>
-      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" pannable="true" prefHeight="1080.0" prefWidth="1920.0" vbarPolicy="NEVER">
-         <content>
-            <StackPane fx:id="stackPane" maxHeight="1800" maxWidth="3350" minHeight="1800" minWidth="3350" prefHeight="1800" prefWidth="3350">
-                  <children>
-                        <GridPane fx:id="gridPane" alignment="CENTER" gridLinesVisible="true" maxHeight="1631.8" maxWidth="3177.5" minHeight="1631.8" minWidth="3177.5" prefHeight="1631.8" prefWidth="3177.5" scaleX="0.2" scaleY="0.2">
-                  </GridPane>
-               </children>
-            </StackPane>
-         </content>
-      </ScrollPane>
-      <StackPane prefHeight="0.0" prefWidth="0.0" scaleX="0.5" scaleY="0.5" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <HBox fx:id="playerHand" alignment="CENTER" prefHeight="500.0" prefWidth="1684.0" scaleX="0.5" scaleY="0.5" spacing="10.0" AnchorPane.bottomAnchor="-100.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0">
+      <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
-               <children>
-                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
-                     <font>
-                        <Font size="28.0" />
-                     </font>
-                  </Button>
-                  <StackPane fx:id="firstHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
+            <ScrollPane fx:id="defaultScrollPane" hbarPolicy="NEVER" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
+               <content>
+                  <GridPane fx:id="defaultGridPane" alignment="CENTER" disable="true" onMouseDragged="#handleMouseDragged" onMousePressed="#handleOnMousePressed">
+                     <columnConstraints>
+                        <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="100.0" prefHeight="51.0" valignment="CENTER" vgrow="NEVER" />
+                     </rowConstraints>
                      <children>
-                        <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../../images/cards/fronts/0.png" />
-                        </ImageView>
+                        <StackPane prefHeight="51.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../images/miscellaneous/default_starter_card.png" />
+                                 </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
+                              </ImageView>
+                           </children>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </StackPane>
+                     </children>
+                     <padding>
+                        <Insets left="670.0" top="425.0" />
+                     </padding></GridPane>
+               </content>
+            </ScrollPane>
+            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="70.0" stroke="#c9c18f" strokeType="INSIDE" width="1400.0" StackPane.alignment="TOP_LEFT">
+               <StackPane.margin>
+                  <Insets left="20.0" right="20.0" top="20.0" />
+               </StackPane.margin>
+            </Rectangle>
+            <HBox fx:id="currentTopPanel" prefHeight="70.0" prefWidth="1400.0">
+               <children>
+                  <AnchorPane prefHeight="70.0" prefWidth="300.0">
+                     <children>
+                        <StackPane prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <ImageView fitHeight="70.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" translateX="25.0">
+                                 <image>
+                                    <Image url="@../../images/miscellaneous/codex_naturalis.png" />
+                                 </image>
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
+                              </ImageView>
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </StackPane>
+                     </children>
+                  </AnchorPane>
+                  <HBox prefHeight="70.0" prefWidth="800.0">
+                     <children>
+                        <AnchorPane prefHeight="70.0" prefWidth="400.0">
+                           <children>
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#f5f5f5" height="60.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="390.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <HBox prefHeight="70.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox prefHeight="100.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <image>
+                                                <Image url="@../../images/icons/animal.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/gameView.css">
+                                             <children>
+                                                <Text fx:id="animalResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" />
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="-5.0" />
+                                             </HBox.margin>
+                                          </StackPane>
+                                       </children>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </HBox>
+                                    <HBox prefHeight="100.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                             <image>
+                                                <Image url="@../../images/icons/plant.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                             <children>
+                                                <Text fx:id="plantResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="-5.0" />
+                                             </HBox.margin>
+                                          </StackPane>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="100.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <image>
+                                                <Image url="@../../images/icons/fungi.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                             <children>
+                                                <Text fx:id="fungiResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="-5.0" />
+                                             </HBox.margin>
+                                          </StackPane>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="100.0" prefWidth="95.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <image>
+                                                <Image url="@../../images/icons/insect.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                             <children>
+                                                <Text fx:id="insectResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="-5.0" />
+                                             </HBox.margin>
+                                          </StackPane>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets left="40.0" />
+                           </HBox.margin>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="200.0" prefWidth="300.0">
+                           <children>
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#ebebeb" height="60.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="290.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox prefHeight="100.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <image>
+                                                <Image url="@../../images/icons/manuscript.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                             <children>
+                                                <Text fx:id="manuscriptItemsCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                                                   <StackPane.margin>
+                                                      <Insets left="-5.0" />
+                                                   </StackPane.margin>
+                                                </Text>
+                                             </children>
+                                          </StackPane>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </HBox>
+                                    <HBox prefHeight="100.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <image>
+                                                <Image url="@../../images/icons/inkwell.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                             <children>
+                                                <Text fx:id="inkwellItemsCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="-5.0" />
+                                             </HBox.margin>
+                                          </StackPane>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="100.0" prefWidth="95.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" scaleX="0.75" scaleY="0.75">
+                                             <image>
+                                                <Image url="@../../images/icons/quill.png" />
+                                             </image>
+                                          </ImageView>
+                                          <StackPane prefHeight="150.0" prefWidth="10.0">
+                                             <children>
+                                                <Text fx:id="quillItemsCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0">
+                                                   <StackPane.margin>
+                                                      <Insets />
+                                                   </StackPane.margin>
+                                                </Text>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets left="-5.0" />
+                                             </HBox.margin>
+                                          </StackPane>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets left="20.0" right="40.0" />
+                           </HBox.margin>
+                        </AnchorPane>
+                     </children>
+                  </HBox>
+                  <StackPane fx:id="eventPane" prefHeight="150.0" prefWidth="290.0">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text fx:id="eventTitle" strokeType="OUTSIDE" strokeWidth="0.0" text="Played Card!" />
+                              <Text fx:id="eventText" strokeType="OUTSIDE" strokeWidth="0.0" text="RED has played in 0, 0" />
+                           </children>
+                        </VBox>
                      </children>
                   </StackPane>
                </children>
-            </VBox>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+               <StackPane.margin>
+                  <Insets bottom="810.0" left="20.0" right="20.0" top="20.0" />
+               </StackPane.margin>
+            </HBox>
+            <TabPane fx:id="leftTabPane" disable="true" prefHeight="468.0" prefWidth="320.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab>
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <VBox prefHeight="450.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fx:id="firstObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="20.0" right="20.0" top="56.5" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="secondObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets bottom="56.5" left="20.0" right="20.0" top="5.0" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="325.0" prefWidth="100.0">
+                                       <children>
+                                          <ImageView fx:id="secretObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets bottom="79.5" left="20.0" right="20.0" top="79.5" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/bullseye-arrow.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                </Tab>
+                <Tab fx:id="decksTab">
+                  <content>
+                    <AnchorPane fx:id="decksAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="169.0">
+                           <children>
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" />
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#f2f2f2" height="365.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="259.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#f2f2f2" height="365.0" layoutX="10.0" layoutY="10.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="259.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <VBox prefHeight="365.0" prefWidth="259.0">
+                                       <VBox.margin>
+                                          <Insets left="15.0" right="25.0" top="15.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <ImageView fx:id="resourceDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="32.0" right="32.0" top="12.5" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="firstResourceImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="10.0" top="5.0" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="secondResourceImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="99.0" top="5.0" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="365.0" prefWidth="259.0">
+                                       <VBox.margin>
+                                          <Insets bottom="15.0" left="15.0" right="25.0" top="15.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <ImageView fx:id="goldDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="32.0" right="32.0" top="12.5" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="firstGoldImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="10.0" top="5.0" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="secondGoldImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                             <VBox.margin>
+                                                <Insets left="99.0" top="5.0" />
+                                             </VBox.margin>
+                                             <image>
+                                                <Image url="@../../images/cards/backs/86.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/playing-cards.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                </Tab>
+              </tabs>
+               <StackPane.margin>
+                  <Insets bottom="20.0" left="20.0" right="1090.0" top="105.0" />
+               </StackPane.margin>
+            </TabPane>
+            <StackPane disable="true" prefHeight="30.0" prefWidth="30.0">
                <children>
-                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
-                     <font>
-                        <Font size="28.0" />
-                     </font>
-                  </Button>
-                <StackPane fx:id="secondHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
-                 <children>
-                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
-                   <Image url="@../../images/cards/fronts/10.png" />
-                  </ImageView>
-                 </children>
-                </StackPane>
+                  <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" scaleX="0.75" scaleY="0.75">
+                           <image>
+                              <Image url="@../../images/icons/angle-right.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <StackPane.margin>
+                        <Insets />
+                     </StackPane.margin>
+                     <padding>
+                        <Insets bottom="4.0" left="3.0" right="3.0" top="4.0" />
+                     </padding></Button>
                </children>
-            </VBox>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+               <StackPane.margin>
+                  <Insets bottom="766.0" left="20.0" right="1388.0" top="105.0" />
+               </StackPane.margin>
+            </StackPane>
+            <TabPane fx:id="rightTabPane" disable="true" prefHeight="608.0" prefWidth="232.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+               <tabs>
+                  <Tab>
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
+                              <VBox prefHeight="200.0" prefWidth="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <ImageView fitHeight="560.0" fitWidth="270.0" pickOnBounds="true">
+                                       <VBox.margin>
+                                          <Insets left="10.0" top="10.0" />
+                                       </VBox.margin>
+                                       <image>
+                                          <Image url="@../../images/miscellaneous/score_track.png" />
+                                       </image>
+                                    </ImageView>
+                                    <VBox fx:id="playersList" prefHeight="185.0" prefWidth="290.0">
+                                       <VBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </VBox.margin>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/trophy.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Tab>
+                  <Tab>
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="0.0">
+                           <children>
+                              <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
+                           </children>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </AnchorPane>
+                     </content>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/icons/messages.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Tab>
+               </tabs>
+               <StackPane.margin>
+                  <Insets bottom="20.0" left="1090.0" right="20.0" top="105.0" />
+               </StackPane.margin>
+            </TabPane>
+            <StackPane fx:id="rightStackPane" disable="true" prefHeight="150.0" prefWidth="400.0">
                <children>
-                  <Button mnemonicParsing="false" onMouseClicked="#flipHandCard" text="Flip">
-                     <font>
-                        <Font size="28.0" />
-                     </font>
+                  <Button fx:id="rightPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton">
+                     <padding>
+                        <Insets bottom="4.0" left="3.0" right="3.0" top="4.0" />
+                     </padding>
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" scaleX="0.75" scaleY="0.75">
+                           <image>
+                              <Image url="@../../images/icons/angle-left.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                   </Button>
-                <StackPane fx:id="thirdHandCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#selectCardOnClick" onMouseEntered="#handCardHoverEnter" onMouseExited="#handCardHoverExit" prefHeight="345.0" prefWidth="510.0">
-                 <children>
-                  <ImageView fitHeight="331.0" fitWidth="496.5" pickOnBounds="true" preserveRatio="true">
-                   <Image url="@../../images/cards/fronts/20.png" />
-                  </ImageView>
-                 </children>
-                </StackPane>
                </children>
-            </VBox>
+               <StackPane.margin>
+                  <Insets bottom="765.0" left="1390.0" right="23.0" top="105.0" />
+               </StackPane.margin>
+            </StackPane>
+         </children>
+      </StackPane>
+      <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="150.0" stroke="#c9c18f" strokeType="INSIDE" width="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5" />
+      <HBox fx:id="defaultHandHBox" disable="true" layoutX="446.0" layoutY="659.0" prefHeight="136.0" prefWidth="625.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="407.5" AnchorPane.rightAnchor="407.5">
+         <children>
+            <ImageView fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" top="10.0" />
+               </HBox.margin>
+               <image>
+                  <Image url="@../../images/cards/backs/101.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" top="10.0" />
+               </HBox.margin>
+               <image>
+                  <Image url="@../../images/cards/backs/101.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+               <image>
+                  <Image url="@../../images/cards/backs/101.png" />
+               </image>
+            </ImageView>
          </children>
       </HBox>
-      <VBox fx:id="secObjPane" alignment="CENTER" fillWidth="false" prefHeight="100.0" prefWidth="100.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+      <StackPane fx:id="importantEventPane" disable="true" prefHeight="150.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="725.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="105.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Text>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-               <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/96.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
+            <Text fx:id="importantEventText" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
          </children>
-      </VBox>
-      <VBox fx:id="decksPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" scaleX="0.75" scaleY="0.75" spacing="15.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="-20.0" AnchorPane.topAnchor="200.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Decks">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Text>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-               <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/backs/40.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/backs/65.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-               <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/18.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/64.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-               <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/5.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/55.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-      <HBox fx:id="itemsPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="83.0" prefWidth="978.0" AnchorPane.leftAnchor="600.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="25.0">
-         <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/animal.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0" HBox.hgrow="NEVER">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="859.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="NEVER">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/fungi.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="970.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/insect.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="1081.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/plant.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="748.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/quill.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="1303.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/inkwell.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="1414.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/icons/manuscript.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0">
-                     <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-         </children>
-      </HBox>
-      <VBox fx:id="playerListPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" AnchorPane.bottomAnchor="200.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="200.0" />
-      <VBox fx:id="commObjPane" alignment="CENTER" fillWidth="false" layoutX="110.0" layoutY="806.0" prefHeight="100.0" prefWidth="100.0" scaleX="0.8" scaleY="0.8" spacing="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" Common Objectives">
-               <font>
-                  <Font size="32.0" />
-               </font>
-            </Text>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-               <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/96.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../images/cards/fronts/98.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
-            <Button fx:id="startButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#openPopupButton" text="Start" />
-         </children>
-      </VBox>
+      </StackPane>
    </children>
 </AnchorPane>
