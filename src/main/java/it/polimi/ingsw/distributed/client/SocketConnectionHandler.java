@@ -114,9 +114,6 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 							Event event = (Event) object;
 
-							if(!(event instanceof KeepAliveEvent))
-								System.out.println("Received event " + event.getClass().getSimpleName());
-
 
 							if (event instanceof KeepAliveEvent) {
 								this.lastKeepAliveTime = System.currentTimeMillis();
@@ -233,7 +230,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 			this.lastKeepAliveTime = System.currentTimeMillis();
 
 			createListenerThread();
-			checkConnection();
+			//checkConnection();
 
 			return this.sendToMainServer(connectionCommand);
 		} catch (Exception e) {
@@ -338,7 +335,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 				if (this.isConnected.get()) {
 					this.lastKeepAliveTime = System.currentTimeMillis();
 					createListenerThread();
-					checkConnection();
+					//checkConnection();
 				}
 
 			});

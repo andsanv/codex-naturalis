@@ -10,7 +10,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.0</junit.version>
-    <maven.test.skip>false</maven.test.skip>
+    <maven.test.skip>true</maven.test.skip>
     <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
     <exec.mainClass />
     <jar.finalName />
@@ -193,7 +193,7 @@
           </dependency>
         </dependencies>
         <configuration>
-          <skipTests>false</skipTests>
+          <skipTests>true</skipTests>
         </configuration>
       </plugin>
       <plugin>

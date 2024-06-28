@@ -119,13 +119,13 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
                 while (userInterface.getUserInfo() == null) {
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
                 }
 
                 this.lastKeepAliveTime = System.currentTimeMillis();
-                checkConnection();
+                //checkConnection();
                 return true;
             } catch (IOException e) {
                 this.isConnected.set(false);
@@ -140,13 +140,13 @@ public class RMIConnectionHandler extends ConnectionHandler {
                         this.clientGameView);
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
 
                 }
 
                 this.lastKeepAliveTime = System.currentTimeMillis();
-                checkConnection();
+                //checkConnection();
             } catch (IOException e) {
                 this.isConnected.set(false);
                 this.userInterface.handleDisconnection();
@@ -245,7 +245,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
                         }
 
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                             this.isConnected.set(false);
