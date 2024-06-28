@@ -732,7 +732,7 @@ public class CLICardUtils {
      * @param element the element to color
      * @return the color to use
      */
-    private static Ansi.Color elementToColor(String element) {
+    public static Ansi.Color elementToColor(String element) {
         switch (element) {
             case "P":
                 return GREEN;

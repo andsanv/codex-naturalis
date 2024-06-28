@@ -227,7 +227,7 @@ public class GameScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(16, 23);
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 24);
 
                     synchronized (cli.slimGameModelLock) {
                         SlimGameModel slim = cli.slimGameModel;
@@ -242,31 +242,31 @@ public class GameScene extends Scene {
                                         ? CLICardUtils.cardToMatrix(slim.goldDeck.getLast(), CardSide.BACK)
                                         : CLICardUtils.simpleCard(DEFAULT),
                                 0,
-                                12);
+                                11);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleResourceCardsList.get(0) != null ? CLICardUtils
                                         .cardToMatrix(slim.visibleResourceCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                7,
+                                6,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleResourceCardsList.get(1) != null ? CLICardUtils
                                         .cardToMatrix(slim.visibleResourceCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                7,
-                                12);
+                                6,
+                                11);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(0) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                13,
+                                12,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(1) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                13,
-                                12);
+                                12,
+                                11);
                     }
                     CLIPrinter.printAnsiGrid(grid);
                 }),
@@ -407,7 +407,27 @@ public class GameScene extends Scene {
                             cli.getConnectionHandler()
                                     .sendToGameServer(new DrawVisibleGoldCardCommand(cli.token.get(), position));
 
-                        }));
+                        }),
+                new CLICommand("elem", Arrays.asList("token"), "to display the elements of a player", () -> {
+                    if (args.length != 2) {
+                        CLIPrinter.displayError("Invalid arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+
+                    if (cli.getTokenToPlayerMap().keySet().stream().map(t -> t.toString())
+                            .noneMatch(t -> t.equalsIgnoreCase(args[1]))) {
+                        CLIPrinter.displayError("Invalid token");
+                        return;
+                    }
+
+                    PlayerToken token = PlayerToken.valueOf(args[1].toUpperCase());
+
+                    synchronized (cli.slimGameModelLock) {
+                        CLIPrinter.printPlayerElements(cli.slimGameModel.tokenToElements.get(token));
+                    }
+                }));
     }
 
     @Override

@@ -4,6 +4,8 @@ import static org.fusesource.jansi.Ansi.ansi;
 import static org.fusesource.jansi.Ansi.Color.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -11,6 +13,9 @@ import org.fusesource.jansi.Ansi;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
+import it.polimi.ingsw.model.common.Elements;
+import it.polimi.ingsw.model.common.Items;
+import it.polimi.ingsw.model.common.Resources;
 
 /**
  * This class provides static methods for writing formatted text
@@ -42,7 +47,7 @@ public class CLIPrinter {
      * Prints all available commands.
      *
      * @param description the description
-     * @param commands the available commands
+     * @param commands    the available commands
      */
     public static void displayCommands(String description, List<CLICommand> commands) {
         if (description != null)
@@ -171,5 +176,28 @@ public class CLIPrinter {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Prints the given player elements.
+     * 
+     * @param elements the player elements as a map from an Element to an Integer
+     */
+    public static void printPlayerElements(Map<Elements, Integer> elements) {
+        System.out.println("Elements owned by the given player:");
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("P")).a("P").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Resources.PLANT)).orElse(0)));
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("A")).a("A").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Resources.ANIMAL)).orElse(0)));
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("F")).a("F").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Resources.FUNGI)).orElse(0)));
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("G")).a("G").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Resources.INSECT)).orElse(0)));
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("Q")).a("Q").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Items.QUILL)).orElse(0)));
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("K")).a("K").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Items.INKWELL)).orElse(0)));
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("M")).a("M").reset().a(" -> ")
+                .a(Optional.ofNullable(elements.get(Items.MANUSCRIPT)).orElse(0)));
     }
 }
