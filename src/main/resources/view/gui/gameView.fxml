@@ -18,7 +18,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -404,7 +404,7 @@
                   <Insets bottom="20.0" left="20.0" right="1090.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
-            <StackPane disable="true" prefHeight="30.0" prefWidth="30.0">
+            <StackPane prefHeight="30.0" prefWidth="30.0">
                <children>
                   <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
                      <graphic>
@@ -465,6 +465,7 @@
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="0.0">
                            <children>
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
+                              <StackPane prefHeight="150.0" prefWidth="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                            <padding>
                               <Insets left="10.0" />
@@ -484,7 +485,7 @@
                   <Insets bottom="20.0" left="1090.0" right="20.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
-            <StackPane fx:id="rightStackPane" disable="true" prefHeight="150.0" prefWidth="400.0">
+            <StackPane fx:id="rightStackPane" prefHeight="150.0" prefWidth="400.0">
                <children>
                   <Button fx:id="rightPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedRightPanelButton">
                      <padding>

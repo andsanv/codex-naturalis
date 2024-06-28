@@ -75,7 +75,7 @@ public class PlayerBoard extends Observable {
           }
         };
 
-    if (starterCard.getPlayedSide() == CardSide.BACK)
+    if (starterCard.getPlayedSide() == CardSide.FRONT)
       for (Resources resource : starterCard.getCentralResources())
         playerElements.put(resource, playerElements.get(resource) + 1);
 

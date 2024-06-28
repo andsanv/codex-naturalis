@@ -28,10 +28,7 @@ import it.polimi.ingsw.controller.usermanagement.Lobby;
 import it.polimi.ingsw.controller.usermanagement.User;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.commands.game.GameCommand;
-import it.polimi.ingsw.distributed.events.game.GameEvent;
-import it.polimi.ingsw.distributed.events.game.LastRoundEvent;
-import it.polimi.ingsw.distributed.events.game.MessageEvent;
-import it.polimi.ingsw.distributed.events.game.PlayerTurnEvent;
+import it.polimi.ingsw.distributed.events.game.*;
 import it.polimi.ingsw.model.card.CardSide;
 import it.polimi.ingsw.model.card.ObjectiveCard;
 import it.polimi.ingsw.model.card.StarterCard;
@@ -269,8 +266,9 @@ public class GameFlowManager implements Runnable {
 
           if (currentState.equals(playCardState))
             currentState = drawCardState;
-          else
+          else {
             switchTurn();
+          }
 
           return;
         } else {
@@ -376,6 +374,7 @@ public class GameFlowManager implements Runnable {
     }
 
     turn += 1;
+    gameModelUpdater.computeCardsPlayability(getTurn());
     notify(new PlayerTurnEvent(getTurn()));
     setState(playCardState);
   }

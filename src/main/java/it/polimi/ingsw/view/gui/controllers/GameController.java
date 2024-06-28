@@ -65,7 +65,7 @@ public class GameController extends Controller {
     public final Pair<Double, Double> adjustedCardDimensions = new Pair<>(rawCardDimensions.first * cardCompressionFactor, rawCardDimensions.second * cardCompressionFactor);
     public final Pair<Integer, Integer> gridCellsCount = new Pair<>(81, 81);
 
-    public final Integer DEFAULT_OBJECTIVE_CARD_ID = 86;
+    public final Integer DEFAULT_OBJECTIVE_CARD_ID = 87;
 
 
     /* GRAPHIC STRUCTURE */
@@ -1134,6 +1134,11 @@ public class GameController extends Controller {
      */
     @Override
     public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
+        System.out.println("CARDS PLAYABILITY RECEIVED: ");
+        availableSlots.forEach(coords -> {
+            System.out.println("x: " + coords.x + ", y: " + coords.y);
+        });
+
         Platform.runLater(() -> {
             if (playerToken != selfPlayerToken) return;     // don't care about events not related to self
 
@@ -1233,6 +1238,8 @@ public class GameController extends Controller {
      */
     public void playCardEnable() {
         // enable hand
+        System.out.println("CARDS PLAYABILITY = " + cardsPlayability);
+
         tokenToHandHBox.get(selfPlayerToken).getChildren().forEach(imageView -> {
             int handIndex = tokenToHandHBox.get(selfPlayerToken).getChildren().indexOf(imageView);
 
@@ -1264,6 +1271,9 @@ public class GameController extends Controller {
     public void drawCardEnable() {
         decksAnchorPane.setDisable(false);
 
+        System.out.println("DRAW CARD ENABLE");
+
+
         if(!resourceDeck.second.isEmpty()) resourceDeckImageView.setDisable(false);
         if(!goldDeck.second.isEmpty()) goldDeckImageView.setDisable(false);
 
@@ -1271,6 +1281,13 @@ public class GameController extends Controller {
         if(visibleSlotToCardId.get(secondResourceImageView).get() != null) secondResourceImageView.setDisable(false);
         if(visibleSlotToCardId.get(firstGoldImageView).get() != null) firstGoldImageView.setDisable(false);
         if(visibleSlotToCardId.get(secondGoldImageView).get() != null) secondGoldImageView.setDisable(false);
+
+        System.out.println("resource: is empty ? " + resourceDeck.second.isEmpty() + " -> " + !resourceDeckImageView.isDisable());
+        System.out.println("gold: is empty ? " + goldDeck.second.isEmpty() + " -> " + !goldDeckImageView.isDisable());
+        System.out.println("first resource: " + !firstResourceImageView.isDisable());
+        System.out.println("second resource: " + !secondResourceImageView.isDisable());
+        System.out.println("first gold: " + !firstGoldImageView.isDisable());
+        System.out.println("second gold: " + !secondGoldImageView.isDisable());
     }
 
     /**
