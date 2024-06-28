@@ -36,7 +36,7 @@ public class ResultsScene extends Scene {
         int i = 1;
         for (Trio<PlayerToken, Integer, Integer> result : sceneManager.cli.gameResults.get()) {
             System.out.println(i + ": " + sceneManager.cli.getTokenToPlayerMap().get(result.first) + " as "
-                    + result.first + " (" + result.second + " points)");
+                    + result.first + " (" + result.second + " points and " + result.third + " completed objectives)");
             i++;
         }
     }

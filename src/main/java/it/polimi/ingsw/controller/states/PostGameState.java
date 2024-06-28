@@ -58,7 +58,7 @@ public class PostGameState extends GameState {
 
                 if (points != 0) {
                     objectiveScore += points;
-                    completedObjectives += (points / objectiveCard.getPoints());
+                    completedObjectives++;
                 }
             }
 
@@ -68,7 +68,7 @@ public class PostGameState extends GameState {
 
             if (points != 0) {
                 objectiveScore += points;
-                completedObjectives += (points / secretObjective.getPoints());
+                completedObjectives++;
             }
 
             results.add(new Trio<PlayerToken, Integer, Integer>(token, entry.getValue() + objectiveScore,
