@@ -73,7 +73,7 @@ public enum Server {
     public static void main(String[] args) {
         AnsiConsole.systemInstall();
 
-        if(!Config.setUp(args)) {
+        if (!Config.setUp(args)) {
             System.out.println("Invalid arguments");
             return;
         }
@@ -241,8 +241,8 @@ public enum Server {
     /**
      * Starts the game by spawing the a game model and controller.
      *
-     * @param userInfo    The UserInfo of the user who tries to start the game
-     * @param lobbyId The id of the lobby
+     * @param userInfo The UserInfo of the user who tries to start the game
+     * @param lobbyId  The id of the lobby
      * @return True if the game is started successfully, false if the game doesn't
      *         exist, if the user is not the lobby manager of if the game was
      *         already started
@@ -585,4 +585,20 @@ public enum Server {
         lastKeepAliveMap.put(userInfo, System.currentTimeMillis());
     }
 
+    /**
+     * Method to call at the end of a game.
+     * Broadcasts updated lobbies after deleting the game lobby.
+     * 
+     * @param lobbyId the id of the lobby
+     */
+    public void gameEnded(int lobbyId) {
+        LobbyInfo lobby = new LobbyInfo(Lobby.getLobby(lobbyId));
+        List<UserInfo> usersInLobby = lobby.users;
+
+        connectedPlayers.entrySet().stream().filter(u -> usersInLobby.contains(u)).map(e -> e.getValue())
+                .filter(c -> !c.getStatus().equals(Status.DISCONNETED_FROM_GAME)).forEach(
+                        c -> c.setStatus(Status.IN_MENU));
+        Lobby.deleteLobby(lobbyId);
+        broadcastLobbies();
+    }
 }
