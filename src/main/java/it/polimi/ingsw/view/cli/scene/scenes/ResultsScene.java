@@ -19,11 +19,12 @@ public class ResultsScene extends Scene {
     public ResultsScene(SceneManager sceneManager) {
         super(sceneManager);
         this.commands = Arrays.asList(
-                new CLICommand("x", "to go back to the main menu", () -> {
+                new CLICommand("x", "to quit", () -> {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid command");
 
-                    sceneManager.transition(LobbiesScene.class);
+                    sceneManager.isRunning.set(false);
+                    System.exit(0);
                 }));
     }
 
@@ -31,7 +32,7 @@ public class ResultsScene extends Scene {
     public void onEntry() {
         CLIPrinter.clear();
         CLIPrinter.displaySceneTitle("Game Results", BLUE);
-        System.out.println("Enter x to go back to the main menu");
+        System.out.println("Enter x to quit the game");
         System.out.println("\nThis is the final ranking:\n");
         int i = 1;
         for (Trio<PlayerToken, Integer, Integer> result : sceneManager.cli.gameResults.get()) {
