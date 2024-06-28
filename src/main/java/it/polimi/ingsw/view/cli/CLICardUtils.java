@@ -281,7 +281,7 @@ public class CLICardUtils {
         result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
                 elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
 
-        result[2][5] = colorAndResetFg(card.type, elementToColor(card.type));
+        // result[2][5] = colorAndResetFg(card.type, elementToColor(card.type));
 
         result[3][1] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_LEFT),
                 elementToColor(corners.get(CornerPosition.BOTTOM_LEFT)));
@@ -332,7 +332,7 @@ public class CLICardUtils {
         result[1][9] = colorAndResetFg(corners.get(CornerPosition.TOP_RIGHT),
                 elementToColor(corners.get(CornerPosition.TOP_RIGHT)));
 
-        result[2][5] = colorAndResetBg(card.type, YELLOW);
+        result[2][5] = colorAndResetBg(" ", YELLOW);
 
         result[3][1] = colorAndResetFg(corners.get(CornerPosition.BOTTOM_LEFT),
                 elementToColor(corners.get(CornerPosition.BOTTOM_LEFT)));
