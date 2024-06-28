@@ -191,7 +191,7 @@ public class CLIPrinter {
                 .a(Optional.ofNullable(elements.get(Resources.ANIMAL)).orElse(0)));
         System.out.println(ansi().fg(CLICardUtils.elementToColor("F")).a("F").reset().a(" -> ")
                 .a(Optional.ofNullable(elements.get(Resources.FUNGI)).orElse(0)));
-        System.out.println(ansi().fg(CLICardUtils.elementToColor("G")).a("G").reset().a(" -> ")
+        System.out.println(ansi().fg(CLICardUtils.elementToColor("I")).a("I").reset().a(" -> ")
                 .a(Optional.ofNullable(elements.get(Resources.INSECT)).orElse(0)));
         System.out.println(ansi().fg(CLICardUtils.elementToColor("Q")).a("Q").reset().a(" -> ")
                 .a(Optional.ofNullable(elements.get(Items.QUILL)).orElse(0)));

@@ -775,7 +775,7 @@ public class CLI implements UI {
 
     @Override
     public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
-        if (!sender.equals(getUserInfo()) || !receiver.equals(getUserInfo()))
+        if (!sender.equals(getUserInfo()) && !receiver.equals(getUserInfo()))
             return;
 
         if (receiver.equals(getUserInfo())) {
@@ -802,6 +802,8 @@ public class CLI implements UI {
     public void handleGameStartedEvent(List<UserInfo> users) {
         this.startingGame.set(false);
         this.usersInGame.set(users);
+
+        this.inGame.set(true);
 
         sceneManager.transition(TokenSelectionScene.class);
         resetPrompt();

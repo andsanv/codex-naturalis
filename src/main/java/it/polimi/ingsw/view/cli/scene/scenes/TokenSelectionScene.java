@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.cli.scene.scenes;
 
+import static org.fusesource.jansi.Ansi.ansi;
+import static org.fusesource.jansi.Ansi.Color.CYAN;
 import static org.fusesource.jansi.Ansi.Color.YELLOW;
 
 import java.util.Arrays;
@@ -40,12 +42,19 @@ public class TokenSelectionScene extends Scene {
         System.out.println("Welcome to the match! The players in the game are:");
         sceneManager.cli.usersInGame.get().stream().forEach(p -> {
             if (!p.equals(sceneManager.cli.getUserInfo()))
-                System.out.println(p);
+                System.out.println(ansi().reset().fg(CYAN).a(p).reset());
             else
-                System.out.println(p + " (YOU)");
+                System.out.println(ansi().reset().fg(CYAN).a(p).reset() + " (YOU)");
         });
 
-        System.out.println("You have to pick a token to play:");
+        System.out.println("\nDuring the match you can use:");
+        CLIPrinter.displayCommands(null, Arrays.asList(
+                new CLICommand("dm", Arrays.asList("user", "message"), "to send a direct message", null),
+                new CLICommand("printdm", Arrays.asList("user"), "to see messages with another user", null),
+                new CLICommand("gm", Arrays.asList("message"), "to send a group message", null),
+                new CLICommand("printgm", "to see messages in the group", null)));
+
+        System.out.println("\nYou have to pick a token to play:");
     }
 
     @Override

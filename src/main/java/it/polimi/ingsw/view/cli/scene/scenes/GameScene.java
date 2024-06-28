@@ -83,7 +83,7 @@ public class GameScene extends Scene {
 
                             if (args[3].equals("f")) {
                                 cardSide = CardSide.FRONT;
-                            } else if (args[2].equals("b")) {
+                            } else if (args[3].equals("b")) {
                                 cardSide = CardSide.BACK;
                             } else {
                                 CLIPrinter.displayError("Invalid card side");
