@@ -2,28 +2,28 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.SetupPhaseController">
+<AnchorPane prefHeight="900.0" prefWidth="1440.0" stylesheets="@../../css/setupPhaseView.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.SetupPhaseController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="187.0" prefWidth="260.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <StackPane fx:id="objectiveCardsPane" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: yellow;">
+            <StackPane fx:id="objectiveCardsPane" prefHeight="150.0" prefWidth="200.0">
                <StackPane.margin>
                   <Insets bottom="175.0" left="300.0" right="300.0" top="175.0" />
                </StackPane.margin>
                <children>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="central-pane">
                      <children>
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                        <StackPane fx:id="objectiveTextPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="293.0">
                            <children>
                               <Text fx:id="objectiveText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-top" text="Choose your objective card!" textAlignment="CENTER" wrappingWidth="422.0">
                                  <font>
@@ -31,15 +31,21 @@
                                  </font>
                               </Text>
                            </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                         </StackPane>
-                        <HBox prefHeight="100.0" prefWidth="840.0" VBox.vgrow="ALWAYS">
+                        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="655.0" VBox.vgrow="ALWAYS">
                            <children>
                               <StackPane prefHeight="150.0" prefWidth="420.0">
                                  <children>
                                     <ImageView fx:id="firstObjectiveCardImageView" fitHeight="150.0" fitWidth="225.0" pickOnBounds="true" preserveRatio="true">
                                        <StackPane.margin>
-                                          <Insets left="75.0" />
+                                          <Insets />
                                        </StackPane.margin>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
                                     </ImageView>
                                  </children>
                               </StackPane>
@@ -47,8 +53,11 @@
                                  <children>
                                     <ImageView fx:id="secondObjectiveCardImageView" fitHeight="150.0" fitWidth="225.0" pickOnBounds="true" preserveRatio="true">
                                        <StackPane.margin>
-                                          <Insets right="75.0" />
+                                          <Insets />
                                        </StackPane.margin>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
                                     </ImageView>
                                  </children>
                               </StackPane>
@@ -63,11 +72,11 @@
                   </VBox>
                </children>
             </StackPane>
-            <StackPane fx:id="starterCardPane" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: yellow;">
+            <StackPane fx:id="starterCardPane" prefHeight="150.0" prefWidth="200.0" styleClass="main-pane">
                <children>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="central-pane">
                      <children>
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                        <StackPane fx:id="starterTextPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="340.0">
                            <children>
                               <Text fx:id="starterText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-top" text="Choose your starter card side!" textAlignment="CENTER" wrappingWidth="422.0">
                                  <font>
@@ -76,14 +85,17 @@
                               </Text>
                            </children>
                         </StackPane>
-                        <HBox prefHeight="100.0" prefWidth="840.0" VBox.vgrow="ALWAYS">
+                        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="657.0" VBox.vgrow="ALWAYS">
                            <children>
                               <StackPane prefHeight="150.0" prefWidth="420.0">
                                  <children>
                                     <ImageView fx:id="frontStarterCardSideImageView" fitHeight="150.0" fitWidth="225.0" pickOnBounds="true" preserveRatio="true">
                                        <StackPane.margin>
-                                          <Insets left="75.0" />
+                                          <Insets />
                                        </StackPane.margin>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
                                     </ImageView>
                                  </children>
                               </StackPane>
@@ -91,16 +103,22 @@
                                  <children>
                                     <ImageView fx:id="backStarterCardSideImageView" fitHeight="150.0" fitWidth="225.0" pickOnBounds="true" preserveRatio="true">
                                        <StackPane.margin>
-                                          <Insets right="75.0" />
+                                          <Insets />
                                        </StackPane.margin>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
                                     </ImageView>
                                  </children>
                               </StackPane>
                            </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                         </HBox>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Button fx:id="starterNextButton" mnemonicParsing="false" text="Next" />
+                              <Button fx:id="starterNextButton" mnemonicParsing="false" styleClass="button-next" text="Next" />
                            </children>
                         </StackPane>
                      </children>
@@ -110,68 +128,84 @@
                   <Insets bottom="175.0" left="300.0" right="300.0" top="175.0" />
                </StackPane.margin>
             </StackPane>
-            <StackPane fx:id="tokenPane" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: yellow;">
+            <StackPane fx:id="tokenPane" prefHeight="150.0" prefWidth="200.0" styleClass="main-pane">
                <children>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" styleClass="central-pane">
                      <children>
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                        <StackPane fx:id="tokenTextPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="287.0" styleClass="text-pane">
                            <children>
                               <Text fx:id="tokenText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-top" text="Choose your token!" textAlignment="CENTER" wrappingWidth="422.0">
                                  <font>
                                     <Font size="17.0" />
                                  </font>
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
                               </Text>
                            </children>
+                           <VBox.margin>
+                              <Insets top="50.0" />
+                           </VBox.margin>
                         </StackPane>
-                        <HBox prefHeight="100.0" prefWidth="840.0" VBox.vgrow="ALWAYS">
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="840.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <Pane prefHeight="200.0" prefWidth="175.0" />
                               <StackPane prefHeight="150.0" prefWidth="490.0">
                                  <children>
-                                    <HBox prefHeight="100.0" prefWidth="200.0">
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" StackPane.alignment="CENTER">
                                        <children>
                                           <ImageView fx:id="redTokenImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                                              <HBox.margin>
-                                                <Insets left="18.0" top="75.0" />
+                                                <Insets />
                                              </HBox.margin>
                                              <image>
                                                 <Image url="@../../images/tokens/token_red.png" />
                                              </image>
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
                                           </ImageView>
                                           <ImageView fx:id="greenTokenImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                                              <HBox.margin>
-                                                <Insets left="18.0" top="75.0" />
+                                                <Insets />
                                              </HBox.margin>
                                              <image>
                                                 <Image url="@../../images/tokens/token_green.png" />
                                              </image>
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
                                           </ImageView>
                                           <ImageView fx:id="blueTokenImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                                              <HBox.margin>
-                                                <Insets left="18.0" top="75.0" />
+                                                <Insets />
                                              </HBox.margin>
                                              <image>
                                                 <Image url="@../../images/tokens/token_blue.png" />
                                              </image>
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
                                           </ImageView>
                                           <ImageView fx:id="yellowTokenImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                                              <HBox.margin>
-                                                <Insets left="18.0" top="75.0" />
+                                                <Insets />
                                              </HBox.margin>
                                              <image>
                                                 <Image url="@../../images/tokens/token_yellow.png" />
                                              </image>
+                                             <effect>
+                                                <DropShadow />
+                                             </effect>
                                           </ImageView>
                                        </children>
                                     </HBox>
                                  </children>
                               </StackPane>
-                              <Pane prefHeight="200.0" prefWidth="175.0" />
                            </children>
                         </HBox>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Button fx:id="tokenNextButton" mnemonicParsing="false" text="Next" />
+                              <Button fx:id="tokenNextButton" mnemonicParsing="false" styleClass="button-next" text="Next" StackPane.alignment="CENTER" />
                            </children>
                         </StackPane>
                      </children>

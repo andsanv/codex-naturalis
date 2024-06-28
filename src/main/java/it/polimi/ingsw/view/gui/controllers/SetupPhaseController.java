@@ -40,6 +40,7 @@ public class SetupPhaseController extends Controller {
     @FXML public StackPane tokenPane;
     @FXML public Text tokenText;
     @FXML public Button tokenNextButton;
+    @FXML public StackPane tokenTextPane;
 
     @FXML public ImageView redTokenImageView;
     @FXML public ImageView greenTokenImageView;
@@ -54,6 +55,7 @@ public class SetupPhaseController extends Controller {
     /* STARTER CARD PHASE */
     @FXML public StackPane starterCardPane;
     @FXML public Text starterText;
+    @FXML public StackPane starterTextPane;
     @FXML public Button starterNextButton;
 
     @FXML public ImageView frontStarterCardSideImageView;
@@ -68,6 +70,7 @@ public class SetupPhaseController extends Controller {
     // interface
     @FXML public StackPane objectiveCardsPane;
     @FXML public Text objectiveText;
+    @FXML public StackPane objectiveTextPane;
     @FXML public Button objectiveNextButton;
 
     @FXML public ImageView firstObjectiveCardImageView;
@@ -93,6 +96,7 @@ public class SetupPhaseController extends Controller {
         this.currentLobby = gui.currentLobby;
 
         initializeTokens();
+        applyCss();
     }
 
     /**
@@ -382,6 +386,8 @@ public class SetupPhaseController extends Controller {
     }
 
 
+
+
     // starter card phase
 
     @Override
@@ -460,5 +466,26 @@ public class SetupPhaseController extends Controller {
 
     public Image getCardImage(int id, CardSide cardSide) {
         return new Image("images/cards/" + (cardSide == CardSide.FRONT ? "fronts/" : "backs/") + id + ".png");
+    }
+
+    /**
+     * Applies CSS to the view.
+     */
+    public void applyCss() {
+
+        //token css
+        tokenPane.getStyleClass().add("main-pane");
+        tokenNextButton.getStyleClass().add("button-next");
+        tokenTextPane.getStyleClass().add("text-pane");
+
+        //starter css
+        starterCardPane.getStyleClass().add("main-pane");
+        starterNextButton.getStyleClass().add("button-next");
+        starterTextPane.getStyleClass().add("text-pane");
+
+        //starter css
+        objectiveCardsPane.getStyleClass().add("main-pane");
+        objectiveNextButton.getStyleClass().add("button-next");
+        objectiveTextPane.getStyleClass().add("text-pane");
     }
 }

@@ -13,7 +13,6 @@
 
 .popup-pane {
     -fx-background-color: #ede4bc;
-    -fx-background-repeat: repeat;
     -fx-background-radius: 20px;
     -fx-border-radius: 20px;
     -fx-border-width: 8;
