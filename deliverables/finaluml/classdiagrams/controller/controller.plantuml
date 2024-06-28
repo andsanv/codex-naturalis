@@ -1,0 +1,246 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class DrawCardState {
+  + drawResourceDeckCard(PlayerToken): boolean
+  + drawGoldDeckCard(PlayerToken): boolean
+  + drawVisibleGoldCard(PlayerToken, int): boolean
+  + drawVisibleResourceCard(PlayerToken, int): boolean
+}
+class GameFlowManager {
+  + round: Integer
+  + tokenSelectionState: GameState
+  + commands: Queue<GameCommand>
+  + users: List<UserInfo>
+  - isConnected: Map<UserInfo, Supplier<Boolean>>
+  + playCardState: GameState
+  - timeLimitReached: AtomicBoolean
+  + turn: Integer
+  + lobbyId: int
+  + userInfoToToken: Map<UserInfo, PlayerToken>
+  + playerTokens: List<PlayerToken>
+  + objectiveCardSelectionState: GameState
+  + currentState: GameState
+  + postGameState: GameState
+  + drawCardState: GameState
+  + isLastRound: Boolean
+  + observers: List<Observer>
+  + gameModelUpdater: GameModelUpdater
+  - timeLimit: long
+  + starterCardSelectionState: GameState
+  + initializationState: GameState
+  + run(): void
+  - handleTurn(): void
+  + forwardMessage(MessageEvent): void
+  + switchTurn(): void
+  + drawRandomCard(PlayerToken): void
+  + notify(GameEvent): void
+  + addCommand(GameCommand): void
+  + getTurn(): PlayerToken
+  + setGameModelUpdater(GameModelUpdater): void
+  + getRound(): int
+  + setState(GameState): void
+  + initializeGameStates(): void
+}
+class GameModelUpdater {
+  + gameModel: GameModel
+  + drawVisibleResourceCard(PlayerToken, int): boolean
+  + drawVisibleGoldCard(PlayerToken, int): boolean
+  + limitScoreReached(): boolean
+  + computeCardsPlayability(PlayerToken): boolean
+  + anyDeckEmpty(): boolean
+  + drawGoldDeckCard(PlayerToken): boolean
+  + drawResourceDeckCard(PlayerToken): boolean
+  + playCard(PlayerToken, Coords, int, CardSide): boolean
+  + getSlimGameModel(): SlimGameModel
+}
+class GameState {
+  # gameFlowManager: GameFlowManager
+  # users: List<UserInfo>
+  # gameModelUpdater: GameModelUpdater
+  + selectToken(UserInfo, PlayerToken): boolean
+  + selectObjectiveCard(PlayerToken, int): boolean
+  + drawVisibleResourceCard(PlayerToken, int): boolean
+  + drawVisibleGoldCard(PlayerToken, int): boolean
+  + handleInitialization(Map<UserInfo, PlayerToken>, Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>, Map<PlayerToken, ObjectiveCard>): boolean
+  + selectStarterCardSide(PlayerToken, CardSide): boolean
+  + playCard(PlayerToken, Coords, int, CardSide): boolean
+  + drawGoldDeckCard(PlayerToken): boolean
+  + handleStarterCardSelection(): Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>>
+  + handleTokenSelection(List<PlayerToken>): Map<UserInfo, PlayerToken>
+  + drawObjectiveCards(PlayerToken): boolean
+  + postGame(): boolean
+  + drawStarterCard(PlayerToken): boolean
+  + handleObjectiveCardSelection(): Map<PlayerToken, ObjectiveCard>
+  + drawResourceDeckCard(PlayerToken): boolean
+}
+class InitializationState {
+  - observers: List<Observer>
+  - lastEventId: AtomicInteger
+  - decks: Decks
+  + handleInitialization(Map<UserInfo, PlayerToken>, Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>, Map<PlayerToken, ObjectiveCard>): boolean
+}
+class Lobby {
+  + id: int
+  - manager: User
+  - gameStarted: boolean
+  - gameFlowManager: GameFlowManager
+  - nextId: int
+  - users: List<User>
+  - lobbies: Set<Lobby>
+  + hashCode(): int
+  + removeUserIfGameNotStarted(UserInfo): boolean
+  + getLobby(int): Lobby
+  + contains(User): boolean
+  + anyLobbyContains(UserInfo): boolean
+  + contains(UserInfo): boolean
+  + deleteLobby(int): boolean
+  + removeUser(User): boolean
+  + getGameFlowManager(): GameFlowManager
+  + getLobby(UserInfo): Lobby
+  + anyLobbyContains(User): boolean
+  + toString(): String
+  + isFull(): boolean
+  + gameStarted(): boolean
+  + addUser(User): boolean
+  + getUsers(): List<User>
+  + toLobbyInfo(): LobbyInfo
+  + setGameFlowManager(GameFlowManager): void
+  + startGame(): boolean
+  + getLobbies(): List<LobbyInfo>
+  + equals(Object): boolean
+  + getManager(): UserInfo
+}
+class LobbyInfo {
+  + gameStarted: boolean
+  + manager: UserInfo
+  + users: List<UserInfo>
+  + id: int
+  + contains(UserInfo): boolean
+  + equals(Object): boolean
+  + toString(): String
+}
+class ObjectiveCardSelectionState {
+  - decks: Decks
+  - timeLimitReached: AtomicBoolean
+  - timeLimit: long
+  - tokenToDrawnObjectiveCards: Map<PlayerToken, Pair<ObjectiveCard, ObjectiveCard>>
+  - playerTokens: List<PlayerToken>
+  - tokenToChosenObjectiveCard: Map<PlayerToken, ObjectiveCard>
+  + drawObjectiveCards(PlayerToken): boolean
+  + handleObjectiveCardSelection(): Map<PlayerToken, ObjectiveCard>
+  + selectObjectiveCard(PlayerToken, int): boolean
+}
+class Observable {
+  - observers: List<Observer>
+  - lastEventId: AtomicInteger
+  + notify(GameEvent): void
+}
+interface Observer << interface >> {
+  + update(GameEvent): void
+}
+class PlayCardState {
+  + playCard(PlayerToken, Coords, int, CardSide): boolean
+}
+class PostGameState {
+  + postGame(): boolean
+}
+enum Server << enumeration >> {
+  - executorService: ExecutorService
+  + MILLISEC_TIME_OUT: long
+  - lastKeepAliveMap: ConcurrentHashMap<UserInfo, Long>
+  + INSTANCE: 
+  - connectedPlayers: ConcurrentHashMap<UserInfo, Client>
+  + gameEnded(int): void
+  + valueOf(String): Server
+  + joinLobby(UserInfo, int): boolean
+  - sendMainEvent(UserInfo, MainEvent): void
+  + updateKeepAlive(UserInfo): void
+  + leaveLobby(UserInfo, int): boolean
+  + removeConnectedClient(MainViewActions): void
+  + checkConnections(): void
+  - setUpClientsForGame(List<Client>, GameFlowManager): void
+  + values(): Server[]
+  + createLobby(UserInfo): LobbyInfo?
+  + main(String[]): void
+  + clientSignUp(String, Client): UserInfo
+  + startGame(UserInfo, int): boolean
+  + clientLogin(UserInfo, Client): void
+  + broadcastLobbies(): void
+  + sendGameEvent(UserInfo, GameEvent): void
+  + leaveLobby(User, int): boolean
+  - checkKeepAlive(): void
+}
+class ServerPrinter {
+  + SHOW_WARNING: boolean
+  + SHOW_INFO: boolean
+  + SHOW_ERROR: boolean
+  + SHOW_DEBUG: boolean
+  + displayDebug(String): void
+  + displayInfo(String): void
+  + displayError(String): void
+  + displayWarning(String): void
+}
+class StarterCardSelectionState {
+  - playerTokens: List<PlayerToken>
+  - timeLimitReached: AtomicBoolean
+  - decks: Decks
+  - timeLimit: long
+  - tokenToCardSide: Map<PlayerToken, CardSide>
+  - tokenToStarterCard: Map<PlayerToken, StarterCard>
+  + drawStarterCard(PlayerToken): boolean
+  + selectStarterCardSide(PlayerToken, CardSide): boolean
+  + handleStarterCardSelection(): Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>>
+}
+enum Status << enumeration >> {
+  + IN_MENU: 
+  + DISCONNETED_FROM_GAME: 
+  + OFFLINE: 
+  + IN_GAME: 
+  + values(): Status[]
+  + valueOf(String): Status
+}
+class TokenSelectionState {
+  - userInfoToToken: Map<UserInfo, PlayerToken>
+  - timeLimitReached: AtomicBoolean
+  - timeLimit: long
+  + handleTokenSelection(List<PlayerToken>): Map<UserInfo, PlayerToken>
+  + selectToken(UserInfo, PlayerToken): boolean
+}
+class User {
+  - nameToNextId: Map<String, Integer>
+  + name: String
+  + id: int
+  - users: Set<User>
+  + randomUsername(int): String
+  + getUsers(): Set<User>
+  + equals(User): boolean
+  + toString(): String
+  + equals(UserInfo): boolean
+  + equals(Object): boolean
+  + userInfoToUser(UserInfo): User
+  + toUserInfo(): UserInfo?
+  + exists(UserInfo): boolean
+}
+class UserInfo {
+  + name: String
+  + id: int
+  + hashCode(): int
+  + toString(): String
+  + fromString(String): UserInfo
+  + equals(User): boolean
+  + equals(Object): boolean
+  + equals(UserInfo): boolean
+}
+
+DrawCardState                -[#000082,plain]-^  GameState                   
+InitializationState          -[#000082,plain]-^  GameState                   
+ObjectiveCardSelectionState  -[#000082,plain]-^  GameState                   
+PlayCardState                -[#000082,plain]-^  GameState                   
+PostGameState                -[#000082,plain]-^  GameState                   
+StarterCardSelectionState    -[#000082,plain]-^  GameState                   
+TokenSelectionState          -[#000082,plain]-^  GameState                   
+@enduml
