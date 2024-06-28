@@ -209,14 +209,15 @@ class GameModelUpdaterTest {
                         .filter(x -> x.get() == Resources.PLANT).count(),
                 (long) redPlayerBoard.playerElements.get(Resources.PLANT));
         assertEquals(
-                1 + resourceCard.getActiveCorners().values().stream().map(x -> x.element)
-                        .filter(Optional::isPresent)
-                        .filter(x -> x.get() == Resources.INSECT).count(),
-                (long) redPlayerBoard.playerElements.get(Resources.INSECT));
-        assertEquals(
                 resourceCard.getActiveCorners().values().stream().map(x -> x.element)
                         .filter(Optional::isPresent)
-                        .filter(x -> x.get() == Resources.ANIMAL).count(),
+                        .filter(x -> x.get() == Resources.INSECT).count() + 1, // We have to account for the central resouce
+                (long) redPlayerBoard.playerElements.get(Resources.INSECT));
+        assertEquals(
+                resourceCard.getActiveCorners().values().stream()
+                .map(x -> x.element)
+                        .filter(Optional::isPresent)
+                        .filter(x -> x.get() == Resources.ANIMAL).count() + 1 , // Again, accounting for the central resouce
                 (long) redPlayerBoard.playerElements.get(Resources.ANIMAL));
         assertEquals(
                 resourceCard.getActiveCorners().values().stream().map(x -> x.element)
