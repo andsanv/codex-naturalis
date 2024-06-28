@@ -8,11 +8,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.util.*;
@@ -28,7 +30,9 @@ public class LobbiesListController extends Controller {
     @FXML private StackPane mainStackPane;
     @FXML private StackPane lobbiesStackPane;
     @FXML private StackPane headerStackPane;
+    @FXML private ScrollPane scrollPane;
     @FXML private Button backButton;
+    @FXML Rectangle rectangle;
 
     @FXML private VBox lobbiesListVBox;
     @FXML private Button updateLobbiesButton;
@@ -46,6 +50,8 @@ public class LobbiesListController extends Controller {
      * @param gui the GUI application
      */
     public void initialize(GUI gui) {
+        applyCss();
+
         this.gui = gui;
         this.selfUserInfo = gui.selfUserInfo;
         this.activeLobbies = gui.availableLobbies;
@@ -57,6 +63,16 @@ public class LobbiesListController extends Controller {
         updateLobbiesButton.setOnAction(this::updateLobbies);
 
         buildList();
+    }
+
+    public void applyCss() {
+        mainStackPane.getStyleClass().add("main-pane");
+        lobbiesStackPane.getStyleClass().add("lobbies-pane");
+        headerStackPane.getStyleClass().add("header-pane");
+        scrollPane.getStyleClass().add("scroll-pane");
+        backButton.getStyleClass().add("back-button");
+        updateLobbiesButton.getStyleClass().add("update-button");
+        rectangle.getStyleClass().add("dark-overlay-rectangle");
     }
 
     /**

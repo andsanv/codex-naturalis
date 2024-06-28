@@ -7,25 +7,27 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.LobbiesListController">
    <children>
-      <StackPane fx:id="mainStackPane" layoutX="-26.0" layoutY="-4.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane fx:id="mainStackPane" layoutX="-26.0" layoutY="-4.0" prefHeight="150.0" prefWidth="200.0" style="-fx-background-image: /images/miscellaneous/background-16-10.png;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
+            <Rectangle fx:id="rectangle" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="900.0" stroke="WHITE" strokeType="INSIDE" width="1440.0" />
             <Button fx:id="backButton" mnemonicParsing="false" text="Back" StackPane.alignment="TOP_LEFT">
                <StackPane.margin>
                   <Insets left="30.0" top="30.0" />
                </StackPane.margin>
             </Button>
-            <StackPane fx:id="lobbiesStackPane" prefHeight="150.0" prefWidth="200.0">
+            <StackPane fx:id="lobbiesStackPane" prefHeight="150.0" prefWidth="200.0" style="-fx-border-radius: 20;">
                <StackPane.margin>
-                  <Insets bottom="125.0" left="250.0" right="250.0" top="125.0" />
+                  <Insets bottom="120.0" left="245.0" right="245.0" top="120.0" />
                </StackPane.margin>
                <children>
-                  <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
+                  <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-border-radius: 20;" vbarPolicy="ALWAYS">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="650.0" prefWidth="940.0">
+                      <AnchorPane fx:id="scrollAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="650.0" prefWidth="940.0" style="-fx-background-color: transparent;">
                            <children>
                               <VBox fx:id="lobbiesListVBox" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
@@ -91,7 +93,7 @@
             </StackPane>
             <Button fx:id="updateLobbiesButton" mnemonicParsing="false" text="Update" StackPane.alignment="TOP_LEFT">
                <StackPane.margin>
-                  <Insets left="681.0" top="90.0" />
+                  <Insets left="681.0" top="80.0" />
                </StackPane.margin>
             </Button>
          </children>

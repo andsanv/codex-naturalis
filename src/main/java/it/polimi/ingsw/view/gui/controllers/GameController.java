@@ -12,6 +12,7 @@ import it.polimi.ingsw.model.common.Resources;
 import it.polimi.ingsw.model.player.Coords;
 import it.polimi.ingsw.model.player.PlayerToken;
 import it.polimi.ingsw.util.Pair;
+import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -25,6 +26,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.event.Event;
@@ -65,7 +67,7 @@ public class GameController extends Controller {
     public final Pair<Double, Double> adjustedCardDimensions = new Pair<>(rawCardDimensions.first * cardCompressionFactor, rawCardDimensions.second * cardCompressionFactor);
     public final Pair<Integer, Integer> gridCellsCount = new Pair<>(81, 81);
 
-    public final Integer DEFAULT_OBJECTIVE_CARD_ID = 87;
+    public final Integer DEFAULT_OBJECTIVE_CARD_ID = 88;
 
 
     /* GRAPHIC STRUCTURE */
@@ -128,6 +130,28 @@ public class GameController extends Controller {
     @FXML public Text eventTitle;
     @FXML public StackPane importantEventPane;
     @FXML public Text importantEventText;
+
+    /* ENDED PHASE */
+    @FXML public StackPane endedGamePane;
+    @FXML public StackPane gameEndedTextPane;
+    @FXML public StackPane firstPlayerEndedPane;
+    @FXML public StackPane secondPlayerEndedPane;
+    @FXML public StackPane thirdPlayerEndedPane;
+    @FXML public StackPane fourthPlayerEndedPane;
+
+    @FXML public Text firstPlayerEndedName;
+    @FXML public Text secondPlayerEndedName;
+    @FXML public Text thirdPlayerEndedName;
+    @FXML public Text fourthPlayerEndedName;
+
+    @FXML public Text firstPlayerPoints;
+    @FXML public Text secondPlayerPoints;
+    @FXML public Text thirdPlayerPoints;
+    @FXML public Text fourthPlayerPoints;
+
+    @FXML public Rectangle endedGameRectangle;
+    @FXML public Button quitButton;
+    @FXML public VBox endedPlayersVBox;
 
     /* HELPERS */
     // mouse drag
@@ -211,17 +235,6 @@ public class GameController extends Controller {
 
         currentPlayerToken = selfPlayerToken;
         switchPlayerView(selfPlayerToken);
-//
-//        // simulate some turns
-//        cardsPlayability = new HashMap<>() {{
-//            put(0, new ArrayList<>(Arrays.asList(new Pair<>(CardSide.FRONT, true), new Pair<>(CardSide.BACK, false))));
-//            put(1, new ArrayList<>(Arrays.asList(new Pair<>(CardSide.FRONT, false), new Pair<>(CardSide.BACK, true))));
-//            put(7, new ArrayList<>(Arrays.asList(new Pair<>(CardSide.FRONT, false), new Pair<>(CardSide.BACK, false))));
-//        }};
-//        availableSlots = new ArrayList<>(Arrays.asList(new Coords(1,1), new Coords(-1,-1)));
-//
-//        handleCardsPlayabilityEvent(PlayerToken.RED, new ArrayList<>(availableSlots), new HashMap<>(cardsPlayability));
-//        isPlayCardState = false;
     }
 
     /**
@@ -263,19 +276,35 @@ public class GameController extends Controller {
         resourceDeckImageView.setImage(getCardImage(
                 !slimGameModel.resourceDeck.isEmpty() ? slimGameModel.resourceDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
+        resourceDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // gold deck
         goldDeckImageView.setImage(getCardImage(
                 !slimGameModel.goldDeck.isEmpty() ? slimGameModel.goldDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
+        goldDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
 
         // resource visible
         firstResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.get(0), CardSide.FRONT));
+        firstResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        firstResourceImageView.setDisable(true);
+
         secondResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.get(1), CardSide.FRONT));
+        secondResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        secondResourceImageView.setDisable(true);
 
         // gold visible
         firstGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.get(0), CardSide.FRONT));
+        firstGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        firstGoldImageView.setDisable(true);
+
         secondGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.get(1), CardSide.FRONT));
+        secondGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        secondGoldImageView.setDisable(true);
+
+        firstObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(0), CardSide.FRONT));
+        secondObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(1), CardSide.FRONT));
+        secretObjectiveSlot.setImage(getCardImage(slimGameModel.tokenToSecretObjective.get(selfPlayerToken), CardSide.FRONT));
     }
 
     /**
@@ -572,8 +601,8 @@ public class GameController extends Controller {
         manuscriptItemsCounter.setText(slimGameModel.tokenToElements.get(playerToken).get(Items.MANUSCRIPT).toString());
 
         // enable / disable decks
-        if (playerToken == selfPlayerToken) enableDecksPane();
-        else disableDecksPane();
+        if (playerToken == selfPlayerToken && isPlayCardState) enableDecksPane();
+        else disableDecks();
 
         // switch token
         currentPlayerToken = playerToken;
@@ -743,8 +772,10 @@ public class GameController extends Controller {
                 .map(this::getIndexesFromCoords)
                 .filter(Objects::nonNull)
                 .forEach(cellIndexes -> {
-                    getCell(currentGridPane, cellIndexes.x, cellIndexes.y).ifPresent(value -> {
-                        if(value.getClass().equals(Pane.class)) currentGridPane.getChildren().remove(value);
+                    Platform.runLater(() -> {
+                        getCell(currentGridPane, cellIndexes.x, cellIndexes.y).ifPresent(value -> {
+                            if(value.getClass().equals(Pane.class)) currentGridPane.getChildren().remove(value);
+                        });
                     });
                 });
 
@@ -781,6 +812,12 @@ public class GameController extends Controller {
         return gridPane.getChildren().stream()
                 .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
                 .findFirst();
+    }
+
+    public List<Node> getCells(GridPane gridPane, int i, int j) {
+        return gridPane.getChildren().stream()
+                .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
+                .toList();
     }
 
     /**
@@ -871,7 +908,7 @@ public class GameController extends Controller {
      * @param cardId id of the card to remove
      */
     public void removeCardFromHand(PlayerToken playerToken, int cardId) {
-        int handIndex = slimGameModel.tokenToHand.get(selfPlayerToken).indexOf(cardId);
+        int handIndex = slimGameModel.tokenToHand.get(playerToken).indexOf(cardId);
         if (handIndex == -1) throw new RuntimeException("Card is not in player's hand");
 
         ImageView cardImageView = (ImageView) tokenToHandHBox.get(playerToken).getChildren().get(handIndex);
@@ -973,7 +1010,7 @@ public class GameController extends Controller {
             deck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
             deck.first.setDisable(true);
         }
-        else deck.first.setImage(getCardImage(deck.second.getLast(), CardSide.BACK));
+        else deck.first.setImage(getCardImage(deck.second.get(deck.second.size() - 2), CardSide.BACK));
 
         return drawnCardId;
     }
@@ -1135,9 +1172,6 @@ public class GameController extends Controller {
     @Override
     public void handleCardsPlayabilityEvent(PlayerToken playerToken, List<Coords> availableSlots, Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability) {
         System.out.println("CARDS PLAYABILITY RECEIVED: ");
-        availableSlots.forEach(coords -> {
-            System.out.println("x: " + coords.x + ", y: " + coords.y);
-        });
 
         Platform.runLater(() -> {
             if (playerToken != selfPlayerToken) return;     // don't care about events not related to self
@@ -1237,9 +1271,6 @@ public class GameController extends Controller {
      * As card Hover and card Click are already enabled by CardsPlayabilityEvent, the PlayCardEvent only enables the drag and drop.
      */
     public void playCardEnable() {
-        // enable hand
-        System.out.println("CARDS PLAYABILITY = " + cardsPlayability);
-
         tokenToHandHBox.get(selfPlayerToken).getChildren().forEach(imageView -> {
             int handIndex = tokenToHandHBox.get(selfPlayerToken).getChildren().indexOf(imageView);
 
@@ -1271,9 +1302,6 @@ public class GameController extends Controller {
     public void drawCardEnable() {
         decksAnchorPane.setDisable(false);
 
-        System.out.println("DRAW CARD ENABLE");
-
-
         if(!resourceDeck.second.isEmpty()) resourceDeckImageView.setDisable(false);
         if(!goldDeck.second.isEmpty()) goldDeckImageView.setDisable(false);
 
@@ -1281,13 +1309,6 @@ public class GameController extends Controller {
         if(visibleSlotToCardId.get(secondResourceImageView).get() != null) secondResourceImageView.setDisable(false);
         if(visibleSlotToCardId.get(firstGoldImageView).get() != null) firstGoldImageView.setDisable(false);
         if(visibleSlotToCardId.get(secondGoldImageView).get() != null) secondGoldImageView.setDisable(false);
-
-        System.out.println("resource: is empty ? " + resourceDeck.second.isEmpty() + " -> " + !resourceDeckImageView.isDisable());
-        System.out.println("gold: is empty ? " + goldDeck.second.isEmpty() + " -> " + !goldDeckImageView.isDisable());
-        System.out.println("first resource: " + !firstResourceImageView.isDisable());
-        System.out.println("second resource: " + !secondResourceImageView.isDisable());
-        System.out.println("first gold: " + !firstGoldImageView.isDisable());
-        System.out.println("second gold: " + !secondGoldImageView.isDisable());
     }
 
     /**
@@ -1381,4 +1402,49 @@ public class GameController extends Controller {
    public void setCardToHand(PlayerToken playerToken, int cardId, int handIndex) {
        ((ImageView) tokenToHandHBox.get(playerToken).getChildren().get(handIndex)).setImage(getCardImage(cardId, CardSide.BACK));
    }
+
+    /**
+     * Allows to handle the game results
+     *
+     * @param gameResults results of the game
+     */
+    @Override
+    public void handleGameResultsEvent(List<Trio<PlayerToken, Integer, Integer>> gameResults) {
+        List<Node> players = endedPlayersVBox.getChildren();
+
+        for (int i = 0; i < gameResults.size(); i++) {
+            PlayerToken playerToken = gameResults.get(i).first;
+            Integer points = gameResults.get(i).second;
+
+            String name = userInfoToToken.entrySet().stream().filter(x -> x.getValue().equals(playerToken)).map(Map.Entry::getKey).findFirst().get().name;
+
+            StackPane playerStackPane = (StackPane) players.get(i);
+            ((Text) ((StackPane) ((HBox) playerStackPane.getChildren().getFirst()).getChildren().get(1)).getChildren().getFirst()).setText(name);
+            ((Text) ((StackPane) ((HBox) playerStackPane.getChildren().getFirst()).getChildren().get(2)).getChildren().getFirst()).setText(String.valueOf(points));
+        }
+
+        quitButton.setOnAction(event -> {
+            Platform.runLater(() -> {
+                gui.changeToMenuScene();
+            });
+        });
+        quitButton.setDisable(false);
+        quitButton.setVisible(true);
+
+
+
+        firstPlayerEndedPane.getStyleClass().add("player-ended-pane");
+        secondPlayerEndedPane.getStyleClass().add("player-ended-pane");
+        thirdPlayerEndedPane.getStyleClass().add("player-ended-pane");
+        fourthPlayerEndedPane.getStyleClass().add("player-ended-pane");
+
+        endedGameRectangle.setDisable(false);
+        endedGameRectangle.setVisible(true);
+        endedPlayersVBox.setDisable(false);
+        endedPlayersVBox.setVisible(true);
+
+        endedGamePane.getStyleClass().add("game-ended-pane");
+        endedGamePane.setDisable(false);
+        endedGamePane.setVisible(true);
+    }
 }

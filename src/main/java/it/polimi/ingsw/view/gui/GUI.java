@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui;
 
+import it.polimi.ingsw.Config;
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
@@ -86,6 +87,10 @@ public class GUI extends Application {
      * @param args args
      */
     public static void main(String[] args) {
+        if (!Config.setUp(args)) {
+            System.out.println("Invalid arguments");
+            return;
+        }
         launch(args);
     }
 

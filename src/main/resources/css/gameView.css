@@ -96,3 +96,23 @@
     -fx-background-color: rgb(160, 160, 255);
     -fx-border-color: rgb(90, 90, 255);
 }
+
+.game-ended-pane {
+    -fx-background-color: #ede4bc;
+    -fx-background-radius: 10;
+    -fx-border-width: 2;
+    -fx-border-color: #d5cda9;
+    -fx-border-radius: 10;
+}
+
+.game-ended-text-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.player-ended-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
