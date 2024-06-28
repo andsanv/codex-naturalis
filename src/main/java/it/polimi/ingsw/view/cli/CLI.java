@@ -374,7 +374,12 @@ public class CLI implements UI {
         canDrawCard.set(false);
         canPlayCard.set(false);
 
+        inGame.set(false);
+
         availablePositionsPlaceholders.clear();
+
+        waitingGameEvent.set(false);
+        lastGameError.set(null);
     }
 
     /**
@@ -847,9 +852,9 @@ public class CLI implements UI {
 
     @Override
     public void handleLastConnectedPlayerWonEvent() {
-        waitingGameEvent.set(false);
-
         sceneManager.transition(LastPlayerWonScene.class);
         resetPrompt();
+
+        resetAttributesAfterMatch();
     }
 }

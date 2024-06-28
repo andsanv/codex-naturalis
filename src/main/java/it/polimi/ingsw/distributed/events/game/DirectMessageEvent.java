@@ -35,6 +35,6 @@ public class DirectMessageEvent extends MessageEvent {
 
     @Override
     public void execute(GameEventHandler gameUpdateHandler) {
-        gameUpdateHandler.handleDirectMessageEvent(sender, sender, message);
+        gameUpdateHandler.handleDirectMessageEvent(sender, receiver, message);
     }
 }

@@ -122,7 +122,7 @@ public class GameScene extends Scene {
 
                     List<Integer> playerHand = cli.getPlayerHand();
 
-                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(5, 11 * 3 + 2);
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(5, 11 * 3);
                     CLICardUtils.addCardToMatrix(grid,
                             (playerHand.get(0) != null ? CLICardUtils.cardToMatrix(playerHand.get(0), CardSide.FRONT)
                                     : CLICardUtils.simpleCard(DEFAULT)),
@@ -130,13 +130,13 @@ public class GameScene extends Scene {
                     CLICardUtils.addCardToMatrix(grid,
                             (playerHand.get(1) != null ? CLICardUtils.cardToMatrix(playerHand.get(1), CardSide.FRONT)
                                     : CLICardUtils.simpleCard(DEFAULT)),
-                            0, 12);
+                            0, 11);
                     CLICardUtils.addCardToMatrix(grid,
                             (playerHand.get(2) != null ? CLICardUtils.cardToMatrix(playerHand.get(2), CardSide.FRONT)
                                     : CLICardUtils.simpleCard(DEFAULT)),
-                            0, 23);
+                            0, 22);
                     CLIPrinter.printAnsiGrid(grid);
-                    System.out.println("     1           2           3     ");
+                    System.out.println("     1          2          3     ");
                 }),
                 new CLICommand("board", Arrays.asList("token"), "to show a player board", () -> {
                     if (args.length != 2) {
@@ -186,22 +186,23 @@ public class GameScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    System.out.println("Common objectives:");
-                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(5, 23);
                     synchronized (cli.slimGameModelLock) {
+                        System.out.println("Common objectives:");
+                        Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(6, 24);
                         CLICardUtils.addCardToMatrix(grid,
                                 CLICardUtils.cardToMatrix(cli.slimGameModel.commonObjectives.get(0), CardSide.FRONT), 0,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 CLICardUtils.cardToMatrix(cli.slimGameModel.commonObjectives.get(1), CardSide.FRONT), 0,
-                                12);
-                    }
-                    CLIPrinter.printAnsiGrid(grid);
-                    System.out.println("\nSecret objective:");
-                    synchronized (cli.slimGameModelLock) {
-                        CLIPrinter.printAnsiGrid(
-                                CLICardUtils.cardToMatrix(cli.slimGameModel.tokenToSecretObjective.get(cli.token.get()),
-                                        CardSide.FRONT));
+                                11);
+                        CLIPrinter.printAnsiGrid(grid);
+                        System.out.println("\nSecret objective:");
+                        synchronized (cli.slimGameModelLock) {
+                            CLIPrinter.printAnsiGrid(
+                                    CLICardUtils.cardToMatrix(
+                                            cli.slimGameModel.tokenToSecretObjective.get(cli.token.get()),
+                                            CardSide.FRONT));
+                        }
                     }
                 }),
                 new CLICommand("scores", "to show the points of each player", () -> {
@@ -227,10 +228,11 @@ public class GameScene extends Scene {
 
                     CLI cli = sceneManager.cli;
 
-                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 24);
+                    Ansi[][] grid = CLICardUtils.emptyAnsiMatrix(18, 22);
 
                     synchronized (cli.slimGameModelLock) {
                         SlimGameModel slim = cli.slimGameModel;
+                        System.out.println("\n  Resource     Gold   ");
                         CLICardUtils.addCardToMatrix(grid,
                                 !slim.resourceDeck.isEmpty()
                                         ? CLICardUtils.cardToMatrix(slim.resourceDeck.getLast(), CardSide.BACK)
@@ -250,22 +252,23 @@ public class GameScene extends Scene {
                                 6,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
-                                slim.visibleResourceCardsList.get(1) != null ? CLICardUtils
-                                        .cardToMatrix(slim.visibleResourceCardsList.get(1), CardSide.FRONT)
+                                slim.visibleGoldCardsList.get(0) != null ? CLICardUtils
+                                        .cardToMatrix(slim.visibleGoldCardsList.get(0), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
                                 6,
                                 11);
                         CLICardUtils.addCardToMatrix(grid,
-                                slim.visibleGoldCardsList.get(0) != null
-                                        ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(0), CardSide.FRONT)
+                                slim.visibleResourceCardsList.get(1) != null
+                                        ? CLICardUtils.cardToMatrix(slim.visibleResourceCardsList.get(1),
+                                                CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                12,
+                                11,
                                 0);
                         CLICardUtils.addCardToMatrix(grid,
                                 slim.visibleGoldCardsList.get(1) != null
                                         ? CLICardUtils.cardToMatrix(slim.visibleGoldCardsList.get(1), CardSide.FRONT)
                                         : CLICardUtils.simpleCard(DEFAULT),
-                                12,
+                                11,
                                 11);
                     }
                     CLIPrinter.printAnsiGrid(grid);

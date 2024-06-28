@@ -188,7 +188,7 @@ public class SceneManager {
             cli.getConnectionHandler().sendToGameServer(new GroupMessageCommand(cli.getUserInfo(), args[1]));
         } else if (cli.inGame.get() && args[0].equalsIgnoreCase("printgm")) {
             if (args.length != 1) {
-                CLIPrinter.displayError("Invalid formatting for send direct message command");
+                CLIPrinter.displayError("Too many arguments");
                 return;
             }
 
@@ -196,7 +196,7 @@ public class SceneManager {
             cli.getGroupMessages().stream().forEach(p -> System.out.println(p.first + ": " + p.second));
         } else if (cli.inGame.get() && args[0].equalsIgnoreCase("printdm")) {
             if (args.length != 2) {
-                CLIPrinter.displayError("Invalid formatting for send direct message command");
+                CLIPrinter.displayError("Invalid arguments");
                 return;
             }
 

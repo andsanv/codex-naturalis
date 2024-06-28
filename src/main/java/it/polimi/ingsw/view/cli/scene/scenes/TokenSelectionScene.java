@@ -52,7 +52,7 @@ public class TokenSelectionScene extends Scene {
                 new CLICommand("dm", Arrays.asList("user", "message"), "to send a direct message", null),
                 new CLICommand("printdm", Arrays.asList("user"), "to see messages with another user", null),
                 new CLICommand("gm", Arrays.asList("message"), "to send a group message", null),
-                new CLICommand("printgm", "to see messages in the group", null)));
+                new CLICommand("printgm", "to see group messages", null)));
 
         System.out.println("\nYou have to pick a token to play:");
     }
