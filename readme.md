@@ -24,7 +24,6 @@ The project includes:
 - Peer Reviews of model and network;
 - Source code of the game implementation;
 - Source code of junit tests;
-- Compiled JAR files;
 
 ## Implemented Functionalities
 
@@ -47,42 +46,36 @@ Almost all `model` and `controller` classes have a class and method coverage of 
 
 | Package    | Class          | Coverage      |
 |------------|----------------|---------------|
-| Model      | Entire Package | 95% (109/114) |
-| Controller | Entire Package | 82% (250/303) |
-| Controller | ClientHandler  | 69% (53/76)   |
-| Controller | Controller     | 90% (166/184) |
-| Controller | Server         | 72% (31/43)   | 
+| Model      | Entire Package | 100% |
+| Controller | Entire Package | 95%  |
+| Controller | GameFlowManager  | 88% |
+| Controller | GameModelUpdater     | 100%  |
 
-To run the tests:
+To run the tests, after setting the options (2 different in the pom.xml) 'skip tests' to false:
 ```bash
 mvn test
 ```
 
-## Compile
+## Requirements
 
 To run the test and compile the software:
 
 1. Install [Java SE Development Kit 21](https://docs.oracle.com/en/java/javase/21/)
 2. Install [Maven](https://maven.apache.org/install.html)
 3. Clone this repo by downloading the `.zip` and extract it, or using the `git clone` command.
-4. Open a bash terminal, navigate to the project folder and compile sources of the package:
-    ```bash
-    cd /path/to/project/home/directory
-    mvn clean package
-    ```
 
 ## Run using the JAR files
-Once installed all the requirements, open a terminal and run ```bash ./buildjar.sh```, then go to the deliverable/ older.
+Once installed all the requirements, open a terminal and run ``` ./buildjar.sh```, then go to the deliverable/ older.
 Start the server and decide to start the cli or gu:
 
 ### Start the Server
 ```bash
-java -jar server.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
+java -jar deliverables/server-jar-with-dependencies.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
 ```
 
 ### Run the Client (TUI)
 ```bash
-java -jar clientTUI.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
+java -jar deliverables/clientTUI-jar-with-dependencies.jar [--server-ip=<SERVER_IP>] [--socket-port=<SOCKET_PORT>] [--rmi-port=<RMI_PORT>]
 ```
 
 ### Run the Client (GUI)
@@ -99,4 +92,4 @@ The fields are optional:
 
 
 #### More:
-To play the client should support UTF-8 encoding and ANSI characters
+To play the client should support UTF-8 encoding, ANSI escape characters and it is also advised to play in full screen.
