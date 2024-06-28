@@ -135,7 +135,7 @@ class PlayerBoardTest {
 
   @Test
   void constructorTest() {
-    assertEquals(1, playerBoard.playerElements.get(Resources.INSECT));
+    assertEquals(2, playerBoard.playerElements.get(Resources.INSECT));
     assertEquals(1, playerBoard.playerElements.get(Resources.PLANT));
     assertEquals(0, playerBoard.playerElements.get(Resources.ANIMAL));
     assertEquals(0, playerBoard.playerElements.get(Resources.FUNGI));
@@ -262,17 +262,17 @@ class PlayerBoardTest {
   @Test
   void updatePlayerElementsTest() {
     playerBoard.placeCard(playerToken, new Coords(1,1), firstResourceCard, CardSide.FRONT);
-    assertEquals(1, playerBoard.playerElements.get(Resources.INSECT));
+    assertEquals(2, playerBoard.playerElements.get(Resources.INSECT));
     assertEquals(1, playerBoard.playerElements.get(Resources.PLANT));
 
     playerBoard.updatePlayerElements(playerToken, new Coords(1,1));
-    assertEquals(1, playerBoard.playerElements.get(Resources.INSECT));
+    assertEquals(2, playerBoard.playerElements.get(Resources.INSECT));
     assertEquals(0, playerBoard.playerElements.get(Resources.PLANT));
     assertEquals(1, playerBoard.playerElements.get(Resources.FUNGI));
 
     playerBoard.placeCard(playerToken, new Coords(2,0), secondGoldCard, CardSide.BACK);
     playerBoard.updatePlayerElements(playerToken, new Coords(2,0));
-    assertEquals(1, playerBoard.playerElements.get(Resources.INSECT));
+    assertEquals(2, playerBoard.playerElements.get(Resources.INSECT));
     assertEquals(0, playerBoard.playerElements.get(Resources.PLANT));
     assertEquals(2, playerBoard.playerElements.get(Resources.FUNGI));
   }

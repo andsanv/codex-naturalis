@@ -380,6 +380,8 @@ public class CLI implements UI {
 
         waitingGameEvent.set(false);
         lastGameError.set(null);
+
+        lobbyId.set(-1);
     }
 
     /**
