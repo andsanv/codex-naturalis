@@ -1,8 +1,6 @@
 package it.polimi.ingsw.view.gui;
 
-import it.polimi.ingsw.controller.usermanagement.Lobby;
-import it.polimi.ingsw.view.gui.controllers.Controller;
-import it.polimi.ingsw.view.gui.controllers.LobbyController;
+import it.polimi.ingsw.view.gui.controllers.tempController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,23 +8,21 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class SceneTester extends Application {
+
     @Override
     public void start(Stage primaryStage) {
-        String sceneName = "menu";
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/" + sceneName + "View.fxml"));
-
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/tempView.fxml"));
         Parent root = null;
         try { root = fxmlLoader.load(); } catch (Exception e) { e.printStackTrace(); }
 
-        Controller controller = fxmlLoader.getController();
-        controller.initialize();
+        tempController controller = fxmlLoader.getController();
+        // controller.initialize();
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("/css/" + sceneName + "View.css");
+        scene.getStylesheets().add("css/tempView.css");
 
-        primaryStage.setTitle(sceneName);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Chat Application");
         primaryStage.show();
     }
 
