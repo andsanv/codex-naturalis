@@ -138,11 +138,12 @@ public class GameController extends Controller {
     @FXML public StackPane secondPlayerEndedPane;
     @FXML public StackPane thirdPlayerEndedPane;
     @FXML public StackPane fourthPlayerEndedPane;
+    @FXML public Text gameEndedText;
 
-    @FXML public Text firstPlayerEndedName;
-    @FXML public Text secondPlayerEndedName;
-    @FXML public Text thirdPlayerEndedName;
-    @FXML public Text fourthPlayerEndedName;
+    @FXML public Text firstPlayerEndedText;
+    @FXML public Text secondPlayerEndedText;
+    @FXML public Text thirdPlayerEndedText;
+    @FXML public Text fourthPlayerEndedText;
 
     @FXML public Text firstPlayerPoints;
     @FXML public Text secondPlayerPoints;
@@ -760,9 +761,11 @@ public class GameController extends Controller {
                     pane.getStyleClass().add("highlightPlayable");
 
                     Platform.runLater(() -> {
-                        if (getCell(currentGridPane, cellIndexes.x, cellIndexes.y).isPresent()) return;
+                        if (getCell(currentGridPane, cellIndexes.x, cellIndexes.y).isPresent()) {
+                            return;
+                        }
 
-                        currentGridPane.add(pane, cellIndexes.y, cellIndexes.x);
+                        currentGridPane.add(pane, cellIndexes.x, cellIndexes.y);
                     });
                 });
     }
@@ -797,7 +800,7 @@ public class GameController extends Controller {
         if (row < 0 || row > gridPane.getRowConstraints().size() || col < 0 || col > gridPane.getColumnConstraints().size())
             return null;
 
-        return new Coords(row, col);
+        return new Coords(col, row);
     }
 
     /**
@@ -810,13 +813,12 @@ public class GameController extends Controller {
      */
     public Optional<Node> getCell(GridPane gridPane, int i, int j) {
         return gridPane.getChildren().stream()
-                .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
+                .filter(cell -> GridPane.getRowIndex(cell) == j && GridPane.getColumnIndex(cell) == i)
                 .findFirst();
     }
 
-    public List<Node> getCells(GridPane gridPane, int i, int j) {
+    public List<Node> getCells(GridPane gridPane) {
         return gridPane.getChildren().stream()
-                .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
                 .toList();
     }
 
@@ -877,7 +879,7 @@ public class GameController extends Controller {
         GridPane.setVgrow(stackPane, Priority.NEVER);
 
         Coords indexes = getIndexesFromCoords(coords);
-        gridPane.add(stackPane, indexes.y, indexes.x);
+        gridPane.add(stackPane, indexes.x, indexes.y);
     }
 
     /**
@@ -1430,8 +1432,6 @@ public class GameController extends Controller {
         });
         quitButton.setDisable(false);
         quitButton.setVisible(true);
-
-
 
         firstPlayerEndedPane.getStyleClass().add("player-ended-pane");
         secondPlayerEndedPane.getStyleClass().add("player-ended-pane");

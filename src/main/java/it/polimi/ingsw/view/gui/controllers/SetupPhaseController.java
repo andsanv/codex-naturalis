@@ -300,7 +300,7 @@ public class SetupPhaseController extends Controller {
         Platform.runLater(() -> {
             Integer cardIndex = objectiveCardsImageViewsList.indexOf((ImageView) event.getTarget());
 
-            if (selectedCard != null && selectedCard.equals(availableObjectiveCards.get(cardIndex))) {
+            if (selectedCard != null && selectedCard.equals(cardIndex)) {
                 selectedCard = null;
                 objectiveNextButton.setDisable(true);
 
@@ -309,7 +309,7 @@ public class SetupPhaseController extends Controller {
                 return;
             }
 
-            selectedCard = availableObjectiveCards.get(cardIndex);
+            selectedCard = cardIndex;
             objectiveNextButton.setDisable(false);
 
             // TODO ingrandire quella nuova e rimpicciolire quella vecchia se c'era
@@ -444,7 +444,7 @@ public class SetupPhaseController extends Controller {
     @Override
     public void handleChosenObjectiveCardEvent(PlayerToken playerToken, int chosenCardId) {
         Platform.runLater(() -> {
-            System.out.println("[INFO] Received ChosenObjectiveCardEvent from " + playerToken);
+            System.out.println("[INFO] Received ChosenObjectiveCardEvent from " + playerToken + " with card: " + chosenCardId);
         });
     }
 

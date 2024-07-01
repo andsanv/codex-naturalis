@@ -71,6 +71,9 @@ public class GameModelUpdater {
 
     playerBoard.updatePlayerElements(playerToken, coords);
 
+    if (cardSide == CardSide.BACK)
+      return true;
+
     int points = switch (card.pointsType) {
       case ONE -> 1;
       case THREE -> 3;

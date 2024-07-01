@@ -565,9 +565,9 @@
                      <children>
                         <StackPane fx:id="gameEndedTextPane" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game Ended!">
+                              <Text fx:id="gameEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Ended!">
                                  <font>
-                                    <Font size="20.0" />
+                                    <Font name="FrakturNo2" size="40.0" />
                                  </font></Text>
                            </children>
                            <VBox.margin>
@@ -588,23 +588,26 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="1" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="1">
+                                                   <font>
+                                                      <Font name="FrakturNo2" size="18.0" />
+                                                   </font></Text>
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="firstPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="firstPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" styleClass="player-text" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="firstPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="firstPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children></HBox>
                                  </children>
                               </StackPane>
-                              <StackPane prefHeight="87.5" prefWidth="200.0">
+                              <StackPane fx:id="secondPlayerEndedPane" prefHeight="87.5" prefWidth="200.0">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -613,23 +616,23 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="2" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="2" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="secondPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="secondPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="secondPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="secondPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children></HBox>
                                  </children>
                               </StackPane>
-                              <StackPane prefHeight="87.5" prefWidth="200.0">
+                              <StackPane fx:id="thirdPlayerEndedPane" prefHeight="87.5" prefWidth="200.0">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -638,23 +641,23 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="3" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="3" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="thirdPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="thirdPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="thirdPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="thirdPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children></HBox>
                                  </children>
                               </StackPane>
-                              <StackPane prefHeight="87.5" prefWidth="200.0">
+                              <StackPane fx:id="fourthPlayerEndedPane" prefHeight="87.5" prefWidth="200.0">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -663,17 +666,17 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="4" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="4" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="fourthPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="fourthPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="fourthPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="fourthPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children>
