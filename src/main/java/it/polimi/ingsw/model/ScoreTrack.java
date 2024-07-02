@@ -25,7 +25,7 @@ public class ScoreTrack extends Observable {
   /**
    * When a player reaches limitScore, last turn of the game starts
    */
-  private final int limitScore = 20;
+  private final int limitScore = 5;
 
   /**
    * @param scores initial scores of the players (all zero)
