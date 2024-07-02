@@ -19,12 +19,12 @@ public class ResultsScene extends Scene {
     public ResultsScene(SceneManager sceneManager) {
         super(sceneManager);
         this.commands = Arrays.asList(
-                new CLICommand("x", "to quit", () -> {
+                new CLICommand("x", "to go back to the main menu", () -> {
                     if (args.length != 1)
                         CLIPrinter.displayError("Invalid command");
-
-                    sceneManager.isRunning.set(false);
-                    System.exit(0);
+                    sceneManager.transition(LobbiesScene.class);
+                    // sceneManager.isRunning.set(false);
+                    // System.exit(0);
                 }));
     }
 

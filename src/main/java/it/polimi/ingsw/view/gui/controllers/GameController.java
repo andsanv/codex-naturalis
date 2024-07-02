@@ -16,9 +16,11 @@ import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -27,7 +29,7 @@ import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.util.Duration;
 import javafx.event.Event;
 
@@ -59,8 +61,8 @@ public class GameController extends Controller {
     private final double zoomIncrement = 0.1;
 
     // cells and cards
-    public final Pair<Double, Double> rawCellDimensions = new Pair<>(774.0, 397.0);;
-    public final Pair<Double, Double> rawCardDimensions = new Pair<>(993.0, 662.0);;
+    public final Pair<Double, Double> rawCellDimensions = new Pair<>(774.0, 397.0);
+    public final Pair<Double, Double> rawCardDimensions = new Pair<>(993.0, 662.0);
     public final double targetCellWidth = 100;
     public final double cardCompressionFactor = targetCellWidth / rawCellDimensions.first;    // target = 100 --> 0.1292, target = 200 -> 0.2584
     public final Pair<Double, Double> adjustedCellDimensions = new Pair<>(rawCellDimensions.first * cardCompressionFactor, rawCellDimensions.second * cardCompressionFactor);
@@ -130,6 +132,11 @@ public class GameController extends Controller {
     @FXML public Text eventTitle;
     @FXML public StackPane importantEventPane;
     @FXML public Text importantEventText;
+    @FXML public StackPane scoretrackStackPane;
+    @FXML public ImageView redTokenImageView;
+    @FXML public ImageView greenTokenImageView;
+    @FXML public ImageView blueTokenImageView;
+    @FXML public ImageView yellowTokenImageView;
 
     /* ENDED PHASE */
     @FXML public StackPane endedGamePane;
@@ -138,11 +145,12 @@ public class GameController extends Controller {
     @FXML public StackPane secondPlayerEndedPane;
     @FXML public StackPane thirdPlayerEndedPane;
     @FXML public StackPane fourthPlayerEndedPane;
+    @FXML public Text gameEndedText;
 
-    @FXML public Text firstPlayerEndedName;
-    @FXML public Text secondPlayerEndedName;
-    @FXML public Text thirdPlayerEndedName;
-    @FXML public Text fourthPlayerEndedName;
+    @FXML public Text firstPlayerEndedText;
+    @FXML public Text secondPlayerEndedText;
+    @FXML public Text thirdPlayerEndedText;
+    @FXML public Text fourthPlayerEndedText;
 
     @FXML public Text firstPlayerPoints;
     @FXML public Text secondPlayerPoints;
@@ -153,6 +161,24 @@ public class GameController extends Controller {
     @FXML public Button quitButton;
     @FXML public VBox endedPlayersVBox;
 
+    @FXML public StackPane endedScoretrackStackPane;
+    public Pair<Integer, Integer> endedScoretrackDimensions = new Pair<>(231, 480);
+    public double endedScoretrackXRatio = 231.0 / 378.0;
+    public double endedScoretrackYRatio = 480.0 / 756.0;
+
+    /* CHAT */
+    @FXML private AnchorPane chatAnchorPane;
+    @FXML private Button sendMessageButton;
+    @FXML private VBox globalMessagesVBox;
+    @FXML private TextField messageTextField;
+
+    @FXML private ScrollPane currentChatScrollPane;
+    private ScrollPane globalChatScrollPane;
+    @FXML Button globalChatButton;
+    private Map<UserInfo, ScrollPane> userToChatScrollPane = new HashMap<>();
+
+    @FXML private VBox chatPlayersVBox;
+
     /* HELPERS */
     // mouse drag
     private double dragStartX;
@@ -162,6 +188,9 @@ public class GameController extends Controller {
     private boolean clearList = false;
     public Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability = new HashMap<>();
     public List<Coords> availableSlots = new ArrayList<>();
+
+    // draw card
+    boolean drawnCard = false;
 
     // miscellaneous structures
     public Pair<ImageView, List<Integer>> resourceDeck;
@@ -178,6 +207,42 @@ public class GameController extends Controller {
 
     public List<CardSide> visibleHandCardsSides = new ArrayList<>(Arrays.asList(CardSide.BACK, CardSide.BACK, CardSide.BACK));
 
+    public Pair<Double, Double> scoreTrackDimensions = new Pair<>(270.0, 560.0);
+    public double scoretrackYRatio = 560.0 / 756.0;
+    public double scoretrackXRatio = 270.0 / 378.0;
+    Map<Integer, Coords> scoretrackPositions = new HashMap<>() {{
+        put(0, new Coords((int) (99.987), (int) (703.545)));
+        put(1, new Coords((int) (188.976), (int) (703.545)));
+        put(2, new Coords((int) (277.967), (int) (703.545)));
+        put(3, new Coords((int) (322.461), (int) (622.147)));
+        put(4, new Coords((int) (233.471), (int) (622.147)));
+        put(5, new Coords((int) (144.481), (int) (622.147)));
+        put(6, new Coords((int) (55.492), (int) (622.147)));
+        put(7, new Coords((int) (55.492), (int) (540.748)));
+        put(8, new Coords((int) (144.481), (int) (540.748)));
+        put(9, new Coords((int) (233.471), (int) (540.749)));
+        put(10, new Coords((int) (322.461), (int) (540.748)));
+        put(11, new Coords((int) (322.462), (int) (459.351)));
+        put(12, new Coords((int) (233.472), (int) (459.351)));
+        put(13, new Coords((int) (144.481), (int) (459.351)));
+        put(14, new Coords((int) (55.492), (int) (459.351)));
+        put(15, new Coords((int) (55.492), (int) (377.953)));
+        put(16, new Coords((int) (144.481), (int) (377.953)));
+        put(17, new Coords((int) (233.472), (int) (377.953)));
+        put(18, new Coords((int) (322.461), (int) (377.953)));
+        put(19, new Coords((int) (322.143), (int) (296.555)));
+
+        put(20, new Coords((int) (188.717), (int) (256.552)));
+        put(21, new Coords((int) (55.810), (int) (296.554)));
+        put(22, new Coords((int) (55.670), (int) (215.156)));
+        put(23, new Coords((int) (55.670), (int) (133.759)));
+        put(24, new Coords((int) (107.122), (int) (67.044)));
+        put(25, new Coords((int) (188.976), (int) (52.361)));
+        put(26, new Coords((int) (270.830), (int) (67.044)));
+        put(27, new Coords((int) (322.283), (int) (133.759)));
+        put(28, new Coords((int) (322.283), (int) (215.156)));
+        put(29, new Coords((int) (188.976), (int) (151.093)));
+    }};
 
     /**
      * Method to call to initialize the controller and the scene.
@@ -230,6 +295,7 @@ public class GameController extends Controller {
         initializeDecks();
         initializeEventPanes();
         initializePlayersList(lobby.get().users);
+        initializeChat();
 
         lobby.get().users.forEach(this::initializePlayer);    // sets up structures for each player, such as scroll and grid pane
 
@@ -266,6 +332,10 @@ public class GameController extends Controller {
 
         rightTabPane.setDisable(false);
         rightPanelButton.setDisable(false);
+
+        Arrays.asList(PlayerToken.RED, PlayerToken.BLUE, PlayerToken.GREEN, PlayerToken.YELLOW).forEach(token -> {
+                handleScoreTrackEvent(token, 0);
+        });
     }
 
     /**
@@ -305,6 +375,56 @@ public class GameController extends Controller {
         firstObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(0), CardSide.FRONT));
         secondObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(1), CardSide.FRONT));
         secretObjectiveSlot.setImage(getCardImage(slimGameModel.tokenToSecretObjective.get(selfPlayerToken), CardSide.FRONT));
+    }
+
+    /**
+     * Allows to initialize chat pane
+     */
+    public void initializeChat() {
+        globalMessagesVBox.setAlignment(Pos.TOP_CENTER);
+        sendMessageButton.setOnAction(this::sendMessage);
+        sendMessageButton.getStyleClass().add("send-message-button");
+
+        globalChatScrollPane = currentChatScrollPane;
+        globalChatButton.setOnAction(actionEvent -> {
+            currentChatScrollPane = globalChatScrollPane;
+            chatAnchorPane.getChildren().set(1, currentChatScrollPane);
+        });
+
+        lobby.get().users.stream().filter(player -> !player.equals(selfUserInfo.get())).forEach(player -> {
+            ScrollPane scrollPane = new ScrollPane();
+            AnchorPane.setTopAnchor(scrollPane, 10.0);
+            AnchorPane.setLeftAnchor(scrollPane, 10.0);
+            AnchorPane.setBottomAnchor(scrollPane, 235.0);
+            AnchorPane.setLeftAnchor(scrollPane, 10.0);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+            VBox vbox = new VBox();
+            vbox.setPrefWidth(254);
+            vbox.setPrefHeight(530);
+            vbox.setSpacing(5);
+            Pane pane = new Pane();
+            pane.setPrefHeight(5);
+            vbox.getChildren().add(pane);
+            scrollPane.setContent(vbox);
+
+            userToChatScrollPane.put(player, scrollPane);
+
+            StackPane stackPane = new StackPane();
+            stackPane.setPrefHeight(185);
+            Button button = new Button();
+            button.setText(player.name);
+            button.setOnAction(actionEvent -> {
+                currentChatScrollPane = userToChatScrollPane.get(player);
+                chatAnchorPane.getChildren().set(1, currentChatScrollPane);
+            });
+            button.setMaxHeight(Double.MAX_VALUE);
+            button.setMaxWidth(Double.MAX_VALUE);
+            stackPane.getChildren().add(button);
+
+            chatPlayersVBox.getChildren().add(stackPane);
+        });
     }
 
     /**
@@ -760,9 +880,11 @@ public class GameController extends Controller {
                     pane.getStyleClass().add("highlightPlayable");
 
                     Platform.runLater(() -> {
-                        if (getCell(currentGridPane, cellIndexes.x, cellIndexes.y).isPresent()) return;
+                        if (getCell(currentGridPane, cellIndexes.x, cellIndexes.y).isPresent()) {
+                            return;
+                        }
 
-                        currentGridPane.add(pane, cellIndexes.y, cellIndexes.x);
+                        currentGridPane.add(pane, cellIndexes.x, cellIndexes.y);
                     });
                 });
     }
@@ -797,7 +919,7 @@ public class GameController extends Controller {
         if (row < 0 || row > gridPane.getRowConstraints().size() || col < 0 || col > gridPane.getColumnConstraints().size())
             return null;
 
-        return new Coords(row, col);
+        return new Coords(col, row);
     }
 
     /**
@@ -810,13 +932,12 @@ public class GameController extends Controller {
      */
     public Optional<Node> getCell(GridPane gridPane, int i, int j) {
         return gridPane.getChildren().stream()
-                .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
+                .filter(cell -> GridPane.getRowIndex(cell) == j && GridPane.getColumnIndex(cell) == i)
                 .findFirst();
     }
 
-    public List<Node> getCells(GridPane gridPane, int i, int j) {
+    public List<Node> getCells(GridPane gridPane) {
         return gridPane.getChildren().stream()
-                .filter(cell -> GridPane.getRowIndex(cell) == i && GridPane.getColumnIndex(cell) == j)
                 .toList();
     }
 
@@ -877,7 +998,7 @@ public class GameController extends Controller {
         GridPane.setVgrow(stackPane, Priority.NEVER);
 
         Coords indexes = getIndexesFromCoords(coords);
-        gridPane.add(stackPane, indexes.y, indexes.x);
+        gridPane.add(stackPane, indexes.x, indexes.y);
     }
 
     /**
@@ -951,6 +1072,8 @@ public class GameController extends Controller {
             connectionHandler.get().sendToGameServer(new DrawGoldDeckCardCommand(currentPlayerToken));
             System.out.println("[INFO] Submitted DrawGoldDeckCardCommand");
         });
+
+        drawnCard = true;
     }
 
     /**
@@ -993,6 +1116,8 @@ public class GameController extends Controller {
             connectionHandler.get().sendToGameServer(new DrawVisibleGoldCardCommand(currentPlayerToken, visibleSlotImageView.equals(firstGoldImageView) ? 0 : 1));
             System.out.println("[INFO] Submitted DrawVisibleGoldCardCommand: token = " + currentPlayerToken + ", slot = " + (visibleSlotImageView.equals(firstGoldImageView) ? "0" : "1"));
         });
+
+        drawnCard = true;
     }
 
     /**
@@ -1423,6 +1548,60 @@ public class GameController extends Controller {
             ((Text) ((StackPane) ((HBox) playerStackPane.getChildren().getFirst()).getChildren().get(2)).getChildren().getFirst()).setText(String.valueOf(points));
         }
 
+        gameResults.forEach(entry -> {
+            Pair<PlayerToken, Integer> score = new Pair<>(entry.first, entry.second);
+
+            int x = (int) (scoretrackPositions.get(score.second).x * endedScoretrackXRatio - endedScoretrackDimensions.first / 2.0);
+            int y = (int) (scoretrackPositions.get(score.second).y * endedScoretrackYRatio - endedScoretrackDimensions.second / 2.0);
+
+            Pair<Integer, Integer> translation = null;
+            switch (score.first) {
+                case PlayerToken.RED -> {
+                    translation = new Pair<>((int) -(22 * endedScoretrackXRatio), (int) -(22 * endedScoretrackYRatio));
+                    ImageView tokenImageView = new ImageView(new Image("images/tokens/token_red.png"));
+                    endedScoretrackStackPane.getChildren().add(tokenImageView);
+                    tokenImageView.setScaleX(0.04);
+                    tokenImageView.setScaleY(0.04);
+
+                    tokenImageView.setTranslateX(x + translation.first);
+                    tokenImageView.setTranslateY(y + translation.second);
+                }
+                case PlayerToken.GREEN -> {
+                    translation = new Pair<>((int) +(22 * endedScoretrackXRatio), (int) -(22 * endedScoretrackYRatio));
+                    ImageView tokenImageView = new ImageView(new Image("images/tokens/token_green.png"));
+                    endedScoretrackStackPane.getChildren().add(tokenImageView);
+                    tokenImageView.setScaleX(0.04);
+                    tokenImageView.setScaleY(0.04);
+
+                    tokenImageView.setTranslateX(x + translation.first);
+                    tokenImageView.setTranslateY(y + translation.second);
+                }
+                case PlayerToken.BLUE -> {
+                    translation = new Pair<>((int) -(22 * endedScoretrackXRatio), (int) +(22 * endedScoretrackYRatio));
+                    ImageView tokenImageView = new ImageView(new Image("images/tokens/token_blue.png"));
+                    endedScoretrackStackPane.getChildren().add(tokenImageView);
+                    tokenImageView.setScaleX(0.04);
+                    tokenImageView.setScaleY(0.04);
+
+                    tokenImageView.setTranslateX(x + translation.first);
+                    tokenImageView.setTranslateY(y + translation.second);
+                }
+                case PlayerToken.YELLOW -> {
+                    translation = new Pair<>((int) +(22 * endedScoretrackXRatio), (int) +(22 * endedScoretrackYRatio));
+                    ImageView tokenImageView = new ImageView(new Image("images/tokens/token_yellow.png"));
+                    endedScoretrackStackPane.getChildren().add(tokenImageView);
+                    tokenImageView.setScaleX(0.04);
+                    tokenImageView.setScaleY(0.04);
+
+                    tokenImageView.setTranslateX(x + translation.first);
+                    tokenImageView.setTranslateY(y + translation.second);
+
+                    System.out.println("translation: " + x + ", " + y);
+                    System.out.println("scale: " + tokenImageView.getScaleX() + ", " + tokenImageView.getScaleY());
+                }
+            }
+        });
+
         quitButton.setOnAction(event -> {
             Platform.runLater(() -> {
                 gui.changeToMenuScene();
@@ -1430,8 +1609,6 @@ public class GameController extends Controller {
         });
         quitButton.setDisable(false);
         quitButton.setVisible(true);
-
-
 
         firstPlayerEndedPane.getStyleClass().add("player-ended-pane");
         secondPlayerEndedPane.getStyleClass().add("player-ended-pane");
@@ -1446,5 +1623,124 @@ public class GameController extends Controller {
         endedGamePane.getStyleClass().add("game-ended-pane");
         endedGamePane.setDisable(false);
         endedGamePane.setVisible(true);
+    }
+
+    public void sendMessage(ActionEvent event) {
+        if (messageTextField.getText().isEmpty()) return;
+
+        if (currentChatScrollPane.equals(globalChatScrollPane)) {
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new GroupMessageCommand(selfUserInfo.get(), messageTextField.getText()));
+                System.out.println("[INFO] Submitted GroupMessageCommand: from " + selfUserInfo.get().name);
+            });
+        }
+        else {
+            UserInfo receiver = userToChatScrollPane.entrySet().stream()
+                    .filter(x -> x.getValue() == currentChatScrollPane)
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new DirectMessageCommand(selfUserInfo.get(), receiver, messageTextField.getText()));
+                System.out.println("[INFO] Submitted DirectMessageCommand: from " + selfUserInfo.get().name + " to " + receiver.name);
+            });
+        }
+
+        messageTextField.clear();
+    }
+
+    @Override
+    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
+        if (!sender.equals(selfUserInfo.get()) && !receiver.equals(selfUserInfo.get())) return;
+
+        ScrollPane scrollPane = null;
+
+        Text text = new Text(message);
+        TextFlow textFlow = new TextFlow(text);
+        textFlow.setMaxWidth(160);
+
+        if (sender.equals(selfUserInfo.get())) {
+            scrollPane = userToChatScrollPane.get(receiver);
+
+            textFlow.setTextAlignment(TextAlignment.RIGHT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(0, 10, 0, 80));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+        else {
+            scrollPane = userToChatScrollPane.get(sender);
+
+            textFlow.setTextAlignment(TextAlignment.LEFT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(0, 80, 0, 10));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+
+        ((VBox) scrollPane.getContent()).getChildren().add(textFlow);
+        scrollPane.layout();
+        scrollPane.setVvalue(scrollPane.getVmax());
+    }
+
+    @Override
+    public void handleGroupMessageEvent(UserInfo sender, String message) {
+        TextFlow textFlow = new TextFlow();
+        Text senderName = new Text(sender.name);
+        senderName.setFont(Font.font("System", FontWeight.BOLD, 13.0));
+
+        textFlow.getChildren().addAll(senderName, new Text("\n"), new Text(message));
+
+        textFlow.setMaxWidth(160);
+
+        if (sender.equals(selfUserInfo.get())) {
+            textFlow.setTextAlignment(TextAlignment.RIGHT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(10, 10, 0, 80));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+        else {
+            textFlow.setTextAlignment(TextAlignment.LEFT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(10, 80, 0, 10));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+
+        ((VBox) globalChatScrollPane.getContent()).getChildren().add(textFlow);
+
+        updateChatScrollPane(globalChatScrollPane);
+    }
+
+    public void updateChatScrollPane(ScrollPane scrollPane) {
+        scrollPane.layout();
+        scrollPane.setVvalue(scrollPane.getVmax());
+    }
+
+    public void handleScoreTrackEvent(PlayerToken playerToken, int score) {
+        int x = (int) (scoretrackPositions.get(score).x * scoretrackXRatio - scoreTrackDimensions.first / 2);
+        int y = (int) (scoretrackPositions.get(score).y * scoretrackYRatio - scoreTrackDimensions.second / 2);
+
+        Pair<Integer, Integer> translation = null;
+        switch (playerToken) {
+            case PlayerToken.RED -> {
+                translation = new Pair<>((int) -(22 * scoretrackXRatio), (int) -(22 * scoretrackYRatio));
+                redTokenImageView.setTranslateX(x + translation.first);
+                redTokenImageView.setTranslateY(y + translation.second);
+            }
+            case PlayerToken.GREEN -> {
+                translation = new Pair<>((int) +(22 * scoretrackXRatio), (int) -(22 * scoretrackYRatio));
+                greenTokenImageView.setTranslateX(x + translation.first);
+                greenTokenImageView.setTranslateY(y + translation.second);
+            }
+            case PlayerToken.BLUE -> {
+                translation = new Pair<>((int) -(22 * scoretrackXRatio), (int) +(22 * scoretrackYRatio));
+                blueTokenImageView.setTranslateX(x + translation.first);
+                blueTokenImageView.setTranslateY(y + translation.second);
+            }
+            case PlayerToken.YELLOW -> {
+                translation = new Pair<>((int) +(22 * scoretrackXRatio), (int) +(22 * scoretrackYRatio));
+                yellowTokenImageView.setTranslateX(x + translation.first);
+                yellowTokenImageView.setTranslateY(y + translation.second);
+            }
+        }
     }
 }

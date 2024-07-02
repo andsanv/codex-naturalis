@@ -116,3 +116,13 @@
     -fx-background-radius: 10;
     -fx-border-radius: 10;
 }
+
+.single-message {
+    -fx-font-family: sans-serif;
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 10;
+}
+
+.send-message-button {
+    -fx-font-family: sans-serif;
+}

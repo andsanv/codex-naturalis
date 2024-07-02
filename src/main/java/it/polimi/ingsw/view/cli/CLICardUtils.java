@@ -493,10 +493,10 @@ public class CLICardUtils {
 
         Ansi[][] result = simpleCard(YELLOW);
 
-        result[2][3] = colorAndResetFg(points.get(id - 94).toString(), DEFAULT);
+        result[2][3] = colorAndResetFg(points.get(id - 95).toString(), DEFAULT);
 
         for (int j = 5; j <= 7; j++) {
-            String element = elements.get(id - 94)[j - 5];
+            String element = elements.get(id - 95)[j - 5];
             result[2][j] = !element.equals(" ") ? colorAndResetFg(element, elementToColor(element)) : emptyAnsi();
         }
 

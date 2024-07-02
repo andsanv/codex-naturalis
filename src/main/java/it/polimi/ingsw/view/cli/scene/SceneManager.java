@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.cli.scene;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -139,10 +140,11 @@ public class SceneManager {
             this.currentScene.availableCommands();
         } else if (args[0].equalsIgnoreCase("quit")) {
             this.isRunning.set(false);
+            System.exit(0);
         } else if (cli.inGame.get() && args[0].equalsIgnoreCase("dm")) {
             // Handle direct message
 
-            if (args.length != 3) {
+            if (args.length < 3) {
                 CLIPrinter.displayError("Invalid formatting for send direct message command");
                 return;
             }
@@ -166,26 +168,18 @@ public class SceneManager {
                 return;
             }
 
-            if (args[2].isEmpty()) {
-                CLIPrinter.displayError("Can't send an empty message");
-                return;
-            }
-
-            cli.getConnectionHandler().sendToGameServer(new DirectMessageCommand(cli.getUserInfo(), receiver, args[2]));
+            cli.getConnectionHandler().sendToGameServer(new DirectMessageCommand(cli.getUserInfo(), receiver,
+                    String.join(" ", Arrays.copyOfRange(args, 2, args.length))));
         } else if (cli.inGame.get() && args[0].equalsIgnoreCase("gm")) {
             // Handle group message
 
-            if (args.length != 2) {
+            if (args.length < 2) {
                 CLIPrinter.displayError("Invalid formatting for send group message command");
                 return;
             }
 
-            if (args[1].isEmpty()) {
-                CLIPrinter.displayError("Can't send an empty message");
-                return;
-            }
-
-            cli.getConnectionHandler().sendToGameServer(new GroupMessageCommand(cli.getUserInfo(), args[1]));
+            cli.getConnectionHandler().sendToGameServer(new GroupMessageCommand(cli.getUserInfo(),
+                    String.join(" ", Arrays.copyOfRange(args, 1, args.length))));
         } else if (cli.inGame.get() && args[0].equalsIgnoreCase("printgm")) {
             if (args.length != 1) {
                 CLIPrinter.displayError("Too many arguments");
@@ -220,7 +214,7 @@ public class SceneManager {
             }
 
             System.out.println("Messages with " + other);
-            cli.getGroupMessages().stream().forEach(p -> System.out.println(p.first + ": " + p.second));
+            cli.getDirectMessages(other).stream().forEach(p -> System.out.println(p.first + ": " + p.second));
         } else {
             this.currentScene.handleCommand(args);
         }

@@ -4,6 +4,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,7 +227,7 @@ public class CLI implements UI {
      * List with direct messages saved as a pair with the sender of the direct
      * message and the message itself
      */
-    private List<Pair<UserInfo, String>> directMessages = new ArrayList<>();
+    private Map<UserInfo, List<Pair<UserInfo, String>>> directMessages = new HashMap<>();
 
     /**
      * Direct messages object for synchronization
@@ -387,11 +388,14 @@ public class CLI implements UI {
     /**
      * Direct messages getter
      * 
+     * @param userInfo the other user of the private chat
+     * 
      * @return a copy of the list of direct messages
      */
-    public List<Pair<UserInfo, String>> getDirectMessages() {
+    public List<Pair<UserInfo, String>> getDirectMessages(UserInfo userInfo) {
         synchronized (directMessagesLock) {
-            return new ArrayList<>(directMessages);
+            return directMessages.containsKey(userInfo) ? new ArrayList<>(directMessages.get(userInfo))
+                    : new ArrayList<>();
         }
     }
 
@@ -790,8 +794,14 @@ public class CLI implements UI {
             resetPrompt();
         }
 
+        UserInfo other = sender.equals(getUserInfo()) ? receiver : sender;
+        Pair<UserInfo, String> messageToSave = new Pair<UserInfo, String>(sender, message);
+
         synchronized (directMessagesLock) {
-            directMessages.add(new Pair<UserInfo, String>(sender, message));
+            if (directMessages.containsKey(other))
+                directMessages.get(other).add(messageToSave);
+            else
+                directMessages.put(other, new ArrayList<>(Collections.singletonList(messageToSave)));
         }
     }
 

@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -595,9 +596,10 @@ public enum Server {
         LobbyInfo lobby = new LobbyInfo(Lobby.getLobby(lobbyId));
         List<UserInfo> usersInLobby = lobby.users;
 
-        connectedPlayers.entrySet().stream().filter(u -> usersInLobby.contains(u)).map(e -> e.getValue())
+        connectedPlayers.entrySet().stream().filter(u -> usersInLobby.contains(u.getKey())).map(Map.Entry::getValue)
                 .filter(c -> !c.getStatus().equals(Status.DISCONNETED_FROM_GAME)).forEach(
                         c -> c.setStatus(Status.IN_MENU));
+
         Lobby.deleteLobby(lobbyId);
         broadcastLobbies();
     }

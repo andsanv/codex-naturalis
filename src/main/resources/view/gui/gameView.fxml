@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -12,6 +13,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -435,14 +437,38 @@
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
                               <VBox prefHeight="200.0" prefWidth="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <ImageView fitHeight="560.0" fitWidth="270.0" pickOnBounds="true">
+                                    <StackPane fx:id="scoretrackStackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="560.0" prefWidth="270.0">
+                                       <children>
+                                          <ImageView fitHeight="560.0" fitWidth="270.0" pickOnBounds="true">
+                                             <image>
+                                                <Image url="@../../images/miscellaneous/score_track.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="redTokenImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" scaleX="0.16" scaleY="0.16">
+                                             <image>
+                                                <Image url="@../../images/tokens/token_red.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="greenTokenImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" scaleX="0.16" scaleY="0.16">
+                                             <image>
+                                                <Image url="@../../images/tokens/token_green.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="blueTokenImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" scaleX="0.16" scaleY="0.16">
+                                             <image>
+                                                <Image url="@../../images/tokens/token_blue.png" />
+                                             </image>
+                                          </ImageView>
+                                          <ImageView fx:id="yellowTokenImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" scaleX="0.16" scaleY="0.16">
+                                             <image>
+                                                <Image url="@../../images/tokens/token_yellow.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
                                        <VBox.margin>
                                           <Insets left="10.0" top="10.0" />
                                        </VBox.margin>
-                                       <image>
-                                          <Image url="@../../images/miscellaneous/score_track.png" />
-                                       </image>
-                                    </ImageView>
+                                    </StackPane>
                                     <VBox fx:id="playersList" prefHeight="185.0" prefWidth="290.0">
                                        <VBox.margin>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -463,22 +489,32 @@
                   </Tab>
                   <Tab>
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="0.0">
+                        <AnchorPane fx:id="chatAnchorPane" prefHeight="775.0" prefWidth="290.0">
                            <children>
-                              <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="289.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="215.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                                <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="530.0" prefWidth="247.5">
-                                       <children>
-                                          <VBox prefHeight="200.0" prefWidth="252.5" />
-                                       </children>
-                                    </AnchorPane>
-                                </content>
-                                 <padding>
-                                    <Insets left="10.0" right="10.0" top="10.0" />
-                                 </padding>
-                              </ScrollPane>
                               <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="775.0" stroke="#c9c18f" strokeType="INSIDE" width="289.0" AnchorPane.rightAnchor="0.0" />
-                              <StackPane prefHeight="150.0" prefWidth="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <ScrollPane fx:id="currentChatScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="270.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="235.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <content>
+                                    <VBox fx:id="globalMessagesVBox" prefHeight="530.0" prefWidth="255.0" spacing="5.0">
+                                       <children>
+                                          <Pane prefHeight="10.0" prefWidth="200.0" />
+                                       </children></VBox>
+                                 </content>
+                              </ScrollPane>
+                              <TextField fx:id="messageTextField" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="544.0" />
+                              <Button fx:id="sendMessageButton" mnemonicParsing="false" text="Send" AnchorPane.leftAnchor="231.0" AnchorPane.topAnchor="544.0" />
+                              <VBox fx:id="chatPlayersVBox" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="580.0">
+                                 <children>
+                                    <StackPane prefHeight="185.0" prefWidth="200.0">
+                                       <children>
+                                          <Button fx:id="globalChatButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Global">
+                                             <StackPane.margin>
+                                                <Insets />
+                                             </StackPane.margin>
+                                          </Button>
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </VBox>
                            </children>
                            <padding>
                               <Insets left="10.0" />
@@ -565,9 +601,9 @@
                      <children>
                         <StackPane fx:id="gameEndedTextPane" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game Ended!">
+                              <Text fx:id="gameEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Ended!">
                                  <font>
-                                    <Font size="20.0" />
+                                    <Font name="FrakturNo2" size="40.0" />
                                  </font></Text>
                            </children>
                            <VBox.margin>
@@ -588,23 +624,26 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="1" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="1">
+                                                   <font>
+                                                      <Font name="FrakturNo2" size="18.0" />
+                                                   </font></Text>
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="firstPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="firstPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" styleClass="player-text" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="firstPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="firstPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children></HBox>
                                  </children>
                               </StackPane>
-                              <StackPane prefHeight="87.5" prefWidth="200.0">
+                              <StackPane fx:id="secondPlayerEndedPane" prefHeight="87.5" prefWidth="200.0">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -613,23 +652,23 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="2" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="2" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="secondPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="secondPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="secondPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="secondPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children></HBox>
                                  </children>
                               </StackPane>
-                              <StackPane prefHeight="87.5" prefWidth="200.0">
+                              <StackPane fx:id="thirdPlayerEndedPane" prefHeight="87.5" prefWidth="200.0">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -638,23 +677,23 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="3" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="3" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="thirdPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="thirdPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="thirdPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="thirdPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children></HBox>
                                  </children>
                               </StackPane>
-                              <StackPane prefHeight="87.5" prefWidth="200.0">
+                              <StackPane fx:id="fourthPlayerEndedPane" prefHeight="87.5" prefWidth="200.0">
                                  <VBox.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </VBox.margin>
@@ -663,17 +702,17 @@
                                        <children>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="4" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="4" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="369.0">
                                              <children>
-                                                <Text fx:id="fourthPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="fourthPlayerEndedText" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                           <StackPane prefHeight="150.0" prefWidth="100.0">
                                              <children>
-                                                <Text fx:id="fourthPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" text="-" />
+                                                <Text fx:id="fourthPlayerPoints" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="-" />
                                              </children>
                                           </StackPane>
                                        </children>
@@ -684,7 +723,7 @@
                         </VBox>
                      </children>
                   </VBox>
-                  <StackPane prefHeight="150.0" prefWidth="231.0">
+                  <StackPane fx:id="endedScoretrackStackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="231.0">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" top="10.0" />
                      </HBox.margin>

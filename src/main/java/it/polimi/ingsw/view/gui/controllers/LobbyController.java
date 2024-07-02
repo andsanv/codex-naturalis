@@ -69,11 +69,6 @@ public class LobbyController extends Controller {
         User self = new User("Andrea");
         gui.selfUserInfo.set(new UserInfo(self));
 
-//        Lobby tempLobby = new Lobby(self);
-//        lobby = new LobbyInfo(tempLobby);
-
-        this.lobbyText.setText("Lobby #" + 5);
-
         firstPlayerText.setText("Andrea");
         secondPlayerText.setText("Samuele");
         thirdPlayerText.setText("Gabriele");
@@ -205,6 +200,8 @@ public class LobbyController extends Controller {
 
         backButton.setOnAction(this::handleBackButton);
         startButton.setOnAction(this::startGame);
+
+        this.lobbyText.setText("Lobby #" + currentLobby.get().id);
     }
 
     /**

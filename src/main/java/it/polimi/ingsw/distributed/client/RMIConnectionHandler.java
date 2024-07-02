@@ -128,9 +128,9 @@ public class RMIConnectionHandler extends ConnectionHandler {
                 //checkConnection();
                 return true;
             } catch (IOException e) {
-                this.isConnected.set(false);
-                this.userInterface.handleDisconnection();
-                return false;
+                // this.isConnected.set(false);
+                // this.userInterface.handleDisconnection();
+                // return false;
             }
         } else if (mainCommand instanceof ReconnectionCommand) {
             try {
@@ -148,17 +148,17 @@ public class RMIConnectionHandler extends ConnectionHandler {
                 this.lastKeepAliveTime = System.currentTimeMillis();
                 //checkConnection();
             } catch (IOException e) {
-                this.isConnected.set(false);
-                this.userInterface.handleDisconnection();
-                return false;
+                // this.isConnected.set(false);
+                // this.userInterface.handleDisconnection();
+                // return false;
             }
         } else {
             try {
                 mainServerActions.transmitCommand(mainCommand);
             } catch (Exception e) {
-                this.isConnected.set(false);
-                this.userInterface.handleDisconnection();
-                return false;
+                // this.isConnected.set(false);
+                // this.userInterface.handleDisconnection();
+                // return false;
             }
         }
 
@@ -178,8 +178,8 @@ public class RMIConnectionHandler extends ConnectionHandler {
                 gameServerActions.transmitCommand(gameCommand);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            // e.printStackTrace();
+            // return false;
         }
 
         return true;
