@@ -168,7 +168,6 @@ public class GameController extends Controller {
     @FXML Button globalChatButton;
     private Map<UserInfo, ScrollPane> userToChatScrollPane = new HashMap<>();
 
-
     @FXML private VBox chatPlayersVBox;
 
     /* HELPERS */
@@ -180,6 +179,9 @@ public class GameController extends Controller {
     private boolean clearList = false;
     public Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability = new HashMap<>();
     public List<Coords> availableSlots = new ArrayList<>();
+
+    // draw card
+    boolean drawnCard = false;
 
     // miscellaneous structures
     public Pair<ImageView, List<Integer>> resourceDeck;
@@ -1021,6 +1023,8 @@ public class GameController extends Controller {
             connectionHandler.get().sendToGameServer(new DrawGoldDeckCardCommand(currentPlayerToken));
             System.out.println("[INFO] Submitted DrawGoldDeckCardCommand");
         });
+
+        drawnCard = true;
     }
 
     /**
@@ -1063,6 +1067,8 @@ public class GameController extends Controller {
             connectionHandler.get().sendToGameServer(new DrawVisibleGoldCardCommand(currentPlayerToken, visibleSlotImageView.equals(firstGoldImageView) ? 0 : 1));
             System.out.println("[INFO] Submitted DrawVisibleGoldCardCommand: token = " + currentPlayerToken + ", slot = " + (visibleSlotImageView.equals(firstGoldImageView) ? "0" : "1"));
         });
+
+        drawnCard = true;
     }
 
     /**
@@ -1157,12 +1163,14 @@ public class GameController extends Controller {
         Platform.runLater(() -> {
             slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
 
-            if (playerToken != selfPlayerToken) {
+            if (playerToken != selfPlayerToken || (playerToken == selfPlayerToken && !drawnCard)) {
                 if (deckEmptied) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
 
                 setCardToHand(playerToken, drawnCardId, handIndex);
             }
+
+            drawnCard = false;
         });
     }
 
@@ -1171,7 +1179,7 @@ public class GameController extends Controller {
         Platform.runLater(() -> {
             slimGameModel.applyDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
 
-            if (playerToken != selfPlayerToken) {
+            if (playerToken != selfPlayerToken || (playerToken == selfPlayerToken && !drawnCard)) {
                 if (deckEmptied) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else resourceDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
 
@@ -1185,7 +1193,7 @@ public class GameController extends Controller {
         Platform.runLater(() -> {
             slimGameModel.applyDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex);
 
-            if(playerToken != selfPlayerToken) {
+            if(playerToken != selfPlayerToken || (playerToken == selfPlayerToken && !drawnCard)) {
                 if (deckEmptied) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else resourceDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
 
@@ -1204,7 +1212,7 @@ public class GameController extends Controller {
         Platform.runLater(() -> {
             slimGameModel.applyDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex);
 
-            if(playerToken != selfPlayerToken) {
+            if(playerToken != selfPlayerToken || (playerToken == selfPlayerToken && !drawnCard)) {
                 if (deckEmptied) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
 
