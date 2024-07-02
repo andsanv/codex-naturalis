@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.usermanagement.LobbyInfo;
+import it.polimi.ingsw.controller.usermanagement.User;
 import it.polimi.ingsw.controller.usermanagement.UserInfo;
 import it.polimi.ingsw.distributed.client.ConnectionHandler;
 import it.polimi.ingsw.distributed.commands.game.*;
@@ -16,9 +17,11 @@ import it.polimi.ingsw.util.Trio;
 import it.polimi.ingsw.view.gui.GUI;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -27,7 +30,7 @@ import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.util.Duration;
 import javafx.event.Event;
 
@@ -154,6 +157,20 @@ public class GameController extends Controller {
     @FXML public Button quitButton;
     @FXML public VBox endedPlayersVBox;
 
+    /* CHAT */
+    @FXML private AnchorPane chatAnchorPane;
+    @FXML private Button sendMessageButton;
+    @FXML private VBox globalMessagesVBox;
+    @FXML private TextField messageTextField;
+
+    @FXML private ScrollPane currentChatScrollPane;
+    private ScrollPane globalChatScrollPane;
+    @FXML Button globalChatButton;
+    private Map<UserInfo, ScrollPane> userToChatScrollPane = new HashMap<>();
+
+
+    @FXML private VBox chatPlayersVBox;
+
     /* HELPERS */
     // mouse drag
     private double dragStartX;
@@ -231,6 +248,7 @@ public class GameController extends Controller {
         initializeDecks();
         initializeEventPanes();
         initializePlayersList(lobby.get().users);
+        initializeChat();
 
         lobby.get().users.forEach(this::initializePlayer);    // sets up structures for each player, such as scroll and grid pane
 
@@ -306,6 +324,56 @@ public class GameController extends Controller {
         firstObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(0), CardSide.FRONT));
         secondObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(1), CardSide.FRONT));
         secretObjectiveSlot.setImage(getCardImage(slimGameModel.tokenToSecretObjective.get(selfPlayerToken), CardSide.FRONT));
+    }
+
+    /**
+     * Allows to initialize chat pane
+     */
+    public void initializeChat() {
+        globalMessagesVBox.setAlignment(Pos.TOP_CENTER);
+        sendMessageButton.setOnAction(this::sendMessage);
+        sendMessageButton.getStyleClass().add("send-message-button");
+
+        globalChatScrollPane = currentChatScrollPane;
+        globalChatButton.setOnAction(actionEvent -> {
+            currentChatScrollPane = globalChatScrollPane;
+            chatAnchorPane.getChildren().set(1, currentChatScrollPane);
+        });
+
+        lobby.get().users.stream().filter(player -> !player.equals(selfUserInfo.get())).forEach(player -> {
+            ScrollPane scrollPane = new ScrollPane();
+            AnchorPane.setTopAnchor(scrollPane, 10.0);
+            AnchorPane.setLeftAnchor(scrollPane, 10.0);
+            AnchorPane.setBottomAnchor(scrollPane, 235.0);
+            AnchorPane.setLeftAnchor(scrollPane, 10.0);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+            VBox vbox = new VBox();
+            vbox.setPrefWidth(254);
+            vbox.setPrefHeight(530);
+            vbox.setSpacing(5);
+            Pane pane = new Pane();
+            pane.setPrefHeight(5);
+            vbox.getChildren().add(pane);
+            scrollPane.setContent(vbox);
+
+            userToChatScrollPane.put(player, scrollPane);
+
+            StackPane stackPane = new StackPane();
+            stackPane.setPrefHeight(185);
+            Button button = new Button();
+            button.setText(player.name);
+            button.setOnAction(actionEvent -> {
+                currentChatScrollPane = userToChatScrollPane.get(player);
+                chatAnchorPane.getChildren().set(1, currentChatScrollPane);
+            });
+            button.setMaxHeight(Double.MAX_VALUE);
+            button.setMaxWidth(Double.MAX_VALUE);
+            stackPane.getChildren().add(button);
+
+            chatPlayersVBox.getChildren().add(stackPane);
+        });
     }
 
     /**
@@ -1446,5 +1514,95 @@ public class GameController extends Controller {
         endedGamePane.getStyleClass().add("game-ended-pane");
         endedGamePane.setDisable(false);
         endedGamePane.setVisible(true);
+    }
+
+    public void sendMessage(ActionEvent event) {
+        if (messageTextField.getText().isEmpty()) return;
+
+        if (currentChatScrollPane.equals(globalChatScrollPane)) {
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new GroupMessageCommand(selfUserInfo.get(), messageTextField.getText()));
+                System.out.println("[INFO] Submitted GroupMessageCommand: from " + selfUserInfo.get().name);
+            });
+        }
+        else {
+            UserInfo receiver = userToChatScrollPane.entrySet().stream()
+                    .filter(x -> x.getValue() == currentChatScrollPane)
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            gui.submitToExecutorService(() -> {
+                connectionHandler.get().sendToGameServer(new DirectMessageCommand(selfUserInfo.get(), receiver, messageTextField.getText()));
+                System.out.println("[INFO] Submitted DirectMessageCommand: from " + selfUserInfo.get().name + " to " + receiver.name);
+            });
+        }
+
+        messageTextField.clear();
+    }
+
+    @Override
+    public void handleDirectMessageEvent(UserInfo sender, UserInfo receiver, String message) {
+        if (!sender.equals(selfUserInfo.get()) && !receiver.equals(selfUserInfo.get())) return;
+
+        ScrollPane scrollPane = null;
+
+        Text text = new Text(message);
+        TextFlow textFlow = new TextFlow(text);
+        textFlow.setMaxWidth(160);
+
+        if (sender.equals(selfUserInfo.get())) {
+            scrollPane = userToChatScrollPane.get(receiver);
+
+            textFlow.setTextAlignment(TextAlignment.RIGHT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(0, 10, 0, 80));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+        else {
+            scrollPane = userToChatScrollPane.get(sender);
+
+            textFlow.setTextAlignment(TextAlignment.LEFT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(0, 80, 0, 10));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+
+        ((VBox) scrollPane.getContent()).getChildren().add(textFlow);
+        scrollPane.layout();
+        scrollPane.setVvalue(scrollPane.getVmax());
+    }
+
+    @Override
+    public void handleGroupMessageEvent(UserInfo sender, String message) {
+        TextFlow textFlow = new TextFlow();
+        Text senderName = new Text(sender.name);
+        senderName.setFont(Font.font("System", FontWeight.BOLD, 13.0));
+
+        textFlow.getChildren().addAll(senderName, new Text("\n"), new Text(message));
+
+        textFlow.setMaxWidth(160);
+
+        if (sender.equals(selfUserInfo.get())) {
+            textFlow.setTextAlignment(TextAlignment.RIGHT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(10, 10, 0, 80));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+        else {
+            textFlow.setTextAlignment(TextAlignment.LEFT);
+            textFlow.getStyleClass().add("single-message");
+            VBox.setMargin(textFlow, new Insets(10, 80, 0, 10));
+            textFlow.setPadding(new Insets(3, 10, 3, 10));
+        }
+
+        ((VBox) globalChatScrollPane.getContent()).getChildren().add(textFlow);
+
+        updateChatScrollPane(globalChatScrollPane);
+    }
+
+    public void updateChatScrollPane(ScrollPane scrollPane) {
+        scrollPane.layout();
+        scrollPane.setVvalue(scrollPane.getVmax());
     }
 }
