@@ -132,15 +132,15 @@ public class SocketConnectionHandler extends ConnectionHandler {
 								});
 							}
 						} catch (IOException e) {
-							this.isConnected.set(false);
-							this.userInterface.handleDisconnection();
-							this.close();
-							break;
+							// this.isConnected.set(false);
+							// this.userInterface.handleDisconnection();
+							// this.close();
+							// break;
 						} catch (ClassNotFoundException e) {
-							this.isConnected.set(false);
-							this.userInterface.handleDisconnection();
-							this.close();
-							break;
+							// this.isConnected.set(false);
+							// this.userInterface.handleDisconnection();
+							// this.close();
+							// break;
 						}
 					}
 				});
@@ -167,10 +167,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
 			outputStream.writeObject(command);
 			outputStream.reset();
 		} catch (IOException e) {
-			this.isConnected.set(false);
-			this.userInterface.handleDisconnection();
-			this.close();
-			return false;
+			// this.isConnected.set(false);
+			// this.userInterface.handleDisconnection();
+			// this.close();
+			// return false;
 		}
 
 		this.isConnected.set(true);
@@ -196,10 +196,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
 			outputStream.writeObject(command);
 			outputStream.reset();
 		} catch (IOException e) {
-			this.isConnected.set(false);
-			this.userInterface.handleDisconnection();
-			this.close();
-			return false;
+			// this.isConnected.set(false);
+			// this.userInterface.handleDisconnection();
+			// this.close();
+			// return false;
 		}
 
 		this.isConnected.set(true);
@@ -299,17 +299,17 @@ public class SocketConnectionHandler extends ConnectionHandler {
 						}
 
 					} catch (IOException e) {
-						this.isConnected.set(false);
-						this.userInterface.handleDisconnection();
-						this.close();
+						// this.isConnected.set(false);
+						// this.userInterface.handleDisconnection();
+						// this.close();
 
-						break;
+						// break;
 					} catch (ClassNotFoundException e) {
-						this.isConnected.set(false);
-						this.userInterface.handleDisconnection();
-						this.close();
+						// this.isConnected.set(false);
+						// this.userInterface.handleDisconnection();
+						// this.close();
 
-						break;
+						// break;
 					}
 				}
 
@@ -341,10 +341,10 @@ public class SocketConnectionHandler extends ConnectionHandler {
 			});
 
 		} catch (IOException e) {
-			this.isConnected.set(false);
-			this.userInterface.handleDisconnection();
-			this.close();
-			return false;
+			// this.isConnected.set(false);
+			// this.userInterface.handleDisconnection();
+			// this.close();
+			// return false;
 		}
 
 		return this.isConnected.get();
@@ -364,7 +364,7 @@ public class SocketConnectionHandler extends ConnectionHandler {
 
 				this.socket = null;
 			} catch (IOException e) {
-				return false;
+				// return false;
 			}
 		}
 		return true;
