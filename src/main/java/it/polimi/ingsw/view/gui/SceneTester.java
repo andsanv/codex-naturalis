@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view.gui;
 
-import it.polimi.ingsw.view.gui.controllers.tempController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,7 +14,7 @@ public class SceneTester extends Application {
         Parent root = null;
         try { root = fxmlLoader.load(); } catch (Exception e) { e.printStackTrace(); }
 
-        tempController controller = fxmlLoader.getController();
+        // tempController controller = fxmlLoader.getController();
         // controller.initialize();
 
         Scene scene = new Scene(root);
