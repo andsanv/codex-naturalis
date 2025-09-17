@@ -1,213 +1,154 @@
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>it.polimi.ingsw</groupId>
-  <artifactId>CodexNaturalis</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>CodexNaturalis</name>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <junit.version>5.10.0</junit.version>
-    <maven.test.skip>true</maven.test.skip>
-    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
-    <exec.mainClass />
-    <jar.finalName />
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-controls</artifactId>
-      <version>23-ea+22</version>
-      <classifier>win</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-fxml</artifactId>
-      <version>23-ea+22</version>
-      <classifier>win</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-graphics</artifactId>
-      <version>23-ea+22</version>
-      <classifier>win</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-media</artifactId>
-      <version>23-ea+22</version>
-      <classifier>win</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-controls</artifactId>
-      <version>23-ea+22</version>
-      <classifier>linux</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-fxml</artifactId>
-      <version>23-ea+22</version>
-      <classifier>linux</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-graphics</artifactId>
-      <version>23-ea+22</version>
-      <classifier>linux</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-media</artifactId>
-      <version>23-ea+22</version>
-      <classifier>linux</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-controls</artifactId>
-      <version>23-ea+22</version>
-      <classifier>mac</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-fxml</artifactId>
-      <version>23-ea+22</version>
-      <classifier>mac</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-graphics</artifactId>
-      <version>23-ea+22</version>
-      <classifier>mac</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-media</artifactId>
-      <version>23-ea+22</version>
-      <classifier>mac</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.fusesource.jansi</groupId>
-      <artifactId>jansi</artifactId>
-      <version>2.4.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>5.11.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>5.12.0</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <finalName> ${jar.finalName} </finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>
-                    ${exec.mainClass}
-                  </mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
-        <configuration>
-          <source>21</source>
-          <target>21</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-maven-plugin</artifactId>
-        <version>0.0.8</version>
-        <configuration>
-          <mainClass>it.polimi.ingsw.view.gui.GUI</mainClass>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M7</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.0</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <skipTests>true</skipTests>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.7.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>javadoc</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.polimi.ingsw</groupId>
+    <artifactId>codex-naturalis</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+
+    <!-- PROPERTIES -->
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javafx.version>21.0.2</javafx.version>
+    </properties>
+
+
+    <!-- DEPENDENCIES -->
+    <dependencies>
+        <!-- general -->
+        <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>2.4.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.13.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+
+        <!-- MacOS (ARM) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+
+    </dependencies>
+
+
+    <!-- PLUGINS -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>0.0.8</version>
+                    <configuration>
+                        <mainClass>view.Launcher</mainClass>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.6.1</version>
+                    <executions>
+                        <!-- BUILD CLIENT -->
+                        <execution>
+                            <id>shade-client</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <finalName>codex-naturalis</finalName>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>view.Launcher</mainClass>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+
+                        <!-- BUILD SERVER -->
+                        <execution>
+                            <id>shade-server</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <finalName>server</finalName>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>controller.Server</mainClass>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <!-- PROFILES -->
+    <profiles>
+        <profile>
+            <id>default-run</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>test-scene</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>javafx-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>view.gui.SceneTester</mainClass>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

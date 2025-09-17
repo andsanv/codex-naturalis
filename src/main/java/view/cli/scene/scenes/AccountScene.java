@@ -1,0 +1,81 @@
+package view.cli.scene.scenes;
+
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+
+import java.util.Arrays;
+
+import controller.usermanagement.UserInfo;
+import distributed.client.ConnectionHandler;
+import distributed.commands.main.ConnectionCommand;
+import view.cli.CLI;
+import view.cli.CLICommand;
+import view.cli.CLIPrinter;
+import view.cli.scene.Scene;
+import view.cli.scene.SceneManager;
+
+/**
+ * In this scene the user decides if he wants to log-in or create a new account.
+ */
+public class AccountScene extends Scene {
+    public AccountScene(SceneManager sceneManager) {
+        super(sceneManager);
+
+        this.commands = Arrays.asList(
+                new CLICommand("new", Arrays.asList("username"), "to create a new account", () -> {
+                    if (args.length != 2) {
+                        CLIPrinter.displayError("There can't be spaces in the name");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+                    cli.waitinLogin.set(true);
+                    connectionHandler.connect(new ConnectionCommand(args[1]));
+
+                    if (CLIPrinter.displayLoadingMessage("Creating an account", cli.waitinLogin,
+                            connectionHandler.isConnected, cli.waitingLoginError))
+                        sceneManager.transition(LobbiesScene.class);
+                    else
+                        sceneManager.transition(ConnectionLostScene.class);
+                }),
+                new CLICommand("login", Arrays.asList("username", "id"), "to use a previously created account", () -> {
+                    if (args.length != 3) {
+                        CLIPrinter.displayError("Invalid arguments");
+                        return;
+                    }
+
+                    CLI cli = sceneManager.cli;
+                    ConnectionHandler connectionHandler = cli.getConnectionHandler();
+
+                    String username = args[1];
+                    int id;
+
+                    try {
+                        id = Integer.parseInt(args[2]);
+                    } catch (NumberFormatException e) {
+                        CLIPrinter.displayError("The id must be an integer");
+                        return;
+                    }
+
+                    cli.setUserInfo(new UserInfo(username, id));
+
+                    cli.waitinLogin.set(true);
+                    connectionHandler.reconnect();
+
+                    if (CLIPrinter.displayLoadingMessage("Logging in", cli.waitinLogin,
+                            connectionHandler.isConnected, cli.waitingLoginError))
+                        sceneManager.transition(LobbiesScene.class);
+                    else
+                        sceneManager.transition(ConnectionLostScene.class);
+                }));
+    }
+
+    @Override
+    public void onEntry() {
+        CLIPrinter.clear();
+        CLIPrinter.displaySceneTitle("Account Menu", BLUE);
+
+        System.out.println("Do you want to create a new account or log in with a previously created one?");
+    }
+}

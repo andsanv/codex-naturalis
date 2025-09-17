@@ -1,0 +1,184 @@
+package controller.states;
+
+import controller.GameFlowManager;
+import controller.ServerPrinter;
+import distributed.commands.game.GameCommand;
+import distributed.events.game.ChosenStarterCardSideEvent;
+import distributed.events.game.DrawnStarterCardEvent;
+import distributed.events.game.EndedStarterCardPhaseEvent;
+import model.card.CardSide;
+import model.card.StarterCard;
+import model.deck.Decks;
+import model.player.PlayerToken;
+import util.Pair;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * The state represents the game phase where players discover their starter
+ * card, and choose its side
+ */
+public class StarterCardSelectionState extends GameState {
+  /**
+   * List of tokens in the match
+   */
+  private final List<PlayerToken> playerTokens;
+
+  /**
+   * Decks used to draw setup cards.
+   */
+  private final Decks decks;
+
+  /**
+   * Time limit within which players need to decide their starter card side
+   */
+  private final long timeLimit; // seconds
+
+  /**
+   * If true, the state machine assigns a random card side to remaining players
+   */
+  private final AtomicBoolean timeLimitReached = new AtomicBoolean(false);
+
+  /**
+   * Map that tracks which starter card each token drew
+   */
+  private final Map<PlayerToken, StarterCard> tokenToStarterCard;
+
+  /**
+   * Map that tracks tokens and the chosen card side
+   */
+  private final Map<PlayerToken, CardSide> tokenToCardSide;
+
+  public StarterCardSelectionState(
+      GameFlowManager gameFlowManager, Decks decks, List<PlayerToken> playerTokens, long timeLimit) {
+    super(gameFlowManager);
+
+    this.timeLimit = timeLimit;
+
+    this.decks = decks;
+    this.playerTokens = playerTokens;
+    this.tokenToStarterCard = new HashMap<>();
+    this.tokenToCardSide = new HashMap<>();
+  }
+
+  /**
+   * Waits for DrawStarterCardCommands and SelectStarterCardSideCommand by the
+   * players.
+   * Players need to draw the card and choose the side within a certain time
+   * limit, otherwise a random card (with a random side) is assigned to them.
+   * If time limit is reached, or if all players drew the card and chose the side,
+   * breaks from loop and returns the maps.
+   * Throws a EndedStarterCardPhaseEvent, so that clients can update their UIs
+   *
+   * @return The two maps containing information on what card and what side each
+   *         player chose
+   */
+  @Override
+  public Pair<Map<PlayerToken, StarterCard>, Map<PlayerToken, CardSide>> handleStarterCardSelection() {
+    Timer timer = new Timer();
+
+    Queue<GameCommand> commands = gameFlowManager.commands;
+
+    TimerTask timeElapsedTask = new TimerTask() {
+      @Override
+      public void run() {
+        synchronized (timeLimitReached) {
+          timeLimitReached.set(true);
+
+          synchronized (commands) {
+            commands.notifyAll();
+          }
+        }
+      }
+    };
+    timer.schedule(timeElapsedTask, timeLimit * 1000);
+
+    while (true) {
+      synchronized (commands) {
+        if (commands.isEmpty()) {
+          try {
+            commands.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+
+        if (timeLimitReached.get()) {
+          // TODO time limit reached event
+          Random random = new Random();
+
+          List<CardSide> sides = new ArrayList<>(Arrays.asList(CardSide.FRONT, CardSide.BACK));
+
+          playerTokens.stream()
+              .filter(pt -> !tokenToStarterCard.containsKey(pt))
+              .forEach(
+                  pt -> tokenToStarterCard.put(pt, decks.starterCardsDeck.draw(pt, 0).orElseThrow()));
+          playerTokens.stream()
+              .filter(pt -> !tokenToCardSide.containsKey(pt))
+              .forEach(pt -> tokenToCardSide.put(pt, sides.get(random.nextInt(sides.size()))));
+
+          break;
+        }
+
+        if (commands.isEmpty())
+          continue;
+
+        if (commands.poll().execute(gameFlowManager)) {
+          if (tokenToStarterCard.keySet().size() == playerTokens.size()
+              && tokenToCardSide.keySet().size() == playerTokens.size()) {
+            timer.cancel();
+            break;
+          }
+        } else {
+          // cannot execute command event
+        }
+      }
+    }
+
+    gameFlowManager.setState(gameFlowManager.objectiveCardSelectionState);
+    ServerPrinter.displayInfo("Starter card phase ended for lobby " + gameFlowManager.lobbyId);
+    gameFlowManager.notify(new EndedStarterCardPhaseEvent());
+    return new Pair<>(new HashMap<>(tokenToStarterCard), new HashMap<>(tokenToCardSide));
+  }
+
+  /**
+   * Handles the DrawStarterCardCommand
+   * Throws a DrawnStarterCardCommand when finished
+   *
+   * @param playerToken player drawing the card
+   * @return false if player has already drawn a card, true otherwise
+   */
+  @Override
+  public boolean drawStarterCard(PlayerToken playerToken) {
+    if (tokenToStarterCard.containsKey(playerToken))
+      return false;
+
+    StarterCard starterCard = decks.starterCardsDeck.draw(playerToken, 0).orElseThrow();
+
+    tokenToStarterCard.put(playerToken, starterCard);
+    ServerPrinter.displayInfo("[DEBUG] Sending DrawnStarterCardEvent for player token: " + playerToken);
+    decks.starterCardsDeck.notify(new DrawnStarterCardEvent(playerToken, starterCard.id));
+    return true;
+  }
+
+  /**
+   * Handles the SelectStarterCardSideCommand
+   * Throws a ChosenStarterCardSideCommand when finished
+   *
+   * @param playerToken player drawing the card
+   * @param cardSide    side chosen
+   * @return false if player has not drawn a card yet or if he already chose a
+   *         side, true otherwise
+   */
+  @Override
+  public boolean selectStarterCardSide(PlayerToken playerToken, CardSide cardSide) {
+    if (!tokenToStarterCard.containsKey(playerToken) || tokenToCardSide.containsKey(playerToken))
+      return false;
+
+    tokenToCardSide.put(playerToken, cardSide);
+
+    decks.starterCardsDeck.notify(new ChosenStarterCardSideEvent(playerToken, cardSide));
+    return true;
+  }
+}

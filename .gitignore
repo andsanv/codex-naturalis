@@ -4,8 +4,9 @@
 # Ignore vscode files
 .vscode/
 
-# Ignore target/
+# Ignore project-building related files
 target/
+dependency-reduced-pom.xml
 
 # Ignore MacOS related files
 .DS_Store

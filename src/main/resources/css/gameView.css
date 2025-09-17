@@ -1,128 +1,32 @@
+
 @font-face {
-    src: url('../fonts/FrakturNo2.ttf');
+    font-family: "Mulish";
+    src: url("../fonts/Mulish-Regular.ttf");
 }
 
-.root {
-    -fx-font-family: 'Fraktur No2';
+.button {
+    -fx-background-color: #e0e0e0; /* A light grey background */
+    -fx-background-radius: 5px;   /* Round the background corners */
+    -fx-border-radius: 5px;      /* Round the border corners */
+    -fx-border-color: #bababa;     /* A slightly darker border */
+    -fx-border-width: 1px;         /* A thin border */
 }
 
-.tab .tab-label {
-    -fx-background-color: transparent;
-    -fx-alignment: CENTER;
-    -fx-text-fill: black;
-}
-
-.tab {
-    -fx-background-color: #e7e1a8;
-    -fx-background-radius: 10px;
-    -fx-border-color: #c9c18f;
-    -fx-border-radius: 10px;
-    -fx-padding: 3 20 3 20;
-}
-
-.tab:selected {
-    -fx-background-color: #e7e1a8;
-    -fx-background-radius: 10px;
-    -fx-background-insets: 0.0;
-    -fx-border-width: 4 1 1 1;
-    -fx-border-color: #c5a641;
-}
-
-.tab:focused {
-    -fx-focus-color: transparent;
+.button:hover {
+    -fx-background-color: #d3d3d3;
 }
 
 .tab-pane *.tab-header-background {
     -fx-background-color: transparent;
 }
 
-.tab-pane:right *.tab-header-area {
-    -fx-background-insets: 0 0 0 10;
-    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
+#defaultGridPane {
+    -fx-background-image: url("../images/pattern.png");
+    -fx-background-repeat: repeat;
+    -fx-background-position: top left;
 }
 
-.tab-pane:left *.tab-header-area {
-    -fx-background-insets: 0 0 0 10;
-    -fx-padding: 0.0em 0.0em 0.0em 0.0em;
-}
-
-.tab:selected .focus-indicator {
-    -fx-focus-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.button {
-    -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;
-    -fx-background-radius: 8;
-    -fx-background-color: #dcdcdc;
-    -fx-border-radius: 8;
-    -fx-border-color: #bdbdbd;
-}
-
-.button:hover {
-    -fx-background-color: #cdcdcd;
-    -fx-border-radius: 20;
-}
-
-.highlightPlayable {
-    -fx-background-color: yellow;
-    -fx-background-radius: 4;
-    -fx-scale-x: 1.2829;
-    -fx-scale-y: 1.667;
-    -fx-opacity: 0.5;
-}
-
-.player-pane {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-}
-
-.important-event-pane {
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-    -fx-border-width: 1.5;
-}
-
-.important-text {
-    -fx-font-size: 28;
-}
-
-.important-error-msg {
-    -fx-background-color: rgb(255, 110, 110);
-    -fx-border-color: rgb(255, 50, 50);
-}
-
-.important-info-msg {
-    -fx-background-color: rgb(160, 160, 255);
-    -fx-border-color: rgb(90, 90, 255);
-}
-
-.game-ended-pane {
-    -fx-background-color: #ede4bc;
-    -fx-background-radius: 10;
-    -fx-border-width: 2;
-    -fx-border-color: #d5cda9;
-    -fx-border-radius: 10;
-}
-
-.game-ended-text-pane {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-}
-
-.player-ended-pane {
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-}
-
-.single-message {
-    -fx-font-family: sans-serif;
-    -fx-background-color: #e0e0e0;
-    -fx-background-radius: 10;
-}
-
-.send-message-button {
-    -fx-font-family: sans-serif;
+.root {
+    -fx-font-family: 'Mulish';
+    -fx-font-size: 13;
 }

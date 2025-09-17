@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.LobbyController">
+<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.gui.controllers.LobbyController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
@@ -21,7 +23,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" stylesheets="@../../css/gameView.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.gui.controllers.GameController">
    <children>
       <StackPane fx:id="mainStackPane" prefHeight="900.0" prefWidth="1440.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -55,6 +57,9 @@
                         <Insets left="670.0" top="425.0" />
                      </padding></GridPane>
                </content>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
             </ScrollPane>
             <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#e7e1a8" height="70.0" stroke="#c9c18f" strokeType="INSIDE" width="1400.0" StackPane.alignment="TOP_LEFT">
                <StackPane.margin>
@@ -96,7 +101,7 @@
                                                 <Image url="@../../images/icons/animal.png" />
                                              </image>
                                           </ImageView>
-                                          <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/gameView.css">
+                                          <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/old_gameView.css">
                                              <children>
                                                 <Text fx:id="animalResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" />
                                              </children>
@@ -264,7 +269,7 @@
                   <Insets bottom="810.0" left="20.0" right="20.0" top="20.0" />
                </StackPane.margin>
             </HBox>
-            <TabPane fx:id="leftTabPane" disable="true" prefHeight="468.0" prefWidth="320.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="leftTabPane" disable="true" prefHeight="468.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab>
                   <content>
@@ -310,15 +315,8 @@
                            </children>
                         </AnchorPane>
                   </content>
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/icons/bullseye-arrow.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
                 </Tab>
-                <Tab fx:id="decksTab">
+                <Tab fx:id="decksTab" closable="false">
                   <content>
                     <AnchorPane fx:id="decksAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="169.0">
                            <children>
@@ -394,39 +392,60 @@
                            </children>
                         </AnchorPane>
                   </content>
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/icons/playing-cards.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
                 </Tab>
               </tabs>
                <StackPane.margin>
                   <Insets bottom="20.0" left="20.0" right="1090.0" top="105.0" />
                </StackPane.margin>
             </TabPane>
-            <StackPane prefHeight="30.0" prefWidth="30.0">
+            <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="290.0" StackPane.alignment="CENTER_LEFT">
                <children>
-                  <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton">
-                     <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" scaleX="0.75" scaleY="0.75">
-                           <image>
-                              <Image url="@../../images/icons/angle-right.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
+                  <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton" prefHeight="30.0" prefWidth="50.0" text="Close" StackPane.alignment="CENTER_LEFT">
                      <StackPane.margin>
                         <Insets />
                      </StackPane.margin>
                      <padding>
-                        <Insets bottom="4.0" left="3.0" right="3.0" top="4.0" />
-                     </padding></Button>
+                        <Insets right="1.0" />
+                     </padding>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <rotationAxis>
+                        <Point3D />
+                     </rotationAxis></Button>
+                  <HBox fx:id="leftButtonsHBox" maxWidth="-Infinity" prefHeight="100.0" prefWidth="135.0" StackPane.alignment="CENTER_RIGHT">
+                     <children>
+                        <Button fx:id="objectivesButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedObjectivesButton" prefHeight="30.0" prefWidth="80.0" text="Objectives">
+                           <padding>
+                              <Insets right="1.0" />
+                           </padding>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <rotationAxis>
+                              <Point3D />
+                           </rotationAxis>
+                        </Button>
+                        <Button fx:id="decksButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedDecksButton" opacity="0.5" prefHeight="30.0" prefWidth="55.0" text="Decks">
+                           <padding>
+                              <Insets right="1.0" />
+                           </padding>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <rotationAxis>
+                              <Point3D />
+                           </rotationAxis>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
                <StackPane.margin>
-                  <Insets bottom="766.0" left="20.0" right="1388.0" top="105.0" />
+                  <Insets bottom="766.0" left="20.0" top="106.0" />
                </StackPane.margin>
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
             </StackPane>
             <TabPane fx:id="rightTabPane" disable="true" prefHeight="608.0" prefWidth="232.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
                <tabs>
