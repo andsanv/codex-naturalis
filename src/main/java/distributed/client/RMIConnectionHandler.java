@@ -8,6 +8,7 @@ import distributed.commands.game.GameCommand;
 import distributed.commands.main.ConnectionCommand;
 import distributed.commands.main.MainCommand;
 import distributed.commands.main.ReconnectionCommand;
+import distributed.commands.main.KeepAliveCommand;
 import distributed.interfaces.GameServerActions;
 import distributed.interfaces.MainServerActions;
 import view.UI;
@@ -65,7 +66,9 @@ public class RMIConnectionHandler extends ConnectionHandler {
 
         try {
             Registry registry = LocateRegistry.getRegistry(Config.ServerIP, Config.RMIServerPort);
+            System.out.println(registry.toString());
             mainServerActions = (MainServerActions) registry.lookup(Config.RMIServerName);
+            System.out.println(mainServerActions.toString());
 
             this.clientMainView = new RMIMainView(userInterface, this);
             this.clientGameView = new RMIGameView(userInterface);
@@ -112,12 +115,20 @@ public class RMIConnectionHandler extends ConnectionHandler {
      */
     @Override
     public boolean sendToMainServer(MainCommand mainCommand) {
+        if (!(mainCommand instanceof KeepAliveCommand))
+            System.out.println("inside sendToMainServer");
         if (mainCommand instanceof ConnectionCommand) {
+            System.out.println("inside connectionCommand in sendToMainServer");
             try {
+                System.out.println("start");
+
+                System.out.println(mainServerActions.ping());
+
                 mainServerActions.connectToMain(((ConnectionCommand) mainCommand).username, this.clientMainView,
                         this.clientGameView);
-
+                System.out.println("end");
                 while (userInterface.getUserInfo() == null) {
+                    System.out.println("inside getUserInfo null");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -131,6 +142,7 @@ public class RMIConnectionHandler extends ConnectionHandler {
                 // this.isConnected.set(false);
                 // this.userInterface.handleDisconnection();
                 // return false;
+                System.out.println("exception 1");
             }
         } else if (mainCommand instanceof ReconnectionCommand) {
             try {
@@ -151,14 +163,18 @@ public class RMIConnectionHandler extends ConnectionHandler {
                 // this.isConnected.set(false);
                 // this.userInterface.handleDisconnection();
                 // return false;
+                System.out.println("exception 2");
             }
         } else {
             try {
+                if (!(mainCommand instanceof KeepAliveCommand))
+                    System.out.println("inside last branch, transmitting command");
                 mainServerActions.transmitCommand(mainCommand);
             } catch (Exception e) {
                 // this.isConnected.set(false);
                 // this.userInterface.handleDisconnection();
                 // return false;
+                System.out.println("exception 3");
             }
         }
 

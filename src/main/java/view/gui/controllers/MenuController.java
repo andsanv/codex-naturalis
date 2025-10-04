@@ -65,7 +65,11 @@ public class MenuController extends Controller {
     public void createLobby(ActionEvent event) {
         creatingLobby.set(true);
 
+        System.out.println("out");
+
         gui.submitToExecutorService(() -> {
+            System.out.println("sending command...");
+            System.out.println(connectionHandler);
             connectionHandler.get().sendToMainServer(new CreateLobbyCommand(selfUserInfo.get()));
             System.out.println("[INFO] Submitted the CreateLobbyCommand");
         });

@@ -74,6 +74,8 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   public void connectToMain(String username, MainViewActions clientMainView, GameViewActions gameViewActions)
       throws RemoteException {
 
+      System.out.println("test");
+
     RMIHandler rmiHandler = new RMIHandler(clientMainView, gameViewActions);
 
     ServerPrinter.displayDebug("Received connection request from username: " + username);;
@@ -112,4 +114,9 @@ public class RMIMainServer extends UnicastRemoteObject implements MainServerActi
   public void transmitCommand(MainCommand command) throws RemoteException {
     executorService.submit(command::execute);
   }
+
+    @Override
+    public boolean ping() throws RemoteException {
+        return true;
+    }
 }

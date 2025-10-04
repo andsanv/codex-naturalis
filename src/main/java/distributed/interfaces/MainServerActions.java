@@ -48,4 +48,6 @@ public interface MainServerActions extends Remote {
    */
   void connectToMain(String username, MainViewActions clientMainView, GameViewActions gameViewActions)
       throws RemoteException, IOException;
+
+    boolean ping() throws RemoteException;
 }

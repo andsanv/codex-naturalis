@@ -5,6 +5,7 @@ import controller.usermanagement.Status;
 import distributed.events.game.GameEvent;
 import distributed.events.main.LoginEvent;
 import distributed.events.main.MainEvent;
+import distributed.events.main.KeepAliveEvent;
 import distributed.interfaces.GameServerActions;
 import distributed.interfaces.GameViewActions;
 import distributed.interfaces.MainViewActions;
@@ -53,6 +54,8 @@ public class RMIHandler extends Client {
     // TODO: If status is disconnected do not send
     @Override
     public void trasmitEvent(MainEvent event) {
+        if (!(event instanceof KeepAliveEvent))
+            System.out.println("inside transmit event");
         if (isDisconnected()){
             ServerPrinter.displayError("Client is disconnected cannot send event " + event.getClass() + " to client " + this.userInfo.get());
             return;
@@ -64,6 +67,7 @@ public class RMIHandler extends Client {
         } catch (IOException e) {
             setDisconnectionStatus();
             ServerPrinter.displayError("Failed to send event " + event);
+            System.out.println(e);
             ServerPrinter.displayError("Setting client " + this.userInfo.get() + " as disconnected");
         }
     }

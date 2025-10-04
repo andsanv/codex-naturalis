@@ -81,7 +81,7 @@ public class ConfigController extends Controller {
      * Nickname must be longer than 2 characters.
      *
      * @param nickname nickname chosen by player
-     * @param id eventual id for reconnection (null if first connection)
+     * @param id eventual id for reconnection (-1 if first connection)
      * @param isRmi true if user chose rmi connection, false for socket
      * @return boolean on whether the operation was successful or not
      */
@@ -93,8 +93,6 @@ public class ConfigController extends Controller {
         if (isRmi) connectionHandler = new RMIConnectionHandler(mainController);
         else connectionHandler = new SocketConnectionHandler(mainController);
 
-        this.connectionHandler.set(connectionHandler);
-
         gui.submitToExecutorService(() -> {
             if (id == -1) connectionHandler.connect(new ConnectionCommand(nickname));
             else {
@@ -102,6 +100,9 @@ public class ConfigController extends Controller {
                 connectionHandler.reconnect();
             }
         });
+
+        System.out.println("connection handler in ConfigController: " + connectionHandler);
+        this.gui.connectionHandler.set(connectionHandler);
 
         return true;
     }

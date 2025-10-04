@@ -4,12 +4,18 @@
     src: url("../fonts/Mulish-Regular.ttf");
 }
 
+@font-face {
+    font-family: "Old London";
+    src: url("../fonts/OldLondon.ttf");
+}
+
 .button {
     -fx-background-color: #e0e0e0; /* A light grey background */
-    -fx-background-radius: 5px;   /* Round the background corners */
-    -fx-border-radius: 5px;      /* Round the border corners */
+    -fx-background-radius: 7.5;   /* Round the background corners */
+    -fx-border-radius: 7.5;      /* Round the border corners */
     -fx-border-color: #bababa;     /* A slightly darker border */
-    -fx-border-width: 1px;         /* A thin border */
+    -fx-border-width: 1;         /* A thin border */
+    -fx-background-insets: 0;   /* Prevents the background from overshooting */
 }
 
 .button:hover {
@@ -18,6 +24,11 @@
 
 .tab-pane *.tab-header-background {
     -fx-background-color: transparent;
+}
+
+.tab-header-area {
+    visibility: hidden;
+    -fx-max-height: 0;
 }
 
 #defaultGridPane {
@@ -29,4 +40,9 @@
 .root {
     -fx-font-family: 'Mulish';
     -fx-font-size: 13;
+}
+
+.old-london-button {
+    -fx-font-family: 'Old London';
+    -fx-font-size: 35;
 }

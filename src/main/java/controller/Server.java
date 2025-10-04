@@ -341,7 +341,6 @@ public enum Server {
     }
 
     public void clientLogin(UserInfo userInfo, Client client) {
-
         Client owldClient = connectedPlayers.get(userInfo);
         if (owldClient != null)
             ServerPrinter.displayInfo("Client status: " + owldClient.getStatus());
