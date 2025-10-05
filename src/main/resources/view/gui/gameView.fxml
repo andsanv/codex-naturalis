@@ -270,12 +270,12 @@
                   <Insets bottom="810.0" left="20.0" right="20.0" top="20.0" />
                </StackPane.margin>
             </HBox>
-            <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="290.0" StackPane.alignment="TOP_LEFT">
+            <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="320.0" StackPane.alignment="TOP_LEFT">
                <StackPane.margin>
                   <Insets left="20.0" top="110.0" />
                </StackPane.margin>
                <children>
-                  <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="290.0">
+                  <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="320.0">
                      <children>
                         <Button fx:id="leftPanelButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#handleOnMouseClickedLeftPanelButton" prefHeight="30.0" prefWidth="50.0" text="Close" StackPane.alignment="CENTER_LEFT">
                            <StackPane.margin>
@@ -319,28 +319,28 @@
                         </HBox>
                      </children>
                   </StackPane>
-                  <TabPane fx:id="leftTabPane" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="20.0" prefWidth="321.5" side="RIGHT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                  <TabPane fx:id="leftTabPane" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="20.0" prefWidth="351.5" side="RIGHT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
                       <Tab>
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <Rectangle arcHeight="15.0" arcWidth="15.0" fill="#f0e9c4" height="735.0" stroke="#d3cb9b" strokeType="INSIDE" width="290.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <Rectangle arcHeight="15.0" arcWidth="15.0" fill="#f0e9c4" height="735.0" stroke="#d3cb9b" strokeType="INSIDE" width="320.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <VBox maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="450.0" prefWidth="100.0" VBox.vgrow="NEVER">
+                                          <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="450.0" prefWidth="100.0" VBox.vgrow="NEVER">
                                              <children>
                                                 <StackPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
                                                    <children>
                                                       <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="common" StackPane.alignment="CENTER" />
                                                    </children>
                                                    <VBox.margin>
-                                                      <Insets top="40.0" />
+                                                      <Insets top="35.0" />
                                                    </VBox.margin>
                                                 </StackPane>
                                                 <ImageView fx:id="firstObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true">
                                                    <VBox.margin>
-                                                      <Insets left="20.0" right="20.0" top="15.0" />
+                                                      <Insets top="15.0" />
                                                    </VBox.margin>
                                                    <image>
                                                       <Image url="@../../images/cards/backs/86.png" />
@@ -355,7 +355,7 @@
                                                 </ImageView>
                                                 <ImageView fx:id="secondObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true">
                                                    <VBox.margin>
-                                                      <Insets left="20.0" right="20.0" top="15.0" />
+                                                      <Insets top="15.0" />
                                                    </VBox.margin>
                                                    <image>
                                                       <Image url="@../../images/cards/backs/86.png" />
@@ -370,7 +370,7 @@
                                                 </ImageView>
                                              </children>
                                           </VBox>
-                                          <VBox maxHeight="1.7976931348623157E308" prefHeight="285.0" prefWidth="20.0">
+                                          <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefHeight="285.0" prefWidth="20.0">
                                              <children>
                                                 <StackPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
                                                    <children>
@@ -382,7 +382,7 @@
                                                 </StackPane>
                                                 <ImageView fx:id="secretObjectiveSlot" fitHeight="166.0" fitWidth="248.5" pickOnBounds="true" preserveRatio="true" VBox.vgrow="NEVER">
                                                    <VBox.margin>
-                                                      <Insets left="20.0" top="15.0" />
+                                                      <Insets top="15.0" />
                                                    </VBox.margin>
                                                    <image>
                                                       <Image url="@../../images/cards/backs/86.png" />
@@ -407,45 +407,59 @@
                         <content>
                           <AnchorPane fx:id="decksAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="169.0">
                                  <children>
-                                    <Rectangle arcHeight="15.0" arcWidth="15.0" fill="#f0e9c4" height="735.0" stroke="#d3cb9b" strokeType="INSIDE" width="290.0" />
+                                    <Rectangle arcHeight="15.0" arcWidth="15.0" fill="#f0e9c4" height="735.0" stroke="#d3cb9b" strokeType="INSIDE" width="320.0" />
                                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <VBox prefHeight="365.0" prefWidth="259.0">
+                                          <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="367.5" prefWidth="320.0">
                                              <VBox.margin>
-                                                <Insets left="15.0" right="25.0" top="15.0" />
+                                                <Insets />
                                              </VBox.margin>
                                              <children>
-                                                <ImageView fx:id="resourceDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+                                                <StackPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="resource" StackPane.alignment="CENTER" />
+                                                   </children>
+                                                </StackPane>
+                                                <ImageView fx:id="resourceDeckImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                                    <VBox.margin>
-                                                      <Insets left="32.0" right="32.0" top="12.5" />
+                                                      <Insets />
                                                    </VBox.margin>
                                                    <image>
                                                       <Image url="@../../images/cards/backs/86.png" />
                                                    </image>
                                                 </ImageView>
-                                                <ImageView fx:id="firstResourceImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                                <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="145.0" prefWidth="290.0">
+                                                   <children>
+                                                      <ImageView fx:id="firstResourceImageView" fitHeight="100.0" fitWidth="145.0" pickOnBounds="true" preserveRatio="true" rotate="270.0" translateX="20.0">
+                                                         <image>
+                                                            <Image url="@../../images/cards/backs/86.png" />
+                                                         </image>
+                                                         <HBox.margin>
+                                                            <Insets left="40.0" />
+                                                         </HBox.margin>
+                                                      </ImageView>
+                                                      <ImageView fx:id="secondResourceImageView" fitHeight="100.0" fitWidth="145.0" pickOnBounds="true" preserveRatio="true" rotate="270.0" translateX="-20.0">
+                                                         <image>
+                                                            <Image url="@../../images/cards/backs/86.png" />
+                                                         </image>
+                                                         <HBox.margin>
+                                                            <Insets right="40.0" />
+                                                         </HBox.margin>
+                                                      </ImageView>
+                                                   </children>
                                                    <VBox.margin>
-                                                      <Insets left="10.0" top="5.0" />
+                                                      <Insets top="10.0" />
                                                    </VBox.margin>
-                                                   <image>
-                                                      <Image url="@../../images/cards/backs/86.png" />
-                                                   </image>
-                                                </ImageView>
-                                                <ImageView fx:id="secondResourceImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
-                                                   <VBox.margin>
-                                                      <Insets left="99.0" top="5.0" />
-                                                   </VBox.margin>
-                                                   <image>
-                                                      <Image url="@../../images/cards/backs/86.png" />
-                                                   </image>
-                                                </ImageView>
+                                                </HBox>
                                              </children>
                                           </VBox>
-                                          <VBox prefHeight="365.0" prefWidth="259.0">
-                                             <VBox.margin>
-                                                <Insets bottom="15.0" left="15.0" right="25.0" top="15.0" />
-                                             </VBox.margin>
+                                          <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="367.5" prefWidth="320.0">
                                              <children>
+                                                <StackPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                                                   <children>
+                                                      <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="gold" StackPane.alignment="CENTER" />
+                                                   </children>
+                                                </StackPane>
                                                 <ImageView fx:id="goldDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
                                                    <VBox.margin>
                                                       <Insets left="32.0" right="32.0" top="12.5" />
@@ -454,22 +468,29 @@
                                                       <Image url="@../../images/cards/backs/86.png" />
                                                    </image>
                                                 </ImageView>
-                                                <ImageView fx:id="firstGoldImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                                <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="320.0">
                                                    <VBox.margin>
-                                                      <Insets left="10.0" top="5.0" />
+                                                      <Insets top="10.0" />
                                                    </VBox.margin>
-                                                   <image>
-                                                      <Image url="@../../images/cards/backs/86.png" />
-                                                   </image>
-                                                </ImageView>
-                                                <ImageView fx:id="secondGoldImageView" fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
-                                                   <VBox.margin>
-                                                      <Insets left="99.0" top="5.0" />
-                                                   </VBox.margin>
-                                                   <image>
-                                                      <Image url="@../../images/cards/backs/86.png" />
-                                                   </image>
-                                                </ImageView>
+                                                   <children>
+                                                      <ImageView fx:id="firstGoldImageView" fitHeight="90.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" translateX="-5.0">
+                                                         <image>
+                                                            <Image url="@../../images/cards/backs/86.png" />
+                                                         </image>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </ImageView>
+                                                      <ImageView fx:id="secondGoldImageView" fitHeight="90.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" translateX="5.0">
+                                                         <image>
+                                                            <Image url="@../../images/cards/backs/86.png" />
+                                                         </image>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </ImageView>
+                                                   </children>
+                                                </HBox>
                                              </children>
                                           </VBox>
                                        </children>
