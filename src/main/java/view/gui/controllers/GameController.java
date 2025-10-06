@@ -4,6 +4,10 @@ import controller.usermanagement.LobbyInfo;
 import controller.usermanagement.UserInfo;
 import distributed.client.ConnectionHandler;
 import distributed.commands.game.*;
+import javafx.animation.ScaleTransition;
+import javafx.scene.effect.Effect;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import model.SlimGameModel;
 import model.card.CardSide;
 import model.common.Elements;
@@ -72,6 +76,9 @@ public class GameController extends Controller {
 
     public final Integer DEFAULT_OBJECTIVE_CARD_ID = 88;
 
+    public Integer initialResourceDeckSize = null;
+    public Integer initialGoldDeckSize = null;
+
 
     /* GRAPHIC STRUCTURE */
     // fixed
@@ -117,6 +124,8 @@ public class GameController extends Controller {
     @FXML public Text manuscriptItemsCounter;
     @FXML public Text inkwellItemsCounter;
     @FXML public Text quillItemsCounter;
+    @FXML public Rectangle resourceHealthBar;
+    @FXML public Rectangle goldHealthBar;
 
 
     /* NETWORK */
@@ -195,6 +204,9 @@ public class GameController extends Controller {
 
     // draw card
     boolean drawnCard = false;
+
+    // decks health bars
+    private double initialDeckHealthBarHeight = 0.0;
 
     // miscellaneous structures
     public Pair<ImageView, List<Integer>> resourceDeck;
@@ -351,34 +363,50 @@ public class GameController extends Controller {
                 !slimGameModel.resourceDeck.isEmpty() ? slimGameModel.resourceDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
         resourceDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
+        resourceDeckImageView.setOnMouseEntered(this::handleDeckCardMouseEntered);
+        resourceDeckImageView.setOnMouseExited(this::handleDeckCardMouseExited);
+        initialResourceDeckSize = slimGameModel.resourceDeck.size();
 
         // gold deck
         goldDeckImageView.setImage(getCardImage(
                 !slimGameModel.goldDeck.isEmpty() ? slimGameModel.goldDeck.getLast() : DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK
         ));
         goldDeckImageView.setOnMouseClicked(this::handleDeckMouseClicked);
+        goldDeckImageView.setOnMouseEntered(this::handleDeckCardMouseEntered);
+        goldDeckImageView.setOnMouseExited(this::handleDeckCardMouseExited);
+        initialGoldDeckSize = slimGameModel.goldDeck.size();
 
         // resource visible
         firstResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.get(0), CardSide.FRONT));
         firstResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        firstResourceImageView.setOnMouseEntered(this::handleDeckCardMouseEntered);
+        firstResourceImageView.setOnMouseExited(this::handleDeckCardMouseExited);
         firstResourceImageView.setDisable(true);
 
         secondResourceImageView.setImage(getCardImage(slimGameModel.visibleResourceCardsList.get(1), CardSide.FRONT));
         secondResourceImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        secondResourceImageView.setOnMouseEntered(this::handleDeckCardMouseEntered);
+        secondResourceImageView.setOnMouseExited(this::handleDeckCardMouseExited);
         secondResourceImageView.setDisable(true);
 
         // gold visible
         firstGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.get(0), CardSide.FRONT));
         firstGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        firstGoldImageView.setOnMouseEntered(this::handleDeckCardMouseEntered);
+        firstGoldImageView.setOnMouseExited(this::handleDeckCardMouseExited);
         firstGoldImageView.setDisable(true);
 
         secondGoldImageView.setImage(getCardImage(slimGameModel.visibleGoldCardsList.get(1), CardSide.FRONT));
         secondGoldImageView.setOnMouseClicked(this::handleVisibleListMouseClicked);
+        secondGoldImageView.setOnMouseEntered(this::handleDeckCardMouseEntered);
+        secondGoldImageView.setOnMouseExited(this::handleDeckCardMouseExited);
         secondGoldImageView.setDisable(true);
 
         firstObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(0), CardSide.FRONT));
         secondObjectiveSlot.setImage(getCardImage(slimGameModel.commonObjectives.get(1), CardSide.FRONT));
         secretObjectiveSlot.setImage(getCardImage(slimGameModel.tokenToSecretObjective.get(selfPlayerToken), CardSide.FRONT));
+
+        initialDeckHealthBarHeight = resourceHealthBar.getHeight();
     }
 
     /**
@@ -852,6 +880,8 @@ public class GameController extends Controller {
 
         showCardsPlayability();
 
+        dragboard.setDragView(resizedImage);
+
         content.putImage(resizedImage);
         dragboard.setContent(content);
         event.consume();
@@ -934,6 +964,24 @@ public class GameController extends Controller {
                 });
 
         if(clearList) availableSlots.clear();
+    }
+
+    public void handleDeckCardMouseEntered(MouseEvent event) {
+        ImageView targetCard = (ImageView) event.getTarget();
+
+        ScaleTransition st = new ScaleTransition(Duration.millis(125), targetCard);
+        st.setToX(1.05);
+        st.setToY(1.05);
+        st.play();
+    }
+
+    public void handleDeckCardMouseExited(MouseEvent event) {
+        ImageView targetCard = (ImageView) event.getTarget();
+
+        ScaleTransition st = new ScaleTransition(Duration.millis(125), targetCard);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
     }
 
     /**
@@ -1171,6 +1219,15 @@ public class GameController extends Controller {
         }
         else deck.first.setImage(getCardImage(deck.second.get(deck.second.size() - 2), CardSide.BACK));
 
+        if (deck.equals(resourceDeck)) {
+            updateDeckHealthBar(resourceHealthBar, deck.second.size() - 1, false);
+            updateDeckDropShadow(resourceDeck.first, deck.second.size() - 1, false);
+        }
+        else {
+            updateDeckHealthBar(goldHealthBar, deck.second.size() - 1, true);
+            updateDeckDropShadow(goldDeck.first, deck.second.size() - 1, true);
+        }
+
         return drawnCardId;
     }
 
@@ -1242,27 +1299,33 @@ public class GameController extends Controller {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize, Integer nextCardId, int handIndex) {
         Platform.runLater(() -> {
-            slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
+            slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex);
 
             if (playerToken != selfPlayerToken) {
-                if (deckEmptied) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+                if (deckSize == 0) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
 
+                updateDeckHealthBar(goldHealthBar, deckSize, true);
+                updateDeckDropShadow(goldDeck.first, deckSize, true);
+
                 setCardToHand(playerToken, drawnCardId, handIndex);
             }
         });
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize, Integer nextCardId, int handIndex) {
         Platform.runLater(() -> {
-            slimGameModel.applyDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
+            slimGameModel.applyDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex);
 
             if (playerToken != selfPlayerToken) {
-                if (deckEmptied) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+                if (deckSize == 0) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else resourceDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+
+                updateDeckHealthBar(resourceHealthBar, deckSize, false);
+                updateDeckDropShadow(resourceDeck.first, deckSize, false);
 
                 setCardToHand(playerToken, drawnCardId, handIndex);
             }
@@ -1270,13 +1333,16 @@ public class GameController extends Controller {
     }
 
     @Override
-    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         Platform.runLater(() -> {
-            slimGameModel.applyDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex);
+            slimGameModel.applyDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckSize, nextCardId, handIndex);
 
             if(playerToken != selfPlayerToken) {
-                if (deckEmptied) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+                if (deckSize == 0) resourceDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else resourceDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+
+                updateDeckHealthBar(resourceHealthBar, deckSize, false);
+                updateDeckDropShadow(resourceDeck.first, deckSize, false);
 
                 switch (drawnCardPosition) {
                     case 0 -> firstResourceImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
@@ -1289,18 +1355,21 @@ public class GameController extends Controller {
     }
 
     @Override
-    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+    public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         Platform.runLater(() -> {
-            slimGameModel.applyDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex);
+            slimGameModel.applyDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckSize, nextCardId, handIndex);
 
             if(playerToken != selfPlayerToken) {
-                if (deckEmptied) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+                if (deckSize == 0) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
                 else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
 
                 switch (drawnCardPosition) {
                     case 0 -> firstGoldImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
                     case 1 -> secondGoldImageView.setImage(getCardImage(replacementCardId, CardSide.FRONT));
                 }
+
+                updateDeckHealthBar(goldHealthBar, deckSize, true);
+                updateDeckDropShadow(goldDeck.first, deckSize, true);
 
                 setCardToHand(playerToken, drawnCardId, handIndex);
             }
@@ -1776,5 +1845,36 @@ public class GameController extends Controller {
                 yellowTokenImageView.setTranslateY(y + translation.second);
             }
         }
+    }
+
+    public void updateDeckHealthBar(Rectangle healthBar, int deckSize, boolean isGoldDeck) {
+        // change height
+        double remainingPercentage = deckSize / (double)(isGoldDeck ? initialGoldDeckSize : initialResourceDeckSize);
+        healthBar.setHeight(Math.ceil(remainingPercentage * initialDeckHealthBarHeight));
+
+        // change color
+        Color color = Color.web("#009A00");
+        if (0.60 < remainingPercentage && remainingPercentage <= 0.80)
+            color = Color.web("#00C300");
+        else if (0.40 < remainingPercentage && remainingPercentage <= 0.60)
+            color = Color.web("#7DD741");
+        else if (0.20 < remainingPercentage && remainingPercentage <= 0.40)
+            color = Color.web("#FFBF00");
+        else if (0.00 < remainingPercentage && remainingPercentage <= 0.20)
+            color = Color.web("#FF0000");
+
+        healthBar.setFill(color);
+    }
+
+    public void updateDeckDropShadow(ImageView imageView, int deckSize, boolean isGoldDeck) {
+        // change height
+        double remainingPercentage = deckSize / (double)(isGoldDeck ? initialGoldDeckSize : initialResourceDeckSize);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setWidth(21); dropShadow.setHeight(21);
+        dropShadow.setRadius(10); dropShadow.setRadius(10);
+        dropShadow.setColor(Color.color(0, 0, 0, 0.6 + remainingPercentage * 0.4));
+
+        imageView.setEffect(dropShadow);
     }
 }

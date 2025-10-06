@@ -102,7 +102,7 @@
                                                 <Image url="@../../images/icons/animal.png" />
                                              </image>
                                           </ImageView>
-                                          <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/old_gameView.css">
+                                          <StackPane prefHeight="150.0" prefWidth="10.0" stylesheets="@../../css/gameView.css">
                                              <children>
                                                 <Text fx:id="animalResourcesCounter" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" />
                                              </children>
@@ -417,38 +417,78 @@
                                              <children>
                                                 <StackPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
                                                    <children>
-                                                      <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="resource" StackPane.alignment="CENTER" />
+                                                      <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="resource cards" StackPane.alignment="CENTER" />
                                                    </children>
                                                 </StackPane>
-                                                <ImageView fx:id="resourceDeckImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                                   <VBox.margin>
-                                                      <Insets />
-                                                   </VBox.margin>
-                                                   <image>
-                                                      <Image url="@../../images/cards/backs/86.png" />
-                                                   </image>
-                                                </ImageView>
-                                                <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="145.0" prefWidth="290.0">
+                                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                                                    <children>
-                                                      <ImageView fx:id="firstResourceImageView" fitHeight="100.0" fitWidth="145.0" pickOnBounds="true" preserveRatio="true" rotate="270.0" translateX="20.0">
+                                                      <StackPane alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="84.0" prefWidth="10.0" translateX="-15.0">
+                                                         <children>
+                                                            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e3e3e3" height="84.0" stroke="BLACK" strokeType="INSIDE" width="10.0" />
+                                                            <Rectangle fx:id="resourceHealthBar" arcHeight="2.0" arcWidth="2.0" fill="#009a00" height="80.0" stroke="TRANSPARENT" strokeType="INSIDE" width="6.0">
+                                                               <StackPane.margin>
+                                                                  <Insets bottom="2.0" />
+                                                               </StackPane.margin>
+                                                            </Rectangle>
+                                                         </children>
+                                                      </StackPane>
+                                                      <ImageView fx:id="resourceDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true" translateX="-5.0">
+                                                         <image>
+                                                            <Image url="@../../images/cards/backs/86.png" />
+                                                         </image>
+                                                         <effect>
+                                                            <DropShadow />
+                                                         </effect>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
+                                                      </ImageView>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets top="12.5" />
+                                                   </VBox.margin>
+                                                </HBox>
+                                                <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="320.0">
+                                                   <children>
+                                                      <ImageView fx:id="firstResourceImageView" fitHeight="90.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" translateX="-5.0">
                                                          <image>
                                                             <Image url="@../../images/cards/backs/86.png" />
                                                          </image>
                                                          <HBox.margin>
                                                             <Insets left="40.0" />
                                                          </HBox.margin>
+                                                         <effect>
+                                                            <DropShadow>
+                                                               <color>
+                                                                  <Color opacity="0.6000000238418579" />
+                                                               </color>
+                                                            </DropShadow>
+                                                         </effect>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
                                                       </ImageView>
-                                                      <ImageView fx:id="secondResourceImageView" fitHeight="100.0" fitWidth="145.0" pickOnBounds="true" preserveRatio="true" rotate="270.0" translateX="-20.0">
+                                                      <ImageView fx:id="secondResourceImageView" fitHeight="90.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" translateX="5.0">
                                                          <image>
                                                             <Image url="@../../images/cards/backs/86.png" />
                                                          </image>
                                                          <HBox.margin>
                                                             <Insets right="40.0" />
                                                          </HBox.margin>
+                                                         <effect>
+                                                            <DropShadow>
+                                                               <color>
+                                                                  <Color opacity="0.6000000238418579" />
+                                                               </color>
+                                                            </DropShadow>
+                                                         </effect>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
                                                       </ImageView>
                                                    </children>
                                                    <VBox.margin>
-                                                      <Insets top="10.0" />
+                                                      <Insets top="15.0" />
                                                    </VBox.margin>
                                                 </HBox>
                                              </children>
@@ -457,20 +497,40 @@
                                              <children>
                                                 <StackPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" prefWidth="200.0">
                                                    <children>
-                                                      <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="gold" StackPane.alignment="CENTER" />
+                                                      <Text fill="#43271c" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="old-london-button" text="gold cards" StackPane.alignment="CENTER" />
                                                    </children>
                                                 </StackPane>
-                                                <ImageView fx:id="goldDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true">
+                                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                                                   <children>
+                                                      <StackPane alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="84.0" prefWidth="10.0" translateX="-15.0">
+                                                         <children>
+                                                            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e3e3e3" height="84.0" stroke="BLACK" strokeType="INSIDE" width="10.0" />
+                                                            <Rectangle fx:id="goldHealthBar" arcHeight="2.0" arcWidth="2.0" fill="#009a00" height="80.0" stroke="TRANSPARENT" strokeType="INSIDE" width="6.0">
+                                                               <StackPane.margin>
+                                                                  <Insets bottom="2.0" />
+                                                               </StackPane.margin>
+                                                            </Rectangle>
+                                                         </children>
+                                                      </StackPane>
+                                                      <ImageView fx:id="goldDeckImageView" fitHeight="130.0" fitWidth="195.0" pickOnBounds="true" preserveRatio="true" translateX="-5.0">
+                                                         <image>
+                                                            <Image url="@../../images/cards/backs/86.png" />
+                                                         </image>
+                                                         <effect>
+                                                            <DropShadow />
+                                                         </effect>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
+                                                      </ImageView>
+                                                   </children>
                                                    <VBox.margin>
-                                                      <Insets left="32.0" right="32.0" top="12.5" />
+                                                      <Insets top="12.5" />
                                                    </VBox.margin>
-                                                   <image>
-                                                      <Image url="@../../images/cards/backs/86.png" />
-                                                   </image>
-                                                </ImageView>
+                                                </HBox>
                                                 <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="320.0">
                                                    <VBox.margin>
-                                                      <Insets top="10.0" />
+                                                      <Insets top="15.0" />
                                                    </VBox.margin>
                                                    <children>
                                                       <ImageView fx:id="firstGoldImageView" fitHeight="90.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" translateX="-5.0">
@@ -480,6 +540,16 @@
                                                          <HBox.margin>
                                                             <Insets />
                                                          </HBox.margin>
+                                                         <effect>
+                                                            <DropShadow>
+                                                               <color>
+                                                                  <Color opacity="0.6000000238418579" />
+                                                               </color>
+                                                            </DropShadow>
+                                                         </effect>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
                                                       </ImageView>
                                                       <ImageView fx:id="secondGoldImageView" fitHeight="90.0" fitWidth="135.0" pickOnBounds="true" preserveRatio="true" translateX="5.0">
                                                          <image>
@@ -488,10 +558,26 @@
                                                          <HBox.margin>
                                                             <Insets />
                                                          </HBox.margin>
+                                                         <effect>
+                                                            <DropShadow>
+                                                               <color>
+                                                                  <Color opacity="0.6000000238418579" />
+                                                               </color>
+                                                            </DropShadow>
+                                                         </effect>
+                                                         <cursor>
+                                                            <Cursor fx:constant="HAND" />
+                                                         </cursor>
                                                       </ImageView>
                                                    </children>
                                                 </HBox>
                                              </children>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                             <padding>
+                                                <Insets top="-30.0" />
+                                             </padding>
                                           </VBox>
                                        </children>
                                     </VBox>

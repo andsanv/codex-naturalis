@@ -60,9 +60,9 @@ public class Deck<CardType extends Card> extends Observable {
         }
 
         if (card instanceof ResourceCard)
-            notify(new DrawnResourceDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardId, handIndex));
+            notify(new DrawnResourceDeckCardEvent(playerToken, card.id, deck.size(), nextCardId, handIndex));
         else if (card instanceof GoldCard)
-            notify(new DrawnGoldDeckCardEvent(playerToken, card.id, deck.isEmpty(), nextCardId, handIndex));
+            notify(new DrawnGoldDeckCardEvent(playerToken, card.id, deck.size(), nextCardId, handIndex));
         else if (card instanceof StarterCard)
             notify(new DrawnStarterCardEvent(playerToken, card.id));
 
@@ -105,16 +105,16 @@ public class Deck<CardType extends Card> extends Observable {
      * not empty.
      * Invocation of this method will not notify observers.
      *
-     * @return a trio containing: the drawn card, a boolean telling if the draw
-     *         emptied the main deck, and the next card's id
+     * @return a trio containing: the drawn card, an integer describing the number of
+     *         remaining cards in the deck, and the next card's id
      */
-    public Trio<Optional<CardType>, Boolean, Integer> anonymousDraw() {
+    public Trio<Optional<CardType>, Integer, Integer> anonymousDraw() {
         if (isEmpty())
-            return new Trio<>(Optional.empty(), true, null);
+            return new Trio<>(Optional.empty(), 0, null);
 
         CardType card = deck.pop();
         if (isEmpty())
-            return new Trio<>(Optional.of(card), true, null);
+            return new Trio<>(Optional.of(card), 0, null);
         {
         }
 
@@ -124,7 +124,7 @@ public class Deck<CardType extends Card> extends Observable {
             nextCardId = nextCard.id;
         }
 
-        return new Trio<>(Optional.of(card), deck.isEmpty(), nextCardId);
+        return new Trio<>(Optional.of(card), deck.size(), nextCardId);
     }
 
     /**

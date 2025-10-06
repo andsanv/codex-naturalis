@@ -704,36 +704,36 @@ public class CLI implements UI {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
             Integer nextCardId, int handIndex) {
         synchronized (slimGameModelLock) {
-            slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
+            slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex);
         }
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
             Integer nextCardId, int handIndex) {
         synchronized (slimGameModelLock) {
-            slimGameModel.applyDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex);
+            slimGameModel.applyDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex);
         }
     }
 
     @Override
     public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+            Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         synchronized (slimGameModelLock) {
             slimGameModel.applyDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId,
-                    replacementCardId, deckEmptied, nextCardId, handIndex);
+                    replacementCardId, deckSize, nextCardId, handIndex);
         }
     }
 
     @Override
     public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+            Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         synchronized (slimGameModelLock) {
             slimGameModel.applyDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId,
-                    deckEmptied, nextCardId, handIndex);
+                    deckSize, nextCardId, handIndex);
         }
 
     }

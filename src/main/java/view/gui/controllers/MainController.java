@@ -193,15 +193,14 @@ public class MainController extends Controller {
      * @param playerToken the token of the player who draws the card from the gold
      *                    deck
      * @param drawnCardId the drawn card id
-     * @param deckEmptied a flag that is true if the deck is now empty, false
-     *                    otherwise
+     * @param deckSize    an integer that indicates the number of remaining cards in the deck.
      * @param nextCardId  the id of the next card; null if there is no next card
      * @param handIndex   the position (0,1,2) of the drawn card in the player hand
      */
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
                                              Integer nextCardId, int handIndex) {
         System.out.println("[INFO] Received DrawnGoldDeckCardEvent");
-        Platform.runLater(() -> subController.handleDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex));
+        Platform.runLater(() -> subController.handleDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex));
     }
 
     /**
@@ -210,15 +209,14 @@ public class MainController extends Controller {
      *
      * @param playerToken the player token which drew the card
      * @param drawnCardId the id of the drawn card
-     * @param deckEmptied a flag that is true if the deck is now empty, false
-     *                    otherwise
+     * @param deckSize    an integer that indicates the number of remaining cards in the deck.
      * @param nextCardId  the id of the next card; null if there is no next card
      * @param handIndex   the position (0,1,2) of the drawn card in the player hand
      */
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
                                                  Integer nextCardId, int handIndex) {
         System.out.println("[INFO] Received DrawnResourceDeckCardEvent");
-        Platform.runLater(() -> subController.handleDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckEmptied, nextCardId, handIndex));
+        Platform.runLater(() -> subController.handleDrawnResourceDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex));
     }
 
     /**
@@ -232,16 +230,16 @@ public class MainController extends Controller {
      */
     public void handleDrawnVisibleResourceCardEvent(
             PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId,
-            boolean deckEmptied, Integer nextCardId, int handIndex) {
+            int deckSize, Integer nextCardId, int handIndex) {
         System.out.println("[INFO] Received DrawnVisibleResourceCardEvent");
-        Platform.runLater(() -> subController.handleDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex));
+        Platform.runLater(() -> subController.handleDrawnVisibleResourceCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckSize, nextCardId, handIndex));
     }
 
     public void handleDrawnVisibleGoldCardEvent(
             PlayerToken playerToken, int drawnCardPosition, int drawnCardId, Integer replacementCardId,
-            boolean deckEmptied, Integer nextCardId, int handIndex) {
+            int deckSize, Integer nextCardId, int handIndex) {
         System.out.println("[INFO] Received DrawnVisibleGoldCardEvent");
-        Platform.runLater(() -> subController.handleDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckEmptied, nextCardId, handIndex));
+        Platform.runLater(() -> subController.handleDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId, deckSize, nextCardId, handIndex));
     }
 
     /**

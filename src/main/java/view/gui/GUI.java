@@ -211,7 +211,7 @@ public class GUI extends Application {
         controller.initialize(this, slimGameModel, userInfoToToken);
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("css/old_gameView.css");
+        scene.getStylesheets().add("css/gameView.css");
 
         mainController.setSubController(controller);
 

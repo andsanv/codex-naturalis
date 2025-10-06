@@ -22,7 +22,7 @@ public final class DrawnVisibleGoldCardEvent extends GameEvent {
   private final Integer replacementCardId;
 
   /** This boolean field informs about the decks state. */
-  private final boolean emptiedDeck;
+  private final int deckSize;
 
   /** The id of the next card. */
   private final Integer nextCardId;
@@ -38,19 +38,18 @@ public final class DrawnVisibleGoldCardEvent extends GameEvent {
    *                          cards.
    * @param drawnCardId       the id of the drawn card.
    * @param replacementCardId the id of the replacement card.
-   * @param emptiedDeck       true if deck was emptied drawing the replacement
-   *                          card, false otherwise.
+   * @param deckSize          an integer that indicates the number of remaining cards in the deck.
    * @param nextCardId        id of the next card.
    * @param handIndex         index of the playerHand where drawn card will be
    *                          placed.
    */
   public DrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-      Integer replacementCardId, boolean emptiedDeck, Integer nextCardId, int handIndex) {
+      Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
     this.playerToken = playerToken;
     this.drawnCardPosition = drawnCardPosition;
     this.drawnCardId = drawnCardId;
     this.replacementCardId = replacementCardId;
-    this.emptiedDeck = emptiedDeck;
+    this.deckSize = deckSize;
     this.nextCardId = nextCardId;
     this.handIndex = handIndex;
   }
@@ -61,6 +60,6 @@ public final class DrawnVisibleGoldCardEvent extends GameEvent {
   @Override
   public void execute(GameEventHandler gameUpdateHandler) {
     gameUpdateHandler.handleDrawnVisibleGoldCardEvent(playerToken, drawnCardPosition, drawnCardId, replacementCardId,
-        emptiedDeck, nextCardId, handIndex);
+        deckSize, nextCardId, handIndex);
   }
 }

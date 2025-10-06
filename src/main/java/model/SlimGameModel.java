@@ -169,12 +169,11 @@ public class SlimGameModel implements Serializable {
      *
      * @param playerToken token of the player
      * @param drawnCardId id of the drawn card
-     * @param deckEmptied boolean that represents whether the deck was emptied or
-     *                    not
+     * @param deckSize    an integer that indicates the number of remaining cards in the deck.
      * @param nextCardId  id of the next card at the top of the deck
      * @param handIndex   index of the hand where card was drawn
      */
-    public void applyDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void applyDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
             Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
@@ -186,12 +185,11 @@ public class SlimGameModel implements Serializable {
      *
      * @param playerToken token of the player
      * @param drawnCardId id of the drawn card
-     * @param deckEmptied boolean that represents whether the deck was emptied or
-     *                    not
+     * @param deckSize an integer that indicates the number of remaining cards in the deck.
      * @param nextCardId  id of the next card at the top of the deck
      * @param handIndex   index of the hand where card was drawn
      */
-    public void applyDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void applyDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
             Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
@@ -206,14 +204,14 @@ public class SlimGameModel implements Serializable {
      *                          cards.
      * @param drawnCardId       the id of the drawn card.
      * @param replacementCardId the id of the replacement card.
-     * @param deckEmptied       true if deck was emptied drawing the replacement
+     * @param deckSize          an integer that indicates the number of remaining cards in the deck.
      *                          card, false otherwise.
      * @param nextCardId        id of the next card.
      * @param handIndex         index of the playerHand where drawn card will be
      *                          placed.
      */
     public void applyDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+            Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
         visibleGoldCardsList.set(drawnCardPosition, replacementCardId);
@@ -229,14 +227,14 @@ public class SlimGameModel implements Serializable {
      *                          cards.
      * @param drawnCardId       the id of the drawn card.
      * @param replacementCardId the id of the replacement card.
-     * @param deckEmptied       true if deck was emptied drawing the replacement
+     * @param deckSize          an integer that indicates the number of remaining cards in the deck.
      *                          card, false otherwise.
      * @param nextCardId        id of the next card.
      * @param handIndex         index of the playerHand where drawn card will be
      *                          placed.
      */
     public void applyDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+            Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         tokenToHand.get(playerToken).set(handIndex, drawnCardId);
 
         visibleResourceCardsList.set(drawnCardPosition, replacementCardId);

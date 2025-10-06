@@ -51,26 +51,26 @@ public abstract class Controller implements UI {
     }
 
     @Override
-    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void handleDrawnGoldDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
             Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
-    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, boolean deckEmptied,
+    public void handleDrawnResourceDeckCardEvent(PlayerToken playerToken, int drawnCardId, int deckSize,
             Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
     public void handleDrawnVisibleResourceCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+            Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         return;
     }
 
     @Override
     public void handleDrawnVisibleGoldCardEvent(PlayerToken playerToken, int drawnCardPosition, int drawnCardId,
-            Integer replacementCardId, boolean deckEmptied, Integer nextCardId, int handIndex) {
+            Integer replacementCardId, int deckSize, Integer nextCardId, int handIndex) {
         return;
     }
 
