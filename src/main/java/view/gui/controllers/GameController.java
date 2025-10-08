@@ -1,18 +1,27 @@
 package view.gui.controllers;
 
+import controller.GameModelUpdater;
+import controller.ServerPrinter;
 import controller.usermanagement.LobbyInfo;
 import controller.usermanagement.UserInfo;
 import distributed.client.ConnectionHandler;
 import distributed.commands.game.*;
+import distributed.events.game.EndedInitializationPhaseEvent;
 import javafx.animation.ScaleTransition;
+import javafx.geometry.*;
 import javafx.scene.effect.Effect;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import model.GameModel;
 import model.SlimGameModel;
+import model.card.Card;
 import model.card.CardSide;
+import model.card.ObjectiveCard;
+import model.card.StarterCard;
 import model.common.Elements;
 import model.common.Items;
 import model.common.Resources;
+import model.deck.Decks;
 import model.player.Coords;
 import model.player.PlayerToken;
 import util.Pair;
@@ -22,10 +31,6 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
@@ -63,6 +68,8 @@ public class GameController extends Controller {
 
     // zoom
     private double currentZoomScale = 1;
+    private final double minimumZoomScale = 0.25;
+    private final double maximumZoomScale = 4;
     private final double zoomIncrement = 0.1;
 
     // cells and cards
@@ -197,6 +204,9 @@ public class GameController extends Controller {
     private double dragStartX;
     private double dragStartY;
 
+    private Double currentTranslateX = 0.0;
+    private Double currentTranslateY = 0.0;
+
     // cards playability
     private boolean clearList = false;
     public Map<Integer, List<Pair<CardSide, Boolean>>> cardsPlayability = new HashMap<>();
@@ -259,6 +269,81 @@ public class GameController extends Controller {
         put(28, new Coords((int) (322.283), (int) (215.156)));
         put(29, new Coords((int) (188.976), (int) (151.093)));
     }};
+
+    public void initializeTest() {
+        System.out.println("ao");
+        this.selfUserInfo = new AtomicReference<>(new UserInfo("andrea", 0));
+
+        this.userInfoToToken = new HashMap<>();
+        userInfoToToken.put(this.selfUserInfo.get(), PlayerToken.RED);
+
+        this.selfPlayerToken = userInfoToToken.get(this.selfUserInfo.get());
+
+        Decks decks = new Decks(null, new AtomicInteger(0));
+
+        Map<PlayerToken, StarterCard> tokenToStarterCard = new HashMap<>();
+        tokenToStarterCard.put(this.selfPlayerToken, decks.starterCardsDeck.anonymousDraw().first.get());
+
+        Map<PlayerToken, CardSide> tokenToCardSide = new HashMap<>();
+        tokenToCardSide.put(this.selfPlayerToken, CardSide.FRONT);
+
+        Map<PlayerToken, ObjectiveCard> tokenToObjectiveCard = new HashMap<>();
+        tokenToObjectiveCard.put(this.selfPlayerToken, decks.objectiveCardsDeck.anonymousDraw().first.get());
+
+        List<ObjectiveCard> commonObjectives = new ArrayList<>(
+                Arrays.asList(decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow(),
+                        decks.objectiveCardsDeck.anonymousDraw().first.orElseThrow()));
+        List<PlayerToken> playerTokens = new ArrayList<>(userInfoToToken.values());
+
+        GameModelUpdater gameModelUpdater = new GameModelUpdater(
+                new GameModel(decks, playerTokens, tokenToStarterCard, tokenToCardSide, tokenToObjectiveCard,
+                        commonObjectives, new ArrayList<>(), new AtomicInteger(1)));
+
+        this.slimGameModel = gameModelUpdater.getSlimGameModel();
+
+        resourceDeck = new Pair<>(resourceDeckImageView, slimGameModel.resourceDeck);
+        goldDeck = new Pair<>(goldDeckImageView, slimGameModel.goldDeck);
+
+        deckViewToDeck = new HashMap<>() {{
+            put(resourceDeckImageView, resourceDeck);
+            put(goldDeckImageView, goldDeck);
+        }};
+
+        visibleSlotToCardId = new HashMap<>() {{
+            put(firstResourceImageView, () -> slimGameModel.visibleResourceCardsList.get(0));
+            put(secondResourceImageView, () -> slimGameModel.visibleResourceCardsList.get(1));
+            put(firstGoldImageView, () -> slimGameModel.visibleGoldCardsList.get(0));
+            put(secondGoldImageView, () -> slimGameModel.visibleGoldCardsList.get(1));
+        }};
+
+        visibleSlotToVisibleListSetter = new HashMap<>() {{
+            put(firstResourceImageView, x -> slimGameModel.visibleResourceCardsList.set(0, x));
+            put(secondResourceImageView, x -> slimGameModel.visibleResourceCardsList.set(1, x));
+            put(firstGoldImageView, x -> slimGameModel.visibleGoldCardsList.set(0, x));
+            put(secondGoldImageView, x -> slimGameModel.visibleGoldCardsList.set(1, x));
+        }};
+
+        visibleSlotToDeck = new HashMap<>() {{
+            put(firstResourceImageView, resourceDeck);
+            put(secondResourceImageView, resourceDeck);
+            put(firstGoldImageView, goldDeck);
+            put(secondGoldImageView, goldDeck);
+        }};
+
+        initializeTabs();
+        initializeDecks();
+        initializeEventPanes();
+        // initializePlayersList(lobby.get().users);
+        // initializeChat();
+
+        // lobby.get().users.forEach(this::initializePlayer);    // sets up structures for each player, such as scroll and grid pane
+        initializePlayer(this.selfUserInfo.get());
+
+        currentPlayerToken = selfPlayerToken;
+        switchPlayerView(selfPlayerToken);
+
+        handlePlayerTurnEvent(this.selfPlayerToken);
+    }
 
     /**
      * Method to call to initialize the controller and the scene.
@@ -569,6 +654,8 @@ public class GameController extends Controller {
         scrollPane.setVvalue(0.5);
 
         scrollPane.setOnKeyPressed(this::handleKeyPressedEvent);
+        scrollPane.setPannable(false);
+        scrollPane.addEventFilter(ScrollEvent.ANY, this::handleTrackpadDrag);
 
         GridPane gridPane = new GridPane();
         for(int i = 0; i < gridCellsCount.first; i++) {
@@ -595,7 +682,7 @@ public class GameController extends Controller {
             "-fx-background-position: top left;"
         );
 
-        gridPane.setOnMouseDragged(this::handleMouseDragged);
+        // gridPane.setOnMouseDragged(this::handleMouseDragged);
         gridPane.setOnMousePressed(this::handleOnMousePressed);
 
         scrollPane.setContent(gridPane);
@@ -681,22 +768,175 @@ public class GameController extends Controller {
         dragStartY = event.getSceneY();
     }
 
-    /**
-     * Handles dragging mouse on the player board grid.
-     * Calculates translation values, applies them, and updates last drag coordinates.
-     *
-     * @param event drag MouseEvent
-     */
+    // /**
+    //  * Handles dragging mouse on the player board grid.
+    //  * Calculates translation values, applies them, and updates last drag coordinates.
+    //  *
+    //  * @param event drag MouseEvent
+    //  */
+    // @FXML
+    // private void handleMouseDragged(MouseEvent event) {
+    //     double newViewportX = currentScrollPane.getHvalue() - (event.getSceneX() - dragStartX) / currentGridPane.getWidth();
+    //     double newViewportY = currentScrollPane.getVvalue() - (event.getSceneY() - dragStartY) / currentGridPane.getHeight();
+//
+    //     currentScrollPane.setHvalue(newViewportX);
+    //     currentScrollPane.setVvalue(newViewportY);
+//
+    //     dragStartX = event.getSceneX();
+    //     dragStartY = event.getSceneY();
+    // }
+
+    // /**
+    //  * Handles dragging mouse on the player board grid.
+    //  * Calculates translation values, applies them, and updates last drag coordinates.
+    //  *
+    //  * @param event drag MouseEvent
+    //  */
+    // @FXML
+    // private void handleMouseDragged(MouseEvent event) {
+    //     double deltaX = (event.getSceneX() - dragStartX);
+    //     double deltaY = (event.getSceneY() - dragStartY);
+//
+    //     double zoomFactor = currentZoomScale;
+//
+    //     double viewportWidth = currentScrollPane.getViewportBounds().getWidth();
+    //     double viewportHeight = currentScrollPane.getViewportBounds().getHeight();
+//
+    //     double contentWidth = currentGridPane.getWidth() * zoomFactor;
+    //     double contentHeight = currentGridPane.getHeight() * zoomFactor;
+//
+    //     double hRange = Math.max(0, contentWidth - viewportWidth);
+    //     double vRange = Math.max(0, contentHeight - viewportHeight);
+//
+    //     double hDelta = hRange == 0 ? 0 : deltaX / hRange;
+    //     double vDelta = vRange == 0 ? 0 : deltaY / vRange;
+//
+    //     double newH = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentScrollPane.getHvalue() - hDelta));
+    //     double newV = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentScrollPane.getVvalue() - vDelta));
+//
+    //     System.out.printf(
+    //             "Δx=%.2f Δy=%.2f | zoom=%.2f | viewport=(%.1f, %.1f) | content=(%.1f, %.1f) | newH=%.3f newV=%.3f%n",
+    //             deltaX, deltaY, zoomFactor, viewportWidth, viewportHeight, contentWidth, contentHeight, newH, newV
+    //     );
+//
+    //     currentScrollPane.setHvalue(newH);
+    //     currentScrollPane.setVvalue(newV);
+//
+    //     dragStartX = event.getSceneX();
+    //     dragStartY = event.getSceneY();
+//
+    //     event.consume();
+    // }
+
     @FXML
-    private void handleMouseDragged(MouseEvent event) {
-        double newViewportX = currentScrollPane.getHvalue() - (event.getSceneX() - dragStartX) / currentGridPane.getWidth();
-        double newViewportY = currentScrollPane.getVvalue() - (event.getSceneY() - dragStartY) / currentGridPane.getHeight();
+    private void handleTrackpadDrag(ScrollEvent event) {
+        moveScene(event.getDeltaX(), event.getDeltaY());
+        event.consume();
+    }
 
-        currentScrollPane.setHvalue(newViewportX);
-        currentScrollPane.setVvalue(newViewportY);
+    private void moveScene(double deltaX, double deltaY) {
+        double viewportX = currentScrollPane.getViewportBounds().getWidth();
+        double viewportY = currentScrollPane.getViewportBounds().getHeight();
 
-        dragStartX = event.getSceneX();
-        dragStartY = event.getSceneY();
+        Node content = currentScrollPane.getContent();
+
+        double maxTranslateX = (content.getBoundsInParent().getWidth() - viewportX) / 2.0 + 5;
+        double minTranslateX = (viewportX - content.getBoundsInParent().getWidth()) / 2.0 - 5;
+
+        double maxTranslateY = (content.getBoundsInParent().getHeight() - viewportY) / 2.0 + 5;
+        double minTranslateY = (viewportY - content.getBoundsInParent().getHeight()) / 2.0 - 5;
+
+        double newTranslateX = Math.min(Math.max(currentTranslateX + deltaX, minTranslateX), maxTranslateX);
+        double newTranslateY = Math.min(Math.max(currentTranslateY + deltaY, minTranslateY), maxTranslateY);;
+
+        System.out.println("currentTranslateX: " + currentTranslateX + " newTranslateY: " + currentTranslateY);
+        System.out.printf("newTranslateX: %.6f (min: %.3f, max: %.3f)\n", newTranslateX, minTranslateX, maxTranslateX);
+        System.out.printf("newTranslateY: %.6f (min: %.3f, max: %.3f)\n", newTranslateY, minTranslateY, maxTranslateY);
+
+        content.setTranslateX(newTranslateX);
+        content.setTranslateY(newTranslateY);
+
+        currentTranslateX = newTranslateX;
+        currentTranslateY = newTranslateY;
+    }
+
+    // @FXML
+    // private void handleZoom(ZoomEvent event) {
+    //     double zoomFactor = event.getZoomFactor();
+    //     double newScale = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentZoomScale * zoomFactor));
+//
+    //     // double absoluteX = event.getX(), absoluteY = event.getY();
+    //     double centerX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0;
+    //     double centerY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0;
+//
+    //     double absoluteX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0 - currentTranslateX + event.getX();
+    //     double absoluteY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0 - currentTranslateY;
+//
+    //     double relativeX = absoluteX - centerX;
+    //     double relativeY = absoluteY - centerY;
+//
+    //     double zoomedX = relativeX * newScale / currentZoomScale;
+    //     double zoomedY = relativeY * newScale / currentZoomScale;
+//
+    //     moveScene(-(zoomedX - relativeX), -(zoomedY - relativeY));
+    //
+    //     System.out.printf("center: (%f, %f)\n", centerX, centerY);
+    //     System.out.printf("absolute: (%f, %f)\n", absoluteX, absoluteY);
+    //     System.out.printf("relative: (%f, %f)\n", relativeX, relativeY);
+    //     System.out.printf("zoomed: (%f, %f)\n", zoomedX, zoomedY);
+    //     System.out.printf("delta: (%f, %f)\n", zoomedX - relativeX, zoomedY - relativeY);
+//
+    //     currentGridPane.setScaleX(newScale);
+    //     currentGridPane.setScaleY(newScale);
+    //     currentZoomScale = newScale;
+//
+    //     event.consume();
+    // }
+
+    @FXML
+    private void handleZoom(ZoomEvent event) {
+        double zoomFactor = event.getZoomFactor();
+        double newScale = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentZoomScale * zoomFactor));
+
+        double viewportToContentRatio = currentScrollPane.getViewportBounds().getWidth() / currentScrollPane.getContent().getBoundsInParent().getWidth();
+
+        double viewportCenterX = currentScrollPane.getViewportBounds().getWidth() / 2.0;
+        double viewportCenterY = currentScrollPane.getViewportBounds().getHeight() / 2.0;
+
+        System.out.printf("viewportCenter: (%f %f)\n", viewportCenterX, viewportCenterY);
+        System.out.printf("event: (%f %f)\n", event.getX(), event.getY());
+
+        double tempX = (event.getX() - viewportCenterX);
+        double tempY = (event.getY() - viewportCenterY);
+        System.out.printf("content dimensions: (%f, %f)\n", currentScrollPane.getContent().getBoundsInParent().getWidth(), currentScrollPane.getContent().getBoundsInParent().getHeight());
+        System.out.printf("distanceInContentCoords: (%f %f)\n", tempX, tempY);
+
+        // double absoluteX = event.getX(), absoluteY = event.getY();
+        double centerX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0;
+        double centerY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0;
+
+        double absoluteX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0 - currentTranslateX + tempX;
+        double absoluteY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0 - currentTranslateY + tempY;
+
+        double relativeX = absoluteX - centerX;
+        double relativeY = absoluteY - centerY;
+
+        double zoomedX = relativeX * newScale / currentZoomScale;
+        double zoomedY = relativeY * newScale / currentZoomScale;
+
+        currentGridPane.setScaleX(newScale);
+        currentGridPane.setScaleY(newScale);
+        moveScene(relativeX - zoomedX, relativeY - zoomedY);    // first scale then move!! allows to have no outside boundaries behavior
+
+        System.out.printf("center: (%f, %f)\n", centerX, centerY);
+        System.out.printf("absolute: (%f, %f)\n", absoluteX, absoluteY);
+        System.out.printf("relative: (%f, %f)\n", relativeX, relativeY);
+        System.out.printf("zoomed: (%f, %f)\n", zoomedX, zoomedY);
+        System.out.printf("delta: (%f, %f)\n\n", zoomedX - relativeX, zoomedY - relativeY);
+
+        currentZoomScale = newScale;
+
+        event.consume();
     }
 
     /**
@@ -1303,15 +1543,19 @@ public class GameController extends Controller {
         Platform.runLater(() -> {
             slimGameModel.applyDrawnGoldDeckCardEvent(playerToken, drawnCardId, deckSize, nextCardId, handIndex);
 
-            if (playerToken != selfPlayerToken) {
-                if (deckSize == 0) goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
-                else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+            if (playerToken == selfPlayerToken) return;
 
-                updateDeckHealthBar(goldHealthBar, deckSize, true);
-                updateDeckDropShadow(goldDeck.first, deckSize, true);
-
-                setCardToHand(playerToken, drawnCardId, handIndex);
+            if (deckSize == 0) {
+                goldDeck.first.setImage(getCardImage(DEFAULT_OBJECTIVE_CARD_ID, CardSide.BACK));
+                goldDeck.first.setOpacity(0.25);
+                goldDeck.first.setDisable(true);
             }
+            else goldDeck.first.setImage(getCardImage(nextCardId, CardSide.BACK));
+
+            updateDeckHealthBar(goldHealthBar, deckSize, true);
+            updateDeckDropShadow(goldDeck.first, deckSize, true);
+
+            setCardToHand(playerToken, drawnCardId, handIndex);
         });
     }
 
@@ -1871,9 +2115,14 @@ public class GameController extends Controller {
         double remainingPercentage = deckSize / (double)(isGoldDeck ? initialGoldDeckSize : initialResourceDeckSize);
 
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setWidth(21); dropShadow.setHeight(21);
-        dropShadow.setRadius(10); dropShadow.setRadius(10);
-        dropShadow.setColor(Color.color(0, 0, 0, 0.6 + remainingPercentage * 0.4));
+        if (remainingPercentage == 0.0) {
+            dropShadow.setWidth(5); dropShadow.setHeight(5);
+            dropShadow.setColor(Color.color(0, 0, 0, 0.25));
+        }
+        else {
+            dropShadow.setWidth(21); dropShadow.setHeight(21); dropShadow.setRadius(10);
+            dropShadow.setColor(Color.color(0, 0, 0, 0.6 + remainingPercentage * 0.4));
+        }
 
         imageView.setEffect(dropShadow);
     }

@@ -5,24 +5,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import view.gui.controllers.GameController;
 
 public class SceneTester extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/gameView.fxml"));
+        String sceneToLoad = "gameView";
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/gui/" + sceneToLoad + ".fxml"));
         Parent root = null;
         try { root = fxmlLoader.load(); } catch (Exception e) { e.printStackTrace(); }
 
-
-        // tempController controller = fxmlLoader.getController();
-        // controller.initialize();
+        if (sceneToLoad.equals("gameView")) {
+            GameController controller = fxmlLoader.getController();
+            controller.initializeTest();
+            System.out.println("initialized");
+        }
 
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("css/gameView.css");
+        scene.getStylesheets().add("css/" + sceneToLoad + ".css");
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Chat Application");
+        primaryStage.setTitle("Codex Naturalis");
 
         primaryStage.setResizable(false);
         primaryStage.sizeToScene();

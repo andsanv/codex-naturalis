@@ -4,6 +4,8 @@ import common.Config;
 import controller.usermanagement.LobbyInfo;
 import controller.usermanagement.UserInfo;
 import distributed.client.ConnectionHandler;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.ZoomEvent;
 import model.SlimGameModel;
 import model.player.PlayerToken;
 import view.gui.controllers.*;
@@ -212,6 +214,12 @@ public class GUI extends Application {
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("css/gameView.css");
+
+        scene.addEventFilter(ScrollEvent.ANY, e -> {
+            System.out.println("ZOOM EVENT detected: " +
+                    e.getEventType() + " target=" + e.getTarget() +
+                    " source=" + e.getSource());
+        });
 
         mainController.setSubController(controller);
 

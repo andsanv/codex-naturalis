@@ -480,7 +480,6 @@ public class SetupPhaseController extends Controller {
      * Applies CSS to the view.
      */
     public void applyCss() {
-
         //token css
         tokenPane.getStyleClass().add("main-pane");
         tokenNextButton.getStyleClass().add("button-next");
