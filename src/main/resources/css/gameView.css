@@ -31,12 +31,6 @@
     -fx-max-height: 0;
 }
 
-#defaultGridPane {
-    -fx-background-image: url("../images/pattern.png");
-    -fx-background-repeat: repeat;
-    -fx-background-position: top left;
-}
-
 .root {
     -fx-font-family: 'Mulish';
     -fx-font-size: 13;

@@ -1,20 +1,15 @@
 package view.gui.controllers;
 
 import controller.GameModelUpdater;
-import controller.ServerPrinter;
 import controller.usermanagement.LobbyInfo;
 import controller.usermanagement.UserInfo;
 import distributed.client.ConnectionHandler;
 import distributed.commands.game.*;
-import distributed.events.game.EndedInitializationPhaseEvent;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.*;
-import javafx.scene.effect.Effect;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import model.GameModel;
 import model.SlimGameModel;
-import model.card.Card;
 import model.card.CardSide;
 import model.card.ObjectiveCard;
 import model.card.StarterCard;
@@ -70,7 +65,6 @@ public class GameController extends Controller {
     private double currentZoomScale = 1;
     private final double minimumZoomScale = 0.25;
     private final double maximumZoomScale = 4;
-    private final double zoomIncrement = 0.1;
 
     // cells and cards
     public final Pair<Double, Double> rawCellDimensions = new Pair<>(774.0, 397.0);
@@ -201,9 +195,6 @@ public class GameController extends Controller {
 
     /* HELPERS */
     // mouse drag
-    private double dragStartX;
-    private double dragStartY;
-
     private Double currentTranslateX = 0.0;
     private Double currentTranslateY = 0.0;
 
@@ -653,7 +644,6 @@ public class GameController extends Controller {
         scrollPane.setHvalue(0.5);
         scrollPane.setVvalue(0.5);
 
-        scrollPane.setOnKeyPressed(this::handleKeyPressedEvent);
         scrollPane.setPannable(false);
         scrollPane.addEventFilter(ScrollEvent.ANY, this::handleTrackpadDrag);
 
@@ -679,11 +669,8 @@ public class GameController extends Controller {
         gridPane.setStyle(
             "-fx-background-image: url('" + getClass().getResource("/images/pattern.png") + "');" +
             "-fx-background-repeat: repeat;" +
-            "-fx-background-position: top left;"
+            "-fx-background-position: center;"
         );
-
-        // gridPane.setOnMouseDragged(this::handleMouseDragged);
-        gridPane.setOnMousePressed(this::handleOnMousePressed);
 
         scrollPane.setContent(gridPane);
         tokenToScrollPane.put(playerToken, scrollPane);
@@ -726,7 +713,10 @@ public class GameController extends Controller {
         tokenToHandHBox.put(playerToken, handHBox);
 
         // enable structures if the player being initialized is self
+        System.out.println("playertoken: " + playerToken);
+        System.out.println("self playertoken: " + selfPlayerToken);
         if (playerToken == selfPlayerToken) {
+            System.out.println("in");
             firstCardImageView.setOnMouseClicked(this::handleHandMouseClicked);
             firstCardImageView.setOnMouseEntered(this::handleHandMouseEntered);
             firstCardImageView.setOnMouseExited(this::handleHandMouseExited);
@@ -757,77 +747,6 @@ public class GameController extends Controller {
         return new Coords(x, y);
     }
 
-    /**
-     * Updates start coordinates of an eventual drag action.
-     *
-     * @param event press MouseEvent
-     */
-    @FXML
-    private void handleOnMousePressed(MouseEvent event) {
-        dragStartX = event.getSceneX();
-        dragStartY = event.getSceneY();
-    }
-
-    // /**
-    //  * Handles dragging mouse on the player board grid.
-    //  * Calculates translation values, applies them, and updates last drag coordinates.
-    //  *
-    //  * @param event drag MouseEvent
-    //  */
-    // @FXML
-    // private void handleMouseDragged(MouseEvent event) {
-    //     double newViewportX = currentScrollPane.getHvalue() - (event.getSceneX() - dragStartX) / currentGridPane.getWidth();
-    //     double newViewportY = currentScrollPane.getVvalue() - (event.getSceneY() - dragStartY) / currentGridPane.getHeight();
-//
-    //     currentScrollPane.setHvalue(newViewportX);
-    //     currentScrollPane.setVvalue(newViewportY);
-//
-    //     dragStartX = event.getSceneX();
-    //     dragStartY = event.getSceneY();
-    // }
-
-    // /**
-    //  * Handles dragging mouse on the player board grid.
-    //  * Calculates translation values, applies them, and updates last drag coordinates.
-    //  *
-    //  * @param event drag MouseEvent
-    //  */
-    // @FXML
-    // private void handleMouseDragged(MouseEvent event) {
-    //     double deltaX = (event.getSceneX() - dragStartX);
-    //     double deltaY = (event.getSceneY() - dragStartY);
-//
-    //     double zoomFactor = currentZoomScale;
-//
-    //     double viewportWidth = currentScrollPane.getViewportBounds().getWidth();
-    //     double viewportHeight = currentScrollPane.getViewportBounds().getHeight();
-//
-    //     double contentWidth = currentGridPane.getWidth() * zoomFactor;
-    //     double contentHeight = currentGridPane.getHeight() * zoomFactor;
-//
-    //     double hRange = Math.max(0, contentWidth - viewportWidth);
-    //     double vRange = Math.max(0, contentHeight - viewportHeight);
-//
-    //     double hDelta = hRange == 0 ? 0 : deltaX / hRange;
-    //     double vDelta = vRange == 0 ? 0 : deltaY / vRange;
-//
-    //     double newH = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentScrollPane.getHvalue() - hDelta));
-    //     double newV = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentScrollPane.getVvalue() - vDelta));
-//
-    //     System.out.printf(
-    //             "Δx=%.2f Δy=%.2f | zoom=%.2f | viewport=(%.1f, %.1f) | content=(%.1f, %.1f) | newH=%.3f newV=%.3f%n",
-    //             deltaX, deltaY, zoomFactor, viewportWidth, viewportHeight, contentWidth, contentHeight, newH, newV
-    //     );
-//
-    //     currentScrollPane.setHvalue(newH);
-    //     currentScrollPane.setVvalue(newV);
-//
-    //     dragStartX = event.getSceneX();
-    //     dragStartY = event.getSceneY();
-//
-    //     event.consume();
-    // }
-
     @FXML
     private void handleTrackpadDrag(ScrollEvent event) {
         moveScene(event.getDeltaX(), event.getDeltaY());
@@ -835,139 +754,44 @@ public class GameController extends Controller {
     }
 
     private void moveScene(double deltaX, double deltaY) {
-        double viewportX = currentScrollPane.getViewportBounds().getWidth();
-        double viewportY = currentScrollPane.getViewportBounds().getHeight();
+        Node gridPane = currentScrollPane.getContent();     // obtain grid pane as content of the scroll pane
+        double gridPaneWidth = gridPane.getBoundsInParent().getWidth();
+        double gridPaneHeight = gridPane.getBoundsInParent().getHeight();
 
-        Node content = currentScrollPane.getContent();
+        double minTranslateX = (screenResolution.first - gridPaneWidth) / 2.0 - 5;
+        double maxTranslateX = (gridPaneWidth - screenResolution.first) / 2.0 + 5;
 
-        double maxTranslateX = (content.getBoundsInParent().getWidth() - viewportX) / 2.0 + 5;
-        double minTranslateX = (viewportX - content.getBoundsInParent().getWidth()) / 2.0 - 5;
-
-        double maxTranslateY = (content.getBoundsInParent().getHeight() - viewportY) / 2.0 + 5;
-        double minTranslateY = (viewportY - content.getBoundsInParent().getHeight()) / 2.0 - 5;
+        double minTranslateY = (screenResolution.second - gridPaneHeight) / 2.0 - 5;
+        double maxTranslateY = (gridPaneHeight - screenResolution.second) / 2.0 + 5;
 
         double newTranslateX = Math.min(Math.max(currentTranslateX + deltaX, minTranslateX), maxTranslateX);
         double newTranslateY = Math.min(Math.max(currentTranslateY + deltaY, minTranslateY), maxTranslateY);;
 
-        System.out.println("currentTranslateX: " + currentTranslateX + " newTranslateY: " + currentTranslateY);
-        System.out.printf("newTranslateX: %.6f (min: %.3f, max: %.3f)\n", newTranslateX, minTranslateX, maxTranslateX);
-        System.out.printf("newTranslateY: %.6f (min: %.3f, max: %.3f)\n", newTranslateY, minTranslateY, maxTranslateY);
-
-        content.setTranslateX(newTranslateX);
-        content.setTranslateY(newTranslateY);
+        gridPane.setTranslateX(newTranslateX); gridPane.setTranslateY(newTranslateY);   // translate the grid pane
 
         currentTranslateX = newTranslateX;
         currentTranslateY = newTranslateY;
     }
 
-    // @FXML
-    // private void handleZoom(ZoomEvent event) {
-    //     double zoomFactor = event.getZoomFactor();
-    //     double newScale = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentZoomScale * zoomFactor));
-//
-    //     // double absoluteX = event.getX(), absoluteY = event.getY();
-    //     double centerX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0;
-    //     double centerY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0;
-//
-    //     double absoluteX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0 - currentTranslateX + event.getX();
-    //     double absoluteY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0 - currentTranslateY;
-//
-    //     double relativeX = absoluteX - centerX;
-    //     double relativeY = absoluteY - centerY;
-//
-    //     double zoomedX = relativeX * newScale / currentZoomScale;
-    //     double zoomedY = relativeY * newScale / currentZoomScale;
-//
-    //     moveScene(-(zoomedX - relativeX), -(zoomedY - relativeY));
-    //
-    //     System.out.printf("center: (%f, %f)\n", centerX, centerY);
-    //     System.out.printf("absolute: (%f, %f)\n", absoluteX, absoluteY);
-    //     System.out.printf("relative: (%f, %f)\n", relativeX, relativeY);
-    //     System.out.printf("zoomed: (%f, %f)\n", zoomedX, zoomedY);
-    //     System.out.printf("delta: (%f, %f)\n", zoomedX - relativeX, zoomedY - relativeY);
-//
-    //     currentGridPane.setScaleX(newScale);
-    //     currentGridPane.setScaleY(newScale);
-    //     currentZoomScale = newScale;
-//
-    //     event.consume();
-    // }
 
     @FXML
     private void handleZoom(ZoomEvent event) {
-        double zoomFactor = event.getZoomFactor();
-        double newScale = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentZoomScale * zoomFactor));
+        double newScale = Math.max(minimumZoomScale, Math.min(maximumZoomScale, currentZoomScale * event.getZoomFactor()));
 
-        double viewportToContentRatio = currentScrollPane.getViewportBounds().getWidth() / currentScrollPane.getContent().getBoundsInParent().getWidth();
+        double tempX = (event.getX() - screenResolution.first / 2.0);   // mouse coords with respect to the center of the window
+        double tempY = (event.getY() - screenResolution.second / 2.0);
 
-        double viewportCenterX = currentScrollPane.getViewportBounds().getWidth() / 2.0;
-        double viewportCenterY = currentScrollPane.getViewportBounds().getHeight() / 2.0;
+        double relativeX = - currentTranslateX + tempX;     // mouse coords with respect to the center of the grid pane (i.e. game coords)
+        double relativeY = - currentTranslateY + tempY;
 
-        System.out.printf("viewportCenter: (%f %f)\n", viewportCenterX, viewportCenterY);
-        System.out.printf("event: (%f %f)\n", event.getX(), event.getY());
-
-        double tempX = (event.getX() - viewportCenterX);
-        double tempY = (event.getY() - viewportCenterY);
-        System.out.printf("content dimensions: (%f, %f)\n", currentScrollPane.getContent().getBoundsInParent().getWidth(), currentScrollPane.getContent().getBoundsInParent().getHeight());
-        System.out.printf("distanceInContentCoords: (%f %f)\n", tempX, tempY);
-
-        // double absoluteX = event.getX(), absoluteY = event.getY();
-        double centerX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0;
-        double centerY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0;
-
-        double absoluteX = currentScrollPane.getContent().getBoundsInParent().getWidth() / 2.0 - currentTranslateX + tempX;
-        double absoluteY = currentScrollPane.getContent().getBoundsInParent().getHeight() / 2.0 - currentTranslateY + tempY;
-
-        double relativeX = absoluteX - centerX;
-        double relativeY = absoluteY - centerY;
-
-        double zoomedX = relativeX * newScale / currentZoomScale;
+        double zoomedX = relativeX * newScale / currentZoomScale;   // compute movement of the point and fix it moving the scene
         double zoomedY = relativeY * newScale / currentZoomScale;
 
-        currentGridPane.setScaleX(newScale);
-        currentGridPane.setScaleY(newScale);
+        currentGridPane.setScaleX(newScale); currentGridPane.setScaleY(newScale);   // update to the target scale
         moveScene(relativeX - zoomedX, relativeY - zoomedY);    // first scale then move!! allows to have no outside boundaries behavior
 
-        System.out.printf("center: (%f, %f)\n", centerX, centerY);
-        System.out.printf("absolute: (%f, %f)\n", absoluteX, absoluteY);
-        System.out.printf("relative: (%f, %f)\n", relativeX, relativeY);
-        System.out.printf("zoomed: (%f, %f)\n", zoomedX, zoomedY);
-        System.out.printf("delta: (%f, %f)\n\n", zoomedX - relativeX, zoomedY - relativeY);
-
         currentZoomScale = newScale;
-
         event.consume();
-    }
-
-    /**
-     * Handles zooming with "CTRL +" and "CTRL -" commands.
-     *
-     * @param event key pressed KeyEvent
-     */
-    @FXML
-    private void handleKeyPressedEvent(KeyEvent event) {
-        if(!event.isControlDown()) return;
-
-        switch(event.getCode()) {
-            case PLUS, EQUALS -> zoom(zoomIncrement);
-            case MINUS -> zoom(-zoomIncrement);
-        }
-    }
-
-    /**
-     * Allows to zoom the selected board.
-     *
-     * @param zoomIncrement zoom factor
-     */
-    private void zoom(double zoomIncrement) {
-        // TODO
-        if(currentZoomScale + zoomIncrement < 0 || currentZoomScale + zoomIncrement > 2) return;
-        currentZoomScale += zoomIncrement;
-
-        tokenToScrollPane.values().forEach(scrollPane -> {
-            scrollPane.getContent().setScaleX(currentZoomScale);
-            scrollPane.getContent().setScaleY(currentZoomScale);
-        });
     }
 
     /**

@@ -30,7 +30,7 @@
          <children>
             <ScrollPane fx:id="defaultScrollPane" focusTraversable="false" hbarPolicy="NEVER" onScroll="#handleTrackpadDrag" prefHeight="900.0" prefWidth="1440.0" vbarPolicy="NEVER" StackPane.alignment="CENTER">
                <content>
-                  <GridPane fx:id="defaultGridPane" alignment="CENTER" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMousePressed="#handleOnMousePressed">
+                  <GridPane fx:id="defaultGridPane" alignment="CENTER" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
                      <columnConstraints>
                         <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
                      </columnConstraints>
